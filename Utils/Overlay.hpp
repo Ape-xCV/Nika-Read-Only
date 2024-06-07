@@ -80,11 +80,6 @@ private:
     }
 
 public:
-    int ProcessingTime;
-    long long StartTime;
-    int SleepTime;
-    int TimeLeftToSleep;
-
     bool InitializeOverlay() {
         glfwSetErrorCallback(GLFWErrorCallback);
         if (!glfwInit()) {
