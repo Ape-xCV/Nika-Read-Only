@@ -137,10 +137,6 @@ void RenderUI() {
     }
     sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire);
     readError = false;
-    //    ESP->RenderWatermark(Canvas, Myself, OverlayWindow);
-    //    ESP->RenderDrawings(Canvas, Legit, Myself, OverlayWindow);
-    //    ESP->RenderTargetInformation(Canvas, Legit, OverlayWindow);
-    //    MapRadar->RenderDrawings(Canvas, Myself, OverlayWindow);
     ImGui::End();
 }
 
