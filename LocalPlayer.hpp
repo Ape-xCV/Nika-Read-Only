@@ -14,9 +14,9 @@ struct LocalPlayer {
     Vector2D punchAngles;
     Vector2D punchAnglesPrev;
     Vector2D punchAnglesDiff;
-    long actWeaponID;
-    long currentWeapon;
-    long actWeaponIDMasked;
+//_    long actWeaponID;
+//_    long currentWeapon;
+//_    long actWeaponIDMasked;
     long highlightSettingsPtr;
     long weaponEntity;
     long weaponHandle;
@@ -24,7 +24,7 @@ struct LocalPlayer {
     int weaponIndex;
     int frameCount; 
     int grenadeID;
-    int ammoInClip;
+//_    int ammoInClip;
     int teamNumber;
     int squadNumber;
     int currentHealth;
@@ -53,7 +53,7 @@ struct LocalPlayer {
         inJump = mem::Read<bool>(OFF_REGION + OFF_IN_JUMP, "LocalPlayer inJump") > 0;
         highlightSettingsPtr = mem::Read<long>( OFF_REGION + OFF_GLOW_HIGHLIGHTS, "LocalPlayer HiglightsSettingPtr");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
-        
+
         frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
         worldtime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
         traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
@@ -68,19 +68,19 @@ struct LocalPlayer {
         punchAnglesDiff = punchAnglesPrev.Subtract(punchAngles);
         punchAnglesPrev = punchAngles;
         if (!dead && !knocked && map->playable) {
-            weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
-            weaponHandleMasked = weaponHandle & 0xffff;
-           
-            weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5), "LocalPlayer weaponEntity");
             grenadeID = mem::Read<int>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeID");
             grippingGrenade = grenadeID == -251 ? true : false;
-            ammoInClip = mem::Read<int>(weaponEntity + OFFSET_AMMO, "LocalPlayer ammoInClip"); 
+            weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
+            weaponHandleMasked = weaponHandle & 0xffff;
+
+            weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5), "LocalPlayer weaponEntity");
+//_            ammoInClip = mem::Read<int>(weaponEntity + OFFSET_AMMO, "LocalPlayer ammoInClip");
             weaponIndex = mem::Read<int>(weaponEntity + OFF_WEAPON_INDEX, "LocalPlayer weaponIndex");
-            actWeaponID = mem::Read<long>((base + OFF_VIEW_MODELS), "LocalPlayer active Weapon ID");
-            actWeaponIDMasked = actWeaponID & 0xFFFF;
-            currentWeapon = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (actWeaponIDMasked << 5), "LocalPlayer current Weapon");
+//_            actWeaponID = mem::Read<long>((base + OFF_VIEW_MODELS), "LocalPlayer active Weapon ID");
+//_            actWeaponIDMasked = actWeaponID & 0xFFFF;
+//_            currentWeapon = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (actWeaponIDMasked << 5), "LocalPlayer current Weapon");
             WeaponProjectileSpeed = mem::Read<float>(weaponEntity + OFF_PROJECTILESPEED, "LocalPlayer WeaponProjectileSpeed");
-            WeaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILESCALE, "LocalPlayer WeaponProjectileScale");   
+            WeaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILESCALE, "LocalPlayer WeaponProjectileScale");
         }
     }
     bool isValid() {
