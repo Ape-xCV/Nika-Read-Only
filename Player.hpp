@@ -23,8 +23,9 @@ struct Player {
     int plyrDataTable;
     int spctrIndex;
     bool aimedAt;
-    int lastTimeVisible;
-    int lastTimeVisiblePrev;
+//_    int lastTimeVisible;
+    float lastTimeVisible;
+//_    int lastTimeVisiblePrev;
     bool visible;
     float distanceToLocalPlayer;
     float distance2DToLocalPlayer;
@@ -33,7 +34,6 @@ struct Player {
     Vector2D aimbotDesiredAnglesIncrement;
     float aimbotScore;
     uintptr_t nameOffset;
-    uintptr_t nameIndex;
     uint64_t spectators;
     uint64_t spctrBase;
 
@@ -111,10 +111,11 @@ struct Player {
         aimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
         lastTimeAimedAtPrev = lastTimeAimedAt;
 
-        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
+//_        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
+        lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible"); //_add
 //_        visible = isDummie() || aimedAt || lastTimeVisiblePrev < lastTimeVisible;
-        visible = aimedAt || lastTimeVisiblePrev < lastTimeVisible; //_add
-        lastTimeVisiblePrev = lastTimeVisible;
+        visible = aimedAt || (lastTimeVisible + 0.2) > lp->worldtime; //_add
+//_        lastTimeVisiblePrev = lastTimeVisible;
 
         if (lp->isValid()) {
             local = lp->base == base;
@@ -195,11 +196,6 @@ struct Player {
     bool isSpectating() {
 //        if (!dead)
 //            return false;
-//        int playerData = mem::Read<int>(base + OFF_NAMEINDEX, "plyrDataTable");
-//        uint64_t spectatorList = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
-//        int specIndex = mem::Read<int>(spectatorList + playerData*8 + 0x964, "spctrIndex");
-//        uint64_t spectatorAddr =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((specIndex & 0xFFFF) << 5), "spctrBase");
-//        if(spectatorAddr == lp->base)
         if(spctrBase == lp->base)
             return true;
         return false;
@@ -243,7 +239,7 @@ struct Player {
     }
     int GetPlayerLevel()
     {
-        int m_xp = mem::Read<int>(base + OFF_XPLEVEL, "Player XP_Level"); //
+        int m_xp = mem::Read<int>(base + OFF_XPLEVEL, "Player XP_Level");
         if (m_xp < 0) return 0;
         if (m_xp < 100) return 1;
 
@@ -276,7 +272,7 @@ struct Player {
             return -1;
 
         auto HitboxCache = mem::Read<uint16_t>(StudioHDR + 0x34, "Player HitboxCache");
-        auto HitboxArray = StudioHDR + ((uint16_t)(HitboxCache & 0xFFFE) << (4 * (HitboxCache & 1))); 
+        auto HitboxArray = StudioHDR + ((uint16_t)(HitboxCache & 0xFFFE) << (4 * (HitboxCache & 1)));
         if (!mem::IsValidPointer(HitboxArray + 0x4))
             return -1;
 
