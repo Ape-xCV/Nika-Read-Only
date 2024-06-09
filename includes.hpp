@@ -40,7 +40,7 @@
 //==========[FEATURES]=============
 #include "Aim.hpp"
 #include "NoRecoil.hpp"
-#include "Random.hpp"
+//_#include "Random.hpp"
 #include "Sense.hpp"
 #include "TriggerBot.hpp"
 
