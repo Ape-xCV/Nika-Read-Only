@@ -22,7 +22,7 @@ struct LocalPlayer {
     long weaponHandle;
     long weaponHandleMasked;
     int weaponIndex;
-    int frameCount; 
+//_    int frameCount; 
     int grenadeID;
 //_    int ammoInClip;
     int teamNumber;
@@ -31,10 +31,10 @@ struct LocalPlayer {
     float WeaponProjectileSpeed;
     float WeaponProjectileScale;
     float worldtime;
-    float traversalStartTime;
-    float traversalProgress;
-    float traversalReleaseTime;
-    float onWall;
+//_    float traversalStartTime;
+//_    float traversalProgress;
+//_    float traversalReleaseTime;
+//_    float onWall;
 
     void reset() {
         base = 0;
@@ -54,12 +54,12 @@ struct LocalPlayer {
         highlightSettingsPtr = mem::Read<long>( OFF_REGION + OFF_GLOW_HIGHLIGHTS, "LocalPlayer HiglightsSettingPtr");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
 
-        frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
+//_        frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
         worldtime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
-        traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
-        traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress"); 
-        traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime"); 
-        onWall = mem::Read<float>(base + OFFSET_WALL_RUN_START_TIME, "LocalPlayer wallRunStartTime");
+//_        traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
+//_        traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress"); 
+//_        traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime"); 
+//_        onWall = mem::Read<float>(base + OFFSET_WALL_RUN_START_TIME, "LocalPlayer wallRunStartTime");
 
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "LocalPlayer currentHealth");
         CameraPosition = mem::Read<Vector3D>(base + OFF_CAMERAORIGIN, "LocalPlayer CameraPosition");
