@@ -161,7 +161,7 @@ int main() {
     NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
     TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
-    Random* random = new Random(cl, display, map, localPlayer, players);
+//_    Random* random = new Random(cl, display, map, localPlayer, players);
     Aim* aim = new Aim(display, localPlayer, players, cl);
 
 //_    int counter = 0;
