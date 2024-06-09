@@ -136,7 +136,10 @@ void RenderUI() {
         sense->RenderESP(Canvas, OverlayWindow);
     }
     sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire);
-    readError = false;
+    if (readError) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        readError = false;
+    }
     ImGui::End();
 }
 
@@ -189,16 +192,18 @@ int main() {
 //_            if (counter % 20 == 0) cl->reloadFile();
             map->readFromMemory();
             if (!map->playable) {
-                OverlayWindow.Render(&RenderUI); //_add
-//_                printf("Player in Lobby - Sleep 35 sec\n");
+                printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
+                readError = true; //_add
+                OverlayWindow.Render(&RenderUI); //_add
                 continue;
             }
 
             localPlayer->readFromMemory(map);
 //_            if (!localPlayer->isValid()) throw std::invalid_argument("Select Legend");
             if (!localPlayer->isValid()) { //_add
+                printf("Select Legend\n"); //_add
+                readError = true; //_add
                 OverlayWindow.Render(&RenderUI); //_add
                 continue; //_add
             } //_add
