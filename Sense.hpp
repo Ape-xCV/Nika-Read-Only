@@ -23,7 +23,7 @@ struct Sense {
     }
 
 //_begin
-    void RenderStatus(double averageProcessingTime, bool leftLock, bool rightLock, bool autoFire) {
+    void RenderStatus(double averageProcessingTime, bool leftLock, bool rightLock, bool autoFire, int boneID) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
@@ -39,12 +39,19 @@ struct Sense {
         const ImVec4 leftLockColor = leftLock ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
         const ImVec4 rightLockColor = rightLock ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
         const ImVec4 autoFireColor = autoFire ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
+        const ImVec4 boneIDColor = ImVec4(1, 1, 0.343, 1);
         const ImVec4 processingTimeColor = averageProcessingTime < 20 ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
         ImGui::TextColored(leftLockColor, "< ");
         ImGui::SameLine();
         ImGui::TextColored(autoFireColor, "^ ");
         ImGui::SameLine();
         ImGui::TextColored(rightLockColor, "> ");
+        ImGui::SameLine();
+        ImGui::Text("hitbox: ");
+        ImGui::SameLine();
+        if (boneID == 0) ImGui::TextColored(boneIDColor, "BODY ");
+        else if (boneID == 1) ImGui::TextColored(boneIDColor, "NECK ");
+        else ImGui::TextColored(boneIDColor, "HEAD ");
         ImGui::SameLine();
         ImGui::Text("interval: ");
         ImGui::SameLine();
