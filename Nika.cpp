@@ -112,10 +112,11 @@ int counter;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
-bool readError;
+bool readError = true;
 bool leftLock = true;
 bool rightLock = false;
 bool autoFire = false;
+int boneID = 0;
 
 void RenderUI() {
     auto io = ImGui::GetIO();
@@ -135,7 +136,7 @@ void RenderUI() {
         sense->SpectatorsList(counter);
         sense->RenderESP(Canvas, OverlayWindow);
     }
-    sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire);
+    sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
     if (readError) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         readError = false;
@@ -188,6 +189,11 @@ int main() {
                 autoFire = !autoFire; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
             } //_add
+            if (display->keyDown("XK_Down")) { //_add
+                boneID++; //_add
+                if (boneID > 2) boneID = 0; //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+            } //_add
 
 //_            if (counter % 20 == 0) cl->reloadFile();
             map->readFromMemory();
@@ -232,7 +238,7 @@ int main() {
 //_            sense->update(counter);
 //_            sense->itemGlow(counter);
 //_            aim->update(counter);
-            aim->update(counter, leftLock, rightLock); //_add
+            aim->update(counter, leftLock, rightLock, boneID); //_add
 //_            random->runAll(counter);
             OverlayWindow.Render(&RenderUI); //_add
 
