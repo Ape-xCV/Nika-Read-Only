@@ -18,7 +18,7 @@ struct Aim {
         this->display = myDisplay;
         this->lp = localPlayer;
         this->players = all_players;
-        this->cl = ConfigLoada;   
+        this->cl = ConfigLoada;
     }
 //_    bool active(){
     bool active(bool leftLock, bool rightLock){ //_add
@@ -37,7 +37,10 @@ struct Aim {
         return active;
     }
 //_    void update(int counter) {
-    void update(int counter, bool leftLock, bool rightLock) { //_add
+    void update(int counter, bool leftLock, bool rightLock, int boneID) { //_add
+        if (boneID == 0) Hitbox = HitboxType::UpperChest; //_add
+        else if (boneID == 1) Hitbox = HitboxType::Neck; //_add
+        else Hitbox = HitboxType::Head; //_add
         if (lp->grippingGrenade){ ReleaseTarget(); return; }
 //_        if (!active()){ ReleaseTarget(); return; }
         if (!active(leftLock, rightLock)){ ReleaseTarget(); return; } //_add
@@ -149,7 +152,7 @@ struct Aim {
         }
 
         Angle = Resolver::CalculateAngle(CameraPosition, TargetPosition);
-        return true;   
+        return true;
     }
 
     bool IsValidTarget(Player* target) {
