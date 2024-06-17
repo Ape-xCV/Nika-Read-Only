@@ -29,8 +29,8 @@ struct Aim {
         bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE" ) && display->keyDown(cl->AIMBOT_ACTIVATION_KEY);
         bool active = aimbotIsOn
             && combatReady
-//_            && (activatedByAttack
-            && ((activatedByAttack && leftLock) //_add
+            && (activatedByAttack
+            //&& ((activatedByAttack && leftLock) //_add
 //_                || activatedByADS
                 || (activatedByADS && rightLock) //_add
                 || activatedByKey);
@@ -73,10 +73,12 @@ struct Aim {
             ReleaseTarget();
             return;
         }
-        StartAiming();
+//_        StartAiming();
+        StartAiming(leftLock); //_add
     }
 
-    void StartAiming() {
+//_    void StartAiming() {
+    void StartAiming(bool leftLock) { //_add
         QAngle DesiredAngles = QAngle(0, 0);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -85,6 +87,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
+        if (!leftLock) TotalSmooth *= 2; //_add
 
         Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
         double nrPitchIncrement = punchAnglesDiff.x;
@@ -103,8 +106,12 @@ struct Aim {
 //_begin
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
+        if (!leftLock) { //_add
+            zoomedMaxMove /= 2; //_add
+            hipfireMaxMove /= 2; //_add
+        } //_add
 
-        // if (lp->inZoom) { //Ape-xCV; this method is slow
+        //if (lp->inZoom) { //Ape-xCV; this method is slow
         if (display->isRightMouseButtonDown()) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
             if (totalPitchIncrementInt < zoomedMaxMove * -1) totalPitchIncrementInt = zoomedMaxMove * -1;
