@@ -106,10 +106,10 @@ struct Aim {
 //_begin
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
-        if (!leftLock) { //_add
-            zoomedMaxMove /= 2; //_add
-            hipfireMaxMove /= 2; //_add
-        } //_add
+        if (!leftLock) {
+            zoomedMaxMove /= 2;
+            hipfireMaxMove /= 2;
+        }
 
         //if (lp->inZoom) { //Ape-xCV; this method is slow
         if (display->isRightMouseButtonDown()) {
