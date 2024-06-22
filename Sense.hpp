@@ -204,6 +204,98 @@ struct Sense {
         }
     }
 
+    static Vector3D RotatePoint(Vector3D LocalPlayerPos, Vector3D PlayerPos, int posX, int posY, int sizeX, int sizeY, float angle, float zoom, bool* viewCheck) {
+        float r_1, r_2;
+        float x_1, y_1;
+
+        r_1 = -(PlayerPos.y - LocalPlayerPos.y);
+        r_2 = PlayerPos.x - LocalPlayerPos.x;
+
+        float yawToRadian = angle * (float)(M_PI / 180.0F);
+        x_1 = (float)(r_2 * (float)cos((double)(yawToRadian)) - r_1 * sin((double)(yawToRadian))) / 20;
+        y_1 = (float)(r_2 * (float)sin((double)(yawToRadian)) + r_1 * cos((double)(yawToRadian))) / 20;
+
+        *viewCheck = y_1 < 0;
+
+        x_1 *= zoom;
+        y_1 *= zoom;
+
+        x_1 += sizeX / 2;
+        y_1 += sizeY / 2;
+
+        if (x_1 < 5)
+            x_1 = 5;
+
+        if (x_1 > sizeX - 5)
+            x_1 = sizeX - 5;
+
+        if (y_1 < 5)
+            y_1 = 5;
+
+        if (y_1 > sizeY - 5)
+            y_1 = sizeY - 5;
+
+        x_1 += posX;
+        y_1 += posY;
+
+        return Vector3D(x_1, y_1, 0);
+    }
+
+    void RenderRadar(ImDrawList* Canvas) {
+        // 1920*1080: 215 x 215
+        // 2560*1440: 335 x 335
+        ImGui::SetNextWindowSize({ cl->FEATURE_MAP_RADAR_X, cl->FEATURE_MAP_RADAR_Y });
+        ImGui::Begin("Radar", nullptr,
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoInputs);
+
+        ImVec2 drawPos = ImGui::GetCursorScreenPos();
+        ImVec2 drawSize = ImGui::GetContentRegionAvail();
+        ImVec2 midRadar = ImVec2(drawPos.x + (drawSize.x / 2), drawPos.y + (drawSize.y / 2));
+        ImVec2 startHorizontal(midRadar.x - drawSize.x / 2, midRadar.y);
+        ImVec2 endHorizontal(midRadar.x + drawSize.x / 2, midRadar.y);
+        ImVec2 startVertical(midRadar.x, midRadar.y - drawSize.y / 2);
+        ImVec2 endVertical(midRadar.x, midRadar.y + drawSize.y / 2);
+
+        glColor3f(0.99, 0.99, 0.99);
+        glBegin(GL_LINES);
+        glVertex2f(startHorizontal.x, midRadar.y);
+        glVertex2f(endHorizontal.x, midRadar.y);
+        glVertex2f(midRadar.x, startVertical.y);
+        glVertex2f(midRadar.x, endVertical.y);
+        glEnd();
+
+        for (int i = 0; i < players->size(); i++) {
+            Player* p = players->at(i);
+            if (!p->enemy || !p->isValid() || p->base == lp->base)
+                continue;
+
+            float radarDistance = (int)((lp->localOrigin, p->distance2DToLocalPlayer) / 39.62);
+            if (radarDistance >= 0.0f && radarDistance < cl->SENSE_MAXRANGE) {
+                bool viewCheck = false;
+                Vector3D single = RotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
+
+                ImVec2 center(single.x, single.y);
+                int radius = 5;
+                Canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
+                //Canvas->AddCircle(center, radius + 1, ImColor(ImVec4(0, 0, 0, 0.99)));
+
+                // Draw a line pointing in the direction of each player's aim
+                float angle = (360.0 - p->viewYaw) * (M_PI / 180.0);
+                ImVec2 endpoint(center.x + radius * cos(angle), center.y + radius * sin(angle));
+                Canvas->AddLine(center, endpoint, ImColor(ImVec4(0, 0, 0, 0.99)));
+            }
+        }
+        ImGui::End();
+    }
+
 //_end
     void update(int counter){
         if (!map->playable)
