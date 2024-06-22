@@ -319,8 +319,8 @@ struct Sense {
             if (!p->visible && !p->knocked && distance < cl->SENSE_MAXRANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
-                int healthShield = p->currentHealth + p->currentShields;
-                p->setCustomGlow(healthShield, true, false);
+//_                int healthShield = p->currentHealth + p->currentShields;
+//_                p->setCustomGlow(healthShield, true, false);
             } else if (distance <  cl->SENSE_MAXRANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
@@ -339,9 +339,9 @@ struct Sense {
             return;
         for (int highlightId = 15; highlightId < 65; highlightId++) {
             const GlowMode newGlowMode = { 137,0,0,127 };
-            const GlowMode oldGlowMode = mem::Read<GlowMode>(lp->highlightSettingsPtr + (HIGHLIGHT_TYPE_SIZE * highlightId) + 0, "Player oldGlowMode");
-            if (newGlowMode != oldGlowMode)
-                mem::Write<GlowMode>(lp->highlightSettingsPtr + (HIGHLIGHT_TYPE_SIZE * highlightId) + 0, newGlowMode);
+//_            const GlowMode oldGlowMode = mem::Read<GlowMode>(lp->highlightSettingsPtr + (HIGHLIGHT_TYPE_SIZE * highlightId) + 0, "Player oldGlowMode");
+//_            if (newGlowMode != oldGlowMode)
+//_                mem::Write<GlowMode>(lp->highlightSettingsPtr + (HIGHLIGHT_TYPE_SIZE * highlightId) + 0, newGlowMode);
         }
     }
 };
