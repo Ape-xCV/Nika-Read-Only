@@ -53,10 +53,10 @@ struct ConfigLoader {
     int AIMBOT_HIPFIRE_MAX_MOVE = 30; //_add
 
     //keys
-//_    std::string FEATURE_QUICKTURN_BUTTON = "XK_f";
-//_    std::string FEATURE_PRINT_LEVELS_BUTTON = "XK_p";
-//_    std::string FEATURE_MAP_RADAR_BUTTON = "XK_m";
-//_    std::string TRIGGERBOT_PAUSE_BUTTON = "XK_z";
+//_    std::string FEATURE_QUICKTURN_BUTTON = "XK_F";
+//_    std::string FEATURE_PRINT_LEVELS_BUTTON = "XK_P";
+//_    std::string FEATURE_MAP_RADAR_BUTTON = "XK_M";
+//_    std::string TRIGGERBOT_PAUSE_BUTTON = "XK_Z";
     std::string AIMBOT_ACTIVATION_KEY = "XK_Shift_L";
 
     void loadVariables(std::string key, std::string val) {
