@@ -14,6 +14,8 @@ struct Player {
     Vector3D localOrigin_prev;
     Vector3D localOrigin;
     Vector3D AbsoluteVelocity;
+    Vector2D viewAngles; //_add
+    float viewYaw; //_add
     Vector3D localOrigin_predicted;
     bool local;
     bool friendly;
@@ -103,6 +105,8 @@ struct Player {
         knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
+        viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
+        viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
         Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
         localOrigin_predicted = localOrigin.Add(localOrigin_diff);
         localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
