@@ -80,7 +80,7 @@ private:
     }
 
 public:
-    bool InitializeOverlay() {
+    bool InitializeOverlay(const char* OverlayTitle) {
         glfwSetErrorCallback(GLFWErrorCallback);
         if (!glfwInit()) {
             return false;
@@ -99,7 +99,8 @@ public:
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_REFRESH_RATE, GLFW_DONT_CARE);
 
-        OverlayWindow = glfwCreateWindow(ScreenWidth, ScreenHeight, RandomString(RandomInt(10, 20)).c_str(), nullptr, nullptr);
+        //OverlayWindow = glfwCreateWindow(ScreenWidth, ScreenHeight, RandomString(RandomInt(10, 20)).c_str(), nullptr, nullptr);
+        OverlayWindow = glfwCreateWindow(ScreenWidth, ScreenHeight, OverlayTitle, nullptr, nullptr);
 
         CaptureInput(true);
         glfwMakeContextCurrent(OverlayWindow);
