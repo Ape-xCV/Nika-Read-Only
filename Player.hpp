@@ -10,7 +10,7 @@ struct Player {
     bool knocked;
     int teamNumber;
     int currentHealth;
-    int currentShields;
+//_    int currentShields;
     Vector3D localOrigin_prev;
     Vector3D localOrigin;
     Vector3D AbsoluteVelocity;
@@ -97,7 +97,7 @@ struct Player {
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
-        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
+//_        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         if (!isPlayer() && !isDummie()) { reset(); return; }
         dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
         knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
@@ -174,10 +174,10 @@ struct Player {
 
         if (!isSameTeam) {
             mem::Write<unsigned char>(basePointer + OFF_GLOW_HIGHLIGHT_ID + contextId, settingIndex);
-            mem::Write<typeof(highlightFunctionBits)>(
-                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 0, highlightFunctionBits);
-            mem::Write<typeof(glowColorRGB)>(
-                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 4, glowColorRGB);
+//_            mem::Write<typeof(highlightFunctionBits)>(
+//_                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 0, highlightFunctionBits);
+//_            mem::Write<typeof(glowColorRGB)>(
+//_                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 4, glowColorRGB);
             mem::Write<int>(basePointer + OFF_GLOW_FIX, 0);
         }
     }
@@ -199,12 +199,6 @@ struct Player {
         if(spctrBase == lp->base)
             return true;
         return false;
-    }
-    float getViewYaw() {
-        if (!isDummie() || isPlayer()) {
-            return mem::Read<float>(base + OFF_YAW, "");
-        }
-        return 0.0f;
     }
 //_end
     bool isValid() {
