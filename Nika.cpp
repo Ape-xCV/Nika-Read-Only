@@ -88,8 +88,8 @@ const void SetStyle() {
     style.Colors[ImGuiCol_ModalWindowDimBg]         = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 }
 
-bool InitializeOverlayWindow() {
-    if (!OverlayWindow.InitializeOverlay()) {
+bool InitializeOverlayWindow(const char* OverlayTitle) {
+    if (!OverlayWindow.InitializeOverlay(OverlayTitle)) {
         OverlayWindow.DestroyOverlay();
         return false;
     }
