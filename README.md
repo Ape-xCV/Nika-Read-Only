@@ -17,13 +17,16 @@
 
 ## Features
 
+* [x] Window title spoofing (webpage title mimic)
 * [x] Memory writing Glow ESP was replaced with overlay based ESP
-* [x] Spectators list (overlay based)
+* [x] Map radar (overlay based)
+* [x] Spectators list (overlay or CLI based)
 * [x] Added _AIMBOT_ZOOMED_MAX_MOVE_ and _AIMBOT_HIPFIRE_MAX_MOVE_ to limit mouse speed
 * [x] Quickly disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Quickly enable/disable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
+* [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 
 ![Screenshot.jpg](Screenshot.jpg)
 
@@ -34,7 +37,7 @@
 
     sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
 </details>
-OR
+or
 <details>
 <summary>Install dependencies (<b>Debian</b>):</summary>
 
@@ -49,28 +52,44 @@ OR
 ### 2. Build & Install GLFW
 
 ``` shell
+su
+cd /root
 git clone https://github.com/glfw/glfw.git
 cd glfw
 mkdir build
 cd build
 cmake ..
 make
-sudo make install
+make install
 ```
 
-### 3. Build & Run
+### 3. Build
 
 ``` shell
+su
+cd /root
 git clone https://github.com/Ape-xCV/Nika-Read-Only.git
 cd Nika-Read-Only
 mkdir build
 cd build
 cmake ..
 make
-sudo ./main
+cp main /root/main
+cp nika.ini /root/nika.ini
+chmod +x main.sh
+cp main.sh /root/main.sh
+cp www.txt /root/www.txt
 ```
 
-### 4. CachyOS + KDE + NVIDIA proprietary driver
+### 4. Run
+
+``` shell
+su
+cd /root
+./main.sh
+```
+
+### 5. CachyOS + KDE + NVIDIA proprietary driver
 
 - You need to right-click Apex Legends in your taskbar and check: More >> Keep Below Others.
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode.
