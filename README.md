@@ -37,7 +37,9 @@
 
     sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
 </details>
+
 or
+
 <details>
 <summary>Install dependencies (<b>Debian</b>):</summary>
 
