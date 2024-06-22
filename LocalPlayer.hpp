@@ -6,7 +6,7 @@ struct LocalPlayer {
     bool knocked;
     bool inAttack;
     bool inZoom;
-    bool inJump;
+//_    bool inJump;
     bool grippingGrenade;
     Vector3D localOrigin;
     Vector3D CameraPosition;
@@ -17,7 +17,7 @@ struct LocalPlayer {
 //_    long actWeaponID;
 //_    long currentWeapon;
 //_    long actWeaponIDMasked;
-    long highlightSettingsPtr;
+//_    long highlightSettingsPtr;
     long weaponEntity;
     long weaponHandle;
     long weaponHandleMasked;
@@ -50,8 +50,8 @@ struct LocalPlayer {
 
         squadNumber = mem::Read<int>(base + OFF_SQUAD_ID, "LocalPlayer squadNumber");
         inAttack = mem::Read<bool>(OFF_REGION + OFF_IN_ATTACK, "LocalPlayer inAttack") > 0;
-        inJump = mem::Read<bool>(OFF_REGION + OFF_IN_JUMP, "LocalPlayer inJump") > 0;
-        highlightSettingsPtr = mem::Read<long>( OFF_REGION + OFF_GLOW_HIGHLIGHTS, "LocalPlayer HiglightsSettingPtr");
+//_        inJump = mem::Read<bool>(OFF_REGION + OFF_IN_JUMP, "LocalPlayer inJump") > 0;
+//_        highlightSettingsPtr = mem::Read<long>( OFF_REGION + OFF_GLOW_HIGHLIGHTS, "LocalPlayer HiglightsSettingPtr");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
 
 //_        frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
