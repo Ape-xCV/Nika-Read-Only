@@ -258,26 +258,28 @@ int main(int argc, char* argv[]) { //_add
 
             if (counter % 100 == 0) { //_add
                 if (cl->SENSE_VERBOSE == 1) { //_add
-                    int TempTotalSpectators = 0; //_add
-                    std::vector<std::string> TempSpectators; //_add
-                    for (int i = 0; i < players->size(); i++) { //_add
-                        Player* p = players->at(i); //_add
-                        if (p->base == localPlayer->base) //_add
-                            continue; //_add
-                        if (p->isSpectating()) { //_add
-                            TempTotalSpectators++; //_add
-                            TempSpectators.push_back(p->getPlayerName()); //_add
-                            } //else if (p->dead) { //_add
-//                            TempTotalSpectators++; //_add
-//                            TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
-//                        } //_add
+                    if (cl->FEATURE_SPECTATOR_ON) { //_add
+                        int TempTotalSpectators = 0; //_add
+                        std::vector<std::string> TempSpectators; //_add
+                        for (int i = 0; i < players->size(); i++) { //_add
+                            Player* p = players->at(i); //_add
+                            if (p->base == localPlayer->base) //_add
+                                continue; //_add
+                            if (p->isSpectating()) { //_add
+                                TempTotalSpectators++; //_add
+                                TempSpectators.push_back(p->getPlayerName()); //_add
+                                } //else if (p->dead) { //_add
+//                                TempTotalSpectators++; //_add
+//                                TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
+//                            } //_add
+                        } //_add
+                        TotalSpectators = TempTotalSpectators; //_add
+                        Spectators = TempSpectators; //_add
+                        printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
+                        if (static_cast<int>(Spectators.size()) > 0) //_add
+                            for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
+                                printf("> %s\n", Spectators.at(i).c_str()); //_add
                     } //_add
-                    TotalSpectators = TempTotalSpectators; //_add
-                    Spectators = TempSpectators; //_add
-                    printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
-                    if (static_cast<int>(Spectators.size()) > 0) //_add
-                        for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
-                            printf("> %s\n", Spectators.at(i).c_str()); //_add
                     printf("%d %d %d ", leftLock, autoFire, rightLock); //_add
                     if (boneID ==0) printf("BODY\n"); //_add
                     else if (boneID == 1) printf("NECK\n"); //_add
