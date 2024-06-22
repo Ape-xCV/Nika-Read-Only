@@ -58,3 +58,9 @@ target_include_directories(main PUBLIC
 
 # Copy nika.ini to build folder
 file(COPY ${CMAKE_SOURCE_DIR}/nika.ini DESTINATION ${CMAKE_BINARY_DIR})
+
+# Copy main.sh to build folder
+file(COPY ${CMAKE_SOURCE_DIR}/main.sh DESTINATION ${CMAKE_BINARY_DIR})
+
+# Copy www.txt to build folder
+file(COPY ${CMAKE_SOURCE_DIR}/www.txt DESTINATION ${CMAKE_BINARY_DIR})
