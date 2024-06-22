@@ -117,6 +117,8 @@ bool leftLock = true;
 bool rightLock = false;
 bool autoFire = false;
 int boneID = 0;
+int TotalSpectators = 0;
+std::vector<std::string> Spectators;
 
 void RenderUI() {
     auto io = ImGui::GetIO();
@@ -132,20 +134,22 @@ void RenderUI() {
                  ImGuiWindowFlags_NoSavedSettings |
                  ImGuiWindowFlags_NoInputs);
     Canvas = ImGui::GetWindowDrawList();
-    if (map->playable && localPlayer->isValid() && !readError) {
-        sense->SpectatorsList(counter);
-        sense->RenderESP(Canvas, OverlayWindow);
-    }
-    sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
     if (readError) {
+        sense->RenderStatus(0.0, leftLock, rightLock, autoFire, boneID);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         readError = false;
+    } else {
+        sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
+        sense->RenderESP(Canvas, OverlayWindow);
+        if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
+        if (cl->FEATURE_SPECTATOR_ON) sense->SpectatorsList(counter);
     }
     ImGui::End();
 }
 
 //_end
-int main() {
+//_int main() {
+int main(int argc, char* argv[]) { //_add
     if (getuid()) { std::cout << "RUN AS SUDO!\n"; return -1; }
     if (mem::GetPID() == 0) { std::cout << "OPEN APEX LEGENDS!\n"; return -1; }
 
@@ -161,7 +165,7 @@ int main() {
     for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(i, localPlayer, cl));
     for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(i, localPlayer, cl));
 
-    //create features     
+    //create features
     NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
     TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
@@ -170,8 +174,10 @@ int main() {
 
 //_    int counter = 0;
     counter = 1; //_add
-    if (!InitializeOverlayWindow()) //_add
-        return -1; //_add
+    cl->reloadFile(); //_add
+    if (cl->SENSE_VERBOSE > 1) //_add
+        if (!InitializeOverlayWindow(argv[1])) //_add
+            return -1; //_add
 
     //while (!glfwWindowShouldClose(OverlayWindow)) { //_add
     while (true) {
@@ -201,7 +207,6 @@ int main() {
                 printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
                 readError = true; //_add
-                OverlayWindow.Render(&RenderUI); //_add
                 continue;
             }
 
@@ -210,7 +215,6 @@ int main() {
             if (!localPlayer->isValid()) { //_add
                 printf("Select Legend\n"); //_add
                 readError = true; //_add
-                OverlayWindow.Render(&RenderUI); //_add
                 continue; //_add
             } //_add
 
@@ -231,7 +235,7 @@ int main() {
                     if (p->isValid()) players->push_back(p);
                 }
 
-            GameCamera->Update(); //_add
+            if (cl->SENSE_VERBOSE > 1) GameCamera->Update(); //_add
             noRecoil->controlWeapon();
 //_            triggerBot->shootAtEnemy(counter);
             triggerBot->shootAtEnemy(counter, autoFire);
@@ -240,7 +244,7 @@ int main() {
 //_            aim->update(counter);
             aim->update(counter, leftLock, rightLock, boneID); //_add
 //_            random->runAll(counter);
-            OverlayWindow.Render(&RenderUI); //_add
+            if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
 
 //_            int processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime); //_add
@@ -249,7 +253,33 @@ int main() {
             std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
 
             if (counter % 100 == 0) { //_add
-                cl->reloadFile(); //_add
+                if (cl->SENSE_VERBOSE == 1) { //_add
+                    int TempTotalSpectators = 0; //_add
+                    std::vector<std::string> TempSpectators; //_add
+                    for (int i = 0; i < players->size(); i++) { //_add
+                        Player* p = players->at(i); //_add
+                        if (p->base == localPlayer->base) //_add
+                            continue; //_add
+                        if (p->isSpectating()) { //_add
+                            TempTotalSpectators++; //_add
+                            TempSpectators.push_back(p->getPlayerName()); //_add
+                            } //else if (p->dead) { //_add
+//                            TempTotalSpectators++; //_add
+//                            TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
+//                        } //_add
+                    } //_add
+                    TotalSpectators = TempTotalSpectators; //_add
+                    Spectators = TempSpectators; //_add
+                    printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
+                    if (static_cast<int>(Spectators.size()) > 0) //_add
+                        for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
+                            printf("> %s\n", Spectators.at(i).c_str()); //_add
+                    printf("%d %d %d ", leftLock, autoFire, rightLock); //_add
+                    if (boneID ==0) printf("BODY\n"); //_add
+                    else if (boneID == 1) printf("NECK\n"); //_add
+                    else printf("HEAD\n"); //_add
+                } //_add
+                //cl->reloadFile(); //_add
                 processingTimes.push_back(processingTime); //_add
                 if (processingTimes.size() > 10) //_add
                     processingTimes.erase(processingTimes.begin()); //_add
