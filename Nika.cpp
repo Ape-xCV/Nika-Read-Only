@@ -183,6 +183,8 @@ int main(int argc, char* argv[]) { //_add
     while (true) {
         try {
             long startTime = util::currentEpochMillis();
+            if (cl->SENSE_VERBOSE > 1 && readError) //_add
+                OverlayWindow.Render(&RenderUI); //_add
             if (display->keyDown("XK_Left")) { //_add
                 leftLock = !leftLock; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
