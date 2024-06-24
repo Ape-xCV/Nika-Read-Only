@@ -186,7 +186,7 @@ int main(int argc, char* argv[]) { //_add
             if (readError) //_add
                 if (cl->SENSE_VERBOSE > 1) //_add
                     OverlayWindow.Render(&RenderUI); //_add
-                else if (cl->SENSE_VERBOSE < 2) { //_add
+                else { //_add
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
                     readError = false; //_add
                 } //_add
