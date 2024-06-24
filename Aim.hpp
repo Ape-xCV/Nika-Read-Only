@@ -88,7 +88,7 @@ struct Aim {
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         if (interval > 1) TotalSmooth /= interval; //_add
-        if (!leftLock) TotalSmooth *= 2; //_add
+        if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
         Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
         double nrPitchIncrement = punchAnglesDiff.x;
@@ -108,8 +108,8 @@ struct Aim {
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
         if (!leftLock) {
-            zoomedMaxMove /= 2;
-            hipfireMaxMove /= 2;
+            zoomedMaxMove /= cl->AIMBOT_WEAKEN;
+            hipfireMaxMove /= cl->AIMBOT_WEAKEN;
         }
 
         //if (lp->inZoom) { //Ape-xCV; this method is slow
