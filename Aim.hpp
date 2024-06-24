@@ -37,7 +37,7 @@ struct Aim {
         return active;
     }
 //_    void update(int counter) {
-    void update(int counter, bool leftLock, bool rightLock, int boneID) { //_add
+    void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, int boneID) { //_add
         if (boneID == 0) Hitbox = HitboxType::UpperChest; //_add
         else if (boneID == 1) Hitbox = HitboxType::Neck; //_add
         else Hitbox = HitboxType::Head; //_add
@@ -74,11 +74,11 @@ struct Aim {
             return;
         }
 //_        StartAiming();
-        StartAiming(leftLock); //_add
+        StartAiming(averageProcessingTime, leftLock); //_add
     }
 
 //_    void StartAiming() {
-    void StartAiming(bool leftLock) { //_add
+    void StartAiming(double interval, bool leftLock) { //_add
         QAngle DesiredAngles = QAngle(0, 0);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -87,6 +87,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
+        if (interval > 1) TotalSmooth /= interval; //_add
         if (!leftLock) TotalSmooth *= 2; //_add
 
         Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
