@@ -183,8 +183,13 @@ int main(int argc, char* argv[]) { //_add
     while (true) {
         try {
             long startTime = util::currentEpochMillis();
-            if (cl->SENSE_VERBOSE > 1 && readError) //_add
-                OverlayWindow.Render(&RenderUI); //_add
+            if (readError) //_add
+                if (cl->SENSE_VERBOSE > 1) //_add
+                    OverlayWindow.Render(&RenderUI); //_add
+                else if (cl->SENSE_VERBOSE < 2) { //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
+                    readError = false; //_add
+                } //_add
             if (display->keyDown("XK_Left")) { //_add
                 leftLock = !leftLock; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
@@ -248,7 +253,7 @@ int main(int argc, char* argv[]) { //_add
 //_            sense->update(counter);
 //_            sense->itemGlow(counter);
 //_            aim->update(counter);
-            aim->update(counter, leftLock, rightLock, boneID); //_add
+            aim->update(counter, averageProcessingTime, leftLock, rightLock, boneID); //_add
 //_            random->runAll(counter);
             if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
 
