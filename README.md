@@ -24,12 +24,13 @@
 
 ## Features
 
-* [x] Window title spoofing (webpage title mimic)
+* [x] Window title **spoofing** (webpage title mimic)
 * [x] Memory writing Glow ESP was replaced with overlay based ESP
 * [x] Map radar (overlay based)
 * [x] Spectators list (overlay or CLI based)
+* [x] **Smooth** dynamically adjusts with performance; Firing Range settings will now act the same during matches
 * [x] Added _AIMBOT_ZOOMED_MAX_MOVE_ and _AIMBOT_HIPFIRE_MAX_MOVE_ to limit mouse speed
-* [x] Quickly disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
+* [x] Partially disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Quickly enable/disable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
