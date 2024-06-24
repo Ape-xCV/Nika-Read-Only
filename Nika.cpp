@@ -207,10 +207,6 @@ int main(int argc, char* argv[]) { //_add
                 if (boneID > 2) boneID = 0; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
             } //_add
-            if (cl->SENSE_VERBOSE < 2 && readError) { //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
-                readError = false; //_add
-            } //_add
 
 //_            if (counter % 20 == 0) cl->reloadFile();
             map->readFromMemory();
