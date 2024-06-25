@@ -24,7 +24,8 @@ struct Aim {
     bool active(bool leftLock, bool rightLock){ //_add
         bool aimbotIsOn = cl->FEATURE_AIMBOT_ON;
         bool combatReady = lp->isCombatReady();
-        bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
+//_        bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
+        bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && display->isLeftMouseButtonDown(); //_add
         bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
         bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE" ) && display->keyDown(cl->AIMBOT_ACTIVATION_KEY);
         bool active = aimbotIsOn
@@ -90,16 +91,18 @@ struct Aim {
         if (interval > 1) TotalSmooth /= interval; //_add
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
-        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
-        double nrPitchIncrement = punchAnglesDiff.x;
-        double nrYawIncrement = -punchAnglesDiff.y;
+//_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
+//_        double nrPitchIncrement = punchAnglesDiff.x;
+//_        double nrYawIncrement = -punchAnglesDiff.y;
 
         Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
         double aimYawIncrement = aimbotDelta.y * -1;
         double aimPitchIncrement = aimbotDelta.x;
 
-        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
-        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
+//_        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
+//_        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
+        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(aimPitchIncrement)); //_add
+        int totalYawIncrementInt = RoundHalfEven(AL1AF0(aimYawIncrement)); //_add
 
         int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
         int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
@@ -107,10 +110,6 @@ struct Aim {
 //_begin
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
-        if (!leftLock) {
-            zoomedMaxMove /= cl->AIMBOT_WEAKEN;
-            hipfireMaxMove /= cl->AIMBOT_WEAKEN;
-        }
 
         //if (lp->inZoom) { //Ape-xCV; this method is slow
         if (display->isRightMouseButtonDown()) {
@@ -125,6 +124,8 @@ struct Aim {
             if (totalYawIncrementInt < hipfireMaxMove * -1) totalYawIncrementInt = hipfireMaxMove * -1;
         }
 
+        if ((aimPitchIncrement > -0.5f) && (aimPitchIncrement < 0.5f)) totalPitchIncrementInt = 0;
+        if ((aimYawIncrement > -0.5f) && (aimYawIncrement < 0.5f)) totalYawIncrementInt = 0;
 //_end
         if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
