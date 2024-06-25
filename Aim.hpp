@@ -101,11 +101,11 @@ struct Aim {
 
 //_        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
 //_        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
+
+//_        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
+//_        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
         int totalPitchIncrementInt = RoundHalfEven(AL1AF0(aimPitchIncrement)); //_add
         int totalYawIncrementInt = RoundHalfEven(AL1AF0(aimYawIncrement)); //_add
-
-        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
-        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
 
 //_begin
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
