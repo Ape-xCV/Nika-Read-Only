@@ -56,7 +56,7 @@ or
 
 ``` shell
 su
-chmod -R 700 /root
+chmod 700 /root
 cd /root
 git clone https://github.com/glfw/glfw.git
 cd glfw
