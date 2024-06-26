@@ -15,13 +15,6 @@
 - [x] (UC) **Acknowledge**
 - [x] (UC) **Gerosity**
 
-## Machine ID (Linux HWID)
-
-- "When a machine is booted with systemd(1) the ID of the machine will be established. If systemd.machine_id= or --machine-id= options (see first section) are specified, this value will be used. Otherwise, the value in /etc/machine-id will be used. If this file is empty or missing, systemd will attempt to use the D-Bus machine ID from /var/lib/dbus/machine-id, the value of the kernel command line option container_uuid, the KVM DMI product_uuid or the devicetree vm,uuid (on KVM systems), the Xen hypervisor uuid, and finally a randomly generated UUID." --https://www.freedesktop.org/software/systemd/man/latest/machine-id.html
-- You can display your Linux HWID with: `cat /etc/machine-id`
-- For example, swapping USB WiFi Adapter and reinstalling OS will change it.
-- Also, disabling Onboard Ethernet Adapter and reinstalling OS will change it.
-
 ## Features
 
 * [x] Window title **spoofing** (webpage title mimic)
@@ -63,6 +56,7 @@ or
 
 ``` shell
 su
+chmod -R 700 /root
 cd /root
 git clone https://github.com/glfw/glfw.git
 cd glfw
