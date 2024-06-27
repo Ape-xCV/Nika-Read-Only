@@ -142,7 +142,7 @@ void RenderUI() {
         sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
         if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
-        if (cl->FEATURE_SPECTATOR_ON) sense->SpectatorsList(counter);
+        if (cl->FEATURE_SPECTATORS_ON) sense->SpectatorsList(counter);
     }
     ImGui::End();
 }
@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) { //_add
 
             if (counter % 100 == 0) { //_add
                 if (cl->SENSE_VERBOSE == 1) { //_add
-                    if (cl->FEATURE_SPECTATOR_ON) { //_add
+                    if (cl->FEATURE_SPECTATORS_ON) { //_add
                         int TempTotalSpectators = 0; //_add
                         std::vector<std::string> TempSpectators; //_add
                         for (int i = 0; i < players->size(); i++) { //_add
@@ -271,10 +271,10 @@ int main(int argc, char* argv[]) { //_add
                             if (p->isSpectating()) { //_add
                                 TempTotalSpectators++; //_add
                                 TempSpectators.push_back(p->getPlayerName()); //_add
-                                } //else if (p->dead) { //_add
-//                                TempTotalSpectators++; //_add
-//                                TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
-//                            } //_add
+                                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->dead) { //_add
+                                TempTotalSpectators++; //_add
+                                TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
+                            } //_add
                         } //_add
                         TotalSpectators = TempTotalSpectators; //_add
                         Spectators = TempSpectators; //_add
