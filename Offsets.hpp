@@ -8,8 +8,6 @@ constexpr long OFF_GLOBAL_VARS = 0x17e8830; //[Miscellaneous]->GlobalVars
 constexpr long OFF_NAMELIST = 0xd2e21e0; //[Miscellaneous]->NameList
 constexpr long OFF_VIEW_RENDER = 0x7542b80; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
-constexpr long OFF_VIEWRENDER = 0x7542b80; //[Miscellaneous]->ViewRender
-constexpr long OFF_VIEWMATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
 constexpr long OFF_LEVEL = 0x17e8d34; //[Miscellaneous]->LevelName
 constexpr long OFF_PROJECTILESPEED = 0x1eb4; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
 constexpr long OFF_PROJECTILESCALE = 0x1ebc; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta].base
@@ -35,7 +33,7 @@ constexpr long OFF_LAST_AIMEDAT_TIME = 0x199e + 0x2 + 0x8; //[Miscellaneous]->CP
 // [RecvTable.DT_BaseEntity]
 constexpr long OFF_CURRENT_SHIELDS = 0x01a0; //[RecvTable.DT_BaseEntity]->m_shieldHealth
 constexpr long OFF_TEAM_NUMBER = 0x0338; //[RecvTable.DT_BaseEntity]->m_iTeamNum
-constexpr long OFF_SQUAD_ID = 0x0344; //m_squadID
+constexpr long OFF_SQUAD_ID = 0x0344; //[RecvTable.DT_BaseEntity]->m_squadID
 constexpr long OFF_SIGNIFIER_NAME = 0x0478; //[RecvTable.DT_BaseEntity]->m_iSignifierName
 constexpr long OFF_NAME = 0x0481; //[RecvTable.DT_BaseEntity]->m_iName
 constexpr long OFF_NAMEINDEX = 0x38; //[RecvTable.DT_BaseEntity]
