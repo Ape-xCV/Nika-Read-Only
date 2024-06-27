@@ -82,10 +82,10 @@ struct Sense {
                 if (p->isSpectating()) {
                     TempTotalSpectators++;
                     TempSpectators.push_back(p->getPlayerName());
-                } //else if (p->dead) {
-//                    TempTotalSpectators++;
-//                    TempSpectators.push_back("DEAD: " + p->getPlayerName());
-//                }
+                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->dead) {
+                    TempTotalSpectators++;
+                    TempSpectators.push_back("DEAD: " + p->getPlayerName());
+                }
             }
             TotalSpectators = TempTotalSpectators;
             Spectators = TempSpectators;
@@ -139,7 +139,7 @@ struct Sense {
                 p->localOrigin.x,
                 p->localOrigin.y,
                 p->localOrigin.z);
-            if (!p->local && p->enemy && p->isValid() && distance < cl->SENSE_MAXRANGE) {
+            if (!p->local && p->enemy && p->isValid() && distance < cl->SENSE_MAX_RANGE) {
 
                 // Draw Boxes
                 if (bLocalOriginW2SValid && bHeadPositionW2SValid) {
@@ -278,7 +278,7 @@ struct Sense {
                 continue;
 
             float radarDistance = (int)((lp->localOrigin, p->distance2DToLocalPlayer) / 39.62);
-            if (radarDistance >= 0.0f && radarDistance < cl->SENSE_MAXRANGE) {
+            if (radarDistance >= 0.0f && radarDistance < cl->SENSE_MAX_RANGE) {
                 bool viewCheck = false;
                 Vector3D single = RotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
 
@@ -316,12 +316,12 @@ struct Sense {
                 p->localOrigin.x,
                 p->localOrigin.y,
                 p->localOrigin.z);
-            if (!p->visible && !p->knocked && distance < cl->SENSE_MAXRANGE) {
+            if (!p->visible && !p->knocked && distance < cl->SENSE_MAX_RANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
 //_                int healthShield = p->currentHealth + p->currentShields;
 //_                p->setCustomGlow(healthShield, true, false);
-            } else if (distance <  cl->SENSE_MAXRANGE) {
+            } else if (distance <  cl->SENSE_MAX_RANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
                 p->setCustomGlow(0, false, false);
