@@ -128,7 +128,7 @@ struct Random
         if(!map->playable) return;
         int spectatorcount = 0;   
         std::vector<std::string> spectatorlist;
-        if(cl->FEATURE_SPECTATOR_ON){
+        if(cl->FEATURE_SPECTATORS_ON){
             for (int i = 0; i < players->size(); i++)
             { 
                 Player *p = players->at(i);          
