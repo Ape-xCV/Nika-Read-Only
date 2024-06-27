@@ -41,7 +41,7 @@ struct ConfigLoader {
     bool AIMBOT_ACTIVATED_BY_ATTACK = true;
     bool AIMBOT_ACTIVATED_BY_ADS = true;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
-    float AIMBOT_SMOOTH = 400;
+    float AIMBOT_SMOOTH = 200;
     float AIMBOT_SPEED = 100;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 50000;
     float AIMBOT_FOV = 10;
@@ -51,8 +51,8 @@ struct ConfigLoader {
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
     int AIMBOT_MAX_DISTANCE = 180;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 10; //_add
-    int AIMBOT_HIPFIRE_MAX_MOVE = 40; //_add
+    int AIMBOT_ZOOMED_MAX_MOVE = 5; //_add
+    int AIMBOT_HIPFIRE_MAX_MOVE = 30; //_add
 
     //keys
 //_    std::string FEATURE_QUICKTURN_BUTTON = "XK_F";
