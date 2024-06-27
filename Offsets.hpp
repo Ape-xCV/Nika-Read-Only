@@ -81,6 +81,7 @@ constexpr long OFF_GAMEMODE = 0x022e8360; //mp_gamemode
 
 
 constexpr long OFF_SPECTATOR_LIST = 0x1ef9c58; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
+constexpr long OFF_SPECTATOR_LIST_AUX = 0x964 + 0x10; //+0x10 general offset increase/decrease
 
 
 constexpr long OFF_REGION = 0x140000000; //[Static]->Region
