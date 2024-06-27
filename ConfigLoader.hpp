@@ -14,7 +14,8 @@ struct ConfigLoader {
     bool FEATURE_TRIGGERBOT_ON = true;
     bool FEATURE_SENSE_ON = false;
     bool FEATURE_ITEM_GLOW_ON = false;
-    bool FEATURE_SPECTATOR_ON = true;
+    bool FEATURE_SPECTATORS_ON = true;
+    bool FEATURE_SPECTATORS_SHOW_DEAD = false; //_add
 //_    bool FEATURE_SUPER_GLIDE_ON = true;
 //_    bool FEATURE_SKINCHANGER_ON = true;
 //_    bool FEATURE_QUICKTURN_ON = true;
@@ -32,26 +33,26 @@ struct ConfigLoader {
     int TRIGGERBOT_HIPFIRE_RANGE = 25;
 
     //sense
-    int SENSE_MAXRANGE = 250;
-//_    int SENSE_MAXRANGE_OVERWALL = 250;
+    int SENSE_MAX_RANGE = 250;
+//_    int SENSE_MAX_RANGE_OVERWALL = 250;
     int SENSE_VERBOSE = 2; //_add
 
     //aimbot
     bool AIMBOT_ACTIVATED_BY_ATTACK = true;
     bool AIMBOT_ACTIVATED_BY_ADS = true;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
-    float AIMBOT_SMOOTH = 15;
-    float AIMBOT_SPEED = 75;
-    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
+    float AIMBOT_SMOOTH = 400;
+    float AIMBOT_SPEED = 100;
+    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 50000;
     float AIMBOT_FOV = 10;
     float AIMBOT_WEAKEN = 2; //_add
     bool AIMBOT_PREDICT_BULLETDROP = false;
     bool AIMBOT_PREDICT_MOVEMENT = false;
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
-    int AIMBOT_MAX_DISTANCE = 150;
+    int AIMBOT_MAX_DISTANCE = 180;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 15; //_add
-    int AIMBOT_HIPFIRE_MAX_MOVE = 30; //_add
+    int AIMBOT_ZOOMED_MAX_MOVE = 10; //_add
+    int AIMBOT_HIPFIRE_MAX_MOVE = 40; //_add
 
     //keys
 //_    std::string FEATURE_QUICKTURN_BUTTON = "XK_F";
@@ -75,7 +76,7 @@ struct ConfigLoader {
         TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
 //_        TRIGGERBOT_PAUSE_BUTTON = (key.compare("TRIGGERBOT_PAUSE_BUTTON") != 0) ? TRIGGERBOT_PAUSE_BUTTON : trimConstructive(val);
         //sense
-        SENSE_MAXRANGE = (key.compare("SENSE_MAXRANGE") != 0) ? SENSE_MAXRANGE : stoi(val);
+        SENSE_MAX_RANGE = (key.compare("SENSE_MAX_RANGE") != 0) ? SENSE_MAX_RANGE : stoi(val);
         SENSE_VERBOSE = (key.compare("SENSE_VERBOSE") != 0) ? SENSE_VERBOSE : stoi(val); //_add
         //aimBot
         AIMBOT_ACTIVATED_BY_ATTACK = (key.compare("AIMBOT_ACTIVATED_BY_ATTACK") != 0) ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
@@ -95,7 +96,8 @@ struct ConfigLoader {
         AIMBOT_ZOOMED_MAX_MOVE = (key.compare("AIMBOT_ZOOMED_MAX_MOVE") != 0) ? AIMBOT_ZOOMED_MAX_MOVE : stoi(val); //_add
         AIMBOT_HIPFIRE_MAX_MOVE = (key.compare("AIMBOT_HIPFIRE_MAX_MOVE") != 0) ? AIMBOT_HIPFIRE_MAX_MOVE : stoi(val); //_add
         //random
-        FEATURE_SPECTATOR_ON = (key.compare("FEATURE_SPECTATOR_ON") != 0) ? FEATURE_SPECTATOR_ON : toBool(val);
+        FEATURE_SPECTATORS_ON = (key.compare("FEATURE_SPECTATORS_ON") != 0) ? FEATURE_SPECTATORS_ON : toBool(val);
+        FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val); //_add
 //_        FEATURE_SUPER_GLIDE_ON = (key.compare("FEATURE_SUPER_GLIDE_ON") != 0) ? FEATURE_SUPER_GLIDE_ON : toBool(val);
 //_        FEATURE_SKINCHANGER_ON = (key.compare("FEATURE_SKINCHANGER_ON") != 0) ? FEATURE_SKINCHANGER_ON : toBool(val);
 //_        FEATURE_QUICKTURN_ON = (key.compare("FEATURE_QUICKTURN_ON") != 0) ? FEATURE_QUICKTURN_ON : toBool(val);    
@@ -116,7 +118,8 @@ struct ConfigLoader {
         printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
 //_        printf("FEATURE_SENSE_ON\t\t\t\t\t%s\n", FEATURE_SENSE_ON ? "YES" : "NO");
 //_        printf("FEATURE_ITEM_GLOW_ON\t\t\t\t\t%s\n", FEATURE_ITEM_GLOW_ON ? "YES" : "NO");
-        printf("FEATURE_SPECTATOR_ON\t\t\t\t\t%s\n", FEATURE_SPECTATOR_ON ? "YES" : "NO");
+        printf("FEATURE_SPECTATORS_ON\t\t\t\t\t%s\n", FEATURE_SPECTATORS_ON ? "YES" : "NO");
+        FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val); //_add
 //_        printf("FEATURE_SUPER_GLIDE_ON\t\t\t\t\t%s\n", FEATURE_SUPER_GLIDE_ON ? "YES" : "NO");
 //_        printf("FEATURE_SKINCHANGER_ON\t\t\t\t\t%s\n", FEATURE_SKINCHANGER_ON ? "YES" : "NO");
 //_        printf("FEATURE_QUICKTURN_ON\t\t\t\t\t%s\n", FEATURE_QUICKTURN_ON ? "YES" : "NO");
@@ -138,7 +141,7 @@ struct ConfigLoader {
 //_        printf("TRIGGERBOT_PAUSE_BUTTON\t\t\t\t\t%s\n", TRIGGERBOT_PAUSE_BUTTON.c_str());
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         //sense
-        printf("SENSE_MAXRANGE\t\t\t\t\t\t%d\n", SENSE_MAXRANGE);
+        printf("SENSE_MAX_RANGE\t\t\t\t\t\t%d\n", SENSE_MAX_RANGE);
         printf("SENSE_VERBOSE\t\t\t\t\t\t%d\n", SENSE_VERBOSE); //_add
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");        
         //aimBot
