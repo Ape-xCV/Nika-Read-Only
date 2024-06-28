@@ -6,6 +6,8 @@ struct Aim {
     float FinalDistance = 0;
     float FinalFOV = 0;
     float HipfireDistance = 60;
+    int lastMoveX = 0; //_add
+    int lastMoveY = 0; //_add
 
     MyDisplay* display;
     LocalPlayer* lp;
@@ -50,7 +52,8 @@ struct Aim {
             FinalDistance = cl->AIMBOT_MAX_DISTANCE;
         }
         else {
-            FinalFOV = (cl->AIMBOT_FOV + 20);
+//_            FinalFOV = (cl->AIMBOT_FOV + 20);
+            FinalFOV = (cl->AIMBOT_FOV * 2); //_add
             FinalDistance = HipfireDistance;
         }
 
@@ -111,24 +114,36 @@ struct Aim {
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
 
-        //if (lp->inZoom) { //Ape-xCV; this method is slow
-        if (display->isRightMouseButtonDown()) {
+        if (lp->inZoom) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
-            if (totalPitchIncrementInt < zoomedMaxMove * -1) totalPitchIncrementInt = zoomedMaxMove * -1;
+            else if (totalPitchIncrementInt < zoomedMaxMove * -1) totalPitchIncrementInt = zoomedMaxMove * -1;
             if (totalYawIncrementInt > zoomedMaxMove) totalYawIncrementInt = zoomedMaxMove;
-            if (totalYawIncrementInt < zoomedMaxMove * -1) totalYawIncrementInt = zoomedMaxMove * -1;
+            else if (totalYawIncrementInt < zoomedMaxMove * -1) totalYawIncrementInt = zoomedMaxMove * -1;
         } else {
             if (totalPitchIncrementInt > hipfireMaxMove) totalPitchIncrementInt = hipfireMaxMove;
-            if (totalPitchIncrementInt < hipfireMaxMove * -1) totalPitchIncrementInt = hipfireMaxMove * -1;
+            else if (totalPitchIncrementInt < hipfireMaxMove * -1) totalPitchIncrementInt = hipfireMaxMove * -1;
             if (totalYawIncrementInt > hipfireMaxMove) totalYawIncrementInt = hipfireMaxMove;
-            if (totalYawIncrementInt < hipfireMaxMove * -1) totalYawIncrementInt = hipfireMaxMove * -1;
+            else if (totalYawIncrementInt < hipfireMaxMove * -1) totalYawIncrementInt = hipfireMaxMove * -1;
         }
 
-        if ((aimPitchIncrement > -0.5f) && (aimPitchIncrement < 0.5f)) totalPitchIncrementInt = 0;
-        if ((aimYawIncrement > -0.5f) && (aimYawIncrement < 0.5f)) totalYawIncrementInt = 0;
+        if (abs(totalPitchIncrementInt - lastMoveY) > cl->AIMBOT_MAX_DELTA)
+            if (totalPitchIncrementInt > lastMoveY)
+                totalPitchIncrementInt = lastMoveY + cl->AIMBOT_MAX_DELTA;
+            else
+                totalPitchIncrementInt = lastMoveY - cl->AIMBOT_MAX_DELTA;
+        if (abs(totalYawIncrementInt - lastMoveX) > cl->AIMBOT_MAX_DELTA)
+            if (totalYawIncrementInt > lastMoveX)
+                totalYawIncrementInt = lastMoveX + cl->AIMBOT_MAX_DELTA;
+            else
+                totalYawIncrementInt = lastMoveX - cl->AIMBOT_MAX_DELTA;
+
+        if ((aimPitchIncrement > -1.0f) && (aimPitchIncrement < 1.0f)) totalPitchIncrementInt = 0;
+        if ((aimYawIncrement > -1.0f) && (aimYawIncrement < 1.0f)) totalYawIncrementInt = 0;
 //_end
         if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
+        lastMoveY = totalPitchIncrementInt; //_add
+        lastMoveX = totalYawIncrementInt; //_add
     }
 
     bool GetAngle(const Player* Target, QAngle& Angle) {
