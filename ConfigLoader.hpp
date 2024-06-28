@@ -34,7 +34,7 @@ struct ConfigLoader {
 
     //sense
     int SENSE_MAX_RANGE = 250;
-//_    int SENSE_MAX_RANGE_OVERWALL = 250;
+//_    int SENSE_MAX_RANGE_OVER_WALL = 250;
     int SENSE_VERBOSE = 2; //_add
 
     //aimbot
@@ -51,8 +51,9 @@ struct ConfigLoader {
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
     int AIMBOT_MAX_DISTANCE = 180;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 5; //_add
-    int AIMBOT_HIPFIRE_MAX_MOVE = 30; //_add
+    int AIMBOT_ZOOMED_MAX_MOVE = 15; //_add
+    int AIMBOT_HIPFIRE_MAX_MOVE = 45; //_add
+    int AIMBOT_MAX_DELTA = 5; //_add
 
     //keys
 //_    std::string FEATURE_QUICKTURN_BUTTON = "XK_F";
@@ -95,6 +96,7 @@ struct ConfigLoader {
         AIMBOT_MIN_DISTANCE = (key.compare("AIMBOT_MIN_DISTANCE") != 0) ? AIMBOT_MIN_DISTANCE : stoi(val);
         AIMBOT_ZOOMED_MAX_MOVE = (key.compare("AIMBOT_ZOOMED_MAX_MOVE") != 0) ? AIMBOT_ZOOMED_MAX_MOVE : stoi(val); //_add
         AIMBOT_HIPFIRE_MAX_MOVE = (key.compare("AIMBOT_HIPFIRE_MAX_MOVE") != 0) ? AIMBOT_HIPFIRE_MAX_MOVE : stoi(val); //_add
+        AIMBOT_MAX_DELTA = (key.compare("AIMBOT_MAX_DELTA") != 0) ? AIMBOT_MAX_DELTA : stoi(val); //_add
         //random
         FEATURE_SPECTATORS_ON = (key.compare("FEATURE_SPECTATORS_ON") != 0) ? FEATURE_SPECTATORS_ON : toBool(val);
         FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val); //_add
@@ -161,6 +163,7 @@ struct ConfigLoader {
         printf("AIMBOT_MIN_DISTANCE\t\t\t\t\t%d\n", AIMBOT_MIN_DISTANCE);
         printf("AIMBOT_ZOOMED_MAX_MOVE\t\t\t\t\t%d\n", AIMBOT_ZOOMED_MAX_MOVE); //_add
         printf("AIMBOT_HIPFIRE_MAX_MOVE\t\t\t\t\t%d\n", AIMBOT_HIPFIRE_MAX_MOVE); //_add
+        printf("AIMBOT_MAX_DELTA\t\t\t\t\t%d\n", AIMBOT_MAX_DELTA); //_add
 
         printf("====================================================================\n\n");
 
