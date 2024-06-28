@@ -34,7 +34,6 @@ struct ConfigLoader {
 
     //sense
     int SENSE_MAX_RANGE = 250;
-//_    int SENSE_MAX_RANGE_OVER_WALL = 250;
     int SENSE_VERBOSE = 2; //_add
 
     //aimbot
@@ -53,7 +52,7 @@ struct ConfigLoader {
     int AIMBOT_MIN_DISTANCE = 0;
     int AIMBOT_ZOOMED_MAX_MOVE = 15; //_add
     int AIMBOT_HIPFIRE_MAX_MOVE = 45; //_add
-    int AIMBOT_MAX_DELTA = 5; //_add
+    int AIMBOT_MAX_DELTA = 10; //_add
 
     //keys
 //_    std::string FEATURE_QUICKTURN_BUTTON = "XK_F";
