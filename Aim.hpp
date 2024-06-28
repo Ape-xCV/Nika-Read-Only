@@ -95,12 +95,12 @@ struct Aim {
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
-//_        double nrPitchIncrement = punchAnglesDiff.x;
-//_        double nrYawIncrement = -punchAnglesDiff.y;
+//_        double nrPitchIncrement = punchAnglesDiff.y * -1;
+//_        double nrYawIncrement = punchAnglesDiff.x;
 
         Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
-        double aimYawIncrement = aimbotDelta.y * -1;
-        double aimPitchIncrement = aimbotDelta.x;
+        double aimPitchIncrement = aimbotDelta.y * -1;
+        double aimYawIncrement = aimbotDelta.x;
 
 //_        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
 //_        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
@@ -192,8 +192,8 @@ struct Aim {
     }
 
     float CalculatePitchIncrement(QAngle AimbotDesiredAngles) {
-        float wayA = AimbotDesiredAngles.x - lp->viewAngles.x;
-        float wayB = 180 - abs(wayA);
+        float wayA = AimbotDesiredAngles.y - lp->viewAngles.y;
+        float wayB = 360 - abs(wayA);
         if (wayA > 0 && wayB > 0)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
@@ -202,8 +202,8 @@ struct Aim {
     }
 
     float CalculateYawIncrement(QAngle AimbotDesiredAngles) {
-        float wayA = AimbotDesiredAngles.y - lp->viewAngles.y;
-        float wayB = 360 - abs(wayA);
+        float wayA = AimbotDesiredAngles.x - lp->viewAngles.x;
+        float wayB = 180 - abs(wayA);
         if (wayA > 0 && wayB > 0)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
