@@ -95,12 +95,12 @@ struct Aim {
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
-//_        double nrPitchIncrement = punchAnglesDiff.y * -1;
-//_        double nrYawIncrement = punchAnglesDiff.x;
+//_        double nrPitchIncrement = punchAnglesDiff.y;
+//_        double nrYawIncrement = punchAnglesDiff.x * -1;
 
         Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
-        double aimPitchIncrement = aimbotDelta.y * -1;
-        double aimYawIncrement = aimbotDelta.x;
+        double aimPitchIncrement = aimbotDelta.y;
+        double aimYawIncrement = aimbotDelta.x * -1;
 
 //_        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
 //_        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
