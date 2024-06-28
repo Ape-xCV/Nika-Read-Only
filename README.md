@@ -83,17 +83,37 @@ cp nika.ini /root/nika.ini
 chmod +x main.sh
 cp main.sh /root/main.sh
 cp www.txt /root/www.txt
+chmod +x spoof.sh
+cp spoof.sh /root/spoof.sh
+chmod +x unspoof.sh
+cp unspoof.sh /root/unspoof.sh
 ```
 
-### 4. Run
+### 4. Spoof & Run
 
 ``` shell
 su
 cd /root
+./spoof.sh
 ./main.sh
 ```
 
-### 5. CachyOS + KDE + NVIDIA proprietary driver
+### 5. HWID unban
+
+- My storage serial numbers were collected most likely from **dbus**. Widely adopted Linux **systemd** `init` as currently being distributed has the security profile of an internet **meme**.
+- Disabling **udisksd** will prevent populating **dbus** with storage serials. Run `spoof.sh` and do **>NOT<** disable **udevadm**. Then reboot.
+- After reboot the following command will now fail as intended: `dbus-send --system --dest=org.freedesktop.UDisks2 --type=method_call --print-reply  /org/freedesktop/UDisks2 org.freedesktop.DBus.ObjectManager.GetManagedObjects | grep by-id`
+- Always run `spoof.sh` before you open the game.
+- You can confirm that **udisksd** or **udevadm** are disabled by finding them misplaced in /root with: `ls /root`
+- If you disable **udevadm** be aware that you will have to run `unspoof.sh` to restore it after your game session. Your system will not boot without it. To move it back from `/root/udevadm` to `/usr/bin/udevadm` you will need a proper Live USB and some command line knowledge.
+
+### 6. GNU MAC Changer
+
+- Install (Arch): `sudo pacman -S macchanger`
+- Install (Debian): `sudo apt install macchanger`
+- Edit **spoof.sh** and modify it where needed: `sudo nano /root/spoof.sh`
+
+### 7. CachyOS + KDE + NVIDIA proprietary driver
 
 - You need to right-click Apex Legends in your taskbar and check: More >> Keep Below Others.
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode.
