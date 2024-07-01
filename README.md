@@ -67,7 +67,11 @@ make
 make install
 ```
 
-### 3. Build
+### 3.0 Updating
+
+- If you are updating, run this command first: `sudo rm -fr /root/Nika-Read-Only`
+
+### 3.1 Build
 
 ``` shell
 su
