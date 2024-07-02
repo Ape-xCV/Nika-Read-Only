@@ -53,8 +53,7 @@ struct Aim {
             FinalDistance = cl->AIMBOT_MAX_DISTANCE;
         }
         else {
-//_            FinalFOV = (cl->AIMBOT_FOV + 20);
-            FinalFOV = (cl->AIMBOT_FOV * 2); //_add
+            FinalFOV = (cl->AIMBOT_FOV + 20);
             FinalDistance = HipfireDistance;
         }
 
