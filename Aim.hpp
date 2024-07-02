@@ -3,9 +3,10 @@
 #include "Player.hpp"
 struct Aim {
     HitboxType Hitbox = HitboxType::Neck;
-    float FinalDistance = 0;
     float FinalFOV = 0;
+    float FinalDistance = 0;
     float HipfireDistance = 60;
+    int maxDelta = 0; //_add
     int lastMoveX = 0; //_add
     int lastMoveY = 0; //_add
 
@@ -77,12 +78,14 @@ struct Aim {
             ReleaseTarget();
             return;
         }
+        if (DistanceFromCrosshair > FinalFOV / 2) maxDelta = cl->AIMBOT_MAX_DELTA / 2; //_add
+        else maxDelta = cl->AIMBOT_MAX_DELTA; //_add
 //_        StartAiming();
-        StartAiming(averageProcessingTime, leftLock); //_add
+        StartAiming(averageProcessingTime, leftLock, maxDelta); //_add
     }
 
 //_    void StartAiming() {
-    void StartAiming(double interval, bool leftLock) { //_add
+    void StartAiming(double interval, bool leftLock, int maxDelta) { //_add
         QAngle DesiredAngles = QAngle(0, 0);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -126,16 +129,16 @@ struct Aim {
             else if (totalYawIncrementInt < hipfireMaxMove * -1) totalYawIncrementInt = hipfireMaxMove * -1;
         }
 
-        if (abs(totalPitchIncrementInt - lastMoveY) > cl->AIMBOT_MAX_DELTA)
+        if (abs(totalPitchIncrementInt - lastMoveY) > maxDelta)
             if (totalPitchIncrementInt > lastMoveY)
-                totalPitchIncrementInt = lastMoveY + cl->AIMBOT_MAX_DELTA;
+                totalPitchIncrementInt = lastMoveY + maxDelta;
             else
-                totalPitchIncrementInt = lastMoveY - cl->AIMBOT_MAX_DELTA;
-        if (abs(totalYawIncrementInt - lastMoveX) > cl->AIMBOT_MAX_DELTA)
+                totalPitchIncrementInt = lastMoveY - maxDelta;
+        if (abs(totalYawIncrementInt - lastMoveX) > maxDelta)
             if (totalYawIncrementInt > lastMoveX)
-                totalYawIncrementInt = lastMoveX + cl->AIMBOT_MAX_DELTA;
+                totalYawIncrementInt = lastMoveX + maxDelta;
             else
-                totalYawIncrementInt = lastMoveX - cl->AIMBOT_MAX_DELTA;
+                totalYawIncrementInt = lastMoveX - maxDelta;
 
         if ((aimPitchIncrement > -1.0f) && (aimPitchIncrement < 1.0f)) totalPitchIncrementInt = 0;
         if ((aimYawIncrement > -1.0f) && (aimYawIncrement < 1.0f)) totalYawIncrementInt = 0;
