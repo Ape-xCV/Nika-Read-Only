@@ -1,5 +1,5 @@
 #pragma once
-// Apex Legends v3.0.73.14
+// Apex Legends v3.0.74.20
 
 // [Miscellaneous]
 constexpr long OFF_ENTITY_LIST = 0x1ef7c38; //[Miscellaneous]->cl_entitylist
