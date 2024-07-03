@@ -5,8 +5,8 @@
 constexpr long OFF_ENTITY_LIST = 0x1ef7c38; //[Miscellaneous]->cl_entitylist
 constexpr long OFF_LOCAL_PLAYER = 0x22b0328; //[Miscellaneous]->LocalPlayer
 constexpr long OFF_GLOBAL_VARS = 0x17e8830; //[Miscellaneous]->GlobalVars
-constexpr long OFF_NAMELIST = 0xd2e21e0; //[Miscellaneous]->NameList
-constexpr long OFF_VIEW_RENDER = 0x7542b80; //[Miscellaneous]->ViewRender
+constexpr long OFF_NAMELIST = 0xd2e2260; //[Miscellaneous]->NameList
+constexpr long OFF_VIEW_RENDER = 0x7542c00; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
 constexpr long OFF_LEVEL = 0x17e8d34; //[Miscellaneous]->LevelName
 constexpr long OFF_PROJECTILESPEED = 0x1eb4; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
@@ -15,10 +15,10 @@ constexpr long OFF_CAMERAORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_orig
 constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 
 // [Buttons]
-constexpr long OFF_IN_ATTACK = 0x07542ca8; //[Buttons]->in_attack
-constexpr long OFF_IN_DUCK = 0x07542e98; //[Buttons]->in_duck
-constexpr long OFFSET_IN_FORWARD = 0x07542bd8; //[Buttons]->in_forward
-constexpr long OFF_IN_JUMP = 0x07542da8; //[Buttons]->in_jump
+constexpr long OFF_IN_ATTACK = 0x07542d28; //[Buttons]->in_attack
+constexpr long OFF_IN_DUCK = 0x07542f18; //[Buttons]->in_duck
+constexpr long OFFSET_IN_FORWARD = 0x07542c58; //[Buttons]->in_forward
+constexpr long OFF_IN_JUMP = 0x07542e28; //[Buttons]->in_jump
 
 // [RecvTable.DT_BaseAnimating]
 constexpr long OFF_SKIN = 0x0d68; //[RecvTable.DT_BaseAnimating]->m_nSkin
