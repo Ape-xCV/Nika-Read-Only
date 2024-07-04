@@ -77,7 +77,7 @@ struct Aim {
             ReleaseTarget();
             return;
         }
-        if (DistanceFromCrosshair > FinalFOV / 2) maxDelta = cl->AIMBOT_MAX_DELTA / 2; //_add
+        if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) maxDelta = cl->AIMBOT_MAX_DELTA / 2; //_add
         else maxDelta = cl->AIMBOT_MAX_DELTA; //_add
 //_        StartAiming();
         StartAiming(averageProcessingTime, leftLock, maxDelta); //_add
@@ -195,7 +195,7 @@ struct Aim {
 
     float CalculatePitchIncrement(QAngle AimbotDesiredAngles) {
         float wayA = AimbotDesiredAngles.x - lp->viewAngles.x;
-        float wayB = 180 - abs(wayA);
+        float wayB = 180.0f - abs(wayA);
         if (wayA > 0 && wayB > 0)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
@@ -205,7 +205,7 @@ struct Aim {
 
     float CalculateYawIncrement(QAngle AimbotDesiredAngles) {
         float wayA = AimbotDesiredAngles.y - lp->viewAngles.y;
-        float wayB = 360 - abs(wayA);
+        float wayB = 360.0f - abs(wayA);
         if (wayA > 0 && wayB > 0)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
