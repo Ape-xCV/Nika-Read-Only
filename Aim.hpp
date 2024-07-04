@@ -5,7 +5,7 @@ struct Aim {
     HitboxType Hitbox = HitboxType::Neck;
     float FinalFOV = 0;
     float FinalDistance = 0;
-    float HipfireDistance = 60;
+    float HipfireDistance = 30;
     int maxDelta = 0; //_add
     int lastMoveX = 0; //_add
     int lastMoveY = 0; //_add
