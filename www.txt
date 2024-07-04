@@ -5,10 +5,8 @@ myspace.com
 nypost.com
 people.com
 photobucket.com
-pixabay.com
 prezi.com
 soundcloud.com
-taringa.net
 time.com
 wordpress.com
 www.20minutos.es
@@ -18,7 +16,6 @@ www.bbc.co.uk
 www.blogger.com
 www.businessinsider.com
 www.calameo.com
-www.canva.com
 www.cbsnews.com
 www.change.org
 www.clarin.com
@@ -26,8 +23,6 @@ www.cnbc.com
 www.cnet.com
 www.cnn.com
 www.dailymail.co.uk
-www.dreamstime.com
-www.dw.com
 www.elmundo.es
 www.e-monsite.com
 www.estadao.com.br
@@ -44,7 +39,6 @@ www.huawei.com
 www.huffpost.com
 www.ig.com.br
 www.ikea.com
-www.imdb.com
 www.indiatimes.com
 www.istockphoto.com
 www.kompas.com
@@ -61,19 +55,16 @@ www.nbcnews.com
 www.ndtv.com
 www.netlify.com
 www.newsweek.com
-www.nydailynews.com
 www.nytimes.com
 www.over-blog.com
 www.ovhcloud.com
 www.paypal.com
-www.pexels.com
 www.plesk.com
 www.quora.com
 www.reuters.com
 www.rt.com
 www.rtve.es
 www.sapo.pt
-www.sciencedirect.com
 www.scribd.com
 www.shopify.com
 www.shutterstock.com
@@ -100,5 +91,4 @@ www.wikihow.com
 www.wiley.com
 www.wix.com
 www.wordpress.org
-www.wsj.com
 www.yelp.com
