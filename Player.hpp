@@ -10,7 +10,7 @@ struct Player {
     bool knocked;
     int teamNumber;
     int currentHealth;
-//_    int currentShields;
+    int currentShields;
     Vector3D localOrigin_prev;
     Vector3D localOrigin;
     Vector3D AbsoluteVelocity;
@@ -99,7 +99,7 @@ struct Player {
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
-//_        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
+        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         if (!isPlayer() && !isDummie()) { reset(); return; }
         dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
         knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
