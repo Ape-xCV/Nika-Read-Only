@@ -241,7 +241,7 @@ struct Aim {
             if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1)
                 continue;
 
-            if (lp->inZoom) { //_add
+            if (lp->inZoom) //_add
             if (DistanceFromCrosshair < NearestDistance) {
                 BestTarget = p;
                 NearestDistance = DistanceFromCrosshair;
