@@ -241,12 +241,12 @@ struct Aim {
             if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1)
                 continue;
 
-            if (lp->inZoom) //_add
+            if (lp->inZoom) { //_add
             if (DistanceFromCrosshair < NearestDistance) {
                 BestTarget = p;
                 NearestDistance = DistanceFromCrosshair;
             }
-            else { //_add
+            } else { //_add
                 double distance = math::calculateDistanceInMeters( //_add
                     lp->localOrigin.x, //_add
                     lp->localOrigin.y, //_add
