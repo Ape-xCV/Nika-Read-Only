@@ -147,8 +147,21 @@ struct Sense {
                     Vector2D head = HeadPositionW2S;
                     float height = head.y - foot.y;
                     float width = height / 2;
-                    float BoxThickness = 1.50f;
                     Canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width / 2), head.y + (height / 5)), ImColor(EnemyBoxColor), 0.0f, 0, 2);
+
+                    int life = p->currentHealth;
+                    int evo = p->currentShields;
+                    if (evo > 100) glColor3f(1.0f, 0.25f, 0.0f); // red shield
+                    else if (evo > 75) glColor3f(1.0f, 0.25f, 1.0f); // purple shield
+                    else if (evo > 50) glColor3f(0.0f, 0.75f, 1.0f); // blue shield
+                    else if (evo > 0) glColor3f(1.0f, 1.0f, 1.0f); // white shield
+                    else glColor3f(1.0f, 1.0f, 0.0f); // no shield
+
+                    glLineWidth(5.0f);
+                    glBegin(GL_LINES);
+                    glVertex2f(head.x + width/2 - 5.0f, foot.y);
+                    glVertex2f(head.x + width/2 - 5.0f, foot.y + (height + height/5) * life/100);
+                    glEnd();
                 }
 
                 // Draw Distance
@@ -211,7 +224,7 @@ struct Sense {
         r_1 = -(PlayerPos.y - LocalPlayerPos.y);
         r_2 = PlayerPos.x - LocalPlayerPos.x;
 
-        float yawToRadian = angle * (float)(M_PI / 180.0F);
+        float yawToRadian = angle * (float)(M_PI / 180.0f);
         x_1 = (float)(r_2 * (float)cos((double)(yawToRadian)) - r_1 * sin((double)(yawToRadian))) / 20;
         y_1 = (float)(r_2 * (float)sin((double)(yawToRadian)) + r_1 * cos((double)(yawToRadian))) / 20;
 
@@ -265,6 +278,7 @@ struct Sense {
         ImVec2 endVertical(midRadar.x, midRadar.y + drawSize.y / 2);
 
         glColor3f(0.99, 0.99, 0.99);
+        glLineWidth(1.0f);
         glBegin(GL_LINES);
         glVertex2f(startHorizontal.x, midRadar.y);
         glVertex2f(endHorizontal.x, midRadar.y);
@@ -288,7 +302,7 @@ struct Sense {
                 //Canvas->AddCircle(center, radius + 1, ImColor(ImVec4(0, 0, 0, 0.99)));
 
                 // Draw a line pointing in the direction of each player's aim
-                float angle = (360.0 - p->viewYaw) * (M_PI / 180.0);
+                float angle = (360.0f - p->viewYaw) * (M_PI / 180.0f);
                 ImVec2 endpoint(center.x + radius * cos(angle), center.y + radius * sin(angle));
                 Canvas->AddLine(center, endpoint, ImColor(ImVec4(0, 0, 0, 0.99)));
             }
