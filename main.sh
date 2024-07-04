@@ -6,9 +6,15 @@ url2=$(head -n 2 <<< "$file" | tail -n 1)
 echo $url
 echo $url2
 title=$(wget -qO- $url | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si')
-title=${title/&*;/}
+title=${title//&???;}
+title=${title//&????;}
+title=${title//&?????;}
+title=${title//&??????;}
 title2=$(wget -qO- $url2 | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si')
-title2=${title2/&*;/}
+title2=${title2//&???;}
+title2=${title2//&????;}
+title2=${title2//&?????;}
+title2=${title2//&??????;}
 echo -e '\033]2;'${title//-}'\007'
 
 me=$(basename "$0")
