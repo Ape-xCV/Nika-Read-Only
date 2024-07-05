@@ -136,13 +136,13 @@ struct Player {
     }
     void setGlowThroughWall(int glowThroughWall)
     {
-        long ptrLong = base + OFF_GLOW_THROUGH_WALL;
-        mem::Write<int>(ptrLong, glowThroughWall);
+//_        long ptrLong = base + OFF_GLOW_THROUGH_WALL;
+//_        mem::Write<int>(ptrLong, glowThroughWall);
     }
     void setGlowEnable(int glowEnable)
     {
-        long ptrLong = base + OFF_GLOW_HIGHLIGHT_ID;
-        mem::Write<int>(ptrLong, glowEnable);
+//_        long ptrLong = base + OFF_GLOW_HIGHLIGHT_ID;
+//_        mem::Write<int>(ptrLong, glowEnable);
     }
     void setCustomGlow(int health, bool isVisible, bool isSameTeam)
     {
@@ -177,12 +177,12 @@ struct Player {
         }
 
         if (!isSameTeam) {
-            mem::Write<unsigned char>(basePointer + OFF_GLOW_HIGHLIGHT_ID + contextId, settingIndex);
+//_            mem::Write<unsigned char>(basePointer + OFF_GLOW_HIGHLIGHT_ID + contextId, settingIndex);
 //_            mem::Write<typeof(highlightFunctionBits)>(
 //_                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 0, highlightFunctionBits);
 //_            mem::Write<typeof(glowColorRGB)>(
 //_                lp->highlightSettingsPtr + HIGHLIGHT_TYPE_SIZE * settingIndex + 4, glowColorRGB);
-            mem::Write<int>(basePointer + OFF_GLOW_FIX, 0);
+//_            mem::Write<int>(basePointer + OFF_GLOW_FIX, 0);
         }
     }
     bool SameTeam()
@@ -223,17 +223,17 @@ struct Player {
     }
     int getGlowThroughWall()
     {
-        int ptrInt = mem::Read<int>(base + OFF_GLOW_THROUGH_WALL, "Player GlowThroughWall");
-        if (!mem::IsValidPointer(ptrInt))
-            return -1;
-        return ptrInt;
+//_        int ptrInt = mem::Read<int>(base + OFF_GLOW_THROUGH_WALL, "Player GlowThroughWall");
+//_        if (!mem::IsValidPointer(ptrInt))
+//_            return -1;
+//_        return ptrInt;
     }
     int getGlowEnable()
     {
-        int ptrInt = mem::Read<int>(base + OFF_GLOW_HIGHLIGHT_ID, "Player GlowEnable");
-        if (!mem::IsValidPointer(ptrInt))
-            return -1;
-        return ptrInt;
+//_        int ptrInt = mem::Read<int>(base + OFF_GLOW_HIGHLIGHT_ID, "Player GlowEnable");
+//_        if (!mem::IsValidPointer(ptrInt))
+//_            return -1;
+//_        return ptrInt;
     }
     int GetPlayerLevel()
     {
