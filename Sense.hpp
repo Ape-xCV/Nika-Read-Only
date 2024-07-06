@@ -129,7 +129,15 @@ struct Sense {
                     Vector2D head = HeadPositionW2S;
                     float height = head.y - foot.y;
                     float width = height / 2;
-                    Canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width / 2), head.y + (height / 5)), ImColor(EnemyBoxColor), 0.0f, 0, 2);
+                    glColor3f(EnemyBoxColor.x, EnemyBoxColor.y, EnemyBoxColor.z);
+                    glLineWidth(1.5f);
+                    glBegin(GL_LINE_LOOP);
+                    glVertex2f(foot.x - width/2, foot.y);
+                    glVertex2f(foot.x - width/2, head.y + height/5);
+                    glVertex2f(head.x + width/2, head.y + height/5);
+                    glVertex2f(head.x + width/2, foot.y);
+                    glEnd();
+                    //Canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width / 2), head.y + (height / 5)), ImColor(EnemyBoxColor), 0.0f, 0, 2);
 
                     int life = p->currentHealth;
                     int evo = p->currentShields;
