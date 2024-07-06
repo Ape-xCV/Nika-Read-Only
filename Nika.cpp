@@ -142,7 +142,7 @@ void RenderUI() {
         sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
         if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
-        if (cl->FEATURE_SPECTATORS_ON) sense->SpectatorsList(counter);
+        if (cl->FEATURE_SPECTATORS_ON) sense->SpectatorsList(counter, TotalSpectators, Spectators);
     }
     ImGui::End();
 }
@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) { //_add
             std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
 
             if (counter % 100 == 0) { //_add
-                if (cl->SENSE_VERBOSE == 1) { //_add
+                if (cl->SENSE_VERBOSE > 0) { //_add
                     if (cl->FEATURE_SPECTATORS_ON) { //_add
                         int TempTotalSpectators = 0; //_add
                         std::vector<std::string> TempSpectators; //_add
