@@ -59,7 +59,7 @@ struct Sense {
         ImGui::End();
     }
 
-    void SpectatorsList(int counter) {
+    void SpectatorsList(int counter, int TotalSpectators, std::vector<std::string> Spectators) {
         ImVec2 Center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.3f);
@@ -72,24 +72,6 @@ struct Sense {
         ImGuiWindowFlags_NoSavedSettings |
         ImGuiWindowFlags_NoInputs);
 
-        if (counter % 100 == 0) {
-            int TempTotalSpectators = 0;
-            std::vector<std::string> TempSpectators;
-            for (int i = 0; i < players->size(); i++) {
-                Player* p = players->at(i);
-                if (p->base == lp->base)
-                    continue;
-                if (p->isSpectating()) {
-                    TempTotalSpectators++;
-                    TempSpectators.push_back(p->getPlayerName());
-                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->dead) {
-                    TempTotalSpectators++;
-                    TempSpectators.push_back("DEAD: " + p->getPlayerName());
-                }
-            }
-            TotalSpectators = TempTotalSpectators;
-            Spectators = TempSpectators;
-        }
         ImGui::Text("Spectators: ");
         ImGui::SameLine(); ImGui::TextColored(TotalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", TotalSpectators);
         if (static_cast<int>(Spectators.size()) > 0) {
