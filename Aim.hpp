@@ -119,8 +119,8 @@ struct Aim {
             Vector2D TargetBoneW2S;
             GameCamera->WorldToScreen(CurrentTarget->GetBonePosition(Hitbox), TargetBoneW2S);
             Vector2D ScreenSize = GameCamera->GetResolution();
-            totalPitchIncrementInt = TargetBoneW2S.y - ScreenSize.y/2;
-            totalYawIncrementInt = TargetBoneW2S.x - ScreenSize.x/2;
+            totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
+            totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
         }
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
