@@ -20,7 +20,7 @@ struct Aim {
     bool TargetSelected = true;
 
 //_    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
-    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players) { //_add
+    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players, Camera* GameCamera) { //_add
         this->cl = ConfigLoada;
         this->display = myDisplay;
         this->lp = localPlayer;
