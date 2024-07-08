@@ -1,6 +1,7 @@
 #pragma once
 #include "LocalPlayer.hpp"
 #include "Player.hpp"
+#include "Utils/Camera.hpp" //_add
 struct Aim {
     HitboxType Hitbox = HitboxType::Neck;
     float FinalFOV = 0;
@@ -10,18 +11,21 @@ struct Aim {
     int lastMoveX = 0; //_add
     int lastMoveY = 0; //_add
 
+    ConfigLoader* cl;
     MyDisplay* display;
     LocalPlayer* lp;
     std::vector<Player*>* players;
-    ConfigLoader* cl;
+    Camera* GameCamera; //_add
     Player* CurrentTarget = nullptr;
     bool TargetSelected = true;
 
-    Aim(MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players, ConfigLoader* ConfigLoada) {
+//_    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
+    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players) { //_add
+        this->cl = ConfigLoada;
         this->display = myDisplay;
         this->lp = localPlayer;
         this->players = all_players;
-        this->cl = ConfigLoada;
+        this->GameCamera = GameCamera; //_add
     }
 //_    bool active(){
     bool active(bool leftLock, bool rightLock){ //_add
@@ -96,23 +100,28 @@ struct Aim {
         TotalSmooth /= (2 + interval * 0.5); //_add
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
-//_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
-//_        double nrPitchIncrement = punchAnglesDiff.x;
-//_        double nrYawIncrement = punchAnglesDiff.y * -1;
+        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
+        double nrPitchIncrement = punchAnglesDiff.x;
+        double nrYawIncrement = -punchAnglesDiff.y;
 
         Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
         double aimPitchIncrement = aimbotDelta.x;
-        double aimYawIncrement = aimbotDelta.y * -1;
+        double aimYawIncrement = -aimbotDelta.y;
 
-//_        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
-//_        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
+        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
+        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
 
-//_        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
-//_        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
-        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(aimPitchIncrement)); //_add
-        int totalYawIncrementInt = RoundHalfEven(AL1AF0(aimYawIncrement)); //_add
+        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
+        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
 
 //_begin
+        if (!cl->AIMBOT_LEGACY_MODE) {
+            Vector2D TargetBoneW2S;
+            GameCamera->WorldToScreen(CurrentTarget->GetBonePosition(Hitbox), TargetBoneW2S);
+            Vector2D ScreenSize = GameCamera->GetResolution();
+            totalPitchIncrementInt = TargetBoneW2S.y - ScreenSize.y/2;
+            totalYawIncrementInt = TargetBoneW2S.x - ScreenSize.x/2;
+        }
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE;
 
