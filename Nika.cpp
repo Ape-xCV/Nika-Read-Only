@@ -170,7 +170,8 @@ int main(int argc, char* argv[]) { //_add
     TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
 //_    Random* random = new Random(cl, display, map, localPlayer, players);
-    Aim* aim = new Aim(display, localPlayer, players, cl);
+//_    Aim* aim = new Aim(cl, display, localPlayer, players);
+    Aim* aim = new Aim(cl, display, localPlayer, players, GameCamera);
 
 //_    int counter = 0;
     counter = 1; //_add
