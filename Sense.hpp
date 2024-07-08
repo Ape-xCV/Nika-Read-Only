@@ -93,12 +93,12 @@ struct Sense {
 
             Vector2D LocalOriginW2S, HeadPositionW2S, AboveHeadW2S;
             Vector3D LocalOrigin3D = p->localOrigin;
-            Vector3D Head3D = p->GetBonePosition(HitboxType::Head);
-            Vector3D AboveHead3D = Head3D;
+            Vector3D HeadPosition3D = p->GetBonePosition(HitboxType::Head);
+            Vector3D AboveHead3D = HeadPosition3D;
             AboveHead3D.z += 10.f; // Y Offset
 
             bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
-            bool bHeadPositionW2SValid = GameCamera->WorldToScreen(Head3D, HeadPositionW2S);
+            bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
             GameCamera->WorldToScreen(AboveHead3D, AboveHeadW2S);
 
             // Colors - Players (Enemy)
