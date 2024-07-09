@@ -98,7 +98,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
-        TotalSmooth /= (2 + interval * 0.5); //_add
+        TotalSmooth /= (1 + interval * 0.5); //_add
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
         Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
