@@ -151,8 +151,8 @@ struct Aim {
             else
                 totalYawIncrementInt = lastMoveX - maxDelta;
 
-        if (totalPitchIncrementInt >= -1 && totalPitchIncrementInt <= 1) totalPitchIncrementInt = 0;
-        if (totalYawIncrementInt >= -1 && totalYawIncrementInt <= 1) totalYawIncrementInt = 0;
+        //if (totalPitchIncrementInt >= -1 && totalPitchIncrementInt <= 1) totalPitchIncrementInt = 0;
+        //if (totalYawIncrementInt >= -1 && totalYawIncrementInt <= 1) totalYawIncrementInt = 0;
 //_end
         if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
