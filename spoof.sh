@@ -7,7 +7,12 @@ mv /usr/lib/udisks2/udisksd /root/udisksd
 
 rm -fr /dev/disk/by-id
 mkdir /dev/disk/by-id
-exa --icons /dev/disk
+if [[ ! -f /usr/bin/eza ]]; then
+  echo /dev/disk/by-id
+  ls -al /dev/disk/by-id
+else
+  eza --icons /dev/disk
+fi
 
 ip link set wlan0 down
 macchanger -r wlan0
