@@ -76,7 +76,8 @@ struct Aim {
             TargetSelected = true;
         }
 
-        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
+//_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
+        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
         if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
             ReleaseTarget();
             return;
@@ -224,11 +225,12 @@ struct Aim {
         return wayB;
     }
 
-    double CalculateDistanceFromCrosshair(Player* target) {
+//_    double CalculateDistanceFromCrosshair(Player* target) {
+    double CalculateDistanceFromCrosshair(Vector3D TargetPos) { //_add
         Vector3D CameraPosition = lp->CameraPosition;
         QAngle CurrentAngle = QAngle(lp->viewAngles.x, lp->viewAngles.y).fixAngle();
 
-        Vector3D TargetPos = target->localOrigin;
+//_        Vector3D TargetPos = target->localOrigin;
         if (CameraPosition.Distance(TargetPos) <= 0.0001f)
             return -1;
 
@@ -248,7 +250,8 @@ struct Aim {
             Player* p = players->at(i);
             if (!IsValidTarget(p)) continue;
 
-            double DistanceFromCrosshair = CalculateDistanceFromCrosshair(p);
+//_            double DistanceFromCrosshair = CalculateDistanceFromCrosshair(p);
+        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(p->GetBonePosition(Hitbox)); //_add
             if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1)
                 continue;
 
