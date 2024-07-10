@@ -12,7 +12,8 @@ struct Resolver {
     }
 
     static Vector3D GetTargetPosition(const Vector3D& targetPosition, Vector3D targetVelocity, float time) {
-        return targetPosition.Subtract((targetVelocity.Multiply(time)));
+//_        return targetPosition.Subtract((targetVelocity.Multiply(time)));
+        return targetPosition.Add((targetVelocity.Multiply(time))); //_add
     }
 
     static float GetTimeToTarget(Vector3D startPosition, Vector3D endPosition, float bulletSpeed) {
@@ -28,7 +29,8 @@ struct Resolver {
 
     static Vector3D GetTargetPosition(Vector3D startPosition, Vector3D endPosition, Vector3D targetVelocity, float bulletSpeed) {
         float time = GetTimeToTarget(startPosition, endPosition, bulletSpeed);
-        return GetTargetPosition(endPosition, targetVelocity, bulletSpeed);
+//_        return GetTargetPosition(endPosition, targetVelocity, bulletSpeed);
+        return GetTargetPosition(endPosition, targetVelocity, time + 0.1f); //_add
     }
 
     // Aim at moving target without bullet drop predicion
