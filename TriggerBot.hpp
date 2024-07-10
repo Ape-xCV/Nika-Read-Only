@@ -48,7 +48,7 @@ struct TriggerBot {
             if (!p->isCombatReady()) continue;
             if (!p->enemy) continue;
             if (!p->aimedAt) continue;
-            if (!p->visible) continue;
+//_            if (!p->visible) continue;
             
             if (p->distanceToLocalPlayer <= RANGE_MAX ) {
                 display->mouseClickLeft();
