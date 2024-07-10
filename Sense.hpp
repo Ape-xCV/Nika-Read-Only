@@ -9,9 +9,9 @@ struct Sense {
     Level* map;
     LocalPlayer* lp;
     std::vector<Player*>* players;
+    Camera* GameCamera; //_add
     int TotalSpectators = 0; //_add
     std::vector<std::string> Spectators; //_add
-    Camera* GameCamera; //_add
 
 //_    Sense(ConfigLoader* configLoada, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
     Sense(ConfigLoader* configLoada, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players, Camera* GameCamera) { //_add
