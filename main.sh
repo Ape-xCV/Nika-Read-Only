@@ -20,4 +20,4 @@ echo -e '\033]2;'${title//-}'\007'
 me=$(basename "$0")
 target="${me%.sh}"
 
-sudo /root/$target "${title2//-}"
+/root/$target "${title2//-}"
