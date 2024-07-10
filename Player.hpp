@@ -68,6 +68,7 @@ struct Player {
         std::string modelName = mem::ReadString(modelOffset, 1024, "Player modelName");
         // Check for different player names
         if (modelName.find("dummie") != std::string::npos) modelName = "DUMMIE";
+        else if (modelName.find("alter") != std::string::npos) modelName = "ALTER";
         else if (modelName.find("ash") != std::string::npos) modelName = "ASH";
         else if (modelName.find("ballistic") != std::string::npos) modelName = "BALLISTIC";
         else if (modelName.find("bangalore") != std::string::npos) modelName = "BANGALORE";
