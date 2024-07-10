@@ -3,15 +3,19 @@
 struct Player {
     LocalPlayer* lp;
     ConfigLoader* cl;
+    uintptr_t nameOffset;
     int index;
     uint64_t base;
     std::string name;
+    int teamNumber;
+    int plyrDataTable;
+    uint64_t spectators;
+    int spctrIndex;
+    uint64_t spctrBase;
     bool dead;
     bool knocked;
-    int teamNumber;
     int currentHealth;
     int currentShields;
-    Vector3D localOrigin_prev;
     Vector3D localOrigin;
     float timeLocalOrigin; //_add
     Vector3D localOriginPrev; //_add
@@ -27,27 +31,23 @@ struct Player {
     Vector2D viewAngles; //_add
     float viewYaw; //_add
     Vector3D localOrigin_predicted;
+    Vector3D localOrigin_prev;
+    int lastTimeAimedAt;
+    bool aimedAt;
+    int lastTimeAimedAtPrev;
+//_    int lastTimeVisible;
+    float lastTimeVisible;
+    bool visible;
+//_    int lastTimeVisiblePrev;
     bool local;
     bool friendly;
     bool enemy;
-    int lastTimeAimedAt;
-    int lastTimeAimedAtPrev;
-    int plyrDataTable;
-    int spctrIndex;
-    bool aimedAt;
-//_    int lastTimeVisible;
-    float lastTimeVisible;
-//_    int lastTimeVisiblePrev;
-    bool visible;
     float distanceToLocalPlayer;
     float distance2DToLocalPlayer;
-    bool IsLockedOn;
     Vector2D aimbotDesiredAngles;
     Vector2D aimbotDesiredAnglesIncrement;
     float aimbotScore;
-    uintptr_t nameOffset;
-    uint64_t spectators;
-    uint64_t spctrBase;
+    bool IsLockedOn;
 
     Player(int in_index, LocalPlayer* in_localPlayer, ConfigLoader* in_cl) {
         this->index = in_index;
@@ -110,10 +110,10 @@ struct Player {
         spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
         spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
         spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
-        currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
-        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
         knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
+        currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
+        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldtime; //_add
         Vector3D localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)); //_add
