@@ -4,9 +4,9 @@
 #include "Utils/Camera.hpp" //_add
 struct Aim {
     HitboxType Hitbox = HitboxType::Neck;
-    float FinalFOV = 0;
-    float FinalDistance = 0;
-    float HipfireDistance = 30;
+    float FinalFOV = 0.0f;
+    float FinalDistance = 0.0f;
+    float HipfireDistance = 30.0f;
     int maxDelta = 0; //_add
     int lastMoveX = 0; //_add
     int lastMoveY = 0; //_add
@@ -57,7 +57,7 @@ struct Aim {
             FinalDistance = cl->AIMBOT_MAX_DISTANCE;
         }
         else {
-            FinalFOV = (cl->AIMBOT_FOV + 20);
+            FinalFOV = (cl->AIMBOT_FOV + 20.0f);
             FinalDistance = HipfireDistance;
         }
 
@@ -82,7 +82,7 @@ struct Aim {
             ReleaseTarget();
             return;
         }
-        if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) maxDelta = cl->AIMBOT_MAX_DELTA / 2; //_add
+        if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) maxDelta = cl->AIMBOT_MAX_DELTA / cl->AIMBOT_WEAKEN; //_add
         else maxDelta = cl->AIMBOT_MAX_DELTA; //_add
 //_        StartAiming();
         StartAiming(averageProcessingTime, leftLock, maxDelta); //_add
@@ -90,7 +90,7 @@ struct Aim {
 
 //_    void StartAiming() {
     void StartAiming(double interval, bool leftLock, int maxDelta) { //_add
-        QAngle DesiredAngles = QAngle(0, 0);
+        QAngle DesiredAngles = QAngle(0.0f, 0.0f);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
 
@@ -98,7 +98,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
-        TotalSmooth /= (1 + interval * 0.5); //_add
+        TotalSmooth /= (1 + interval * 0.5f); //_add
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
         Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
@@ -185,7 +185,7 @@ struct Aim {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
             else if (cl->AIMBOT_PREDICT_BULLETDROP) {
-                return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, Vector3D(0, 0, 0), lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
+                return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, Vector3D(0.0f, 0.0f, 0.0f), lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
             else if (cl->AIMBOT_PREDICT_MOVEMENT) {
                 return Resolver::CalculateAimRotation(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, Angle);
@@ -211,7 +211,7 @@ struct Aim {
     float CalculatePitchIncrement(QAngle AimbotDesiredAngles) {
         float wayA = AimbotDesiredAngles.x - lp->viewAngles.x;
         float wayB = 180.0f - abs(wayA);
-        if (wayA > 0 && wayB > 0)
+        if (wayA > 0.0f && wayB > 0.0f)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
             return wayA;
@@ -221,7 +221,7 @@ struct Aim {
     float CalculateYawIncrement(QAngle AimbotDesiredAngles) {
         float wayA = AimbotDesiredAngles.y - lp->viewAngles.y;
         float wayB = 360.0f - abs(wayA);
-        if (wayA > 0 && wayB > 0)
+        if (wayA > 0.0f && wayB > 0.0f)
             wayB *= -1;
         if (fabs(wayA) < fabs(wayB))
             return wayA;
@@ -245,7 +245,7 @@ struct Aim {
     }
 
     Player* FindBestTarget() {
-        float NearestDistance = 9999;
+        float NearestDistance = 9999.9f;
         Player* BestTarget = nullptr;
         Vector3D CameraPosition = lp->CameraPosition;
         QAngle CurrentAngle = QAngle(lp->viewAngles.x, lp->viewAngles.y).fixAngle();
@@ -289,13 +289,13 @@ struct Aim {
     }
 
     int RoundHalfEven(float x) {
-        return (x >= 0.0)
+        return (x >= 0.0f)
             ? static_cast<int>(std::round(x))
             : static_cast<int>(std::round(-x)) * -1;
     }
 
     float AL1AF0(float num) {
-        if (num > 0) return std::max(num, 1.0f);
+        if (num > 0.0f) return std::max(num, 1.0f);
         return std::min(num, -1.0f);
     }
 };
