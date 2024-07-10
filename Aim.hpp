@@ -12,7 +12,7 @@ struct Aim {
     HitboxType Hitbox = HitboxType::Neck;
     float FinalFOV = 0.0f;
     float FinalDistance = 0.0f;
-    float HipfireDistance = cl->TRIGGERBOT_HIPFIRE_RANGE;
+    float HipfireDistance = 30.0f;
     Player* CurrentTarget = nullptr;
     bool TargetSelected = true;
     int maxDelta = 0; //_add
