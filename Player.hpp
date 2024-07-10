@@ -19,12 +19,12 @@ struct Player {
     Vector3D localOrigin;
     float timeLocalOrigin; //_add
     Vector3D localOriginPrev; //_add
-    float timeLocalOriginPrev; //_add
     Vector3D localOriginPrev2; //_add
-    float timeLocalOriginPrev2; //_add
     Vector3D localOriginPrev3; //_add
-    float timeLocalOriginPrev3; //_add
     Vector3D localOriginPrev4; //_add
+    float timeLocalOriginPrev; //_add
+    float timeLocalOriginPrev2; //_add
+    float timeLocalOriginPrev3; //_add
     float timeLocalOriginPrev4; //_add
     Vector3D velocity; //_add
     Vector3D AbsoluteVelocity;
