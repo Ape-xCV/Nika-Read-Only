@@ -8,7 +8,6 @@ struct Aim {
     LocalPlayer* lp;
     std::vector<Player*>* players;
     Camera* GameCamera; //_add
-
     HitboxType Hitbox = HitboxType::Neck;
     float FinalFOV = 0.0f;
     float FinalDistance = 0.0f;
