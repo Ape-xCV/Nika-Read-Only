@@ -83,6 +83,12 @@ struct Vector3D {
     Vector3D Add(const Vector3D& other) const {
         return Vector3D(x + other.x, y + other.y, z + other.z);
     }
+    Vector3D Divide(float scalar) const {
+        return Vector3D(x / scalar, y / scalar, z / scalar);
+    }
+    Vector3D Multiply(float scalar) const {
+        return Vector3D(x * scalar, y * scalar, z * scalar);
+    }
     Vector3D& Normalize() {
         float len = Magnitude();
         if (len > 0) {
@@ -91,9 +97,6 @@ struct Vector3D {
             z /= len;
         }
         return *this;
-    }
-    Vector3D Multiply(float scalar) const {
-        return Vector3D(x * scalar, y * scalar, z * scalar);
     }
     Vector2D To2D() const {
         return Vector2D(x, y);
