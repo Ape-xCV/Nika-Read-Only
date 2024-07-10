@@ -3,21 +3,21 @@
 #include "Player.hpp"
 #include "Utils/Camera.hpp" //_add
 struct Aim {
-    HitboxType Hitbox = HitboxType::Neck;
-    float FinalFOV = 0.0f;
-    float FinalDistance = 0.0f;
-    float HipfireDistance = 30.0f;
-    int maxDelta = 0; //_add
-    int lastMoveX = 0; //_add
-    int lastMoveY = 0; //_add
-
     ConfigLoader* cl;
     MyDisplay* display;
     LocalPlayer* lp;
     std::vector<Player*>* players;
     Camera* GameCamera; //_add
+
+    HitboxType Hitbox = HitboxType::Neck;
+    float FinalFOV = 0.0f;
+    float FinalDistance = 0.0f;
+    float HipfireDistance = cl->TRIGGERBOT_HIPFIRE_RANGE;
     Player* CurrentTarget = nullptr;
     bool TargetSelected = true;
+    int maxDelta = 0; //_add
+    int lastMoveX = 0; //_add
+    int lastMoveY = 0; //_add
 
 //_    Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
     Aim(ConfigLoader* ConfigLoada, MyDisplay* myDisplay, LocalPlayer* localPlayer, std::vector<Player*>* all_players, Camera* GameCamera) { //_add
