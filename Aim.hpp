@@ -119,9 +119,9 @@ struct Aim {
         if (!cl->AIMBOT_LEGACY_MODE) {
             Vector2D TargetBoneW2S;
             Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
-            if (cl->AIMBOT_PREDICT_BULLETDROP)
+            if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileScale > 1.0f)
                 TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
-            if (cl->AIMBOT_PREDICT_MOVEMENT)
+            if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f)
                 TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, lp->WeaponProjectileSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
             Vector2D ScreenSize = GameCamera->GetResolution();
@@ -184,10 +184,10 @@ struct Aim {
             if (cl->AIMBOT_PREDICT_BULLETDROP && cl->AIMBOT_PREDICT_MOVEMENT) {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
-            else if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileScale > 1.0f) {
+            else if (cl->AIMBOT_PREDICT_BULLETDROP) {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, Vector3D(0, 0, 0), lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
-            else if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f) {
+            else if (cl->AIMBOT_PREDICT_MOVEMENT) {
                 return Resolver::CalculateAimRotation(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, Angle);
             }
         }
