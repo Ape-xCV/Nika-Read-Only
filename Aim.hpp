@@ -119,7 +119,10 @@ struct Aim {
         if (!cl->AIMBOT_LEGACY_MODE) {
             Vector2D TargetBoneW2S;
             Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
-            TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
+            if (cl->AIMBOT_PREDICT_BULLETDROP)
+                TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
+            if (cl->AIMBOT_PREDICT_MOVEMENT)
+                TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, lp->WeaponProjectileSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
             Vector2D ScreenSize = GameCamera->GetResolution();
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
