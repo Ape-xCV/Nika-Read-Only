@@ -11,7 +11,7 @@ struct Player {
     int teamNumber;
     int currentHealth;
     int currentShields;
-//_    Vector3D localOrigin_prev;
+    Vector3D localOrigin_prev;
     Vector3D localOrigin;
     float timeLocalOrigin; //_add
     Vector3D localOriginPrev; //_add
@@ -26,7 +26,7 @@ struct Player {
     Vector3D AbsoluteVelocity;
     Vector2D viewAngles; //_add
     float viewYaw; //_add
-//_    Vector3D localOrigin_predicted;
+    Vector3D localOrigin_predicted;
     bool local;
     bool friendly;
     bool enemy;
@@ -129,9 +129,9 @@ struct Player {
         AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
         viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
-//_        Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
-//_        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
-//_        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
+        Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
+        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
+        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
 
         lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
         aimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
