@@ -30,7 +30,7 @@ struct ConfigLoader {
 
     //triggerBot
     int TRIGGERBOT_ZOOMED_RANGE = 180;
-    int TRIGGERBOT_HIPFIRE_RANGE = 25;
+    int TRIGGERBOT_HIPFIRE_RANGE = 30;
 
     //sense
     int SENSE_MAX_RANGE = 250;
@@ -40,20 +40,20 @@ struct ConfigLoader {
     bool AIMBOT_ACTIVATED_BY_ATTACK = true;
     bool AIMBOT_ACTIVATED_BY_ADS = true;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
-    float AIMBOT_SMOOTH = 20;
+    float AIMBOT_SMOOTH = 30;
     float AIMBOT_SPEED = 10;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
     float AIMBOT_FOV = 10;
-    float AIMBOT_FAST_AREA = 0.75; //_add
+    float AIMBOT_FAST_AREA = 0.67; //_add
     float AIMBOT_WEAKEN = 2; //_add
-    bool AIMBOT_PREDICT_BULLETDROP = false;
-    bool AIMBOT_PREDICT_MOVEMENT = false;
+    bool AIMBOT_PREDICT_BULLETDROP = true;
+    bool AIMBOT_PREDICT_MOVEMENT = true;
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
     bool AIMBOT_LEGACY_MODE = false; //_add
-    int AIMBOT_MAX_DISTANCE = 180;
+    int AIMBOT_MAX_DISTANCE = 250;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 15; //_add
-    int AIMBOT_HIPFIRE_MAX_MOVE = 45; //_add
+    int AIMBOT_ZOOMED_MAX_MOVE = 30; //_add
+    int AIMBOT_HIPFIRE_MAX_MOVE = 40; //_add
     int AIMBOT_MAX_DELTA = 10; //_add
 
     //keys
