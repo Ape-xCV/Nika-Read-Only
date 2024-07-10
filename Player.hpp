@@ -231,7 +231,7 @@ struct Player {
         return base != 0 && (isPlayer() || isDummie());
     }
     bool isCombatReady() {
-        if (!isValid())return false;
+        if (!isValid()) return false;
         if (isDummie()) return true;
         if (dead) return false;
         if (knocked) return false;
