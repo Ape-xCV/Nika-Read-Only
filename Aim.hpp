@@ -184,10 +184,10 @@ struct Aim {
             if (cl->AIMBOT_PREDICT_BULLETDROP && cl->AIMBOT_PREDICT_MOVEMENT) {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
-            else if (cl->AIMBOT_PREDICT_BULLETDROP) {
+            else if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileScale > 1.0f) {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, Vector3D(0, 0, 0), lp->WeaponProjectileSpeed, lp->WeaponProjectileScale, 255, Angle);
             }
-            else if (cl->AIMBOT_PREDICT_MOVEMENT) {
+            else if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f) {
                 return Resolver::CalculateAimRotation(CameraPosition, TargetPosition, TargetVelocity, lp->WeaponProjectileSpeed, Angle);
             }
         }
