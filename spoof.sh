@@ -18,16 +18,19 @@ ip link set wlan0 down
 macchanger -r wlan0
 ip link set wlan0 up
 
-read -p $'Disabling \e[1mudevadm\e[0m... Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo ""
-  read -p $'Are you sure? [y/\e[1mN\e[0m]> ' -n 1 -r
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo ""
-    mv /usr/bin/udevadm /root/udevadm
-  else
-    echo ""
-  fi
-else
-  echo ""
-fi
+#read -p $'Disabling \e[1mudevadm\e[0m... Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
+#if [[ $REPLY =~ ^[Yy]$ ]]; then
+#  echo ""
+#  read -p $'Are you sure? [y/\e[1mN\e[0m]> ' -n 1 -r
+#  if [[ $REPLY =~ ^[Yy]$ ]]; then
+#    echo ""
+#    mv /usr/bin/udevadm /root/udevadm
+#  else
+#    echo ""
+#  fi
+#else
+#  echo ""
+#fi
+
+echo -e "Disabling \e[1mudevadm\e[0m..."
+chmod 700 /usr/bin/udevadm
