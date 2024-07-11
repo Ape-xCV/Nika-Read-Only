@@ -105,7 +105,7 @@ cd /root
 ### 5. HWID unban
 
 - My storage serial numbers were collected most likely from **dbus**. Widely adopted Linux **systemd** `init` as currently being distributed has the security profile of an internet **meme**.
-- Disabling **udisksd** will prevent populating **dbus** with storage serials. Run `spoof.sh` and do **>NOT<** disable **udevadm**. Then reboot.
+- Disabling **udisksd** will prevent populating **dbus** with storage serials. Run `spoof.sh` then reboot.
 - After reboot the following command will now fail as intended: `dbus-send --system --dest=org.freedesktop.UDisks2 --type=method_call --print-reply  /org/freedesktop/UDisks2 org.freedesktop.DBus.ObjectManager.GetManagedObjects | grep by-id`
 - Always run `spoof.sh` before you open the game.
 - You can confirm that **udisksd** is disabled by finding it misplaced in /root with: `ls /root`
