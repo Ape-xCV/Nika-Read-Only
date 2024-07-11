@@ -108,8 +108,7 @@ cd /root
 - Disabling **udisksd** will prevent populating **dbus** with storage serials. Run `spoof.sh` and do **>NOT<** disable **udevadm**. Then reboot.
 - After reboot the following command will now fail as intended: `dbus-send --system --dest=org.freedesktop.UDisks2 --type=method_call --print-reply  /org/freedesktop/UDisks2 org.freedesktop.DBus.ObjectManager.GetManagedObjects | grep by-id`
 - Always run `spoof.sh` before you open the game.
-- You can confirm that **udisksd** or **udevadm** are disabled by finding them misplaced in /root with: `ls /root`
-- If you disable **udevadm** be aware that you will have to run `unspoof.sh` to restore it after your game session. Your system will not boot without it. To move it back from `/root/udevadm` to `/usr/bin/udevadm` you will need a proper Live USB and some command line knowledge.
+- You can confirm that **udisksd** is disabled by finding it misplaced in /root with: `ls /root`
 
 ### 6. GNU MAC Changer
 
