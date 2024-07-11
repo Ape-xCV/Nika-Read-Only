@@ -116,7 +116,7 @@ bool readError = true;
 bool leftLock = true;
 bool rightLock = false;
 bool autoFire = false;
-int boneID = 1;
+int boneID = 0;
 int TotalSpectators = 0;
 std::vector<std::string> Spectators;
 
@@ -176,9 +176,9 @@ int main(int argc, char* argv[]) { //_add
 //_    int counter = 0;
     counter = 1; //_add
     cl->reloadFile(); //_add
-    if (cl->SENSE_VERBOSE > 1) //_add
-        if (!InitializeOverlayWindow(argv[1])) //_add
-            return -1; //_add
+    if (!InitializeOverlayWindow(argv[1])) //_add
+        return -1; //_add
+    if (cl->SENSE_VERBOSE < 2) OverlayWindow.DestroyOverlay(); //_add
 
     //while (!glfwWindowShouldClose(OverlayWindow)) { //_add
     while (true) {
@@ -243,10 +243,10 @@ int main(int argc, char* argv[]) { //_add
                     if (p->isValid()) players->push_back(p);
                 }
 
-            if (cl->SENSE_VERBOSE > 1) GameCamera->Update(); //_add
             noRecoil->controlWeapon();
 //_            triggerBot->shootAtEnemy(counter);
             triggerBot->shootAtEnemy(counter, autoFire);
+            GameCamera->Update(); //_add
 //_            sense->update(counter);
 //_            sense->itemGlow(counter);
 //_            aim->update(counter);
