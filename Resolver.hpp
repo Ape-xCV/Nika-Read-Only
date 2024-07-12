@@ -30,7 +30,7 @@ struct Resolver {
     static Vector3D GetTargetPosition(Vector3D startPosition, Vector3D endPosition, Vector3D targetVelocity, float bulletSpeed) {
         float time = GetTimeToTarget(startPosition, endPosition, bulletSpeed);
 //_        return GetTargetPosition(endPosition, targetVelocity, bulletSpeed);
-        return GetTargetPosition(endPosition, targetVelocity, time + 0.1f); //_add
+        return GetTargetPosition(endPosition, targetVelocity, time + 0.05f); //_add
     }
 
     // Aim at moving target without bullet drop predicion
