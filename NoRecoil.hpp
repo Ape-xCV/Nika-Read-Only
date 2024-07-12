@@ -15,9 +15,9 @@ struct NoRecoil {
     }
 
     void controlWeapon() {
-        noRecPitch = cl->NORECOIL_PITCH_REDUCTION; 
-        noRecYaw = cl->NORECOIL_YAW_REDUCTION; 
-        if (!cl->FEATURE_NORECOIL_ON)return;
+        noRecPitch = cl->NORECOIL_PITCH_REDUCTION;
+        noRecYaw = cl->NORECOIL_YAW_REDUCTION;
+        if (!cl->FEATURE_NORECOIL_ON) return;
         if (!lp->isCombatReady()) return;
         if (!lp->inAttack) return;
         Vector2D punchAnglesDiff = lp->punchAnglesDiff;
@@ -29,7 +29,7 @@ struct NoRecoil {
         display->moveMouseRelative(pitch, yaw);
     }
     int roundHalfEven(float x) {
-        return (x >= 0.0)
+        return (x >= 0.0f)
             ? static_cast<int>(std::round(x))
             : static_cast<int>(std::round(-x)) * -1;
     }
