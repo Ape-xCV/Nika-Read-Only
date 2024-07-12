@@ -30,8 +30,8 @@ struct Player {
     Vector3D AbsoluteVelocity;
     Vector2D viewAngles; //_add
     float viewYaw; //_add
-    Vector3D localOrigin_predicted;
-    Vector3D localOrigin_prev;
+//_    Vector3D localOrigin_predicted;
+//_    Vector3D localOrigin_prev;
     int lastTimeAimedAt;
     bool aimedAt;
     int lastTimeAimedAtPrev;
@@ -130,9 +130,9 @@ struct Player {
         AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
         viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
-        Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
-        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
-        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
+//_        Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
+//_        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
+//_        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
 
         lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
         aimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
@@ -150,11 +150,11 @@ struct Player {
             enemy = !friendly;
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.To2D().Distance(localOrigin.To2D());
-            if (visible) {
-                aimbotDesiredAngles = calcDesiredAngles();
-                aimbotDesiredAnglesIncrement = calcDesiredAnglesIncrement();
-                aimbotScore = calcAimbotScore();
-            }
+//_            if (visible) {
+//_                aimbotDesiredAngles = calcDesiredAngles();
+//_                aimbotDesiredAnglesIncrement = calcDesiredAnglesIncrement();
+//_                aimbotScore = calcAimbotScore();
+//_            }
         }
     }
     void setGlowThroughWall(int glowThroughWall)
@@ -304,53 +304,53 @@ struct Player {
             return -1;
         return mem::Read<uint16_t>(BonePointer, "Player BonePointer");
     }
-    float calcPitchIncrement() {
-        float wayA = aimbotDesiredAngles.x - lp->viewAngles.x;
-        float wayB = 180 - abs(wayA);
-        if (wayA > 0 && wayB > 0)
-            wayB *= -1;
-        if (fabs(wayA) < fabs(wayB))
-            return wayA;
-        return wayB;
-    }
-    float calcDesiredPitch() {
-        if (local) return 0;
-        const Vector3D shift = Vector3D(100000, 100000, 100000);
-        const Vector3D originA = lp->localOrigin.Add(shift);
-        const Vector3D originB = localOrigin_predicted.Add(shift).Subtract(Vector3D(0, 0, 10));
-        const float deltaZ = originB.z - originA.z;
-        const float pitchInRadians = std::atan2(-deltaZ, distance2DToLocalPlayer);
-        const float degrees = pitchInRadians * (180.0f / M_PI);
-        return degrees;
-    }
-    float calcDesiredYaw() {
-        if (local) return 0;
-        const Vector2D shift = Vector2D(100000, 100000);
-        const Vector2D originA = lp->localOrigin.To2D().Add(shift);
-        const Vector2D originB = localOrigin_predicted.To2D().Add(shift);
-        const Vector2D diff = originB.Subtract(originA);
-        const double yawInRadians = std::atan2(diff.y, diff.x);
-        const float degrees = yawInRadians * (180.0f / M_PI);
-        return degrees;
-    }
-    float calcYawIncrement() {
-        float wayA = aimbotDesiredAngles.y - lp->viewAngles.y;
-        float wayB = 360 - abs(wayA);
-        if (wayA > 0 && wayB > 0)
-            wayB *= -1;
-        if (fabs(wayA) < fabs(wayB))
-            return wayA;
-        return wayB;
-    }
-    float calcAimbotScore() {
-        return (1000 - (fabs(aimbotDesiredAnglesIncrement.x) + fabs(aimbotDesiredAnglesIncrement.y)));
-    }
-    Vector2D calcDesiredAngles() {
-        return Vector2D(calcDesiredPitch(), calcDesiredYaw());
-    }
-    Vector2D calcDesiredAnglesIncrement() {
-        return Vector2D(calcPitchIncrement(), calcYawIncrement());
-    }
+//_    float calcPitchIncrement() {
+//_        float wayA = aimbotDesiredAngles.x - lp->viewAngles.x;
+//_        float wayB = 180 - abs(wayA);
+//_        if (wayA > 0 && wayB > 0)
+//_            wayB *= -1;
+//_        if (fabs(wayA) < fabs(wayB))
+//_            return wayA;
+//_        return wayB;
+//_    }
+//_    float calcDesiredPitch() {
+//_        if (local) return 0;
+//_        const Vector3D shift = Vector3D(100000, 100000, 100000);
+//_        const Vector3D originA = lp->localOrigin.Add(shift);
+//_        const Vector3D originB = localOrigin_predicted.Add(shift).Subtract(Vector3D(0, 0, 10));
+//_        const float deltaZ = originB.z - originA.z;
+//_        const float pitchInRadians = std::atan2(-deltaZ, distance2DToLocalPlayer);
+//_        const float degrees = pitchInRadians * (180.0f / M_PI);
+//_        return degrees;
+//_    }
+//_    float calcDesiredYaw() {
+//_        if (local) return 0;
+//_        const Vector2D shift = Vector2D(100000, 100000);
+//_        const Vector2D originA = lp->localOrigin.To2D().Add(shift);
+//_        const Vector2D originB = localOrigin_predicted.To2D().Add(shift);
+//_        const Vector2D diff = originB.Subtract(originA);
+//_        const double yawInRadians = std::atan2(diff.y, diff.x);
+//_        const float degrees = yawInRadians * (180.0f / M_PI);
+//_        return degrees;
+//_    }
+//_    float calcYawIncrement() {
+//_        float wayA = aimbotDesiredAngles.y - lp->viewAngles.y;
+//_        float wayB = 360 - abs(wayA);
+//_        if (wayA > 0 && wayB > 0)
+//_            wayB *= -1;
+//_        if (fabs(wayA) < fabs(wayB))
+//_            return wayA;
+//_        return wayB;
+//_    }
+//_    float calcAimbotScore() {
+//_        return (1000 - (fabs(aimbotDesiredAnglesIncrement.x) + fabs(aimbotDesiredAnglesIncrement.y)));
+//_    }
+//_    Vector2D calcDesiredAngles() {
+//_        return Vector2D(calcDesiredPitch(), calcDesiredYaw());
+//_    }
+//_    Vector2D calcDesiredAnglesIncrement() {
+//_        return Vector2D(calcPitchIncrement(), calcYawIncrement());
+//_    }
     Vector3D GetBonePosition(HitboxType HitBox) const {
         Vector3D Offset = Vector3D(0.0f, 0.0f, 0.0f);
 
