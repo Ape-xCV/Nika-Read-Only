@@ -33,24 +33,22 @@
 
 ### 1. Environment set up in Linux
 
-<details>
-<summary>Install dependencies (<b>Arch</b>):</summary>
-
-    sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
-</details>
+- Install dependencies (<b>Arch</b>):
+``` shell
+sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
+```
 
 or
 
-<details>
-<summary>Install dependencies (<b>Debian</b>):</summary>
-
-    sudo apt-get install -y libudev-dev
-    sudo apt install cmake xorg-dev libglu1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
-    sudo apt install -y libudev-dev libglu1-mesa-dev libxkbcommon-dev libwayland-dev git cmake g++ gcc libinput-dev libsoil-dev
-    sudo apt-get install build-essential
-    sudo apt-get install libx11-dev
-    sudo apt-get install libxtst-dev
-</details>
+- Install dependencies (<b>Debian</b>):
+``` shell
+sudo apt-get install -y libudev-dev
+sudo apt install cmake xorg-dev libglu1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+sudo apt install -y libudev-dev libglu1-mesa-dev libxkbcommon-dev libwayland-dev git cmake g++ gcc libinput-dev libsoil-dev
+sudo apt-get install build-essential
+sudo apt-get install libx11-dev
+sudo apt-get install libxtst-dev
+```
 
 ### 2. Build & Install GLFW
 
