@@ -162,8 +162,8 @@ int main(int argc, char* argv[]) { //_add
 //_    std::vector<Player*>* players = new std::vector<Player*>;
 
     //fill in slots for players, dummies and items
-    for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(i, localPlayer, cl));
-    for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(i, localPlayer, cl));
+    for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(cl, i, localPlayer));
+    for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer));
 
     //create features
     NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
