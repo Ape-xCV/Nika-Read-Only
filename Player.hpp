@@ -1,11 +1,11 @@
 #pragma once
 
 struct Player {
-    LocalPlayer* lp;
     ConfigLoader* cl;
-    uintptr_t nameOffset;
     int index;
+    LocalPlayer* lp;
     uint64_t base;
+    uintptr_t nameOffset;
     std::string name;
     int teamNumber;
     int plyrDataTable;
@@ -44,15 +44,15 @@ struct Player {
     bool enemy;
     float distanceToLocalPlayer;
     float distance2DToLocalPlayer;
-    Vector2D aimbotDesiredAngles;
-    Vector2D aimbotDesiredAnglesIncrement;
-    float aimbotScore;
+//_    Vector2D aimbotDesiredAngles;
+//_    Vector2D aimbotDesiredAnglesIncrement;
+//_    float aimbotScore;
     bool IsLockedOn;
 
-    Player(int in_index, LocalPlayer* in_localPlayer, ConfigLoader* in_cl) {
+    Player(ConfigLoader* in_cl, int in_index, LocalPlayer* in_localPlayer) {
+        this->cl = in_cl;
         this->index = in_index;
         this->lp = in_localPlayer;
-        this->cl = in_cl;
     }
 
     void reset() {
@@ -107,9 +107,11 @@ struct Player {
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         if (!isPlayer() && !isDummie()) { reset(); return; }
         plyrDataTable = mem::Read<int>(base + OFF_NAMEINDEX, "Player Data Table");
-        spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
-        spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
-        spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
+        if (cl->FEATURE_SPECTATORS_ON) { //_add
+            spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
+            spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
+            spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
+        } //_add
         dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
         knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
