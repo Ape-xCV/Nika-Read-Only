@@ -16,6 +16,8 @@ constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStud
 
 // [Buttons]
 constexpr long OFF_IN_ATTACK = 0x07542d28; //[Buttons]->in_attack
+constexpr long OFF_IN_DUCK = 0x07542f18; //[Buttons]->in_duck
+constexpr long OFF_IN_JUMP = 0x07542e28; //[Buttons]->in_jump
 
 // [RecvTable.DT_BaseAnimating]
 constexpr long OFF_SKIN = 0x0d68; //[RecvTable.DT_BaseAnimating]->m_nSkin
