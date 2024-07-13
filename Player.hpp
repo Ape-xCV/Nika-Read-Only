@@ -117,7 +117,7 @@ struct Player {
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
-        timeLocalOrigin = lp->worldtime; //_add
+        timeLocalOrigin = lp->worldTime; //_add
         Vector3D localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)); //_add
         float timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4); //_add
         velocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
@@ -143,7 +143,7 @@ struct Player {
 //_        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible"); //_add
 //_        visible = isDummie() || aimedAt || lastTimeVisiblePrev < lastTimeVisible;
-        visible = aimedAt || (lastTimeVisible + 0.2) > lp->worldtime; //_add
+        visible = aimedAt || (lastTimeVisible + 0.2) > lp->worldTime; //_add
 //_        lastTimeVisiblePrev = lastTimeVisible;
 
         if (lp->isValid()) {
