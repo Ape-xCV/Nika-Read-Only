@@ -22,7 +22,7 @@ struct LocalPlayer {
     long weaponHandle;
     long weaponHandleMasked;
     int weaponIndex;
-//_    int frameCount; 
+    int frameCount; 
     int grenadeID;
 //_    int ammoInClip;
     int teamNumber;
@@ -30,10 +30,10 @@ struct LocalPlayer {
     int currentHealth;
     float WeaponProjectileSpeed;
     float WeaponProjectileScale;
-    float worldtime;
-//_    float traversalStartTime;
-//_    float traversalProgress;
-//_    float traversalReleaseTime;
+    float worldTime;
+    float traversalStartTime;
+    float traversalProgress;
+    float traversalReleaseTime;
 //_    float onWall;
 
     void reset() {
@@ -54,11 +54,11 @@ struct LocalPlayer {
 //_        highlightSettingsPtr = mem::Read<long>( OFF_REGION + OFF_GLOW_HIGHLIGHTS, "LocalPlayer HiglightsSettingPtr");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
 
-//_        frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
-        worldtime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
-//_        traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
-//_        traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress"); 
-//_        traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime"); 
+        frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
+        worldTime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
+        traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
+        traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress"); 
+        traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime"); 
 //_        onWall = mem::Read<float>(base + OFFSET_WALL_RUN_START_TIME, "LocalPlayer wallRunStartTime");
 
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "LocalPlayer currentHealth");
@@ -92,9 +92,9 @@ struct LocalPlayer {
         if (knocked) return false;
         return true;
     }
-    void setYaw(float angle)
-    {
-        long ptrLong = base + OFF_VIEW_ANGLES + sizeof(float);
-        mem::Write<float>(ptrLong, angle);
-    }
+//_    void setYaw(float angle)
+//_    {
+//_        long ptrLong = base + OFF_VIEW_ANGLES + sizeof(float);
+//_        mem::Write<float>(ptrLong, angle);
+//_    }
 };
