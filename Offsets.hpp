@@ -34,6 +34,11 @@ constexpr long OFF_SQUAD_ID = 0x0344; //[RecvTable.DT_BaseEntity]->m_squadID
 constexpr long OFF_NAME = 0x0481; //[RecvTable.DT_BaseEntity]->m_iName
 constexpr long OFF_NAMEINDEX = 0x38; //[RecvTable.DT_BaseEntity]
 
+// [RecvTable.DT_LocalPlayerExclusive]
+constexpr long OFFSET_TRAVERSAL_PROGRESS = 0x2b7c; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalProgress
+constexpr long OFFSET_TRAVERSAL_START_TIME = 0x2b80; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalStartTime
+constexpr long OFFSET_TRAVERSAL_RELEASE_TIME = 0x2b88; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalReleaseTime
+
 // [RecvTable.DT_Player]
 constexpr long OFF_CURRENT_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
