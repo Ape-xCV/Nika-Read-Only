@@ -14,30 +14,44 @@ public:
         XTestFakeButtonEvent(display, Button1, False, 0);
         XFlush(display);
     }
-    void mouseClick(int button)
-    {
-        XEvent event;
-        memset(&event, 0x00, sizeof(event));
-        event.type = ButtonPress;
-        event.xbutton.button = button;
-        event.xbutton.same_screen = True;
-        XQueryPointer(display, RootWindow(display, DefaultScreen(display)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
-        event.xbutton.subwindow = event.xbutton.window;
-        while (event.xbutton.subwindow)
-        {
-            event.xbutton.window = event.xbutton.subwindow;
-            XQueryPointer(display, event.xbutton.window, &event.xbutton.root, &event.xbutton.subwindow, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
-        }
-        if (XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
-            fprintf(stderr, "Error\n");
-        XFlush(display);
-        usleep(100000);
-        event.type = ButtonRelease;
-        event.xbutton.state = 0x100;
-        if (XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
-            fprintf(stderr, "Error\n");
+//_begin
+    void kbPress(std::string XK_keyName) {
+        KeySym ksKeyCode = XStringToKeysym(trimXKPrefix(XK_keyName).c_str());
+        unsigned int uKeyCode = XKeysymToKeycode(display, ksKeyCode);
+        XTestFakeKeyEvent(display, uKeyCode, True, 0);
         XFlush(display);
     }
+    void kbRelease(std::string XK_keyName) {
+        KeySym ksKeyCode = XStringToKeysym(trimXKPrefix(XK_keyName).c_str());
+        unsigned int uKeyCode = XKeysymToKeycode(display, ksKeyCode);
+        XTestFakeKeyEvent(display, uKeyCode, False, 0);
+        XFlush(display);
+    }
+//_end
+//_    void mouseClick(int button)
+//_    {
+//_        XEvent event;
+//_        memset(&event, 0x00, sizeof(event));
+//_        event.type = ButtonPress;
+//_        event.xbutton.button = button;
+//_        event.xbutton.same_screen = True;
+//_        XQueryPointer(display, RootWindow(display, DefaultScreen(display)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+//_        event.xbutton.subwindow = event.xbutton.window;
+//_        while (event.xbutton.subwindow)
+//_        {
+//_            event.xbutton.window = event.xbutton.subwindow;
+//_            XQueryPointer(display, event.xbutton.window, &event.xbutton.root, &event.xbutton.subwindow, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+//_        }
+//_        if (XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
+//_            fprintf(stderr, "Error\n");
+//_        XFlush(display);
+//_        usleep(100000);
+//_        event.type = ButtonRelease;
+//_        event.xbutton.state = 0x100;
+//_        if (XSendEvent(display, PointerWindow, True, 0xfff, &event) == 0)
+//_            fprintf(stderr, "Error\n");
+//_        XFlush(display);
+//_    }
     void moveMouseRelative(int pitchMovement, int yawMovement) {
         XTestFakeRelativeMotionEvent(display, yawMovement, pitchMovement, CurrentTime);
         XFlush(display);
