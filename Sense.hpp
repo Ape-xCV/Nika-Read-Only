@@ -23,7 +23,7 @@ struct Sense {
     }
 
 //_begin
-    void RenderStatus(double averageProcessingTime, bool leftLock, bool rightLock, bool autoFire, int boneID) {
+    void RenderStatus(double averageProcessingTime, double averageFPS, bool leftLock, bool rightLock, bool autoFire, int boneID) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
@@ -55,7 +55,9 @@ struct Sense {
         ImGui::SameLine();
         ImGui::Text("interval: ");
         ImGui::SameLine();
-        ImGui::TextColored(processingTimeColor, "%.2fms", averageProcessingTime);
+        ImGui::TextColored(processingTimeColor, "%.2fms ", averageProcessingTime);
+        ImGui::SameLine();
+        ImGui::Text("fps: %.2f", averageFPS);
         ImGui::End();
     }
 
