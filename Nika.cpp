@@ -139,11 +139,11 @@ void RenderUI() {
                  ImGuiWindowFlags_NoInputs);
     Canvas = ImGui::GetWindowDrawList();
     if (readError) {
-        sense->RenderStatus(0.0, leftLock, rightLock, autoFire, boneID);
+        sense->RenderStatus(0.0, 0.0, leftLock, rightLock, autoFire, boneID);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         readError = false;
     } else {
-        sense->RenderStatus(averageProcessingTime, leftLock, rightLock, autoFire, boneID);
+        sense->RenderStatus(averageProcessingTime, averageFPS, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
         if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
         if (cl->FEATURE_SPECTATORS_ON) sense->SpectatorsList(counter, TotalSpectators, Spectators);
