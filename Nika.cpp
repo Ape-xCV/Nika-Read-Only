@@ -301,7 +301,7 @@ int main(int argc, char* argv[]) { //_add
                 averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0) / processingTimes.size(); //_add
                 if (frameCountPrev != 0) { //_add
                     frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev); //_add
-                    frameCountTimes.push_back(processingTime); //_add
+                    frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime)); //_add
                 } //_add
                 if (frameCountDiffs.size() > 10) //_add
                     frameCountDiffs.erase(frameCountDiffs.begin()); //_add
