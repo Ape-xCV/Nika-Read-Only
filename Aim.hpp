@@ -100,16 +100,16 @@ struct Aim {
         TotalSmooth /= (1 + interval * 0.5f); //_add
         if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
 
-        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
-        double nrPitchIncrement = punchAnglesDiff.x;
-        double nrYawIncrement = -punchAnglesDiff.y;
+//_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
+//_        double nrPitchIncrement = punchAnglesDiff.x;
+//_        double nrYawIncrement = -punchAnglesDiff.y;
 
         Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
         double aimPitchIncrement = aimbotDelta.x;
         double aimYawIncrement = -aimbotDelta.y;
 
-        double totalPitchIncrement = aimPitchIncrement + nrPitchIncrement;
-        double totalYawIncrement = aimYawIncrement + nrYawIncrement;
+        double totalPitchIncrement = aimPitchIncrement; //_+ nrPitchIncrement;
+        double totalYawIncrement = aimYawIncrement; //_+ nrYawIncrement;
 
         int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
         int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
