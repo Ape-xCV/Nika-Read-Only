@@ -146,7 +146,7 @@ void RenderUI() {
         sense->RenderStatus(averageProcessingTime, averageFPS, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
         if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
-        if (cl->FEATURE_SPECTATORS_ON) sense->SpectatorsList(counter, TotalSpectators, Spectators);
+        if (cl->FEATURE_SPECTATORS_ON) sense->RenderSpectators(counter, TotalSpectators, Spectators);
     }
     ImGui::End();
 }
@@ -195,6 +195,8 @@ int main(int argc, char* argv[]) { //_add
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
                     readError = false; //_add
                 } //_add
+            if (display->keyDown("XK_Home")) //_add
+                return -1; //_add
             if (display->keyDown("XK_Left")) { //_add
                 leftLock = !leftLock; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
