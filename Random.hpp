@@ -6,63 +6,64 @@ struct Random
     Level* map;
     LocalPlayer* lp;
     std::vector<Player*>* players;
-    int tmpSpectator = 0;
+//_    int tmpSpectator = 0;
 
-    Random(ConfigLoader* configLoada, MyDisplay* myDisplay, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players){
+    Random(ConfigLoader* configLoada, MyDisplay* myDisplay, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
         cl = configLoada;
         display = myDisplay;
         map = level;
         lp = localPlayer;
         players = all_players;
     }
-    
 
-    void superGlide()
-    {
-        if(cl->FEATURE_SUPER_GLIDE_ON){
-            static int sgState = 0;
-            static int sgFrameTime = 0;
+    void superGlide(double averageFPS) {
+        if(cl->FEATURE_SUPER_GLIDE_ON) {
+//_            static int sgState = 0;
+//_            static int sgFrameTime = 0;
 
             float traversalStartTime = lp->traversalStartTime;
-
             float traversalProgress = lp->traversalProgress;
-
             float traversalReleaseTime = lp->traversalReleaseTime;
 
             float time = lp->worldtime;
             float hangOnWall = time - traversalStartTime;
 
-            switch (sgState){
-            case 0:
-                if (traversalProgress > 0.88f && hangOnWall > 0.0f && hangOnWall < 1.5f && traversalReleaseTime == 0.0f)
-                {
-                    mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 5);
-                    sgState = 1;
-                    sgFrameTime = lp->frameCount;
-                }
-                else if (hangOnWall > 0.1f && hangOnWall < 0.12f && traversalProgress < 0.85f) {
-                    mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 4);
-                }
-                break;
-            case 1:
-                if(sgFrameTime + 1 <= lp->frameCount)
-                {
-                    mem::Write<int>(OFF_REGION + OFF_IN_DUCK + 0x8, 5);
-                    sgState = 2;
-                    sgFrameTime = lp->frameCount;
-                }
-                break;
-            case 2:
-                if (time - traversalReleaseTime > 0.1f && sgFrameTime + 1 <= lp->frameCount)
-                {
-                    mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 4);
-                    mem::Write<int>(OFF_REGION + OFF_IN_DUCK + 0x8, 4);
-                    sgState = 0;
-                }
-                break;
-            }
+            if (traversalProgress > 0.85f && traversalReleaseTime == 0.0f && hangOnWall < 1.5f) { //_add
+                display->kbPress("XK_space"); //_add
+                std::this_thread::sleep_for(str::chrono::milliseconds( int(1/averageFPS*1000) )); //_add
+                display->kbPress("XK_c"); //_add
+                std::this_thread::sleep_for(str::chrono::milliseconds( int(2/averageFPS*1000) )); //_add
+                display->kbRelease("XK_space"); //_add
+                display->kbRelease("XK_c"); //_add
+            } //_add
+//_            switch (sgState) {
+//_                case 0:
+//_                    if (traversalProgress > 0.88f && hangOnWall > 0.0f && hangOnWall < 1.5f && traversalReleaseTime == 0.0f) {
+//_                        mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 5);
+//_                        sgState = 1;
+//_                        sgFrameTime = lp->frameCount;
+//_                    } else if (hangOnWall > 0.1f && hangOnWall < 0.12f && traversalProgress < 0.85f) {
+//_                        mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 4);
+//_                    }
+//_                    break;
+//_                case 1:
+//_                    if(sgFrameTime + 1 <= lp->frameCount) {
+//_                        mem::Write<int>(OFF_REGION + OFF_IN_DUCK + 0x8, 5);
+//_                        sgState = 2;
+//_                        sgFrameTime = lp->frameCount;
+//_                    }
+//_                    break;
+//_                case 2:
+//_                    if (time - traversalReleaseTime > 0.1f && sgFrameTime + 1 <= lp->frameCount) {
+//_                        mem::Write<int>(OFF_REGION + OFF_IN_JUMP + 0x8, 4);
+//_                        mem::Write<int>(OFF_REGION + OFF_IN_DUCK + 0x8, 4);
+//_                        sgState = 0;
+//_                    }
+//_                    break;
+//_            }
         }
     }
+/* //_add
     void quickTurn()
     {
         Vector2D localYawtoClamp = lp->viewAngles;
@@ -216,4 +217,5 @@ struct Random
         skinChanger();
         spectatorView();
     }
+/* //_add
 };
