@@ -25,14 +25,14 @@ struct Random
             float traversalProgress = lp->traversalProgress;
             float traversalReleaseTime = lp->traversalReleaseTime;
 
-            float time = lp->worldtime;
+            float time = lp->worldTime;
             float hangOnWall = time - traversalStartTime;
 
             if (traversalProgress > 0.85f && traversalReleaseTime == 0.0f && hangOnWall < 1.5f) { //_add
                 display->kbPress("XK_space"); //_add
-                std::this_thread::sleep_for(str::chrono::milliseconds( int(1/averageFPS*1000) )); //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds( int(1/averageFPS*1000) )); //_add
                 display->kbPress("XK_c"); //_add
-                std::this_thread::sleep_for(str::chrono::milliseconds( int(2/averageFPS*1000) )); //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds( int(2/averageFPS*1000) )); //_add
                 display->kbRelease("XK_space"); //_add
                 display->kbRelease("XK_c"); //_add
             } //_add
@@ -217,5 +217,5 @@ struct Random
         skinChanger();
         spectatorView();
     }
-/* //_add
+*/ //_add
 };
