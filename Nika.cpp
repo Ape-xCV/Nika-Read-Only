@@ -112,6 +112,10 @@ int counter;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
+int frameCountPrev;
+std::vector<int> frameCountDiffs;
+std::vector<int> frameCountTimes;
+double averageFPS;
 bool readError = true;
 bool leftLock = true;
 bool rightLock = false;
@@ -169,7 +173,7 @@ int main(int argc, char* argv[]) { //_add
     NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
     TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
-//_    Random* random = new Random(cl, display, map, localPlayer, players);
+    Random* random = new Random(cl, display, map, localPlayer, players);
 //_    Aim* aim = new Aim(cl, display, localPlayer, players);
     Aim* aim = new Aim(cl, display, localPlayer, players, GameCamera);
 
@@ -252,6 +256,7 @@ int main(int argc, char* argv[]) { //_add
 //_            aim->update(counter);
             aim->update(counter, averageProcessingTime, leftLock, rightLock, boneID); //_add
 //_            random->runAll(counter);
+            random->superGlide(averageFPS); //_add
             if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
 
 //_            int processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
@@ -294,6 +299,16 @@ int main(int argc, char* argv[]) { //_add
                 if (processingTimes.size() > 10) //_add
                     processingTimes.erase(processingTimes.begin()); //_add
                 averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0) / processingTimes.size(); //_add
+                if (frameCountPrev != 0) { //_add
+                    frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev); //_add
+                    frameCountTimes.push_back(processingTime); //_add
+                } //_add
+                if (frameCountDiffs.size() > 10) //_add
+                    frameCountDiffs.erase(frameCountDiffs.begin()); //_add
+                if (frameCountTimes.size() > 10) //_add
+                    frameCountTimes.erase(frameCountTimes.begin()); //_add
+                averageFPS = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0) * 10; //_add
+                frameCountPrev = localPlayer->frameCount; //_add
             } //_add
             //print loop info every now and then
             if (counter % 500 == 0)
