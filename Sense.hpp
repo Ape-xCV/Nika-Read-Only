@@ -61,7 +61,7 @@ struct Sense {
         ImGui::End();
     }
 
-    void SpectatorsList(int counter, int TotalSpectators, std::vector<std::string> Spectators) {
+    void RenderSpectators(int counter, int TotalSpectators, std::vector<std::string> Spectators) {
         ImVec2 Center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.3f);
