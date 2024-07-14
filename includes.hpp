@@ -39,7 +39,7 @@
 #include "Structs.hpp"
 //==========[FEATURES]=============
 #include "Aim.hpp"
-#include "NoRecoil.hpp"
+//_#include "NoRecoil.hpp"
 #include "Random.hpp"
 #include "Sense.hpp"
 #include "TriggerBot.hpp"
