@@ -16,11 +16,8 @@ constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStud
 
 // [Buttons]
 constexpr long OFF_IN_ATTACK = 0x07542d28; //[Buttons]->in_attack
-constexpr long OFF_IN_DUCK = 0x07542f18; //[Buttons]->in_duck
-constexpr long OFF_IN_JUMP = 0x07542e28; //[Buttons]->in_jump
 
 // [RecvTable.DT_BaseAnimating]
-constexpr long OFF_SKIN = 0x0d68; //[RecvTable.DT_BaseAnimating]->m_nSkin
 constexpr long OFF_BONES = 0x0db0 + 0x48; //[RecvTable.DT_BaseAnimating]->m_nForceBone + 0x48
 
 // [RecvTable.DT_BaseCombatCharacter]
@@ -45,23 +42,17 @@ constexpr long OFFSET_TRAVERSAL_RELEASE_TIME = 0x2b88; //[RecvTable.DT_LocalPlay
 constexpr long OFF_CURRENT_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
 constexpr long OFF_BLEEDOUT_STATE = 0x2770; //[RecvTable.DT_Player]->m_bleedoutState
-constexpr long OFF_XPLEVEL = 0x3734; //[RecvTable.DT_Player]->m_xp
 
 // [RecvTable.DT_WeaponX]
 constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 
 // [DataMap.C_BaseEntity]
-constexpr long OFF_MODELNAME = 0x0030; //[DataMap.C_BaseEntity]->m_ModelName
 constexpr long OFF_LOCAL_ORIGIN = 0x017c; //[DataMap.C_BaseEntity]->m_vecAbsOrigin
-
-// [DataMap.C_BaseEntity]
-constexpr long OFF_ABSVELOCITY = 0x0170; //[DataMap.C_BaseEntity]->m_vecAbsVelocity
 
 // [DataMap.C_Player]
 constexpr long OFF_ZOOMING = 0x1be1; //[DataMap.C_Player]->m_bZooming
 constexpr long OFFSET_TIME_BASE = 0x2098; //[DataMap.C_Player]->m_currentFramePlayer.timeBase
 constexpr long OFF_YAW = 0x224c - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8
-constexpr long OFF_PUNCH_ANGLES = 0x2448; //[DataMap.C_Player]->m_currentFrameLocalPlayer.m_vecPunchWeapon_Angle
 constexpr long OFF_VIEW_ANGLES = 0x2544 - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14
 
 // [ConVars]
