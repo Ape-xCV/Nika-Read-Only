@@ -11,9 +11,9 @@ struct LocalPlayer {
     Vector3D localOrigin;
     Vector3D CameraPosition;
     Vector2D viewAngles;
-    Vector2D punchAngles;
-    Vector2D punchAnglesPrev;
-    Vector2D punchAnglesDiff;
+//_    Vector2D punchAngles;
+//_    Vector2D punchAnglesPrev;
+//_    Vector2D punchAnglesDiff;
 //_    long actWeaponID;
 //_    long currentWeapon;
 //_    long actWeaponIDMasked;
@@ -64,9 +64,9 @@ struct LocalPlayer {
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "LocalPlayer currentHealth");
         CameraPosition = mem::Read<Vector3D>(base + OFF_CAMERAORIGIN, "LocalPlayer CameraPosition");
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "LocalPlayer viewAngles");
-        punchAngles = mem::Read<Vector2D>(base + OFF_PUNCH_ANGLES, "LocalPlayer punchAngles");
-        punchAnglesDiff = punchAnglesPrev.Subtract(punchAngles);
-        punchAnglesPrev = punchAngles;
+//_        punchAngles = mem::Read<Vector2D>(base + OFF_PUNCH_ANGLES, "LocalPlayer punchAngles");
+//_        punchAnglesDiff = punchAnglesPrev.Subtract(punchAngles);
+//_        punchAnglesPrev = punchAngles;
         if (!dead && !knocked && map->playable) {
             grenadeID = mem::Read<int>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeID");
             grippingGrenade = grenadeID == -251 ? true : false;
