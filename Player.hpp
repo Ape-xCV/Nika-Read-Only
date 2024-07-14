@@ -63,43 +63,43 @@ struct Player {
         std::string playerName = mem::ReadString(nameOffset, 64, "Player playerName");
         return playerName;
     }
-    std::string getPlayerModelName(){
-        uintptr_t modelOffset = mem::Read<uintptr_t>(base + OFF_MODELNAME, "Player OFF_MODELNAME");
-        std::string modelName = mem::ReadString(modelOffset, 1024, "Player modelName");
-        // Check for different player names
-        if (modelName.find("dummie") != std::string::npos) modelName = "DUMMIE";
-        else if (modelName.find("alter") != std::string::npos) modelName = "ALTER";
-        else if (modelName.find("ash") != std::string::npos) modelName = "ASH";
-        else if (modelName.find("ballistic") != std::string::npos) modelName = "BALLISTIC";
-        else if (modelName.find("bangalore") != std::string::npos) modelName = "BANGALORE";
-        else if (modelName.find("bloodhound") != std::string::npos) modelName = "BLOODHOUND";
-        else if (modelName.find("catalyst") != std::string::npos) modelName = "CATALYST";
-        else if (modelName.find("caustic") != std::string::npos) modelName = "CAUSTIC";
-        else if (modelName.find("conduit") != std::string::npos) modelName = "CONDUIT";
-        else if (modelName.find("crypto") != std::string::npos) modelName = "CRYPTO";
-        else if (modelName.find("fuse") != std::string::npos) modelName = "FUSE";
-        else if (modelName.find("gibraltar") != std::string::npos) modelName = "GIBRALTAR";
-        else if (modelName.find("horizon") != std::string::npos) modelName = "HORIZON";
-        else if (modelName.find("nova") != std::string::npos) modelName = "HORIZON";
-        else if (modelName.find("holo") != std::string::npos) modelName = "MIRAGE";
-        else if (modelName.find("mirage") != std::string::npos) modelName = "MIRAGE";
-        else if (modelName.find("lifeline") != std::string::npos) modelName = "LIFELINE";
-        else if (modelName.find("loba") != std::string::npos) modelName = "LOBA";
-        else if (modelName.find("madmaggie") != std::string::npos) modelName = "MADMAGGIE";
-        else if (modelName.find("newcastle") != std::string::npos) modelName = "NEWCASTLE";
-        else if (modelName.find("octane") != std::string::npos) modelName = "OCTANE";
-        else if (modelName.find("pathfinder") != std::string::npos) modelName = "PATHFINDER";
-        else if (modelName.find("rampart") != std::string::npos) modelName = "RAMPART";
-        else if (modelName.find("revenant") != std::string::npos) modelName = "REVENANT";
-        else if (modelName.find("seer") != std::string::npos) modelName = "SEER";
-        else if (modelName.find("stim") != std::string::npos) modelName = "OCTANE";
-        else if (modelName.find("valkyrie") != std::string::npos) modelName = "VALKYRIE";
-        else if (modelName.find("vantage") != std::string::npos) modelName = "VANTAGE";
-        else if (modelName.find("wattson") != std::string::npos) modelName = "WATTSON";
-        else if (modelName.find("wraith") != std::string::npos) modelName = "WRAITH";
-
-        return modelName;
-    }
+//_    std::string getPlayerModelName(){
+//_        uintptr_t modelOffset = mem::Read<uintptr_t>(base + OFF_MODELNAME, "Player OFF_MODELNAME");
+//_        std::string modelName = mem::ReadString(modelOffset, 1024, "Player modelName");
+//_        // Check for different player names
+//_        if (modelName.find("dummie") != std::string::npos) modelName = "DUMMIE";
+//_        else if (modelName.find("alter") != std::string::npos) modelName = "ALTER";
+//_        else if (modelName.find("ash") != std::string::npos) modelName = "ASH";
+//_        else if (modelName.find("ballistic") != std::string::npos) modelName = "BALLISTIC";
+//_        else if (modelName.find("bangalore") != std::string::npos) modelName = "BANGALORE";
+//_        else if (modelName.find("bloodhound") != std::string::npos) modelName = "BLOODHOUND";
+//_        else if (modelName.find("catalyst") != std::string::npos) modelName = "CATALYST";
+//_        else if (modelName.find("caustic") != std::string::npos) modelName = "CAUSTIC";
+//_        else if (modelName.find("conduit") != std::string::npos) modelName = "CONDUIT";
+//_        else if (modelName.find("crypto") != std::string::npos) modelName = "CRYPTO";
+//_        else if (modelName.find("fuse") != std::string::npos) modelName = "FUSE";
+//_        else if (modelName.find("gibraltar") != std::string::npos) modelName = "GIBRALTAR";
+//_        else if (modelName.find("horizon") != std::string::npos) modelName = "HORIZON";
+//_        else if (modelName.find("nova") != std::string::npos) modelName = "HORIZON";
+//_        else if (modelName.find("holo") != std::string::npos) modelName = "MIRAGE";
+//_        else if (modelName.find("mirage") != std::string::npos) modelName = "MIRAGE";
+//_        else if (modelName.find("lifeline") != std::string::npos) modelName = "LIFELINE";
+//_        else if (modelName.find("loba") != std::string::npos) modelName = "LOBA";
+//_        else if (modelName.find("madmaggie") != std::string::npos) modelName = "MADMAGGIE";
+//_        else if (modelName.find("newcastle") != std::string::npos) modelName = "NEWCASTLE";
+//_        else if (modelName.find("octane") != std::string::npos) modelName = "OCTANE";
+//_        else if (modelName.find("pathfinder") != std::string::npos) modelName = "PATHFINDER";
+//_        else if (modelName.find("rampart") != std::string::npos) modelName = "RAMPART";
+//_        else if (modelName.find("revenant") != std::string::npos) modelName = "REVENANT";
+//_        else if (modelName.find("seer") != std::string::npos) modelName = "SEER";
+//_        else if (modelName.find("stim") != std::string::npos) modelName = "OCTANE";
+//_        else if (modelName.find("valkyrie") != std::string::npos) modelName = "VALKYRIE";
+//_        else if (modelName.find("vantage") != std::string::npos) modelName = "VANTAGE";
+//_        else if (modelName.find("wattson") != std::string::npos) modelName = "WATTSON";
+//_        else if (modelName.find("wraith") != std::string::npos) modelName = "WRAITH";
+//_
+//_        return modelName;
+//_    }
     void readFromMemory() {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
@@ -260,31 +260,31 @@ struct Player {
 //_            return -1;
 //_        return ptrInt;
     }
-    int GetPlayerLevel()
-    {
-        int m_xp = mem::Read<int>(base + OFF_XPLEVEL, "Player XP_Level");
-        if (m_xp < 0) return 0;
-        if (m_xp < 100) return 1;
-
-        int levels[] = { 2750, 6650, 11400, 17000, 23350, 30450, 38300, 46450, 55050,
-        64100, 73600, 83550, 93950, 104800, 116100, 127850, 140050, 152400, 164900,
-        177550, 190350, 203300, 216400, 229650, 243050, 256600, 270300, 284150, 298150,
-        312300, 326600, 341050, 355650, 370400, 385300, 400350, 415550, 430900, 446400,
-        462050, 477850, 493800, 509900, 526150, 542550, 559100, 575800, 592650, 609650, 626800,
-        644100, 661550, 679150, 696900, 714800 };
-
-        int level = 56;
-        int arraySize = sizeof(levels) / sizeof(levels[0]);
-
-        for (int i = 0; i < arraySize; i++)
-        {
-            if (m_xp < levels[i])
-            {
-                return i + 1;
-            }
-        }
-        return level + ((m_xp - levels[arraySize - 1] + 1) / 18000);
-    }
+//_    int GetPlayerLevel()
+//_    {
+//_        int m_xp = mem::Read<int>(base + OFF_XPLEVEL, "Player XP_Level");
+//_        if (m_xp < 0) return 0;
+//_        if (m_xp < 100) return 1;
+//_
+//_        int levels[] = { 2750, 6650, 11400, 17000, 23350, 30450, 38300, 46450, 55050,
+//_        64100, 73600, 83550, 93950, 104800, 116100, 127850, 140050, 152400, 164900,
+//_        177550, 190350, 203300, 216400, 229650, 243050, 256600, 270300, 284150, 298150,
+//_        312300, 326600, 341050, 355650, 370400, 385300, 400350, 415550, 430900, 446400,
+//_        462050, 477850, 493800, 509900, 526150, 542550, 559100, 575800, 592650, 609650, 626800,
+//_        644100, 661550, 679150, 696900, 714800 };
+//_
+//_        int level = 56;
+//_        int arraySize = sizeof(levels) / sizeof(levels[0]);
+//_
+//_        for (int i = 0; i < arraySize; i++)
+//_        {
+//_            if (m_xp < levels[i])
+//_            {
+//_                return i + 1;
+//_            }
+//_        }
+//_        return level + ((m_xp - levels[arraySize - 1] + 1) / 18000);
+//_    }
     int getBoneFromHitbox(HitboxType HitBox) const {
         long ModelPointer = mem::Read<long>(base + OFF_STUDIOHDR, "Player ModelPointer");
         if (!mem::IsValidPointer(ModelPointer))
