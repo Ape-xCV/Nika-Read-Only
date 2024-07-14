@@ -166,16 +166,19 @@ int main(int argc, char* argv[]) { //_add
 //_    std::vector<Player*>* players = new std::vector<Player*>;
 
     //fill in slots for players, dummies and items
-    for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(cl, i, localPlayer));
-    for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer));
+//_    for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(cl, i, localPlayer));
+//_    for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer));
+    for (int i = 0; i < 70; i++) humanPlayers->push_back(new Player(cl, i, localPlayer)); //_add
+    for (int i = 0; i < 10000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer)); //_add
+    std::cout << "Core Initialized!" << std::endl; //_add
 
     //create features
-    NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
+//_    NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
     TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
-    Random* random = new Random(cl, display, map, localPlayer, players);
 //_    Aim* aim = new Aim(cl, display, localPlayer, players);
     Aim* aim = new Aim(cl, display, localPlayer, players, GameCamera);
+    Random* random = new Random(cl, display, map, localPlayer, players);
 
 //_    int counter = 0;
     counter = 1; //_add
@@ -249,7 +252,7 @@ int main(int argc, char* argv[]) { //_add
                     if (p->isValid()) players->push_back(p);
                 }
 
-            noRecoil->controlWeapon();
+//_            noRecoil->controlWeapon();
 //_            triggerBot->shootAtEnemy(counter);
             triggerBot->shootAtEnemy(counter, autoFire);
             GameCamera->Update(); //_add
