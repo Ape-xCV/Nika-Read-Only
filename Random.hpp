@@ -30,9 +30,9 @@ struct Random
 
             if (traversalProgress > 0.85f && traversalReleaseTime == 0.0f && hangOnWall < 1.5f) { //_add
                 display->kbPress("XK_space"); //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds( int(1/averageFPS*1000) )); //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(1/averageFPS*1000))); //_add
                 display->kbPress("XK_c"); //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds( int(2/averageFPS*1000) )); //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(2/averageFPS*1000))); //_add
                 display->kbRelease("XK_space"); //_add
                 display->kbRelease("XK_c"); //_add
             } //_add
