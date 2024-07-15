@@ -26,14 +26,14 @@ struct Aim {
         this->players = all_players;
         this->GameCamera = GameCamera; //_add
     }
-//_    bool active(){
-    bool active(bool leftLock, bool rightLock){ //_add
+//_    bool active() {
+    bool active(bool leftLock, bool rightLock) { //_add
         bool aimbotIsOn = cl->FEATURE_AIMBOT_ON;
         bool combatReady = lp->isCombatReady();
         bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
         //bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && display->isLeftMouseButtonDown(); //_add
         bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
-        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE" ) && display->keyDown(cl->AIMBOT_ACTIVATION_KEY);
+        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY);
         bool active = aimbotIsOn
             && combatReady
             && (activatedByAttack
