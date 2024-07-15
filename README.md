@@ -23,7 +23,7 @@
 * [x] Spectators list (overlay or CLI based)
 * [x] **Smooth** dynamically adjusts with performance; Firing Range settings will now act the same during matches
 * [x] Added _AIMBOT_ZOOMED_MAX_MOVE_ / _AIMBOT_HIPFIRE_MAX_MOVE_ / _AIMBOT_MAX_DELTA_ to limit mouse speed
-* [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
+* [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire, or to **super glide**
 * [x] Partially disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Quickly enable/disable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
