@@ -17,7 +17,7 @@ struct Random
     }
 
     void superGlide(double averageFPS) {
-        if(cl->FEATURE_SUPER_GLIDE_ON) {
+        if (cl->FEATURE_SUPER_GLIDE_ON || (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY)) {
 //_            static int sgState = 0;
 //_            static int sgFrameTime = 0;
 
