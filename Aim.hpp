@@ -78,7 +78,7 @@ struct Aim {
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
         double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
 //_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
-        if ((cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && !display->keyDown(cl->AIMBOT_ACTIVATION_KEY) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
+        if (!(cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY)) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
             return;
         }
