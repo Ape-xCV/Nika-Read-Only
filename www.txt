@@ -61,7 +61,6 @@ www.ovhcloud.com
 www.paypal.com
 www.plesk.com
 www.quora.com
-www.reuters.com
 www.rt.com
 www.rtve.es
 www.sapo.pt
