@@ -77,7 +77,8 @@ struct Aim {
 
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
         double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
-        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
+//_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
+        if ((cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && !display->keyDown(cl->AIMBOT_ACTIVATION_KEY) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
             return;
         }
@@ -98,7 +99,11 @@ struct Aim {
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         TotalSmooth /= (1 + interval * 0.5f); //_add
-        if (!leftLock) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
+        float bulletSpeed = lp->WeaponProjectileSpeed; //_add
+        if (!leftLock) { //_add
+            TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
+            bulletSpeed -= bulletSpeed * 0.1f * cl->AIMBOT_WEAKEN; //_add
+        } //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
 //_        double nrPitchIncrement = punchAnglesDiff.x;
@@ -121,7 +126,7 @@ struct Aim {
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileScale > 1.0f)
                 TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f)
-                TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, lp->WeaponProjectileSpeed);
+                TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
             Vector2D ScreenSize = GameCamera->GetResolution();
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
