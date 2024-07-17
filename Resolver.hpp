@@ -23,7 +23,8 @@ struct Resolver {
 
     static float GetBasicBulletDrop(Vector3D startPosition, Vector3D endPosition, float bulletSpeed, float bulletDropRate) {
         float time = GetTimeToTarget(startPosition, endPosition, bulletSpeed);
-        bulletDropRate *= 750.0f;
+//_        bulletDropRate *= 750.0f;
+        bulletDropRate *= 700.0f; //_add
         return 0.5f * bulletDropRate * time * time; // d = 1/2(at^2)+vt
     }
 
