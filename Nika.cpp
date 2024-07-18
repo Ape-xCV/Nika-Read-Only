@@ -129,14 +129,14 @@ void RenderUI() {
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("##Overlay", nullptr,
-                 ImGuiSliderFlags_AlwaysClamp |
-                 ImGuiWindowFlags_NoTitleBar |
-                 ImGuiWindowFlags_NoResize |
-                 ImGuiWindowFlags_NoMove |
-                 ImGuiWindowFlags_NoScrollbar |
-                 ImGuiWindowFlags_NoBackground |
-                 ImGuiWindowFlags_NoSavedSettings |
-                 ImGuiWindowFlags_NoInputs);
+        ImGuiSliderFlags_AlwaysClamp |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoInputs);
     Canvas = ImGui::GetWindowDrawList();
     if (readError) {
         sense->RenderStatus(0.0, 0.0, leftLock, rightLock, autoFire, boneID);
