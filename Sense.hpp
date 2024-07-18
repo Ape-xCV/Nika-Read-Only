@@ -27,13 +27,13 @@ struct Sense {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_AlwaysAutoResize |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoInputs);
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs);
         const ImGuiStyle& style = ImGui::GetStyle();
 
         const ImVec4 leftLockColor = leftLock ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
@@ -66,13 +66,13 @@ struct Sense {
         ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.3f);
         ImGui::Begin("Spectators", nullptr,
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_AlwaysAutoResize |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoInputs);
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs);
 
         ImGui::Text("Spectators: ");
         ImGui::SameLine(); ImGui::TextColored(TotalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", TotalSpectators);
@@ -251,15 +251,15 @@ struct Sense {
         // 2560*1440: 335 x 335
         ImGui::SetNextWindowSize({ cl->FEATURE_MAP_RADAR_X, cl->FEATURE_MAP_RADAR_Y });
         ImGui::Begin("Radar", nullptr,
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoBackground |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoInputs);
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoBringToFrontOnFocus |
+            ImGuiWindowFlags_NoInputs);
 
         ImVec2 drawPos = ImGui::GetCursorScreenPos();
         ImVec2 drawSize = ImGui::GetContentRegionAvail();
