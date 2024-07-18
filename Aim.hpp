@@ -105,11 +105,11 @@ struct Aim {
             bulletSpeed -= bulletSpeed * 0.1f * cl->AIMBOT_WEAKEN; //_add
         } //_add
 
-//_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Divide(cl->AIMBOT_SMOOTH).Multiply(cl->AIMBOT_SPEED);
+//_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Multiply(cl->AIMBOT_SPEED).Divide(cl->AIMBOT_SMOOTH);
 //_        double nrPitchIncrement = punchAnglesDiff.x;
 //_        double nrYawIncrement = -punchAnglesDiff.y;
 
-        Vector2D aimbotDelta = DesiredAnglesIncrement.Divide(TotalSmooth).Multiply(cl->AIMBOT_SPEED);
+        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(TotalSmooth);
         double aimPitchIncrement = aimbotDelta.x;
         double aimYawIncrement = -aimbotDelta.y;
 
