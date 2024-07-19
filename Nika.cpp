@@ -242,14 +242,14 @@ int main(int argc, char* argv[]) { //_add
                     Player* p = dummyPlayers->at(i);
                     p->readFromMemory();
 //_                    if (p->isValid()) players->push_back(p);
-                    if (p->isValid() && p->currentHealth > 0) players->push_back(p); //_add
+                    if (p->isValid() && (cl->FEATURE_SENSE_SHOW_DEAD || p->currentHealth > 0)) players->push_back(p); //_add
                 }
             else
                 for (int i = 0; i < humanPlayers->size(); i++) {
                     Player* p = humanPlayers->at(i);
                     p->readFromMemory();
-                    
-                    if (p->isValid()) players->push_back(p);
+//_                    if (p->isValid()) players->push_back(p);
+                    if (p->isValid() && (cl->FEATURE_SENSE_SHOW_DEAD || p->currentHealth > 0)) players->push_back(p); //_add
                 }
 
 //_            noRecoil->controlWeapon();
