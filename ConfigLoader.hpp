@@ -13,6 +13,7 @@ struct ConfigLoader {
 //_    bool FEATURE_NORECOIL_ON = false;
     bool FEATURE_TRIGGERBOT_ON = true;
     bool FEATURE_SENSE_ON = false;
+    bool FEATURE_SENSE_SHOW_DEAD = false; //_add
     bool FEATURE_ITEM_GLOW_ON = false;
     bool FEATURE_SPECTATORS_ON = true;
     bool FEATURE_SPECTATORS_SHOW_DEAD = false; //_add
@@ -70,6 +71,7 @@ struct ConfigLoader {
 //_        FEATURE_NORECOIL_ON = (key.compare("FEATURE_NORECOIL_ON") != 0) ? FEATURE_NORECOIL_ON : toBool(val);
         FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
 //_        FEATURE_SENSE_ON = (key.compare("FEATURE_SENSE_ON") != 0) ? FEATURE_SENSE_ON : toBool(val);
+        FEATURE_SENSE_SHOW_DEAD = (key.compare("FEATURE_SENSE_SHOW_DEAD") != 0) ? FEATURE_SENSE_SHOW_DEAD : toBool(val); //_add
 //_        FEATURE_ITEM_GLOW_ON = (key.compare("FEATURE_ITEM_GLOW_ON") != 0) ? FEATURE_ITEM_GLOW_ON : toBool(val);
         //noRecoil        
 //_        NORECOIL_PITCH_REDUCTION = (key.compare("NORECOIL_PITCH_REDUCTION") != 0) ? NORECOIL_PITCH_REDUCTION : stoi(val);
@@ -124,6 +126,7 @@ struct ConfigLoader {
 //_        printf("FEATURE_NORECOIL_ON\t\t\t\t\t%s\n", FEATURE_NORECOIL_ON ? "YES" : "NO");
         printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
 //_        printf("FEATURE_SENSE_ON\t\t\t\t\t%s\n", FEATURE_SENSE_ON ? "YES" : "NO");
+        printf("FEATURE_SENSE_SHOW_DEAD\t\t\t\t\t%s\n", FEATURE_SENSE_SHOW_DEAD ? "YES" : "NO"); //_add
 //_        printf("FEATURE_ITEM_GLOW_ON\t\t\t\t\t%s\n", FEATURE_ITEM_GLOW_ON ? "YES" : "NO");
         printf("FEATURE_SPECTATORS_ON\t\t\t\t\t%s\n", FEATURE_SPECTATORS_ON ? "YES" : "NO");
         printf("FEATURE_SPECTATORS_SHOW_DEAD\t\t\t\t%s\n", FEATURE_SPECTATORS_SHOW_DEAD ? "YES" : "NO"); //_add
