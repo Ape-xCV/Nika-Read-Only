@@ -387,7 +387,7 @@ struct Player {
         Vector3D BonePosition = BoneMatrix.GetPosition();
 
         if (!BonePosition.IsValid())
-            return localOrigin.Add(Vector3D(0, 0, 0));
+            return localOrigin.Add(Vector3D(0.0f, 0.0f, 50.0f));
 
         BonePosition += localOrigin;
         return BonePosition;
