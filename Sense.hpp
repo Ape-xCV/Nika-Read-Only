@@ -12,6 +12,7 @@ struct Sense {
     Camera* GameCamera; //_add
     int TotalSpectators = 0; //_add
     std::vector<std::string> Spectators; //_add
+    Vector2D DrawPosition; //_add
 
 //_    Sense(ConfigLoader* configLoada, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players) {
     Sense(ConfigLoader* configLoada, Level* level, LocalPlayer* localPlayer, std::vector<Player*>* all_players, Camera* GameCamera) { //_add
@@ -82,6 +83,26 @@ struct Sense {
                 ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", Spectators.at(i).c_str());
         }
         ImGui::End();
+    }
+
+    void drawText(ImDrawList* Canvas, Vector2D textPosition, const char* text, ImVec4 color) {
+        int textX = textPosition.x;
+        int textY = textPosition.y;
+        char buffer[16];
+        strncpy(buffer, text, sizeof(buffer));
+        const auto textSize = ImGui::CalcTextSize(buffer);
+        const auto horizontalOffset = textSize.x / 2;
+        const auto verticalOffset = textSize.y - 20;
+        const auto textColor = ImColor(color);
+
+        glColor3f(0, 0, 0);
+        glBegin(GL_QUADS);
+        glVertex2f(textX - horizontalOffset - 3, textY + 3);
+        glVertex2f(textX + horizontalOffset + 1, textY + 3);
+        glVertex2f(textX + horizontalOffset + 1, textY + textSize.y - 1);
+        glVertex2f(textX - horizontalOffset - 3, textY + textSize.y - 1);
+        glEnd();
+        Canvas->AddText({ textPosition.x - horizontalOffset, textPosition.y - verticalOffset }, textColor, buffer);
     }
 
     void RenderESP(ImDrawList* Canvas, Overlay OverlayWindow) {
@@ -159,29 +180,41 @@ struct Sense {
 
                 // Draw Distance
                 if (bLocalOriginW2SValid && bHeadPositionW2SValid && !LocalOriginW2S.IsZeroVector()) {
-                    Vector2D distancePosition = AboveHeadW2S.Subtract(Vector2D(0, 30));
-                    int textX = distancePosition.x;
-                    int textY = distancePosition.y;
-                    const char* txtDistance = std::to_string((int)distance).c_str();
+                    DrawPosition = AboveHeadW2S.Subtract(Vector2D(0, 30));
                     const char* txtPrefix = "[";
+                    const char* txtDistance = std::to_string((int)distance).c_str();
                     const char* txtSuffix = " M]";
-                    char buffer[256];
-                    strncpy(buffer, txtPrefix, sizeof(buffer));
-                    strncat(buffer, txtDistance, sizeof(buffer));
-                    strncat(buffer, txtSuffix, sizeof(buffer));
-                    const auto textSize = ImGui::CalcTextSize(buffer);
-                    const auto horizontalOffset = textSize.x / 2;
-                    const auto verticalOffset = textSize.y - 20;
-                    const auto textColor = ImColor(EnemyDistanceColor);
+                    char distanceText[256];
+                    strncpy(distanceText, txtPrefix, sizeof(distanceText));
+                    strncat(distanceText, txtDistance, sizeof(distanceText));
+                    strncat(distanceText, txtSuffix, sizeof(distanceText));
+                    drawText(Canvas, DrawPosition, distanceText, EnemyDistanceColor);
 
-                    glColor3f(0, 0, 0);
-                    glBegin(GL_QUADS);
-                    glVertex2f(textX - horizontalOffset - 3, textY + 3);
-                    glVertex2f(textX + horizontalOffset + 1, textY + 3);
-                    glVertex2f(textX + horizontalOffset + 1, textY + textSize.y - 1);
-                    glVertex2f(textX - horizontalOffset - 3, textY + textSize.y - 1);
-                    glEnd();
-                    Canvas->AddText({ distancePosition.x - horizontalOffset, distancePosition.y - verticalOffset }, textColor, buffer);
+                    // Draw Name
+                    if (cl->SENSE_SHOW_PLAYER_NAMES) {
+                        DrawPosition = DrawPosition.Subtract(Vector2D(0, 20));
+                        const char* txtName;
+                        if (p->isPlayer())
+                            txtName = p->getPlayerName().c_str();
+                        else if (p->isDummie())
+                            txtName = "Dummie";
+                        char nameText[256];
+                        strncpy(nameText, txtName, sizeof(nameText));
+                        drawText(Canvas, DrawPosition, nameText, EnemyDistanceColor);
+                    }
+
+                    // Draw Level
+                    if (cl->SENSE_SHOW_PLAYER_LEVELS && p->isPlayer()) {
+                        DrawPosition = DrawPosition.Subtract(Vector2D(0, 20));
+                        const char* txtPrefix = "Lv ";
+                        const char* txtLevel = std::to_string(p->GetPlayerLevel()).c_str();
+                        //const char* txtSuffix = "";
+                        char buffer[256];
+                        strncpy(buffer, txtPrefix, sizeof(buffer));
+                        strncat(buffer, txtLevel, sizeof(buffer));
+                        //strncat(buffer, txtSuffix, sizeof(buffer));
+                        drawText(Canvas, DrawPosition, buffer, EnemyDistanceColor);
+                    }
                 }
 
                 // Draw Warning
