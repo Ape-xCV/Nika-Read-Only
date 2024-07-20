@@ -209,11 +209,11 @@ struct Sense {
                         const char* txtPrefix = "Lv ";
                         const char* txtLevel = std::to_string(p->GetPlayerLevel()).c_str();
                         //const char* txtSuffix = "";
-                        char buffer[256];
-                        strncpy(buffer, txtPrefix, sizeof(buffer));
-                        strncat(buffer, txtLevel, sizeof(buffer));
-                        //strncat(buffer, txtSuffix, sizeof(buffer));
-                        drawText(Canvas, DrawPosition, buffer, EnemyDistanceColor);
+                        char levelText[256];
+                        strncpy(levelText, txtPrefix, sizeof(levelText));
+                        strncat(levelText, txtLevel, sizeof(levelText));
+                        //strncat(levelText, txtSuffix, sizeof(levelText));
+                        drawText(Canvas, DrawPosition, levelText, EnemyDistanceColor);
                     }
                 }
 
