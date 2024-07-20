@@ -113,7 +113,7 @@ struct Sense {
         bool DrawVisibleWarning = false;
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
-            if (!cl->FEATURE_SENSE_SHOW_DEAD && !p->currentHealth > 0) continue;
+            if (!cl->SENSE_SHOW_DEAD && !p->currentHealth > 0) continue;
 
             Vector2D LocalOriginW2S, HeadPositionW2S, AboveHeadW2S;
             Vector3D LocalOrigin3D = p->localOrigin;
