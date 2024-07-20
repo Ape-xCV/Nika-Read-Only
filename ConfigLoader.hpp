@@ -35,6 +35,7 @@ struct ConfigLoader {
     //sense
     int SENSE_VERBOSE = 2; //_add
     int SENSE_MAX_RANGE = 250;
+    bool SENSE_SHOW_PLAYER_DISTANCES = true; //_add
     bool SENSE_SHOW_PLAYER_NAMES = true; //_add
     bool SENSE_SHOW_PLAYER_LEVELS = true; //_add
     bool SENSE_SHOW_DEAD = false; //_add
@@ -84,6 +85,7 @@ struct ConfigLoader {
         //sense
         SENSE_VERBOSE = (key.compare("SENSE_VERBOSE") != 0) ? SENSE_VERBOSE : stoi(val); //_add
         SENSE_MAX_RANGE = (key.compare("SENSE_MAX_RANGE") != 0) ? SENSE_MAX_RANGE : stoi(val);
+        SENSE_SHOW_PLAYER_DISTANCES = (key.compare("SENSE_SHOW_PLAYER_DISTANCES") != 0) ? SENSE_SHOW_PLAYER_DISTANCES : toBool(val); //_add
         SENSE_SHOW_PLAYER_NAMES = (key.compare("SENSE_SHOW_PLAYER_NAMES") != 0) ? SENSE_SHOW_PLAYER_NAMES : toBool(val); //_add
         SENSE_SHOW_PLAYER_LEVELS = (key.compare("SENSE_SHOW_PLAYER_LEVELS") != 0) ? SENSE_SHOW_PLAYER_LEVELS : toBool(val); //_add
         SENSE_SHOW_DEAD = (key.compare("SENSE_SHOW_DEAD") != 0) ? SENSE_SHOW_DEAD : toBool(val); //_add
@@ -156,6 +158,7 @@ struct ConfigLoader {
         //sense
         printf("SENSE_VERBOSE\t\t\t\t\t\t%d\n", SENSE_VERBOSE); //_add
         printf("SENSE_MAX_RANGE\t\t\t\t\t\t%d\n", SENSE_MAX_RANGE);
+        printf("SENSE_SHOW_PLAYER_DISTANCES\t\t\t\t%s\n", SENSE_SHOW_PLAYER_DISTANCES ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_PLAYER_NAMES\t\t\t\t\t%s\n", SENSE_SHOW_PLAYER_NAMES ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_PLAYER_LEVELS\t\t\t\t%s\n", SENSE_SHOW_PLAYER_LEVELS ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_DEAD\t\t\t\t\t\t%s\n", SENSE_SHOW_DEAD ? "YES" : "NO"); //_add
