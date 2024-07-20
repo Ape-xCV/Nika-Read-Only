@@ -42,6 +42,7 @@ constexpr long OFFSET_TRAVERSAL_RELEASE_TIME = 0x2b88; //[RecvTable.DT_LocalPlay
 constexpr long OFF_CURRENT_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
 constexpr long OFF_BLEEDOUT_STATE = 0x2770; //[RecvTable.DT_Player]->m_bleedoutState
+constexpr long OFF_XPLEVEL = 0x3734; //[RecvTable.DT_Player]->m_xp
 
 // [RecvTable.DT_WeaponX]
 constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
