@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) { //_add
 
             if (counter % 100 == 0) { //_add
                 if (cl->SENSE_VERBOSE > 0) { //_add
-                    if (cl->FEATURE_SPECTATORS_ON) { //_add
+                    if (cl->FEATURE_SPECTATORS_ON && !map->trainingArea) { //_add
                         int TempTotalSpectators = 0; //_add
                         std::vector<std::string> TempSpectators; //_add
                         for (int i = 0; i < players->size(); i++) { //_add
