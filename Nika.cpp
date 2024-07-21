@@ -116,7 +116,7 @@ int frameCountPrev;
 std::vector<int> frameCountDiffs;
 std::vector<int> frameCountTimes;
 double averageFPS;
-bool readError = true;
+int readError = 1000;
 bool leftLock = true;
 bool rightLock = false;
 bool autoFire = false;
@@ -138,10 +138,10 @@ void RenderUI() {
         ImGuiWindowFlags_NoSavedSettings |
         ImGuiWindowFlags_NoInputs);
     Canvas = ImGui::GetWindowDrawList();
-    if (readError) {
+    if (readError > 0) {
         sense->RenderStatus(0.0, 0.0, leftLock, rightLock, autoFire, boneID);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        readError = false;
+        std::this_thread::sleep_for(std::chrono::milliseconds(readError));
+        readError = 0;
     } else {
         sense->RenderStatus(averageProcessingTime, averageFPS, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
@@ -191,12 +191,12 @@ int main(int argc, char* argv[]) { //_add
     while (true) {
         try {
             long startTime = util::currentEpochMillis();
-            if (readError) //_add
+            if (readError > 0) //_add
                 if (cl->SENSE_VERBOSE > 1) //_add
                     OverlayWindow.Render(&RenderUI); //_add
                 else { //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //_add
-                    readError = false; //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
+                    readError = 0; //_add
                 } //_add
             if (display->keyDown("XK_Home")) //_add
                 return -1; //_add
@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) { //_add
             if (!map->playable) {
                 printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
-                readError = true; //_add
+                readError = 35000; //_add
                 continue;
             }
 
@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) { //_add
 //_            if (!localPlayer->isValid()) throw std::invalid_argument("Select Legend");
             if (!localPlayer->isValid()) { //_add
                 printf("Select Legend\n"); //_add
-                readError = true; //_add
+                readError = 1000; //_add
                 continue; //_add
             } //_add
 
@@ -325,12 +325,12 @@ int main(int argc, char* argv[]) { //_add
         catch (std::invalid_argument& e) {
             printf("[-] %s - SLEEP 5 SEC [-]\n", e.what());
 //_            std::this_thread::sleep_for(std::chrono::seconds(5));
-            readError = true; //_add
+            readError = 5000; //_add
         }
         catch (...) {
             printf("[-] UNKNOWN ERROR - SLEEP 3 SEC [-]\n");
 //_            std::this_thread::sleep_for(std::chrono::seconds(3));
-            readError = true; //_add
+            readError = 3000; //_add
         }
     }
     //DestroyOverlay(); //_add
