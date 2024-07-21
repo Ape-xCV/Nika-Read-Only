@@ -139,9 +139,7 @@ void RenderUI() {
         ImGuiWindowFlags_NoInputs);
     Canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->RenderStatus(0.0, 0.0, leftLock, rightLock, autoFire, boneID);
-        std::this_thread::sleep_for(std::chrono::milliseconds(readError));
-        readError = 0;
+        sense->RenderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneID);
     } else {
         sense->RenderStatus(averageProcessingTime, averageFPS, leftLock, rightLock, autoFire, boneID);
         sense->RenderESP(Canvas, OverlayWindow);
@@ -192,9 +190,11 @@ int main(int argc, char* argv[]) { //_add
         try {
             long startTime = util::currentEpochMillis();
             if (readError > 0) //_add
-                if (cl->SENSE_VERBOSE > 1) //_add
+                if (cl->SENSE_VERBOSE > 1) { //_add
                     OverlayWindow.Render(&RenderUI); //_add
-                else { //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
+                    readError = 0; //_add
+                } else { //_add
                     std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
                     readError = 0; //_add
                 } //_add
