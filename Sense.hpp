@@ -178,17 +178,20 @@ struct Sense {
                     glEnd();
                 }
 
-                // Draw Distance
+                DrawPosition = AboveHeadW2S.Subtract(Vector2D(0, 10));
                 if (bLocalOriginW2SValid && bHeadPositionW2SValid && !LocalOriginW2S.IsZeroVector()) {
-                    DrawPosition = AboveHeadW2S.Subtract(Vector2D(0, 30));
-                    const char* txtPrefix = "[";
-                    const char* txtDistance = std::to_string((int)distance).c_str();
-                    const char* txtSuffix = " M]";
-                    char distanceText[256];
-                    strncpy(distanceText, txtPrefix, sizeof(distanceText));
-                    strncat(distanceText, txtDistance, sizeof(distanceText));
-                    strncat(distanceText, txtSuffix, sizeof(distanceText));
-                    drawText(Canvas, DrawPosition, distanceText, EnemyDistanceColor);
+                    // Draw Distance
+                    if (cl->SENSE_SHOW_PLAYER_DISTANCES) {
+                        DrawPosition = DrawPosition.Subtract(Vector2D(0, 20));
+                        const char* txtPrefix = "[";
+                        const char* txtDistance = std::to_string((int)distance).c_str();
+                        const char* txtSuffix = " M]";
+                        char distanceText[256];
+                        strncpy(distanceText, txtPrefix, sizeof(distanceText));
+                        strncat(distanceText, txtDistance, sizeof(distanceText));
+                        strncat(distanceText, txtSuffix, sizeof(distanceText));
+                        drawText(Canvas, DrawPosition, distanceText, EnemyDistanceColor);
+                    }
 
                     // Draw Name
                     if (cl->SENSE_SHOW_PLAYER_NAMES) {
