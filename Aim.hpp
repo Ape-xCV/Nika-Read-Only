@@ -139,6 +139,10 @@ struct Aim {
         }
         int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE * static_cast<float>(rand()%20+100) / 100;
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE * static_cast<float>(rand()%20+100) / 100;
+        if (!leftLock) {
+            zoomedMaxMove *= cl->AIMBOT_FAST_AREA;
+            hipfireMaxMove *= cl->AIMBOT_FAST_AREA;
+        }
 
         if (lp->inZoom) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
