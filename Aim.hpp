@@ -14,7 +14,6 @@ struct Aim {
     float HipfireDistance = 30.0f;
     Player* CurrentTarget = nullptr;
     bool TargetSelected = true;
-    int maxDelta = 0; //_add
     int lastMoveX = 0; //_add
     int lastMoveY = 0; //_add
 
@@ -82,8 +81,9 @@ struct Aim {
             ReleaseTarget();
             return;
         }
-        if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) maxDelta = cl->AIMBOT_MAX_DELTA / cl->AIMBOT_WEAKEN; //_add
-        else maxDelta = cl->AIMBOT_MAX_DELTA; //_add
+        int maxDelta = cl->AIMBOT_MAX_DELTA; //_add
+        if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) //_add
+            maxDelta /= cl->AIMBOT_WEAKEN; //_add
 //_        StartAiming();
         StartAiming(averageProcessingTime, leftLock, maxDelta); //_add
     }
