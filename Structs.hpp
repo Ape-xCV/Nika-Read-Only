@@ -16,27 +16,25 @@ struct Color {
 };
 
 namespace Map {
-    bool map_trainingArea; //_add
     bool map_mixtape;
 };
 struct Level {
     std::string name;
-    bool playable;
-    bool trainingArea;
-    bool mapMixtape;
+    bool isPlayable;
+    bool isTrainingArea;
     char gameMode[64] = {0};
-    std::unordered_map<std::string, bool> mixtape = {{"control", true}, {"freedm", true}, {"arenas", true}};
+    std::unordered_map<std::string, bool> gameModes = {{"control", true}, {"freedm", true}};
+    bool isMixtape;
 
     void readFromMemory() {
         name = mem::ReadString(OFF_REGION + OFF_LEVEL, 1024, "Level name");
-        playable = !name.empty() && name != "mp_lobby";
-        trainingArea = name == "mp_rr_canyonlands_staging_mu1";
-        Map::map_trainingArea = trainingArea; //_add
+        isPlayable = !name.empty() && name != "mp_lobby";
+        isTrainingArea = name == "mp_rr_canyonlands_staging_mu1";
         uint64_t gameModePtr = mem::Read<uint64_t>(OFF_REGION + OFF_GAMEMODE + 0x50, "gameModePtr");
         if (gameModePtr > 0) {
             mem::Read(gameModePtr, &gameMode, sizeof(gameMode));
-            mapMixtape=mixtape[gameMode];
-            Map::map_mixtape = mapMixtape;
+            isMixtape=gameModes[gameMode];
+            Map::map_mixtape = isMixtape;
         }
     }
 };
