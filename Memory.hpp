@@ -12,9 +12,18 @@ namespace mem {
         m_pid = pid;
         return pid;
     }
+
     bool IsValidPointer(long Pointer) {
         return Pointer > 0x00010000 && Pointer < 0x7FFFFFFEFFFF;
     }
+
+    std::string convertPointerToHexString(long pointer) {
+        std::stringstream stream;
+        stream << "0x" << std::hex << pointer;
+        std::string result(stream.str());
+        return result;
+    }
+
     bool Read(long address, void* pBuff, size_t size) {
         if (size == 0)
             return false;
@@ -39,6 +48,7 @@ namespace mem {
             return false;
         return false;
     }
+
     bool Write(long address, void* pBuff, size_t size) {
         if (size == 0)
             return false;
@@ -63,12 +73,18 @@ namespace mem {
             return false;
         return false;
     }
-    std::string convertPointerToHexString(long pointer) {
-        std::stringstream stream;
-        stream << "0x" << std::hex << pointer;
-        std::string result(stream.str());
-        return result;
+
+    template <class T>
+    T Read(long address, std::string whatAreYouReading) {
+        T buffer;
+        bool success = Read(address, &buffer, sizeof(T));
+        if (!success) {
+            m_pid = 0;
+            throw std::invalid_argument("Failed to read memory [" + whatAreYouReading + "] at address : " + convertPointerToHexString(address));
+        }
+        return buffer;
     }
+
     template <class T>
     void Write(long address, T value) {
         bool success = Write(address, &value, sizeof(T));
@@ -78,23 +94,7 @@ namespace mem {
                 "Failed to write memory " + std::to_string(sizeof(T)) + " at: " + convertPointerToHexString(address));
         }
     }
-    template <class T>
-    T Read(long address, std::string stringRead) {
-        T buffer;
-        bool success = Read(address, &buffer, sizeof(T));
-        if (!success) {
-            m_pid = 0;
-            throw std::invalid_argument("Failed to read memory [" + stringRead + "] at address : " + convertPointerToHexString(address));
-        }
-        return buffer;
-    }
-    void readbytearray(long address, char* buffer, int size) {
-    	for (int i = 0; i < size; i++) {
-    	    bool success = Read((long)(address + (long)i), &(buffer[i]), sizeof(char));
-            if (!success)
-                throw new std::invalid_argument("Failed to read byte at address: " + address);
-    	}
-    }
+
     std::string ReadString(long address, int size, std::string whatAreYouReading) {
         char buffer[size] = { 0 };
         bool success = Read(address, &buffer, size);
