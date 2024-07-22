@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) { //_add
 
 //_            if (counter % 20 == 0) cl->reloadFile();
             map->readFromMemory();
-            if (!map->playable) {
+            if (!map->isPlayable) {
                 printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
                 readError = 35000; //_add
@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) { //_add
 
             //read players
             players->clear();
-            if (map->trainingArea)
+            if (map->isTrainingArea)
                 for (int i = 0; i < dummyPlayers->size(); i++) {
                     Player* p = dummyPlayers->at(i);
                     p->readFromMemory();
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) { //_add
 
             if (counter % 100 == 0) { //_add
                 if (cl->SENSE_VERBOSE > 0) { //_add
-                    if (cl->FEATURE_SPECTATORS_ON && !map->trainingArea) { //_add
+                    if (cl->FEATURE_SPECTATORS_ON && !map->isTrainingArea) { //_add
                         int TempTotalSpectators = 0; //_add
                         std::vector<std::string> TempSpectators; //_add
                         for (int i = 0; i < players->size(); i++) { //_add
