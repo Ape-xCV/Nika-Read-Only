@@ -24,14 +24,10 @@ struct Player {
     Vector3D localOriginPrev2; //_add
     Vector3D localOriginPrev3; //_add
     Vector3D localOriginPrev4; //_add
-    Vector3D localOriginPrev5; //_add
-    Vector3D localOriginPrev6; //_add
     float timeLocalOriginPrev; //_add
     float timeLocalOriginPrev2; //_add
     float timeLocalOriginPrev3; //_add
     float timeLocalOriginPrev4; //_add
-    float timeLocalOriginPrev5; //_add
-    float timeLocalOriginPrev6; //_add
     Vector3D velocity; //_add
     Vector3D AbsoluteVelocity;
     Vector2D viewAngles; //_add
@@ -124,29 +120,19 @@ struct Player {
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime; //_add
-        if (cl->AIMBOT_PREDICT_LEVEL >= 6) { //_add
-            localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)).Add(localOriginPrev4.Subtract(localOriginPrev5)).Add(localOriginPrev5.Subtract(localOriginPrev6)); //_add
-            timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4) + (timeLocalOriginPrev4 - timeLocalOriginPrev5) + (timeLocalOriginPrev5 - timeLocalOriginPrev6); //_add
-        } else if (cl->AIMBOT_PREDICT_LEVEL == 5) { //_add
-            localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)).Add(localOriginPrev4.Subtract(localOriginPrev5)); //_add
-            timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4) + (timeLocalOriginPrev4 - timeLocalOriginPrev5); //_add
-        } else { //_add
+        if (Map::map_trainingArea) { //_add
             localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)); //_add
             timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4); //_add
+            velocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
+            localOriginPrev4 = localOriginPrev3; //_add
+            localOriginPrev3 = localOriginPrev2; //_add
+            localOriginPrev2 = localOriginPrev; //_add
+            localOriginPrev = localOrigin; //_add
+            timeLocalOriginPrev4 = timeLocalOriginPrev3; //_add
+            timeLocalOriginPrev3 = timeLocalOriginPrev2; //_add
+            timeLocalOriginPrev2 = timeLocalOriginPrev; //_add
+            timeLocalOriginPrev = timeLocalOrigin; //_add
         } //_add
-        velocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
-        localOriginPrev6 = localOriginPrev5; //_add
-        localOriginPrev5 = localOriginPrev4; //_add
-        localOriginPrev4 = localOriginPrev3; //_add
-        localOriginPrev3 = localOriginPrev2; //_add
-        localOriginPrev2 = localOriginPrev; //_add
-        localOriginPrev = localOrigin; //_add
-        timeLocalOriginPrev6 = timeLocalOriginPrev5; //_add
-        timeLocalOriginPrev5 = timeLocalOriginPrev4; //_add
-        timeLocalOriginPrev4 = timeLocalOriginPrev3; //_add
-        timeLocalOriginPrev3 = timeLocalOriginPrev2; //_add
-        timeLocalOriginPrev2 = timeLocalOriginPrev; //_add
-        timeLocalOriginPrev = timeLocalOrigin; //_add
         AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
         viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
