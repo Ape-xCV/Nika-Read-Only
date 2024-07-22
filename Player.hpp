@@ -120,7 +120,7 @@ struct Player {
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime; //_add
-        if (Map::map_trainingArea) { //_add
+        if (isDummie()) { //_add
             localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)); //_add
             timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4); //_add
             velocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
