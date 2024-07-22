@@ -67,7 +67,7 @@ struct LocalPlayer {
 //_        punchAngles = mem::Read<Vector2D>(base + OFF_PUNCH_ANGLES, "LocalPlayer punchAngles");
 //_        punchAnglesDiff = punchAnglesPrev.Subtract(punchAngles);
 //_        punchAnglesPrev = punchAngles;
-        if (!dead && !knocked && map->playable) {
+        if (!dead && !knocked && map->isPlayable) {
             grenadeID = mem::Read<int>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeID");
             grippingGrenade = grenadeID == -251 ? true : false;
             weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
