@@ -129,7 +129,7 @@ struct Aim {
             //if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f)
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->weaponIndex != WEAPON_MELEE)
                 //if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
-                if (Map::map_trainingArea)
+                if (CurrentTarget->isDummie())
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, bulletSpeed);
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
