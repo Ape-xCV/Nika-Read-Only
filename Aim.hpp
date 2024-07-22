@@ -128,7 +128,8 @@ struct Aim {
                 TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
             //if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f)
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->weaponIndex != WEAPON_MELEE)
-                if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
+                //if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
+                if (Map::map_trainingArea)
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, bulletSpeed);
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
