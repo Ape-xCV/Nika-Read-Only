@@ -341,7 +341,7 @@ struct Sense {
 
 //_end
     void update(int counter){
-        if (!map->playable)
+        if (!map->isPlayable)
             return;
         if(!cl->FEATURE_SENSE_ON)
             return;
@@ -376,7 +376,7 @@ struct Sense {
     }
 
     void itemGlow(int counter){
-        if (!map->playable)
+        if (!map->isPlayable)
             return;
         if (!cl->FEATURE_ITEM_GLOW_ON)
             return;
