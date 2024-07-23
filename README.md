@@ -115,8 +115,8 @@ cd /root
 - Install (Debian): `sudo apt install macchanger`
 - Edit **spoof.sh** and modify it where needed: `sudo nano /root/spoof.sh`
 
-### 7. CachyOS + KDE + NVIDIA proprietary driver
+### 7. CachyOS + NVIDIA proprietary driver
 
-- You need to right-click Apex Legends in your taskbar and check: More >> Keep Below Others.
-- Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode.
-- Auto hide your taskbar, right-click it >> Enter Edit Mode >> Visibility: **Auto hide**.
+- Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode
+- For Xfce desktop environment, go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
+- For KDE desktop environment, right-click Apex Legends in your taskbar and check: More >> Keep Below Others
