@@ -136,8 +136,8 @@ struct Aim {
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
             totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
         }
-        int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE * static_cast<float>(rand()%20+100) / 100;
-        int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE * static_cast<float>(rand()%20+100) / 100;
+        int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE * util::randomFloat(1.0f, 1.25f);
+        int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE * util::randomFloat(1.0f, 1.25f);
         if (!leftLock) {
             zoomedMaxMove *= cl->AIMBOT_FAST_AREA;
             hipfireMaxMove *= cl->AIMBOT_FAST_AREA;
