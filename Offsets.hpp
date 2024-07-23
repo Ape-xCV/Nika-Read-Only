@@ -23,8 +23,8 @@ constexpr long OFF_BONES = 0x0db0 + 0x48; //[RecvTable.DT_BaseAnimating]->m_nFor
 // [RecvTable.DT_BaseCombatCharacter]
 constexpr long OFF_WEAPON_HANDLE = 0x1944; //[RecvTable.DT_BaseCombatCharacter]->m_latestPrimaryWeapons
 constexpr long OFF_GRENADE_HANDLE = 0x1954; //[RecvTable.DT_BaseCombatCharacter]->m_latestNonOffhandWeapons
-constexpr long OFF_LAST_VISIBLE_TIME = 0x199e + 0x2; //[Miscellaneous]->CPlayer!lastVisibleTime //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x2
-constexpr long OFF_LAST_AIMEDAT_TIME = 0x199e + 0x2 + 0x8; //[Miscellaneous]->CPlayer!lastVisibleTime + 0x8 //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x2 + 0x8
+constexpr long OFF_LAST_VISIBLE_TIME = 0x19a0; //[Miscellaneous]->CPlayer!lastVisibleTime //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x2
+constexpr long OFF_LAST_AIMEDAT_TIME = 0x19a8; //[Miscellaneous]->CWeaponX!lastCrosshairTargetTime //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x2 + 0x8
 
 // [RecvTable.DT_BaseEntity]
 constexpr long OFF_CURRENT_SHIELDS = 0x01a0; //[RecvTable.DT_BaseEntity]->m_shieldHealth
