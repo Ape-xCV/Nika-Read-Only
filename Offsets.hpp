@@ -2,20 +2,20 @@
 // Apex Legends v3.0.74.20
 
 // [Miscellaneous]
-constexpr long OFF_ENTITY_LIST = 0x1ef7c38; //[Miscellaneous]->cl_entitylist
-constexpr long OFF_LOCAL_PLAYER = 0x22b0328; //[Miscellaneous]->LocalPlayer
-constexpr long OFF_GLOBAL_VARS = 0x17e8830; //[Miscellaneous]->GlobalVars
-constexpr long OFF_NAMELIST = 0xd2e2260; //[Miscellaneous]->NameList
-constexpr long OFF_VIEW_RENDER = 0x7542c00; //[Miscellaneous]->ViewRender
+constexpr long OFF_ENTITY_LIST = 0x1ef8e38; //[Miscellaneous]->cl_entitylist
+constexpr long OFF_LOCAL_PLAYER = 0x22b1528; //[Miscellaneous]->LocalPlayer
+constexpr long OFF_GLOBAL_VARS = 0x17e9820; //[Miscellaneous]->GlobalVars
+constexpr long OFF_NAMELIST = 0xd2e3460; //[Miscellaneous]->NameList
+constexpr long OFF_VIEW_RENDER = 0x7543e00; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
-constexpr long OFF_LEVEL = 0x17e8d34; //[Miscellaneous]->LevelName
+constexpr long OFF_LEVEL = 0x17e9d24; //[Miscellaneous]->LevelName
 constexpr long OFF_PROJECTILESPEED = 0x1eb4; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
 constexpr long OFF_PROJECTILESCALE = 0x1ebc; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta].base
 constexpr long OFF_CAMERAORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_origin
 constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 
 // [Buttons]
-constexpr long OFF_IN_ATTACK = 0x07542d28; //[Buttons]->in_attack
+constexpr long OFF_IN_ATTACK = 0x07543f28; //[Buttons]->in_attack
 
 // [RecvTable.DT_BaseAnimating]
 constexpr long OFF_BONES = 0x0db0 + 0x48; //[RecvTable.DT_BaseAnimating]->m_nForceBone + 0x48
@@ -58,7 +58,7 @@ constexpr long OFF_YAW = 0x224c - 0x8; //[DataMap.C_Player]->m_currentFramePlaye
 constexpr long OFF_VIEW_ANGLES = 0x2544 - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14
 
 // [ConVars]
-constexpr long OFF_GAMEMODE = 0x022e8360; //[ConVars]->mp_gamemode
+constexpr long OFF_GAMEMODE = 0x022e9560; //[ConVars]->mp_gamemode
 
 
 constexpr long OFF_SPECTATOR_LIST = 0x1ef9c58; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
