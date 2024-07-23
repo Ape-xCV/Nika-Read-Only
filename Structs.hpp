@@ -15,9 +15,10 @@ struct Color {
     }
 };
 
-namespace Map {
-    bool map_mixtape;
+namespace level {
+    bool isMixtape;
 };
+
 struct Level {
     std::string name;
     bool isPlayable;
@@ -34,7 +35,7 @@ struct Level {
         if (gameModePtr > 0) {
             mem::Read(gameModePtr, &gameMode, sizeof(gameMode));
             isMixtape=gameModes[gameMode];
-            Map::map_mixtape = isMixtape;
+            level::isMixtape = isMixtape;
         }
     }
 };
