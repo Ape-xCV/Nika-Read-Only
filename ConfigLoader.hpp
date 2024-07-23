@@ -166,12 +166,12 @@ struct ConfigLoader {
         printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_KEY ? "YES" : "NO");
         printf("AIMBOT_ACTIVATION_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATION_KEY.c_str());
-        printf("AIMBOT_SPEED\t\t\t\t\t\t%.10f\n", AIMBOT_SPEED);
-        printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.10f\n", AIMBOT_SMOOTH);
+        printf("AIMBOT_SPEED\t\t\t\t\t\t%.4f\n", AIMBOT_SPEED);
+        printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);
         printf("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE\t\t\t\t%.4f\n", AIMBOT_SMOOTH_EXTRA_BY_DISTANCE);
-        printf("AIMBOT_FOV\t\t\t\t\t\t%.4f\n", AIMBOT_FOV);
-        printf("AIMBOT_FAST_AREA\t\t\t\t\t%.4f\n", AIMBOT_FAST_AREA); //_add
-        printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.4f\n", AIMBOT_WEAKEN); //_add
+        printf("AIMBOT_FOV\t\t\t\t\t\t%.2f\n", AIMBOT_FOV);
+        printf("AIMBOT_FAST_AREA\t\t\t\t\t%.2f\n", AIMBOT_FAST_AREA); //_add
+        printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.2f\n", AIMBOT_WEAKEN); //_add
         printf("AIMBOT_PREDICT_BULLETDROP\t\t\t\t%s\n", AIMBOT_PREDICT_BULLETDROP ? "YES" : "NO");
         printf("AIMBOT_PREDICT_MOVEMENT\t\t\t\t\t%s\n", AIMBOT_PREDICT_MOVEMENT ? "YES" : "NO");
         printf("AIMBOT_ALLOW_TARGET_SWITCH\t\t\t\t%s\n", AIMBOT_ALLOW_TARGET_SWITCH ? "YES" : "NO");
