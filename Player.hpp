@@ -214,16 +214,11 @@ struct Player {
 //_            mem::Write<int>(basePointer + OFF_GLOW_FIX, 0);
         }
     }
-    bool SameTeam()
-    {
-        if (Map::map_mixtape && lp->squadNumber == -1)
-        {
+    bool SameTeam() {
+        if (level::isMixtape && lp->squadNumber == -1)
             return (teamNumber & 1) == (lp->teamNumber & 1);
-        }
         else
-        {
             return teamNumber == lp->teamNumber;
-        }
     }
 //_begin
     bool isSpectating() {
