@@ -1,4 +1,9 @@
 #pragma once
+
+namespace configloader { //_add
+    bool FEATURE_WAYLAND_ON = true; //_add
+}; //_add
+
 struct ConfigLoader {
     const std::string FILE_NAME = "nika.ini";
     std::vector<std::string>* lines = new std::vector<std::string>;
@@ -9,6 +14,7 @@ struct ConfigLoader {
     }
 
     //features
+    bool FEATURE_WAYLAND_ON = true; //_add
     bool FEATURE_AIMBOT_ON = true;
 //_    bool FEATURE_NORECOIL_ON = false;
     bool FEATURE_TRIGGERBOT_ON = true;
@@ -69,6 +75,8 @@ struct ConfigLoader {
 
     void loadVariables(std::string key, std::string val) {
         //features
+        FEATURE_WAYLAND_ON = (key.compare("FEATURE_WAYLAND_ON") != 0) ? FEATURE_WAYLAND_ON : toBool(val); //_add
+        configloader::FEATURE_WAYLAND_ON = (key.compare("FEATURE_WAYLAND_ON") != 0) ? FEATURE_WAYLAND_ON : toBool(val); //_add
         FEATURE_AIMBOT_ON = (key.compare("FEATURE_AIMBOT_ON") != 0) ? FEATURE_AIMBOT_ON : toBool(val);
 //_        FEATURE_NORECOIL_ON = (key.compare("FEATURE_NORECOIL_ON") != 0) ? FEATURE_NORECOIL_ON : toBool(val);
         FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
@@ -126,6 +134,7 @@ struct ConfigLoader {
     void print() {
         printf("\n======================= NIKA SETTINGS LOADED =======================\n");
         //features
+        printf("FEATURE_WAYLAND_ON\t\t\t\t\t%s\n", FEATURE_WAYLAND_ON ? "YES" : "NO"); //_add
         printf("FEATURE_AIMBOT_ON\t\t\t\t\t%s\n", FEATURE_AIMBOT_ON ? "YES" : "NO");
 //_        printf("FEATURE_NORECOIL_ON\t\t\t\t\t%s\n", FEATURE_NORECOIL_ON ? "YES" : "NO");
         printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
