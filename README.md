@@ -137,5 +137,5 @@ cd /root
 ### 7. CachyOS + NVIDIA proprietary driver
 
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode
-- For Xfce desktop environment (X11), go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
 - For KDE desktop environment (Wayland), open System Settings >> Window Management >> Window Rules >> Import... >> glfw.kwinrule
+- For Xfce desktop environment (X11), go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
