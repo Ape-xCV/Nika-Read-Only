@@ -53,6 +53,8 @@ sudo apt-get install libxtst-dev
 
 ### 2. Build & Install GLFW
 
+- For exclusively using **Wayland**:
+
 ``` shell
 su
 chmod 700 /root
@@ -61,7 +63,24 @@ git clone https://github.com/glfw/glfw.git
 cd glfw
 mkdir build
 cd build
-cmake ..
+cmake .. -D GLFW_BUILD_X11=0
+make
+make install
+```
+
+or
+
+- For exclusively using **X11**:
+
+``` shell
+su
+chmod 700 /root
+cd /root
+git clone https://github.com/glfw/glfw.git
+cd glfw
+mkdir build
+cd build
+cmake .. -D GLFW_BUILD_WAYLAND=0
 make
 make install
 ```
@@ -118,5 +137,5 @@ cd /root
 ### 7. CachyOS + NVIDIA proprietary driver
 
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode
-- For Xfce desktop environment, go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
-- For KDE desktop environment, right-click Apex Legends in your taskbar and check: More >> Keep Below Others
+- For Xfce desktop environment (X11), go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
+- For KDE desktop environment (Wayland), open System Settings >> Window Managment >> Window Rules >> Import... >> glfw.kwinrule
