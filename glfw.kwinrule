@@ -1,0 +1,10 @@
+[Window settings for GLFW]
+Description=Window settings for GLFW
+noborder=true
+noborderrule=3
+opacityactive=30
+opacityactiverule=2
+opacityinactive=30
+opacityinactiverule=2
+types=1
+wmclassmatch=1
