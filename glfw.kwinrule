@@ -4,6 +4,7 @@ below=true
 belowrule=3
 title=Apex Legends
 titlematch=1
+types=1
 
 [Window settings for GLFW]
 Description=Window settings for GLFW
