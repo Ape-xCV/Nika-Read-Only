@@ -1,3 +1,10 @@
+[Window settings for Apex Legends]
+Description=Window settings for Apex Legends
+below=true
+belowrule=3
+title=Apex Legends
+titlematch=1
+
 [Window settings for GLFW]
 Description=Window settings for GLFW
 noborder=true
