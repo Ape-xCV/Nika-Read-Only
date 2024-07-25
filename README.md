@@ -53,6 +53,20 @@ sudo apt-get install libxtst-dev
 
 ### 2. Build & Install GLFW
 
+IMPORTANT: When using `nano src/egl_context.c` below, you must change:
+
+``` shell
+    _glfw.egl.EXT_present_opaque = GLFW_FALSE
+        extensionSupportedEGL("EGL_EXT_present_opaque");
+```
+
+into
+
+``` shell
+    _glfw.egl.EXT_present_opaque = GLFW_FALSE;
+        //extensionSupportedEGL("EGL_EXT_present_opaque");
+```
+
 - For exclusively using **Wayland**:
 
 ``` shell
@@ -61,6 +75,7 @@ chmod 700 /root
 cd /root
 git clone https://github.com/glfw/glfw.git
 cd glfw
+nano src/egl_context.c
 mkdir build
 cd build
 cmake .. -D GLFW_BUILD_X11=0
