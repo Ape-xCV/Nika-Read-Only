@@ -166,10 +166,7 @@ public:
     void Render(void (*RenderUI)()) {
         glfwPollEvents();
         glViewport(0, 0, ScreenWidth, ScreenHeight);
-        if (configloader::FEATURE_WAYLAND_ON)
-            glClearColor(0.25f, 0.25f, 0.25f, 0.0f);
-        else
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
