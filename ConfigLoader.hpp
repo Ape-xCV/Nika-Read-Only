@@ -161,7 +161,7 @@ struct ConfigLoader {
         printf("SENSE_SHOW_PLAYER_NAMES\t\t\t\t\t%s\n", SENSE_SHOW_PLAYER_NAMES ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_PLAYER_LEVELS\t\t\t\t%s\n", SENSE_SHOW_PLAYER_LEVELS ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_DEAD\t\t\t\t\t\t%s\n", SENSE_SHOW_DEAD ? "YES" : "NO"); //_add
-        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");        
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         //aimBot
         printf("AIMBOT_ACTIVATED_BY_ATTACK\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ATTACK ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
@@ -268,7 +268,7 @@ struct ConfigLoader {
     }
 
     void printLogo(){
-        std::cout << "\033[1;33m";         
+        std::cout << "\033[1;33m";
         std::cout << " .--..--..--..--..--..--..--..--..--..--..--..--..--..--.\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(69));
         std::cout << R"(/ .. \.. \.. \.. \.. \.. \.. \.. \.. \.. \.. \.. \.. \.. \)" << std::endl;
