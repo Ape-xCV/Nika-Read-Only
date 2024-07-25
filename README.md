@@ -56,7 +56,7 @@ sudo apt-get install libxtst-dev
 IMPORTANT: When using `nano src/egl_context.c` below, you must change:
 
 ``` shell
-    _glfw.egl.EXT_present_opaque = GLFW_FALSE
+    _glfw.egl.EXT_present_opaque =
         extensionSupportedEGL("EGL_EXT_present_opaque");
 ```
 
