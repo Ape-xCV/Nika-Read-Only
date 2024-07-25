@@ -81,15 +81,19 @@ struct Aim {
             ReleaseTarget();
             return;
         }
+        int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE; //_add
+        int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE; //_add
         int maxDelta = cl->AIMBOT_MAX_DELTA; //_add
         if (DistanceFromCrosshair > FinalFOV * cl->AIMBOT_FAST_AREA) //_add
+            zoomedMaxMove *= cl->AIMBOT_WEAKEN; //_add
+            hipfireMaxMove *= cl->AIMBOT_WEAKEN; //_add
             maxDelta /= cl->AIMBOT_WEAKEN; //_add
 //_        StartAiming();
-        StartAiming(averageProcessingTime, leftLock, maxDelta); //_add
+        StartAiming(averageProcessingTime, leftLock, zoomedMaxMove, hipfireMaxMove, maxDelta); //_add
     }
 
 //_    void StartAiming() {
-    void StartAiming(double interval, bool leftLock, int maxDelta) { //_add
+    void StartAiming(double interval, bool leftLock, int zoomedMaxMove, int hipfireMaxMove, int maxDelta) { //_add
         QAngle DesiredAngles = QAngle(0.0f, 0.0f);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -136,12 +140,8 @@ struct Aim {
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
             totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
         }
-        int zoomedMaxMove = cl->AIMBOT_ZOOMED_MAX_MOVE * util::randomFloat(1.0f, 1.25f);
-        int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE * util::randomFloat(1.0f, 1.25f);
-        if (!leftLock) {
-            zoomedMaxMove *= cl->AIMBOT_FAST_AREA;
-            hipfireMaxMove *= cl->AIMBOT_FAST_AREA;
-        }
+        zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
+        hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
 
         if (lp->inZoom) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
