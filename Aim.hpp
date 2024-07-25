@@ -125,16 +125,14 @@ struct Aim {
         if (!cl->AIMBOT_LEGACY_MODE) {
             Vector2D TargetBoneW2S;
             Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
-            //if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileScale > 1.0f)
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->weaponIndex != WEAPON_MELEE)
                 TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
-            //if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 1.0f)
-            if (cl->AIMBOT_PREDICT_MOVEMENT && lp->weaponIndex != WEAPON_MELEE)
+            if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 999.9f)
                 //if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
-//                if (CurrentTarget->isDummie())
+                if (CurrentTarget->isDummie())
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, bulletSpeed);
-//                else
-//                    TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
+                else
+                    TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
             Vector2D ScreenSize = GameCamera->GetResolution();
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
