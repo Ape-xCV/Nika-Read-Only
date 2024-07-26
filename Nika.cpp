@@ -120,7 +120,7 @@ int readError = 1000;
 bool leftLock = true;
 bool rightLock = false;
 bool autoFire = false;
-int boneID = 1;
+int boneID = 0;
 int TotalSpectators = 0;
 std::vector<std::string> Spectators;
 
