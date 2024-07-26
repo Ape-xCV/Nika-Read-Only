@@ -104,8 +104,10 @@ struct Aim {
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         TotalSmooth /= (1 + interval * 0.4f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.7f; //_add
-        if (!leftLock) //_add
+        if (!leftLock) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
+            bulletSpeed -= bulletSpeed * 0.1f * cl->AIMBOT_WEAKEN; //_add
+        } //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Multiply(cl->AIMBOT_SPEED).Divide(cl->AIMBOT_SMOOTH);
 //_        double nrPitchIncrement = punchAnglesDiff.x;
