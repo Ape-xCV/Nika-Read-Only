@@ -211,7 +211,7 @@ struct Aim {
 
     bool IsValidTarget(Player* target) {
         if (target == nullptr ||
-            !target->isValid() || 
+//_            !target->isValid() || 
             !target->isCombatReady() ||
             !target->visible || 
             !target->enemy || 
