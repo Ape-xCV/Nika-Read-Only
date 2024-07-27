@@ -17,7 +17,7 @@ struct Random
     }
 
     void superGlide(double averageFPS) {
-        if (cl->FEATURE_SUPER_GLIDE_ON || (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY)) {
+        if (cl->FEATURE_SUPER_GLIDE_ON || (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) {
 //_            static int sgState = 0;
 //_            static int sgFrameTime = 0;
 
@@ -71,14 +71,14 @@ struct Random
         float localYaw = localYawtoClamp.y;
         // quickTurn
         if(cl->FEATURE_QUICKTURN_ON){
-            if(display->keyDown(cl->FEATURE_QUICKTURN_BUTTON)){
+            if(display->isKeyDown(cl->FEATURE_QUICKTURN_BUTTON)){
                 lp->setYaw((localYaw + 180));
                 std::this_thread::sleep_for(std::chrono::milliseconds(300));
             }
         }
     }   
     void mapRadar() {
-        if (display->keyDown(cl->FEATURE_MAP_RADAR_BUTTON) && cl->FEATURE_MAP_RADAR_ON) {
+        if (display->isKeyDown(cl->FEATURE_MAP_RADAR_BUTTON) && cl->FEATURE_MAP_RADAR_ON) {
             uint64_t pLocal = mem::Read<uint64_t>(OFF_REGION + OFF_LOCAL_PLAYER, "LocalPlayer");
 
             int currentTEAM = mem::Read<int>(pLocal + OFF_TEAM_NUMBER, "Curren TeamID");
@@ -96,7 +96,7 @@ struct Random
     void printLevels()
     {
         if(cl->FEATURE_PRINT_LEVELS_ON){
-            if(display->keyDown(cl->FEATURE_PRINT_LEVELS_BUTTON)){
+            if(display->isKeyDown(cl->FEATURE_PRINT_LEVELS_BUTTON)){
                 printf("[N]=[NAME]-[LEVEL]-[LEGEND]\n\n");
                 for (auto i = 0; i < players->size(); i++)
                 {
