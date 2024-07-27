@@ -74,16 +74,15 @@ public:
         return false;
     }
 //_end
-    bool keyDown(int keyCode) {
+    bool isKeyDown(int keySym) {
         char keys_return[32];
         XQueryKeymap(display, keys_return);
-        KeyCode kc2 = XKeysymToKeycode(display, keyCode);
-        bool buttonDown = !!(keys_return[kc2 >> 3] & (1 << (kc2 & 7)));
-        return buttonDown;
+        KeyCode keyCode = XKeysymToKeycode(display, keySym);
+        return !!(keys_return[keyCode >> 3] & (1 << (keyCode & 7)));
     }
-    bool keyDown(std::string XK_keyName) {
-        KeySym keyCode = XStringToKeysym(trimXKPrefix(XK_keyName).c_str());
-        return keyDown(keyCode);
+    bool isKeyDown(std::string XK_keyName) {
+        KeySym keySym = XStringToKeysym(trimXKPrefix(XK_keyName).c_str());
+        return isKeyDown(keySym);
     }
     std::string trimXKPrefix(const std::string& keyName) {
         if (keyName.compare(0, 3, "XK_") == 0)
