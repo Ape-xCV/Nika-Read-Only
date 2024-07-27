@@ -11,7 +11,7 @@
 if [[ -z "$(ls -A /dev/disk/by-id)" ]]; then
   dbus-send --system --dest=org.freedesktop.UDisks2 --type=method_call --print-reply  /org/freedesktop/UDisks2 org.freedesktop.DBus.ObjectManager.GetManagedObjects | grep by-id
   if [[ $? -eq 1 ]]; then
-    /usr/bin/steam-runtime
+    echo SAFE TO RUN /usr/bin/steam-runtime
   fi
 else
   ls /dev/disk/by-id
