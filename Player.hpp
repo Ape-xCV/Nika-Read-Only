@@ -12,8 +12,8 @@ struct Player {
     uint64_t spectators;
     int spctrIndex;
     uint64_t spctrBase;
-    bool dead;
-    bool knocked;
+    bool isDead;
+    bool isKnocked;
     int currentHealth;
     int currentShields;
     Vector3D localOrigin;
@@ -114,8 +114,8 @@ struct Player {
             spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
             spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
         } //_add
-        dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
-        knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
+        isDead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
+        isKnocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
@@ -222,7 +222,7 @@ struct Player {
     }
 //_begin
     bool isSpectating() {
-//        if (!dead)
+//        if (!isDead)
 //            return false;
         if(spctrBase == lp->base)
             return true;
@@ -235,8 +235,8 @@ struct Player {
     bool isCombatReady() {
         if (!isValid()) return false;
         if (isDummie()) return true;
-        if (dead) return false;
-        if (knocked) return false;
+        if (isDead) return false;
+        if (isKnocked) return false;
         return true;
     }
     bool isPlayer() {
