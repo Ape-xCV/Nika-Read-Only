@@ -152,7 +152,7 @@ void RenderUI() {
 //_end
 //_int main() {
 int main(int argc, char* argv[]) { //_add
-    if (getuid()) { std::cout << "RUN AS SUDO!\n"; return -1; }
+    if (getuid()) { std::cout << "RUN AS ROOT!\n"; return -1; }
     if (mem::GetPID() == 0) {
         //system("mount -o remount,rw,hidepid=0 /proc"); //_add
         std::cout << "OPEN APEX LEGENDS!\n";
