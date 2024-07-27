@@ -15,8 +15,8 @@ struct TriggerBot {
 //_    void shootAtEnemy(int counter) {
     void shootAtEnemy(int counter, bool autoFire) { //_add
         static std::chrono::milliseconds timeLastShot; //_add
-//_        if (!cl->FEATURE_TRIGGERBOT_ON || display->keyDown(cl->TRIGGERBOT_PAUSE_BUTTON)) return;
-        if (!cl->FEATURE_TRIGGERBOT_ON || !display->keyDown(cl->AIMBOT_ACTIVATION_KEY)) return; //_add
+//_        if (!cl->FEATURE_TRIGGERBOT_ON || display->isKeyDown(cl->TRIGGERBOT_PAUSE_BUTTON)) return;
+        if (!cl->FEATURE_TRIGGERBOT_ON || !display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) return; //_add
         if (!lp->isCombatReady()) return;
         
         int weaponId = lp->weaponIndex;
