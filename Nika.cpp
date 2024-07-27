@@ -203,23 +203,23 @@ int main(int argc, char* argv[]) { //_add
                     std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
                     readError = 0; //_add
                 } //_add
-            if (display->keyDown("XK_Home")) { //_add
+            if (display->isKeyDown("XK_Home")) { //_add
                 //system("mount -o remount,rw,hidepid=0 /proc"); //_add
                 return -1; //_add
             } //_add
-            if (display->keyDown("XK_Left")) { //_add
+            if (display->isKeyDown("XK_Left")) { //_add
                 leftLock = !leftLock; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
             } //_add
-            if (display->keyDown("XK_Right")) { //_add
+            if (display->isKeyDown("XK_Right")) { //_add
                 rightLock = !rightLock; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
             } //_add
-            if (display->keyDown("XK_Up")) { //_add
+            if (display->isKeyDown("XK_Up")) { //_add
                 autoFire = !autoFire; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
             } //_add
-            if (display->keyDown("XK_Down")) { //_add
+            if (display->isKeyDown("XK_Down")) { //_add
                 boneID++; //_add
                 if (boneID > 2) boneID = 0; //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
