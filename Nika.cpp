@@ -287,7 +287,7 @@ int main(int argc, char* argv[]) { //_add
                             if (p->isSpectating()) { //_add
                                 TempTotalSpectators++; //_add
                                 TempSpectators.push_back(p->getPlayerName()); //_add
-                                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->dead) { //_add
+                                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->isDead) { //_add
                                 TempTotalSpectators++; //_add
                                 TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
                             } //_add
