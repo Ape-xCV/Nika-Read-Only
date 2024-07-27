@@ -32,7 +32,7 @@ struct Aim {
         bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
         //bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && display->isLeftMouseButtonDown(); //_add
         bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
-        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY);
+        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY);
         bool active = aimbotIsOn
             && combatReady
             && (activatedByAttack
@@ -77,7 +77,7 @@ struct Aim {
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
         double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
 //_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
-        if (!(cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->keyDown(cl->AIMBOT_ACTIVATION_KEY)) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
+        if (!(cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
             return;
         }
@@ -140,8 +140,8 @@ struct Aim {
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
             totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
         }
-        zoomedMaxMove *= util::randomFloat(0.75f, 1.25f);
-        hipfireMaxMove *= util::randomFloat(0.75f, 1.25f);
+        zoomedMaxMove *= util::randomFloat(1.0f, 1.5f);
+        hipfireMaxMove *= util::randomFloat(1.0f, 1.5f);
 
         if (lp->inZoom) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
