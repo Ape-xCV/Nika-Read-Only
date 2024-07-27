@@ -127,13 +127,13 @@ struct Sense {
 
             // Colors - Players (Enemy)
             ImVec4 EnemyBoxColor, EnemyDistanceColor;
-            if (!p->knocked && p->visible) {
+            if (!p->isKnocked && p->visible) {
                 EnemyBoxColor = ImVec4(0, 0.99, 0, 0.99);
                 EnemyDistanceColor = ImVec4(0, 0.99, 0, 0.99);
-            } else if (!p->knocked && !p->visible) {
+            } else if (!p->isKnocked && !p->visible) {
                 EnemyBoxColor = ImVec4(0.99, 0, 0, 0.99);
                 EnemyDistanceColor = ImVec4(0.99, 0, 0, 0.99);
-            } else if (p->knocked) {
+            } else if (p->isKnocked) {
                 EnemyBoxColor = ImVec4(0.990, 0.671, 0.119, 0.99);
                 EnemyDistanceColor = ImVec4(0.990, 0.671, 0.119, 0.99);
             }
@@ -221,7 +221,7 @@ struct Sense {
                 }
 
                 // Draw Warning
-                if (p->visible && !p->knocked)
+                if (p->visible && !p->isKnocked)
                     DrawVisibleWarning = true;
             }
         }
@@ -359,7 +359,7 @@ struct Sense {
                 p->localOrigin.x,
                 p->localOrigin.y,
                 p->localOrigin.z);
-            if (!p->visible && !p->knocked && distance < cl->SENSE_MAX_RANGE) {
+            if (!p->visible && !p->isKnocked && distance < cl->SENSE_MAX_RANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
 //_                int healthShield = p->currentHealth + p->currentShields;
