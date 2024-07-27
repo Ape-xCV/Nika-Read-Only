@@ -2,8 +2,8 @@
 struct LocalPlayer {
     MyDisplay *display;
     uint64_t base;
-    bool dead;
-    bool knocked;
+    bool isDead;
+    bool isKnocked;
     bool inAttack;
     bool inZoom;
 //_    bool inJump;
@@ -43,8 +43,8 @@ struct LocalPlayer {
     void readFromMemory(Level* map) {
         base = mem::Read<long>(OFF_REGION + OFF_LOCAL_PLAYER, "LocalPlayer base");
         if (base == 0) return;
-        dead = mem::Read<short>(base + OFF_LIFE_STATE, "LocalPlayer base") > 0;
-        knocked = mem::Read<short>(base + OFF_BLEEDOUT_STATE, "LocalPlayer base") > 0;
+        isDead = mem::Read<short>(base + OFF_LIFE_STATE, "LocalPlayer base") > 0;
+        isKnocked = mem::Read<short>(base + OFF_BLEEDOUT_STATE, "LocalPlayer base") > 0;
         inZoom = mem::Read<short>(base + OFF_ZOOMING, "LocalPlayer inZoom") > 0;
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "LocalPlayer teamNumber");
 
@@ -67,7 +67,7 @@ struct LocalPlayer {
 //_        punchAngles = mem::Read<Vector2D>(base + OFF_PUNCH_ANGLES, "LocalPlayer punchAngles");
 //_        punchAnglesDiff = punchAnglesPrev.Subtract(punchAngles);
 //_        punchAnglesPrev = punchAngles;
-        if (!dead && !knocked && map->isPlayable) {
+        if (!isDead && !isKnocked && map->isPlayable) {
             grenadeID = mem::Read<int>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeID");
             grippingGrenade = grenadeID == -251 ? true : false;
             weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
@@ -88,8 +88,8 @@ struct LocalPlayer {
     }
     bool isCombatReady() {
         if (base == 0) return false;
-        if (dead) return false;
-        if (knocked) return false;
+        if (isDead) return false;
+        if (isKnocked) return false;
         return true;
     }
 //_    void setYaw(float angle)
