@@ -103,7 +103,7 @@ struct Aim {
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         TotalSmooth /= (1 + interval * 0.4f); //_add
-        float bulletSpeed = lp->WeaponProjectileSpeed * 0.75f; //_add
+        float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
         if (!leftLock) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
             bulletSpeed -= bulletSpeed * 0.1f * cl->AIMBOT_WEAKEN; //_add
