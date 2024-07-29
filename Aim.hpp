@@ -43,7 +43,7 @@ struct Aim {
         return active;
     }
 //_    void update(int counter) {
-    void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, int boneID) { //_add
+    void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, int boneID, int TotalSpectators) { //_add
         if (boneID == 0) Hitbox = HitboxType::UpperChest; //_add
         else if (boneID == 1) Hitbox = HitboxType::Neck; //_add
         else Hitbox = HitboxType::Head; //_add
@@ -89,11 +89,11 @@ struct Aim {
             hipfireMaxMove *= cl->AIMBOT_FAST_AREA; //_add
             maxDelta /= cl->AIMBOT_WEAKEN; //_add
 //_        StartAiming();
-        StartAiming(averageProcessingTime, leftLock, zoomedMaxMove, hipfireMaxMove, maxDelta); //_add
+        StartAiming(averageProcessingTime, leftLock, zoomedMaxMove, hipfireMaxMove, maxDelta, TotalSpectators); //_add
     }
 
 //_    void StartAiming() {
-    void StartAiming(double interval, bool leftLock, int zoomedMaxMove, int hipfireMaxMove, int maxDelta) { //_add
+    void StartAiming(double interval, bool leftLock, int zoomedMaxMove, int hipfireMaxMove, int maxDelta, int TotalSpectators) { //_add
         QAngle DesiredAngles = QAngle(0.0f, 0.0f);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -104,7 +104,7 @@ struct Aim {
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         TotalSmooth /= (1 + interval * 0.4f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
-        if (!leftLock) { //_add
+        if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
             bulletSpeed -= bulletSpeed * 0.1f * cl->AIMBOT_WEAKEN; //_add
         } //_add
