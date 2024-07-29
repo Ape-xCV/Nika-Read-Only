@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) { //_add
 //_            sense->update(counter);
 //_            sense->itemGlow(counter);
 //_            aim->update(counter);
-            aim->update(counter, averageProcessingTime, leftLock, rightLock, boneID); //_add
+            aim->update(counter, averageProcessingTime, leftLock, rightLock, boneID, TotalSpectators); //_add
 //_            random->runAll(counter);
             random->superGlide(averageFPS); //_add
             if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
