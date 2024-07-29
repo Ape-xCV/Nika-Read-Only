@@ -175,7 +175,7 @@ struct ConfigLoader {
         printf("AIMBOT_FOV\t\t\t\t\t\t%.2f\n", AIMBOT_FOV);
         printf("AIMBOT_FAST_AREA\t\t\t\t\t%.2f\n", AIMBOT_FAST_AREA); //_add
         printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.2f\n", AIMBOT_WEAKEN); //_add
-        printf("AIMBOT_SPECTATORS_WEAKEN\t\t\t\t\t%s\n", AIMBOT_SPECTATORS_WEAKEN ? "YES" : "NO"); //_add
+        printf("AIMBOT_SPECTATORS_WEAKEN\t\t\t\t%s\n", AIMBOT_SPECTATORS_WEAKEN ? "YES" : "NO"); //_add
         printf("AIMBOT_PREDICT_BULLETDROP\t\t\t\t%s\n", AIMBOT_PREDICT_BULLETDROP ? "YES" : "NO");
         printf("AIMBOT_PREDICT_MOVEMENT\t\t\t\t\t%s\n", AIMBOT_PREDICT_MOVEMENT ? "YES" : "NO");
         printf("AIMBOT_ALLOW_TARGET_SWITCH\t\t\t\t%s\n", AIMBOT_ALLOW_TARGET_SWITCH ? "YES" : "NO");
