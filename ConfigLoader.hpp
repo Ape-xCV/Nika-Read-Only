@@ -51,6 +51,7 @@ struct ConfigLoader {
     float AIMBOT_FOV = 10;
     float AIMBOT_FAST_AREA = 0.67; //_add
     float AIMBOT_WEAKEN = 2; //_add
+    bool AIMBOT_SPECTATORS_WEAKEN = true; //_add
     bool AIMBOT_PREDICT_BULLETDROP = true;
     bool AIMBOT_PREDICT_MOVEMENT = true;
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
@@ -100,6 +101,7 @@ struct ConfigLoader {
         AIMBOT_FOV = (key.compare("AIMBOT_FOV") != 0) ? AIMBOT_FOV : stod(val);
         AIMBOT_FAST_AREA = (key.compare("AIMBOT_FAST_AREA") != 0) ? AIMBOT_FAST_AREA : stod(val); //_add
         AIMBOT_WEAKEN = (key.compare("AIMBOT_WEAKEN") != 0) ? AIMBOT_WEAKEN : stod(val); //_add
+        AIMBOT_SPECTATORS_WEAKEN = (key.compare("AIMBOT_SPECTATORS_WEAKEN") != 0) ? AIMBOT_SPECTATORS_WEAKEN : toBool(val); //_add
         AIMBOT_PREDICT_BULLETDROP = (key.compare("AIMBOT_PREDICT_BULLETDROP") != 0) ? AIMBOT_PREDICT_BULLETDROP : toBool(val);
         AIMBOT_PREDICT_MOVEMENT = (key.compare("AIMBOT_PREDICT_MOVEMENT") != 0) ? AIMBOT_PREDICT_MOVEMENT : toBool(val);
         AIMBOT_ALLOW_TARGET_SWITCH = (key.compare("AIMBOT_ALLOW_TARGET_SWITCH") != 0) ? AIMBOT_ALLOW_TARGET_SWITCH : toBool(val);
@@ -173,6 +175,7 @@ struct ConfigLoader {
         printf("AIMBOT_FOV\t\t\t\t\t\t%.2f\n", AIMBOT_FOV);
         printf("AIMBOT_FAST_AREA\t\t\t\t\t%.2f\n", AIMBOT_FAST_AREA); //_add
         printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.2f\n", AIMBOT_WEAKEN); //_add
+        printf("AIMBOT_SPECTATORS_WEAKEN\t\t\t\t\t%s\n", AIMBOT_SPECTATORS_WEAKEN ? "YES" : "NO"); //_add
         printf("AIMBOT_PREDICT_BULLETDROP\t\t\t\t%s\n", AIMBOT_PREDICT_BULLETDROP ? "YES" : "NO");
         printf("AIMBOT_PREDICT_MOVEMENT\t\t\t\t\t%s\n", AIMBOT_PREDICT_MOVEMENT ? "YES" : "NO");
         printf("AIMBOT_ALLOW_TARGET_SWITCH\t\t\t\t%s\n", AIMBOT_ALLOW_TARGET_SWITCH ? "YES" : "NO");
