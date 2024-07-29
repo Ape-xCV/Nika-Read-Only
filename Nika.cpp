@@ -230,7 +230,7 @@ int main(int argc, char* argv[]) { //_add
             if (!map->isPlayable) {
                 printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
-                readError = 35000; //_add
+                readError = 3000; //_add
                 continue;
             }
 
@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) { //_add
 //_            if (!localPlayer->isValid()) throw std::invalid_argument("Select Legend");
             if (!localPlayer->isValid()) { //_add
                 printf("Select Legend\n"); //_add
-                readError = 1000; //_add
+                readError = 3000; //_add
                 continue; //_add
             } //_add
 
