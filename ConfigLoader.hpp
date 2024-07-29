@@ -49,8 +49,8 @@ struct ConfigLoader {
     float AIMBOT_SMOOTH = 30;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
     float AIMBOT_FOV = 10;
-    float AIMBOT_SLOW_AREA = 0.50f; //_add
-    float AIMBOT_FAST_AREA = 0.75f; //_add
+    float AIMBOT_SLOW_AREA = 0.67f; //_add
+    float AIMBOT_FAST_AREA = 0.33f; //_add
     float AIMBOT_WEAKEN = 2; //_add
     bool AIMBOT_SPECTATORS_WEAKEN = true; //_add
     bool AIMBOT_PREDICT_BULLETDROP = true;
