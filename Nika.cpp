@@ -153,12 +153,15 @@ void RenderUI() {
 //_int main() {
 int main(int argc, char* argv[]) { //_add
     if (getuid()) { std::cout << "RUN AS ROOT!\n"; return -1; }
-    if (mem::GetPID() == 0) {
-        //system("mount -o remount,rw,hidepid=0 /proc"); //_add
-        std::cout << "OPEN APEX LEGENDS!\n";
-        return -1;
-    }
-    //system("mount -o remount,rw,hidepid=2 /proc"); //_add
+//_    if (mem::GetPID() == 0) { std::cout << "OPEN APEX LEGENDS!\n"; return -1; }
+    system("mount -o remount,rw,hidepid=0 /proc"); //_add
+    while (mem::GetPID() == 0) { //_add
+        std::cout << "OPEN APEX LEGENDS!\n"; //_add
+        std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
+    } //_add
+    while (!map->isLobby) //_add
+        std::this_thread::sleep_for(std::chrono::seconds(3)); //_add
+    system("mount -o remount,rw,hidepid=2 /proc"); //_add
 
 //_    ConfigLoader* cl = new ConfigLoader();
     MyDisplay* display = new MyDisplay();
@@ -204,7 +207,7 @@ int main(int argc, char* argv[]) { //_add
                     readError = 0; //_add
                 } //_add
             if (display->isKeyDown("XK_Home")) { //_add
-                //system("mount -o remount,rw,hidepid=0 /proc"); //_add
+                system("mount -o remount,rw,hidepid=0 /proc"); //_add
                 return -1; //_add
             } //_add
             if (display->isKeyDown("XK_Left")) { //_add
