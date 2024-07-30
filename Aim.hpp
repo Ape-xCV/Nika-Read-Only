@@ -133,7 +133,10 @@ struct Aim {
             Vector2D TargetBoneW2S;
             Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileSpeed > 999.9f)
-                TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
+                if (lp->WeaponProjectileScale >= 0.5f && lp->WeaponProjectileScale <= 1.6f)
+                    TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
+                else
+                    TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, 1.0f);
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 999.9f)
                 //if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
                 if (CurrentTarget->isDummie())
