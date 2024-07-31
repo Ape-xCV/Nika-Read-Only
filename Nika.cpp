@@ -159,7 +159,8 @@ int main(int argc, char* argv[]) { //_add
         std::cout << "OPEN APEX LEGENDS!\n"; //_add
         std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
     } //_add
-    while (!map->isLobby) //_add
+    map->readFromMemory(); //_add
+    while (!map->isLobby && !map->isPlayable) //_add
         std::this_thread::sleep_for(std::chrono::seconds(3)); //_add
     //system("mount -o remount,rw,hidepid=2 /proc"); //_add
 
