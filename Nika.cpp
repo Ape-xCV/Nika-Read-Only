@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) { //_add
         std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
     } //_add
     while (!map->isLobby && !map->isPlayable) { //_add
-        std::cout << "."; //_add
+        std::cout << "." << std::flush; //_add
         std::this_thread::sleep_for(std::chrono::seconds(3)); //_add
         map->readFromMemory(); //_add
     } //_add
