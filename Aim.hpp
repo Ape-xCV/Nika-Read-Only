@@ -32,18 +32,23 @@ struct Aim {
         bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
         //bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && display->isLeftMouseButtonDown(); //_add
         bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
-        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY);
+//_        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY);
         bool active = aimbotIsOn
             && combatReady
             && (activatedByAttack
-            //&& ((activatedByAttack && leftLock) //_add
 //_                || activatedByADS
                 || (activatedByADS && rightLock) //_add
-                || activatedByKey);
+//_                || activatedByKey);
+                || keymap::AIMBOT_ACTIVATION_KEY); //_add
         return active;
     }
 //_    void update(int counter) {
     void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, int boneID, int TotalSpectators) { //_add
+        static bool wasKeyReleased = false; //_add
+        if (!wasKeyReleased && (!keymap::AIMBOT_ACTIVATION_KEY || CurrentTarget != nullptr && !CurrentTarget->visible)) { //_add
+            display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
+            wasKeyReleased = true; //_add
+        } //_add
         if (boneID == 0) Hitbox = HitboxType::UpperChest; //_add
         else if (boneID == 1) Hitbox = HitboxType::Neck; //_add
         else Hitbox = HitboxType::Head; //_add
@@ -77,7 +82,7 @@ struct Aim {
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
         double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
 //_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
-        if (!(cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) && !lp->inAttack && DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) { //_add
+        if (!keymap::AIMBOT_ACTIVATION_KEY && !lp->inAttack || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
             return;
         }
@@ -94,11 +99,9 @@ struct Aim {
             maxDelta /= cl->AIMBOT_WEAKEN; //_add
         } //_add
 //_        StartAiming();
-        StartAiming(averageProcessingTime, leftLock, zoomedMaxMove, hipfireMaxMove, maxDelta, TotalSpectators); //_add
-    }
+//_    }
 
 //_    void StartAiming() {
-    void StartAiming(double interval, bool leftLock, int zoomedMaxMove, int hipfireMaxMove, int maxDelta, int TotalSpectators) { //_add
         QAngle DesiredAngles = QAngle(0.0f, 0.0f);
         if (!GetAngle(CurrentTarget, DesiredAngles))
             return;
@@ -107,7 +110,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
-        TotalSmooth /= (1 + interval * 0.5f); //_add
+        TotalSmooth /= (1 + averageProcessingTime * 0.5f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
         if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
@@ -129,9 +132,16 @@ struct Aim {
         int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
 
 //_begin
+        Vector2D LocalOriginW2S, HeadPositionW2S;
+        Vector3D LocalOrigin3D = CurrentTarget->localOrigin;
+        Vector3D HeadPosition3D = CurrentTarget->GetBonePosition(HitboxType::Head);
+        bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
+        bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
+        float width = (LocalOriginW2S.y - HeadPositionW2S.y) / 2;
+        Vector2D TargetBoneW2S;
+        Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
+        Vector2D ScreenSize = GameCamera->GetResolution();
         if (!cl->AIMBOT_LEGACY_MODE) {
-            Vector2D TargetBoneW2S;
-            Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileSpeed > 999.9f)
                 if (lp->WeaponProjectileScale >= 0.5f && lp->WeaponProjectileScale <= 1.6f)
                     TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, lp->WeaponProjectileScale);
@@ -144,7 +154,6 @@ struct Aim {
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
-            Vector2D ScreenSize = GameCamera->GetResolution();
             totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
             totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
         }
@@ -174,8 +183,28 @@ struct Aim {
             else
                 totalYawIncrementInt = lastMoveX - maxDelta;
 
-        //if (totalPitchIncrementInt >= -1 && totalPitchIncrementInt <= 1) totalPitchIncrementInt = 0;
-        //if (totalYawIncrementInt >= -1 && totalYawIncrementInt <= 1) totalYawIncrementInt = 0;
+        int weapon = lp->weaponIndex;
+        if (weapon != WEAPON_SENTINEL &&
+            weapon != WEAPON_BOCEK &&
+            weapon != WEAPON_CHARGE_RIFLE &&
+            weapon != WEAPON_LONGBOW &&
+            weapon != WEAPON_G7 &&
+            weapon != WEAPON_HEMLOCK &&
+            weapon != WEAPON_KRABER &&
+            weapon != WEAPON_MASTIFF &&
+            weapon != WEAPON_PROWLER &&
+            weapon != WEAPON_PEACEKEEPER &&
+            weapon != WEAPON_P2020 &&
+            weapon != WEAPON_TRIPLE_TAKE &&
+            weapon != WEAPON_WINGMAN &&
+            weapon != WEAPON_3030 &&
+            weapon != WEAPON_MELEE &&
+            weapon != WEAPON_THROWING_KNIFE)
+        if (wasKeyReleased && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width/2 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width/2) {
+            display->kbPress(cl->AIMBOT_FIRING_KEY);
+            wasKeyReleased = false;
+        }
+
 //_end
         if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
