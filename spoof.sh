@@ -3,7 +3,7 @@
 systemctl stop systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-udevd.service
 #mv /usr/bin/udevadm /root/udevadm
 echo -e "Disabling \e[1mudisksd\e[0m..."
-mv /usr/lib/udisks2/udisksd /root/udisksd
+#mv /usr/lib/udisks2/udisksd /root/udisksd
 
 rm -fr /dev/disk/by-id
 mkdir /dev/disk/by-id
