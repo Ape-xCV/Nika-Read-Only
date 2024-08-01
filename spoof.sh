@@ -34,3 +34,5 @@ ip link set wlan0 up
 
 echo -e "Disabling \e[1mudevadm\e[0m..."
 chmod 700 /usr/bin/udevadm
+echo -e "Disabling \e[1mnvidia-smi\e[0m..."
+chmod 700 /usr/bin/nvidia-smi
