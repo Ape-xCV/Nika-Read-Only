@@ -15,6 +15,10 @@ struct Color {
     }
 };
 
+namespace keymap { //_add
+    bool AIMBOT_ACTIVATION_KEY; //_add
+}; //_add
+
 namespace level {
     bool isMixtape;
 };
