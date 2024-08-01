@@ -132,10 +132,11 @@ struct Player {
             timeLocalOriginPrev3 = timeLocalOriginPrev2; //_add
             timeLocalOriginPrev2 = timeLocalOriginPrev; //_add
             timeLocalOriginPrev = timeLocalOrigin; //_add
+        } else { //_add
+            AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
+            viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
+            viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
         } //_add
-        AbsoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player AbsoluteVelocity");
-        viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles"); //_add
-        viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw"); //_add
 //_        Vector3D localOrigin_diff = localOrigin.Subtract(localOrigin_prev).Normalize().Multiply(20);
 //_        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
 //_        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
