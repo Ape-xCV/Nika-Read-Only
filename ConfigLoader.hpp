@@ -70,7 +70,7 @@ struct ConfigLoader {
 //_    std::string FEATURE_MAP_RADAR_BUTTON = "XK_m";
 //_    std::string TRIGGERBOT_PAUSE_BUTTON = "XK_z";
     std::string AIMBOT_ACTIVATION_KEY = "XK_Shift_L";
-    std::string AIMBOT_ACTIVATION_KEY = "XK_x"; //_add
+    std::string AIMBOT_FIRING_KEY = "XK_x"; //_add
 
     void loadVariables(std::string key, std::string val) {
         //features
