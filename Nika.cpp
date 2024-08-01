@@ -200,15 +200,17 @@ int main(int argc, char* argv[]) { //_add
     while (true) {
         try {
             long startTime = util::currentEpochMillis();
-            if (readError > 0) //_add
-                if (cl->SENSE_VERBOSE > 1) { //_add
+            if (readError > 0) { //_add
+                if (cl->SENSE_VERBOSE > 1) //_add
                     OverlayWindow.Render(&RenderUI); //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
-                    readError = 0; //_add
-                } else { //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
-                    readError = 0; //_add
-                } //_add
+                display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
+                std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
+                readError = 0; //_add
+            } //_add
+            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) //_add
+                keymap::AIMBOT_ACTIVATION_KEY = true; //_add
+            else //_add
+                keymap::AIMBOT_ACTIVATION_KEY = false; //_add
             if (display->isKeyDown("XK_Home")) { //_add
                 //system("mount -o remount,rw,hidepid=0 /proc"); //_add
                 return -1; //_add
