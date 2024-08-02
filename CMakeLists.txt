@@ -68,5 +68,5 @@ file(COPY ${CMAKE_SOURCE_DIR}/www.txt DESTINATION ${CMAKE_BINARY_DIR})
 # Copy spoof.sh to build folder
 file(COPY ${CMAKE_SOURCE_DIR}/spoof.sh DESTINATION ${CMAKE_BINARY_DIR})
 
-# Copy unspoof.sh to build folder
-file(COPY ${CMAKE_SOURCE_DIR}/unspoof.sh DESTINATION ${CMAKE_BINARY_DIR})
+# Copy rules to build folder
+file(COPY ${CMAKE_SOURCE_DIR}/rules DESTINATION ${CMAKE_BINARY_DIR})
