@@ -122,8 +122,7 @@ cp main.sh /root/main.sh
 cp www.txt /root/www.txt
 chmod +x spoof.sh
 cp spoof.sh /root/spoof.sh
-chmod +x unspoof.sh
-cp unspoof.sh /root/unspoof.sh
+cp rules /root/rules
 ```
 
 ### 4. Spoof & Run
