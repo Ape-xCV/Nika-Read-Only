@@ -125,12 +125,11 @@ cp spoof.sh /root/spoof.sh
 cp rules /root/rules
 ```
 
-### 4. Spoof & Run
+### 4. Run
 
 ``` shell
 su
 cd /root
-./spoof.sh
 ./main.sh
 ```
 
