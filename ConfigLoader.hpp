@@ -12,12 +12,12 @@ struct ConfigLoader {
     //features
     bool FEATURE_AIMBOT_ON = true;
 //_    bool FEATURE_NORECOIL_ON = false;
-    bool FEATURE_TRIGGERBOT_ON = true;
+//_    bool FEATURE_TRIGGERBOT_ON = true;
     bool FEATURE_SENSE_ON = false;
     bool FEATURE_ITEM_GLOW_ON = false;
     bool FEATURE_SPECTATORS_ON = true;
     bool FEATURE_SPECTATORS_SHOW_DEAD = false; //_add
-    bool FEATURE_SUPER_GLIDE_ON = true;
+    bool FEATURE_SUPER_GLIDE_ON = false;
 //_    bool FEATURE_SKINCHANGER_ON = true;
 //_    bool FEATURE_QUICKTURN_ON = true;
 //_    bool FEATURE_PRINT_LEVELS_ON = true;
@@ -30,15 +30,15 @@ struct ConfigLoader {
 //_    int NORECOIL_YAW_REDUCTION = 10;
 
     //triggerBot
-    int TRIGGERBOT_ZOOMED_RANGE = 180;
-    int TRIGGERBOT_HIPFIRE_RANGE = 30;
+//_    int TRIGGERBOT_ZOOMED_RANGE = 180;
+//_    int TRIGGERBOT_HIPFIRE_RANGE = 30;
 
     //sense
     int SENSE_VERBOSE = 2; //_add
     int SENSE_MAX_RANGE = 250;
     bool SENSE_SHOW_PLAYER_DISTANCES = true; //_add
-    bool SENSE_SHOW_PLAYER_NAMES = true; //_add
-    bool SENSE_SHOW_PLAYER_LEVELS = true; //_add
+    bool SENSE_SHOW_PLAYER_NAMES = false; //_add
+    bool SENSE_SHOW_PLAYER_LEVELS = false; //_add
     bool SENSE_SHOW_DEAD = false; //_add
 
     //aimBot
@@ -48,10 +48,10 @@ struct ConfigLoader {
     bool AIMBOT_DEFERRED_FIRE = true; //_add
     float AIMBOT_SPEED = 10;
     float AIMBOT_SMOOTH = 30;
-    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
+    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 3000;
     float AIMBOT_FOV = 10;
-    float AIMBOT_FAST_AREA = 0.67f; //_add
-    float AIMBOT_SLOW_AREA = 0.33f; //_add
+    float AIMBOT_FAST_AREA = 0.60f; //_add
+    float AIMBOT_SLOW_AREA = 0.40f; //_add
     float AIMBOT_WEAKEN = 2; //_add
     bool AIMBOT_SPECTATORS_WEAKEN = true; //_add
     bool AIMBOT_PREDICT_BULLETDROP = true;
@@ -60,8 +60,8 @@ struct ConfigLoader {
     bool AIMBOT_LEGACY_MODE = false; //_add
     int AIMBOT_MAX_DISTANCE = 250;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 30; //_add
-    int AIMBOT_HIPFIRE_MAX_MOVE = 40; //_add
+    int AIMBOT_ZOOMED_MAX_MOVE = 20; //_add
+    int AIMBOT_HIPFIRE_MAX_MOVE = 30; //_add
     int AIMBOT_MAX_DELTA = 10; //_add
 
     //keys
@@ -76,15 +76,15 @@ struct ConfigLoader {
         //features
         FEATURE_AIMBOT_ON = (key.compare("FEATURE_AIMBOT_ON") != 0) ? FEATURE_AIMBOT_ON : toBool(val);
 //_        FEATURE_NORECOIL_ON = (key.compare("FEATURE_NORECOIL_ON") != 0) ? FEATURE_NORECOIL_ON : toBool(val);
-        FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
+//_        FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
 //_        FEATURE_SENSE_ON = (key.compare("FEATURE_SENSE_ON") != 0) ? FEATURE_SENSE_ON : toBool(val);
 //_        FEATURE_ITEM_GLOW_ON = (key.compare("FEATURE_ITEM_GLOW_ON") != 0) ? FEATURE_ITEM_GLOW_ON : toBool(val);
         //noRecoil
 //_        NORECOIL_PITCH_REDUCTION = (key.compare("NORECOIL_PITCH_REDUCTION") != 0) ? NORECOIL_PITCH_REDUCTION : stoi(val);
 //_        NORECOIL_YAW_REDUCTION = (key.compare("NORECOIL_YAW_REDUCTION") != 0) ? NORECOIL_YAW_REDUCTION : stoi(val);
         //triggerBot
-        TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
-        TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
+//_        TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
+//_        TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
 //_        TRIGGERBOT_PAUSE_BUTTON = (key.compare("TRIGGERBOT_PAUSE_BUTTON") != 0) ? TRIGGERBOT_PAUSE_BUTTON : trimConstructive(val);
         //sense
         SENSE_VERBOSE = (key.compare("SENSE_VERBOSE") != 0) ? SENSE_VERBOSE : stoi(val); //_add
@@ -137,7 +137,7 @@ struct ConfigLoader {
         //features
         printf("FEATURE_AIMBOT_ON\t\t\t\t\t%s\n", FEATURE_AIMBOT_ON ? "YES" : "NO");
 //_        printf("FEATURE_NORECOIL_ON\t\t\t\t\t%s\n", FEATURE_NORECOIL_ON ? "YES" : "NO");
-        printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
+//_        printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
 //_        printf("FEATURE_SENSE_ON\t\t\t\t\t%s\n", FEATURE_SENSE_ON ? "YES" : "NO");
 //_        printf("FEATURE_ITEM_GLOW_ON\t\t\t\t\t%s\n", FEATURE_ITEM_GLOW_ON ? "YES" : "NO");
         printf("FEATURE_SPECTATORS_ON\t\t\t\t\t%s\n", FEATURE_SPECTATORS_ON ? "YES" : "NO");
@@ -158,10 +158,10 @@ struct ConfigLoader {
 //_        printf("NORECOIL_YAW_REDUCTION\t\t\t\t\t%d\n", NORECOIL_YAW_REDUCTION);
 //_        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         //triggerBot
-        printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
-        printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
+//_        printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
+//_        printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
 //_        printf("TRIGGERBOT_PAUSE_BUTTON\t\t\t\t\t%s\n", TRIGGERBOT_PAUSE_BUTTON.c_str());
-        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//_        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         //sense
         printf("SENSE_VERBOSE\t\t\t\t\t\t%d\n", SENSE_VERBOSE); //_add
         printf("SENSE_MAX_RANGE\t\t\t\t\t\t%d\n", SENSE_MAX_RANGE);
