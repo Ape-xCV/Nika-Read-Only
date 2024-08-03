@@ -78,8 +78,9 @@ struct Aim {
             TargetSelected = true;
         }
 
+        Vector3D TargetBone3DCached = CurrentTarget->GetBonePosition(Hitbox); //_add
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
-        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget->GetBonePosition(Hitbox)); //_add
+        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(TargetBone3DCached); //_add
 //_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
         if (!keymap::AIMBOT_ACTIVATION_KEY && !lp->inAttack || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
@@ -138,7 +139,7 @@ struct Aim {
         bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
         float width = (LocalOriginW2S.y - HeadPositionW2S.y) / 2;
         Vector2D TargetBoneW2S;
-        Vector3D TargetBone3D = CurrentTarget->GetBonePosition(Hitbox);
+        Vector3D TargetBone3D = TargetBone3DCached;
         Vector2D ScreenSize = GameCamera->GetResolution();
         if (!cl->AIMBOT_LEGACY_MODE) {
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->WeaponProjectileSpeed > 999.9f)
