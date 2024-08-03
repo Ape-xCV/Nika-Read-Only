@@ -44,10 +44,9 @@ struct Aim {
     }
 //_    void update(int counter) {
     void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, int boneID, int TotalSpectators) { //_add
-        static bool wasKeyReleased = false; //_add
-        if (!wasKeyReleased && (!keymap::AIMBOT_ACTIVATION_KEY || CurrentTarget != nullptr && !CurrentTarget->visible)) { //_add
+        if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || CurrentTarget != nullptr && !CurrentTarget->visible)) { //_add
             display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
-            wasKeyReleased = true; //_add
+            keymap::AIMBOT_FIRING_KEY = false; //_add
         } //_add
         if (boneID == 0) Hitbox = HitboxType::UpperChest; //_add
         else if (boneID == 1) Hitbox = HitboxType::Neck; //_add
@@ -200,9 +199,9 @@ struct Aim {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_MELEE &&
             weapon != WEAPON_THROWING_KNIFE)
-        if (wasKeyReleased && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width/2 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width/2) {
+        if (!keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width*2/3 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width*2/3) {
             display->kbPress(cl->AIMBOT_FIRING_KEY);
-            wasKeyReleased = false;
+            keymap::AIMBOT_FIRING_KEY = true;
         }
 
 //_end
