@@ -119,7 +119,7 @@ double averageFPS;
 int readError = 1000;
 bool leftLock = true;
 bool rightLock = false;
-bool autoFire = false;
+bool autoFire = true;
 int boneID = 0;
 int TotalSpectators = 0;
 std::vector<std::string> Spectators;
@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) { //_add
 
     //create features
 //_    NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
-    TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
+//_    TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
 //_    Sense* sense = new Sense(cl, map, localPlayer, players);
 //_    Aim* aim = new Aim(cl, display, localPlayer, players);
     Aim* aim = new Aim(cl, display, localPlayer, players, GameCamera);
@@ -268,12 +268,11 @@ int main(int argc, char* argv[]) { //_add
 
 //_            noRecoil->controlWeapon();
 //_            triggerBot->shootAtEnemy(counter);
-            triggerBot->shootAtEnemy(counter, autoFire);
             GameCamera->Update(); //_add
 //_            sense->update(counter);
 //_            sense->itemGlow(counter);
 //_            aim->update(counter);
-            aim->update(counter, averageProcessingTime, leftLock, rightLock, boneID, TotalSpectators); //_add
+            aim->update(counter, averageProcessingTime, leftLock, rightLock, autoFire, boneID, TotalSpectators); //_add
 //_            random->runAll(counter);
             random->superGlide(averageFPS); //_add
             if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
