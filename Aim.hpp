@@ -30,16 +30,15 @@ struct Aim {
         bool aimbotIsOn = cl->FEATURE_AIMBOT_ON;
         bool combatReady = lp->isCombatReady();
         bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && lp->inAttack;
-        //bool activatedByAttack = cl->AIMBOT_ACTIVATED_BY_ATTACK && display->isLeftMouseButtonDown(); //_add
-        bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
+//_        bool activatedByADS = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
+        bool activatedByADS = rightLock && cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom; //_add
 //_        bool activatedByKey = cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY);
+        bool activatedByKey = keymap::AIMBOT_ACTIVATION_KEY; //_add
         bool active = aimbotIsOn
             && combatReady
             && (activatedByAttack
-//_                || activatedByADS
-                || (activatedByADS && rightLock) //_add
-//_                || activatedByKey);
-                || keymap::AIMBOT_ACTIVATION_KEY); //_add
+                || activatedByADS
+                || activatedByKey);
         return active;
     }
 //_    void update(int counter) {
@@ -82,7 +81,7 @@ struct Aim {
 //_        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
         double DistanceFromCrosshair = CalculateDistanceFromCrosshair(TargetBone3DCached); //_add
 //_        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
-        if (!keymap::AIMBOT_ACTIVATION_KEY && !lp->inAttack || DistanceFromCrosshair == -1) { //_add
+        if (!lp->inAttack && (rightLock && !lp->inZoom) && !keymap::AIMBOT_ACTIVATION_KEY || DistanceFromCrosshair == -1) { //_add
             ReleaseTarget();
             return;
         }
