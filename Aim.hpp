@@ -266,12 +266,12 @@ struct Aim {
 
     bool IsValidTarget(Player* target) {
         if (target == nullptr ||
-//_            !target->isValid() || 
+//_            !target->isValid() ||
             !target->isCombatReady() ||
-            !target->visible || 
-            !target->enemy || 
-            target->distance2DToLocalPlayer < Conversion::ToGameUnits(cl->AIMBOT_MIN_DISTANCE) || 
-            target->distance2DToLocalPlayer > Conversion::ToGameUnits(FinalDistance))
+            !target->visible ||
+            !target->enemy ||
+            target->distance2DToLocalPlayer < util::metersToInches(cl->AIMBOT_MIN_DISTANCE) ||
+            target->distance2DToLocalPlayer > util::metersToInches(FinalDistance))
             return false;
         return true;
     }
