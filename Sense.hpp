@@ -134,17 +134,11 @@ struct Sense {
                 EnemyBoxColor = ImVec4(0.99, 0, 0, 0.99);
                 EnemyDistanceColor = ImVec4(0.99, 0, 0, 0.99);
             } else if (p->isKnocked) {
-                EnemyBoxColor = ImVec4(0.990, 0.671, 0.119, 0.99);
-                EnemyDistanceColor = ImVec4(0.990, 0.671, 0.119, 0.99);
+                EnemyBoxColor = ImVec4(0.99, 0.671, 0.119, 0.99);
+                EnemyDistanceColor = ImVec4(0.99, 0.671, 0.119, 0.99);
             }
 
-            double distance = math::calculateDistanceInMeters(
-                lp->localOrigin.x,
-                lp->localOrigin.y,
-                lp->localOrigin.z,
-                p->localOrigin.x,
-                p->localOrigin.y,
-                p->localOrigin.z);
+            float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (!p->local && p->enemy && p->isValid() && distance < cl->SENSE_MAX_RANGE) {
 
                 // Draw Boxes
@@ -227,22 +221,13 @@ struct Sense {
         }
 
         if (DrawVisibleWarning) {
-            int textX = screenWidth / 2;
-            int textY = screenHeight * 3/4;
-            const char* buffer = "VISIBLE WARNING";
-            const auto textSize = ImGui::CalcTextSize(buffer);
-            const auto horizontalOffset = textSize.x / 2;
-            const auto verticalOffset = textSize.y - 20;
-            const auto textColor = ImColor(ImVec4(0, 0.99, 0, 0.99));
-
-            glColor3f(0, 0, 0);
-            glBegin(GL_QUADS);
-            glVertex2f(textX - horizontalOffset - 3, textY + 3);
-            glVertex2f(textX + horizontalOffset + 1, textY + 3);
-            glVertex2f(textX + horizontalOffset + 1, textY + textSize.y - 1);
-            glVertex2f(textX - horizontalOffset - 3, textY + textSize.y - 1);
-            glEnd();
-            Canvas->AddText({ textX - horizontalOffset, textY - verticalOffset }, textColor, buffer);
+            ImVec4 warningColor = ImColor(ImVec4(0, 0.99, 0, 0.99));
+            DrawPosition = Vector2D(screenWidth / 2, screenHeight * 3/4);
+            const char* txtWarning;
+            txtWarning = "VISIBLE WARNING";
+            char warningText[256];
+            strncpy(warningText, txtWarning, sizeof(warningText));
+            drawText(Canvas, DrawPosition, warningText, warningColor);
         }
     }
 
@@ -320,7 +305,7 @@ struct Sense {
             if (!p->enemy || !p->isValid() || p->base == lp->base)
                 continue;
 
-            float radarDistance = (int)((lp->localOrigin, p->distance2DToLocalPlayer) / 39.62);
+            float radarDistance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (radarDistance >= 0.0f && radarDistance < cl->SENSE_MAX_RANGE) {
                 bool viewCheck = false;
                 Vector3D single = RotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
@@ -352,13 +337,7 @@ struct Sense {
             if (p->friendly) 
                 continue;
 
-            double distance = math::calculateDistanceInMeters(
-                lp->localOrigin.x,
-                lp->localOrigin.y, 
-                lp->localOrigin.z,
-                p->localOrigin.x,
-                p->localOrigin.y,
-                p->localOrigin.z);
+            float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (!p->visible && !p->isKnocked && distance < cl->SENSE_MAX_RANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
