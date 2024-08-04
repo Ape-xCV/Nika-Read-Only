@@ -105,7 +105,7 @@ bool InitializeOverlayWindow(const char* OverlayTitle) {
 
 ConfigLoader* cl = new ConfigLoader();
 Level* map = new Level();
-LocalPlayer* localPlayer = new LocalPlayer();
+LocalPlayer* localPlayer = new LocalPlayer(cl);
 std::vector<Player*>* players = new std::vector<Player*>;
 Sense* sense = new Sense(cl, map, localPlayer, players, GameCamera);
 int counter;
