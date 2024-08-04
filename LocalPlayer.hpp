@@ -1,6 +1,7 @@
 #pragma once
 struct LocalPlayer {
-    MyDisplay *display;
+//_    MyDisplay *display;
+    ConfigLoader* cl; //_add
     uint64_t base;
     bool isDead;
     bool isKnocked;
@@ -36,6 +37,10 @@ struct LocalPlayer {
     float traversalReleaseTime;
 //_    float onWall;
 
+    LocalPlayer(ConfigLoader* in_cl) { //_add
+        this->cl = in_cl; //_add
+    } //_add
+
     void reset() {
         base = 0;
     }
@@ -56,9 +61,11 @@ struct LocalPlayer {
 
         frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
         worldTime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
-        traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
-        traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress"); 
-        traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime"); 
+        if (cl->FEATURE_SUPER_GLIDE_ON) { //_add
+            traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
+            traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress");
+            traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime");
+        } //_add
 //_        onWall = mem::Read<float>(base + OFFSET_WALL_RUN_START_TIME, "LocalPlayer wallRunStartTime");
 
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "LocalPlayer currentHealth");
