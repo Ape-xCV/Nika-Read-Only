@@ -217,8 +217,9 @@ struct Aim {
                 weapon == WEAPON_PROWLER ||
                 weapon == WEAPON_PEACEKEEPER ||
                 weapon == WEAPON_P2020 ||
-                weapon == WEAPON_WINGMAN)
-                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width*2/3 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width*2/3) {
+                weapon == WEAPON_WINGMAN ||
+                weapon == WEAPON_3030)
+                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width/2 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width/2) {
                     std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     static std::chrono::milliseconds timeLastShot;
                     if (timeNow > timeLastShot + std::chrono::milliseconds(125)) {
