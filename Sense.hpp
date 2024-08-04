@@ -313,7 +313,8 @@ struct Sense {
                 ImVec2 center(single.x, single.y);
                 int radius = 5;
                 Canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
-                //Canvas->AddCircle(center, radius + 1, ImColor(ImVec4(0, 0, 0, 0.99)));
+                if (p->visible)
+                    Canvas->AddCircle(center, radius + 2, ImColor(ImVec4(0.99, 0.99, 0, 0.99)));
 
                 // Draw a line pointing in the direction of each player's aim
                 float angle = (360.0f - p->viewYaw) * (M_PI / 180.0f);
