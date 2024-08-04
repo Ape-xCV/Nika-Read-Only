@@ -48,14 +48,18 @@ struct Level {
 };
 
 namespace util {
-    float metersToGameUnits(float meters) {
-        return 39.37007874 * meters;
-    }
-
     long long currentEpochMillis() {
         auto currentTime = std::chrono::system_clock::now();
         auto duration = currentTime.time_since_epoch();
         return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    }
+
+    float inchesToMeters(float inches) {
+        return inches / 39.37007874;
+    }
+
+    float metersToInches(float meters) {
+        return 39.37007874 * meters;
     }
 
     float randomFloat(float min, float max) {
@@ -114,12 +118,6 @@ namespace util {
     }
     void clearScreen() {
         printf("\e[H\e[2J\e[3J");
-    }
-};
-
-namespace Conversion {
-    float ToGameUnits(float Meters) {
-        return 39.37007874 * Meters;
     }
 };
 
