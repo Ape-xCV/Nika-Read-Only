@@ -34,9 +34,9 @@ struct Player {
     float viewYaw; //_add
 //_    Vector3D localOrigin_predicted;
 //_    Vector3D localOrigin_prev;
-    int lastTimeAimedAt;
-    bool aimedAt;
-    int lastTimeAimedAtPrev;
+//_    int lastTimeAimedAt;
+//_    bool aimedAt;
+//_    int lastTimeAimedAtPrev;
 //_    int lastTimeVisible;
     float lastTimeVisible;
     bool visible;
@@ -141,14 +141,14 @@ struct Player {
 //_        localOrigin_predicted = localOrigin.Add(localOrigin_diff);
 //_        localOrigin_prev = Vector3D(localOrigin.x, localOrigin.y, localOrigin.z);
 
-        lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
-        aimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
-        lastTimeAimedAtPrev = lastTimeAimedAt;
+//_        lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
+//_        aimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
+//_        lastTimeAimedAtPrev = lastTimeAimedAt;
 
 //_        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible"); //_add
 //_        visible = isDummie() || aimedAt || lastTimeVisiblePrev < lastTimeVisible;
-        visible = aimedAt || (lastTimeVisible + 0.2) > lp->worldTime; //_add
+        visible = (lastTimeVisible + 0.2) > lp->worldTime; //_add
 //_        lastTimeVisiblePrev = lastTimeVisible;
 
         if (lp->isValid()) {
