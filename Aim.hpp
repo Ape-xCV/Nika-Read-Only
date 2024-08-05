@@ -111,7 +111,7 @@ struct Aim {
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         TotalSmooth /= (1 + averageProcessingTime * 0.5f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
-        if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
+        if (!leftLock || !lp->inZoom || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
             bulletSpeed -= bulletSpeed * (cl->AIMBOT_SMOOTH / 200) * cl->AIMBOT_WEAKEN; //_add
         } //_add
