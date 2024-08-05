@@ -214,7 +214,7 @@ int main(int argc, char* argv[]) { //_add
             else //_add
                 keymap::AIMBOT_ACTIVATION_KEY = false; //_add
             int weapon = localPlayer->weaponIndex; //_add
-            if (display->isLeftMouseButtonDown() && ( //_add
+            if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
                 weapon == WEAPON_SENTINEL || //_add
                 weapon == WEAPON_LONGBOW || //_add
                 weapon == WEAPON_G7 || //_add
