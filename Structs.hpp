@@ -18,6 +18,7 @@ struct Color {
 namespace keymap { //_add
     bool AIMBOT_ACTIVATION_KEY; //_add
     bool AIMBOT_FIRING_KEY; //_add
+    static std::chrono::milliseconds timeLastShot; //_add
 }; //_add
 
 namespace level {
