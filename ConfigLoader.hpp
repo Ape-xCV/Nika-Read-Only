@@ -42,15 +42,16 @@ struct ConfigLoader {
     bool SENSE_SHOW_DEAD = false; //_add
 
     //aimBot
-    bool AIMBOT_ACTIVATED_BY_ATTACK = true;
-    bool AIMBOT_ACTIVATED_BY_ADS = true;
+    bool AIMBOT_ACTIVATED_BY_ATTACK = false;
+    bool AIMBOT_ACTIVATED_BY_ADS = false;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
+    bool AIMBOT_ACTIVATED_BY_MOUSE = true; //_add
     float AIMBOT_SPEED = 10;
     float AIMBOT_SMOOTH = 30;
-    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 3000;
+    float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
     float AIMBOT_FOV = 10;
-    float AIMBOT_FAST_AREA = 0.60f; //_add
-    float AIMBOT_SLOW_AREA = 0.40f; //_add
+    float AIMBOT_FAST_AREA = 0.75f; //_add
+    float AIMBOT_SLOW_AREA = 0.50f; //_add
     float AIMBOT_WEAKEN = 2; //_add
     bool AIMBOT_SPECTATORS_WEAKEN = true; //_add
     bool AIMBOT_PREDICT_BULLETDROP = true;
@@ -96,6 +97,7 @@ struct ConfigLoader {
         AIMBOT_ACTIVATED_BY_ATTACK = (key.compare("AIMBOT_ACTIVATED_BY_ATTACK") != 0) ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
         AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
         AIMBOT_ACTIVATED_BY_KEY = (key.compare("AIMBOT_ACTIVATED_BY_KEY") != 0) ? AIMBOT_ACTIVATED_BY_KEY : toBool(val);
+        AIMBOT_ACTIVATED_BY_MOUSE = (key.compare("AIMBOT_ACTIVATED_BY_MOUSE") != 0) ? AIMBOT_ACTIVATED_BY_MOUSE : toBool(val); //_add
         AIMBOT_ACTIVATION_KEY = (key.compare("AIMBOT_ACTIVATION_KEY") != 0) ? AIMBOT_ACTIVATION_KEY : trimConstructive(val);
         AIMBOT_FIRING_KEY = (key.compare("AIMBOT_FIRING_KEY") != 0) ? AIMBOT_FIRING_KEY : trimConstructive(val); //_add
         AIMBOT_SPEED = (key.compare("AIMBOT_SPEED") != 0) ? AIMBOT_SPEED : stod(val);
@@ -172,6 +174,7 @@ struct ConfigLoader {
         printf("AIMBOT_ACTIVATED_BY_ATTACK\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ATTACK ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_KEY ? "YES" : "NO");
+        printf("AIMBOT_ACTIVATED_BY_MOUSE\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_MOUSE ? "YES" : "NO"); //_add
         printf("AIMBOT_ACTIVATION_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATION_KEY.c_str());
         printf("AIMBOT_FIRING_KEY\t\t\t\t\t%s\n", AIMBOT_FIRING_KEY.c_str()); //_add
         printf("AIMBOT_SPEED\t\t\t\t\t\t%.4f\n", AIMBOT_SPEED);
