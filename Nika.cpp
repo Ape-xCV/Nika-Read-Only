@@ -213,6 +213,23 @@ int main(int argc, char* argv[]) { //_add
                 keymap::AIMBOT_ACTIVATION_KEY = true; //_add
             else //_add
                 keymap::AIMBOT_ACTIVATION_KEY = false; //_add
+            int weapon = localPlayer->weaponIndex; //_add
+            if (display->isLeftMouseButtonDown() && ( //_add
+                weapon == WEAPON_SENTINEL || //_add
+                weapon == WEAPON_LONGBOW || //_add
+                weapon == WEAPON_G7 || //_add
+                weapon == WEAPON_HEMLOCK || //_add
+                weapon == WEAPON_KRABER || //_add
+                weapon == WEAPON_MASTIFF || //_add
+                weapon == WEAPON_PROWLER || //_add
+                weapon == WEAPON_PEACEKEEPER || //_add
+                weapon == WEAPON_P2020 || //_add
+                weapon == WEAPON_TRIPLE_TAKE || //_add
+                weapon == WEAPON_WINGMAN || //_add
+                weapon == WEAPON_3030)) { //_add
+                display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
+                display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
+            } //_add
             if (display->isKeyDown("XK_Home")) { //_add
                 //system("mount -o remount,rw,hidepid=0 /proc"); //_add
                 return -1; //_add
