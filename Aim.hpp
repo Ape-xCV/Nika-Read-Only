@@ -206,7 +206,7 @@ struct Aim {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_MELEE &&
             weapon != WEAPON_THROWING_KNIFE) {
-            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
+            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width*5/4 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width*5/4) {
                 display->kbPress(cl->AIMBOT_FIRING_KEY);
                 keymap::AIMBOT_FIRING_KEY = true;
             }
