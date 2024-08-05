@@ -217,16 +217,8 @@ int main(int argc, char* argv[]) { //_add
             if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
                 weapon == WEAPON_SENTINEL || //_add
                 weapon == WEAPON_LONGBOW || //_add
-                weapon == WEAPON_G7 || //_add
-                weapon == WEAPON_HEMLOCK || //_add
                 weapon == WEAPON_KRABER || //_add
-                weapon == WEAPON_MASTIFF || //_add
-                weapon == WEAPON_PROWLER || //_add
-                weapon == WEAPON_PEACEKEEPER || //_add
-                weapon == WEAPON_P2020 || //_add
-                weapon == WEAPON_TRIPLE_TAKE || //_add
-                weapon == WEAPON_WINGMAN || //_add
-                weapon == WEAPON_3030)) { //_add
+                weapon == WEAPON_TRIPLE_TAKE)) { //_add
                 std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
                 if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
                     display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
