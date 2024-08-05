@@ -228,11 +228,10 @@ int main(int argc, char* argv[]) { //_add
                 weapon == WEAPON_WINGMAN || //_add
                 weapon == WEAPON_3030)) { //_add
                 std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
-                static std::chrono::milliseconds timeLastShot; //_add
-                if (timeNow > timeLastShot + std::chrono::milliseconds(125)) { //_add
+                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
                     display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
                     display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
-                    timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
+                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
                 } //_add
             } //_add
             if (display->isKeyDown("XK_Home")) { //_add
