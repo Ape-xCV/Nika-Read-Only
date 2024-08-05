@@ -223,7 +223,9 @@ struct Aim {
                     std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     static std::chrono::milliseconds timeLastShot;
                     if (timeNow > timeLastShot + std::chrono::milliseconds(125)) {
-                        display->mouseClickLeft();
+                        //display->mouseClickLeft();
+                        display->kbPress(cl->AIMBOT_FIRING_KEY);
+                        display->kbRelease(cl->AIMBOT_FIRING_KEY);
                         timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     }
                 }
