@@ -208,7 +208,8 @@ int main(int argc, char* argv[]) { //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
                 readError = 0; //_add
             } //_add
-            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) //_add
+            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY) || //_add
+                cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown()) //_add
                 keymap::AIMBOT_ACTIVATION_KEY = true; //_add
             else //_add
                 keymap::AIMBOT_ACTIVATION_KEY = false; //_add
