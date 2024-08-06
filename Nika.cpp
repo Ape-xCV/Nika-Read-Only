@@ -225,6 +225,7 @@ int main(int argc, char* argv[]) { //_add
                 if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
                     display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
                     display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
+                    keymap::AIMBOT_FIRING_KEY = false; //_add
                     keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
                 } //_add
             } //_add
