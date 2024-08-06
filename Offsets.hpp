@@ -2,20 +2,20 @@
 // Apex Legends v3.0.75.30
 
 // [Miscellaneous]
-constexpr long OFF_ENTITY_LIST = 0x1ef8e38; //[Miscellaneous]->cl_entitylist
-constexpr long OFF_LOCAL_PLAYER = 0x22b1528; //[Miscellaneous]->LocalPlayer
-constexpr long OFF_GLOBAL_VARS = 0x17e9820; //[Miscellaneous]->GlobalVars
-constexpr long OFF_NAMELIST = 0xd2e3460; //[Miscellaneous]->NameList
-constexpr long OFF_VIEW_RENDER = 0x7543e00; //[Miscellaneous]->ViewRender
+constexpr long OFF_ENTITY_LIST = 0x1f14e08; //[Miscellaneous]->cl_entitylist
+constexpr long OFF_LOCAL_PLAYER = 0x23e7ff8; //[Miscellaneous]->LocalPlayer
+constexpr long OFF_GLOBAL_VARS = 0x17eaf90; //[Miscellaneous]->GlobalVars
+constexpr long OFF_NAMELIST = 0xd34f2c0; //[Miscellaneous]->NameList
+constexpr long OFF_VIEW_RENDER = 0x769a3d8; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
-constexpr long OFF_LEVEL = 0x17e9d24; //[Miscellaneous]->LevelName
-constexpr long OFF_PROJECTILESPEED = 0x1eb4; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
-constexpr long OFF_PROJECTILESCALE = 0x1ebc; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta].base
+constexpr long OFF_LEVEL = 0x17eb494; //[Miscellaneous]->LevelName
+constexpr long OFF_PROJECTILESPEED = 0x1ec4; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
+constexpr long OFF_PROJECTILESCALE = 0x1ec4 + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta].base
 constexpr long OFF_CAMERAORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_origin
 constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 
 // [Buttons]
-constexpr long OFF_IN_ATTACK = 0x07543f28; //[Buttons]->in_attack
+constexpr long OFF_IN_ATTACK = 0x0769a4f8; //[Buttons]->in_attack
 
 // [RecvTable.DT_BaseAnimating]
 constexpr long OFF_BONES = 0x0db0 + 0x48; //[RecvTable.DT_BaseAnimating]->m_nForceBone + 0x48
@@ -34,15 +34,15 @@ constexpr long OFF_NAME = 0x0481; //[RecvTable.DT_BaseEntity]->m_iName
 constexpr long OFF_NAMEINDEX = 0x38; //[RecvTable.DT_BaseEntity]
 
 // [RecvTable.DT_LocalPlayerExclusive]
-constexpr long OFFSET_TRAVERSAL_PROGRESS = 0x2b7c; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalProgress
-constexpr long OFFSET_TRAVERSAL_START_TIME = 0x2b80; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalStartTime
-constexpr long OFFSET_TRAVERSAL_RELEASE_TIME = 0x2b88; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalReleaseTime
+constexpr long OFFSET_TRAVERSAL_PROGRESS = 0x2b6c; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalProgress
+constexpr long OFFSET_TRAVERSAL_START_TIME = 0x2b70; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalStartTime
+constexpr long OFFSET_TRAVERSAL_RELEASE_TIME = 0x2b78; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalReleaseTime
 
 // [RecvTable.DT_Player]
 constexpr long OFF_CURRENT_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
-constexpr long OFF_BLEEDOUT_STATE = 0x2770; //[RecvTable.DT_Player]->m_bleedoutState
-constexpr long OFF_XPLEVEL = 0x3734; //[RecvTable.DT_Player]->m_xp
+constexpr long OFF_BLEEDOUT_STATE = 0x2760; //[RecvTable.DT_Player]->m_bleedoutState
+constexpr long OFF_XPLEVEL = 0x3724; //[RecvTable.DT_Player]->m_xp
 
 // [RecvTable.DT_WeaponX]
 constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
@@ -53,16 +53,16 @@ constexpr long OFF_LOCAL_ORIGIN = 0x017c; //[DataMap.C_BaseEntity]->m_vecAbsOrig
 
 // [DataMap.C_Player]
 constexpr long OFF_ZOOMING = 0x1be1; //[DataMap.C_Player]->m_bZooming
-constexpr long OFFSET_TIME_BASE = 0x2098; //[DataMap.C_Player]->m_currentFramePlayer.timeBase
-constexpr long OFF_YAW = 0x224c - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8
-constexpr long OFF_VIEW_ANGLES = 0x2544 - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14
+constexpr long OFFSET_TIME_BASE = 0x2088; //[DataMap.C_Player]->m_currentFramePlayer.timeBase
+constexpr long OFF_YAW = 0x223c - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8
+constexpr long OFF_VIEW_ANGLES = 0x2534 - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14
 
 // [ConVars]
-constexpr long OFF_GAMEMODE = 0x022e9560; //[ConVars]->mp_gamemode
+constexpr long OFF_GAMEMODE = 0x02420050; //[ConVars]->mp_gamemode
 
 
-constexpr long OFF_SPECTATOR_LIST = 0x1efae58; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
-constexpr long OFF_SPECTATOR_LIST_AUX = 0x974;
+constexpr long OFF_SPECTATOR_LIST = 0x1f16e28; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
+constexpr long OFF_SPECTATOR_LIST_AUX = 0x964;
 
 
 constexpr long OFF_REGION = 0x140000000; //[Static]->Region
