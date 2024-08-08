@@ -5,7 +5,7 @@
 ## Introduction
 
 - The goal of this project is to have a working Linux cheat that can run alongside Apex Legends on my i5-6600K 4c/4t Linux PC.
-- This a modification of: [Pesci-Apu/Nika](https://github.com/Pesci-Apu/Nika).
+- This is a considerable improvement of: [Pesci-Apu/Nika](https://github.com/Pesci-Apu/Nika).
 - With an overlay taken from: [Gerosity/zap-client-Read-Only-](https://github.com/Gerosity/zap-client-Read-Only-).
 - The code remains simple and clean. You can read it out and understand how the overlay is added.
 - Lines were commented out with a "**//_**" prefix or added with a "**//_add**" suffix. Also "**//_begin**" and "**//_end**" was used for large blocks.
@@ -26,7 +26,7 @@
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire, or to **super glide**
 * [x] Partially disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
-* [x] Quickly enable/disable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
+* [x] Quickly disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 - **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [x] Terminate process with HOME
