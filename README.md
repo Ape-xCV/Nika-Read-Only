@@ -146,7 +146,7 @@ cd /root
 - Install (Debian): `sudo apt install macchanger`
 - Edit **spoof.sh** and modify it where needed: `sudo nano /root/spoof.sh`
 
-### 7. CachyOS + NVIDIA proprietary driver
+### 7. EndeavourOS / CachyOS
 
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode
 - For KDE desktop environment (Wayland), open System Settings >> Window Management >> Window Rules >> Import... >> glfw.kwinrule
