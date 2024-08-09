@@ -60,7 +60,7 @@ struct Aim {
         else {
             FinalFOV = (cl->AIMBOT_FOV + 20.0f);
 //_            FinalDistance = HipfireDistance;
-            FinalDistance = cl->TRIGGERBOT_HIPFIRE_DISTANCE; //_add
+            FinalDistance = cl->TRIGGERBOT_HIPFIRE_RANGE; //_add
         }
 
         Player* Target = CurrentTarget;
