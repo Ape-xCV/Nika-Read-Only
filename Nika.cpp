@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) { //_add
             int grenade = localPlayer->grenadeID; //_add
             int weapon = localPlayer->weaponIndex; //_add
             if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
-                grenade != -255 && grenade != -256 && grenade != -63743 && grenade != -63744 || //_add
+                //grenade != -255 && grenade != -256 || //_add
                 weapon == WEAPON_SENTINEL || //_add
                 weapon == WEAPON_LONGBOW || //_add
                 weapon == WEAPON_KRABER || //_add
