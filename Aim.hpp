@@ -110,7 +110,7 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
-        TotalSmooth /= (1 + averageProcessingTime * 0.5f); //_add
+        TotalSmooth /= (1 + averageProcessingTime * 0.3f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
         if (!leftLock || !lp->inZoom || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
@@ -138,7 +138,7 @@ struct Aim {
         bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
         bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
         float width = (LocalOriginW2S.y - HeadPositionW2S.y) / 2;
-        width += width*util::inchesToMeters(CurrentTarget->distance2DToLocalPlayer/100);
+        width += width*util::inchesToMeters(CurrentTarget->distance2DToLocalPlayer / 85);
         Vector2D TargetBoneW2S;
         Vector3D TargetBone3D = TargetBone3DCached;
         Vector2D ScreenSize = GameCamera->GetResolution();
