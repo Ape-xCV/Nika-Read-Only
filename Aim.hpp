@@ -103,8 +103,8 @@ struct Aim {
 
 //_    void StartAiming() {
         QAngle DesiredAngles = QAngle(0.0f, 0.0f);
-        if (!GetAngle(CurrentTarget, DesiredAngles))
-            return;
+//_        if (!GetAngle(CurrentTarget, DesiredAngles))
+//_            return;
 
         Vector2D DesiredAnglesIncrement = Vector2D(CalculatePitchIncrement(DesiredAngles), CalculateYawIncrement(DesiredAngles));
 
@@ -138,7 +138,6 @@ struct Aim {
         bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
         bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
         float width = (LocalOriginW2S.y - HeadPositionW2S.y) / 2;
-        width += width*util::inchesToMeters(CurrentTarget->distance2DToLocalPlayer / 85);
         Vector2D TargetBoneW2S;
         Vector3D TargetBone3D = TargetBone3DCached;
         Vector2D ScreenSize = GameCamera->GetResolution();
@@ -185,7 +184,7 @@ struct Aim {
                 totalYawIncrementInt = lastMoveX - maxDelta;
 
 //_end
-        if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
+//_        if (totalPitchIncrementInt == 0 && totalYawIncrementInt == 0) return;
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
 //_begin
         lastMoveY = totalPitchIncrementInt;
@@ -208,7 +207,7 @@ struct Aim {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_MELEE &&
             weapon != WEAPON_THROWING_KNIFE) {
-            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
+            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width+10 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width+10) {
                 display->kbPress(cl->AIMBOT_FIRING_KEY);
                 keymap::AIMBOT_FIRING_KEY = true;
             }
@@ -221,7 +220,7 @@ struct Aim {
                 weapon == WEAPON_P2020 ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030)
-                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
+                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width+10 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width+10) {
                     std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) {
                         //display->mouseClickLeft();
