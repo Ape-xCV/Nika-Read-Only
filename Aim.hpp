@@ -90,12 +90,12 @@ struct Aim {
         int hipfireMaxMove = cl->AIMBOT_HIPFIRE_MAX_MOVE; //_add
         int maxDelta = cl->AIMBOT_MAX_DELTA; //_add
         if (DistanceFromCrosshair < FinalFOV * cl->AIMBOT_FAST_AREA) { //_add
-            zoomedMaxMove *= cl->AIMBOT_FAST_AREA; //_add
-            hipfireMaxMove *= cl->AIMBOT_FAST_AREA; //_add
-            maxDelta /= cl->AIMBOT_WEAKEN; //_add
-        } else if (DistanceFromCrosshair < FinalFOV * cl->AIMBOT_SLOW_AREA) { //_add
             zoomedMaxMove *= cl->AIMBOT_SLOW_AREA; //_add
             hipfireMaxMove *= cl->AIMBOT_SLOW_AREA; //_add
+            maxDelta /= cl->AIMBOT_WEAKEN; //_add
+        } else if (DistanceFromCrosshair < FinalFOV * cl->AIMBOT_SLOW_AREA) { //_add
+            zoomedMaxMove *= cl->AIMBOT_FAST_AREA; //_add
+            hipfireMaxMove *= cl->AIMBOT_FAST_AREA; //_add
             maxDelta /= cl->AIMBOT_WEAKEN; //_add
         } //_add
 //_        StartAiming();
