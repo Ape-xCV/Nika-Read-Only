@@ -108,22 +108,9 @@ make install
 ### 3.1 Build
 
 ``` shell
-su
-cd /root
-git clone https://github.com/Ape-xCV/Nika-Read-Only.git
-cd Nika-Read-Only
-mkdir build
-cd build
-cmake ..
-make
-cp main /root/main
-cp nika.ini /root/nika.ini
-chmod +x main.sh
-cp main.sh /root/main.sh
-cp www.txt /root/www.txt
-chmod +x spoof.sh
-cp spoof.sh /root/spoof.sh
-cp rules /root/rules
+cd path/to/extracted/repository
+chmod +x install.sh
+./install.sh
 ```
 
 ### 4. Run
