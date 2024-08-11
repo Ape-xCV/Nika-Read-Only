@@ -218,6 +218,7 @@ struct Aim {
                 weapon == WEAPON_PROWLER ||
                 weapon == WEAPON_PEACEKEEPER ||
                 weapon == WEAPON_P2020 ||
+                weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030)
                 if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width+10 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width+10) {
