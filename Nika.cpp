@@ -296,7 +296,7 @@ int main(int argc, char* argv[]) { //_add
 
 //_            int processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime); //_add
-            int goalSleepTime = 6.97; // 16.67ms=60HZ | 6.97ms=144HZ
+            int goalSleepTime = 16.67; // 16.67ms=60HZ | 6.97ms=144HZ
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
             std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
 
