@@ -5,8 +5,8 @@
 ## Introduction
 
 - The goal of this project is to have a working Linux cheat that can run alongside Apex Legends on my i5-6600K 4c/4t Linux PC.
-- This is a considerable improvement of: [Pesci-Apu/Nika](https://github.com/Pesci-Apu/Nika).
-- With an overlay taken from: [Gerosity/zap-client-Read-Only-](https://github.com/Gerosity/zap-client-Read-Only-).
+- This is a considerable improvement of: Pesci-Apu/Nika
+- With an overlay taken from: Gerosity/zap-client-Read-Only-
 - The code remains simple and clean. You can read it out and understand how the overlay is added.
 - Lines were commented out with a "**//_**" prefix or added with a "**//_add**" suffix. Also "**//_begin**" and "**//_end**" was used for large blocks.
 
