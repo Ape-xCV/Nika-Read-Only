@@ -7,8 +7,6 @@ if [ "$EUID" != 0 ]; then
 fi
 
 rm -fr /root/Nika-Read-Only
-#cd /root
-#git clone https://github.com/Ape-xCV/Nika-Read-Only.git
 cp -r . /root/Nika-Read-Only
 mkdir /root/Nika-Read-Only/build
 cd /root/Nika-Read-Only/build
