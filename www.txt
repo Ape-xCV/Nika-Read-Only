@@ -23,7 +23,6 @@ www.cnbc.com
 www.cnet.com
 www.cnn.com
 www.dailymail.co.uk
-www.elmundo.es
 www.e-monsite.com
 www.estadao.com.br
 www.eventbrite.com
@@ -79,7 +78,6 @@ www.tmz.com
 www.trustpilot.com
 www.uol.com.br
 www.walmart.com
-www.washingtonpost.com
 www.webmd.com
 www.weebly.com
 www.welt.de
