@@ -46,8 +46,8 @@ struct ConfigLoader {
     bool AIMBOT_ACTIVATED_BY_ADS = false;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
     bool AIMBOT_ACTIVATED_BY_MOUSE = true; //_add
-    float AIMBOT_SPEED = 10;
-    float AIMBOT_SMOOTH = 30;
+    float AIMBOT_SPEED = 15;
+    float AIMBOT_SMOOTH = 20;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
     float AIMBOT_FOV = 10;
     float AIMBOT_FAST_AREA = 0.75f; //_add
