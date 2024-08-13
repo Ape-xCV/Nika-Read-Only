@@ -61,7 +61,7 @@ constexpr long OFF_VIEW_ANGLES = 0x2534 - 0x14; //[DataMap.C_Player]->m_ammoPool
 constexpr long OFF_GAMEMODE = 0x02421110; //[ConVars]->mp_gamemode
 
 
-constexpr long OFF_SPECTATOR_LIST = 0x1f16e28; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
+constexpr long OFF_SPECTATOR_LIST = 0x1f17ee8; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
 constexpr long OFF_SPECTATOR_LIST_AUX = 0x964 + 0x10;
 
 
