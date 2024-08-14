@@ -45,7 +45,7 @@ constexpr long OFF_BLEEDOUT_STATE = 0x2760; //[RecvTable.DT_Player]->m_bleedoutS
 constexpr long OFF_XPLEVEL = 0x3724; //[RecvTable.DT_Player]->m_xp
 
 // [RecvTable.DT_WeaponX]
-constexpr long OFF_WEAPON_INDEX = 0x1574; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
+constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 
 // [DataMap.C_BaseEntity]
 constexpr long OFF_ABSVELOCITY = 0x0170; //[DataMap.C_BaseEntity]->m_vecAbsVelocity
