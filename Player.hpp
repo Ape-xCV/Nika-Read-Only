@@ -102,7 +102,8 @@ struct Player {
 //_
 //_        return modelName;
 //_    }
-    void readFromMemory() {
+//_    void readFromMemory() {
+    void readFromMemory(int counter) {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
@@ -110,9 +111,11 @@ struct Player {
         if (!isPlayer() && !isDummie()) { reset(); return; }
         if (isPlayer()) { //_add
             plyrDataTable = mem::Read<int>(base + OFF_NAMEINDEX, "Player Data Table");
-            spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
-            spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
-            spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
+            if (cl->FEATURE_SPECTATORS_ON && counter % 100 == 0) { //_add
+                spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
+                spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
+                spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
+            } //_add
         } //_add
         isDead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
         isKnocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
