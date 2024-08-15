@@ -149,6 +149,61 @@ void RenderUI() {
     ImGui::End();
 }
 
+// isOutdated() by hir0xygen
+bool isOutdated() { // Scan possible Steam installation paths for "libraryfolders.vdf" to then scan existing library folders for "gameversion.txt"
+    // Get currently logged in user
+    struct passwd* pw;
+    const char* username = nullptr;
+    while ((pw = getpwent()) != nullptr) {
+        if (strncmp(pw->pw_dir, "/home/", 6) == 0) {
+            username = pw->pw_name;
+            break;
+        }
+    }
+    endpwent();
+
+    if (username == nullptr)
+        return true;
+
+    const std::string steamPaths[] = {
+      "/.steam/steam/config/libraryfolders.vdf",
+      "/.local/share/Steam/config/libraryfolders.vdf",
+      "/.var/app/com.valvesoftware.Steam/data/Steam/config/libraryfolders.vdf"
+    };
+
+    std::vector<std::string> extractedPaths;
+    for (const auto& steamPath : steamPaths) {
+        std::stringstream fullPath;
+        fullPath << "/home/" << username << steamPath;
+
+        std::string libraryfolders = slurpFile(fullPath.str());
+        size_t currentPos = 0;
+        while (true) {
+            const size_t pathPos = libraryfolders.find("path", currentPos);
+
+            if (pathPos == std::string::npos)
+                break;
+
+            const size_t pathStart = pathPos + 8;
+            const size_t pathEnd = libraryfolders.find('"', pathStart);
+
+            if (pathEnd != std::string::npos) {
+                std::string extractedPath = libraryfolders.substr(pathStart, pathEnd - pathStart);
+                std::stringstream finalPath;
+                finalPath << extractedPath << R"(/steamapps/common/Apex Legends/gameversion.txt)";
+
+                if (std::string version = slurpFile(finalPath.str()); version == GameVersion) {
+                    return false;
+                }
+            }
+
+            currentPos = pathEnd;
+        }
+    }
+
+    return true;
+}
+
 //_end
 //_int main() {
 int main(int argc, char* argv[]) { //_add
