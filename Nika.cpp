@@ -149,6 +149,28 @@ void RenderUI() {
     ImGui::End();
 }
 
+std::string slurpFile(const std::string& absolutePath) {
+    std::string contents;
+    std::ifstream file;
+    file.open(absolutePath, std::ios::in);
+
+    if (file.fail()) {
+        return contents;
+    }
+
+    char c;
+    while (file.get(c)) {
+        contents += c;
+    }
+
+    file.close();
+    std::erase(contents, '\n');
+    std::erase(contents, '\r');
+    return contents;
+}
+
+#include <pwd.h>
+std::string GameVersion = OFF_GAME_VERSION;
 // isOutdated() by hir0xygen
 bool isOutdated() { // Scan possible Steam installation paths for "libraryfolders.vdf" to then scan existing library folders for "gameversion.txt"
     // Get currently logged in user
