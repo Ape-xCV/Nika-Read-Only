@@ -112,8 +112,8 @@ struct Player {
         if (isPlayer()) { //_add
             plyrDataTable = mem::Read<int>(base + OFF_NAMEINDEX, "Player Data Table");
             if (cl->FEATURE_SPECTATORS_ON && counter % 100 == 0) { //_add
-                spectators = mem::Read<uint64_t>(OFF_REGION + OFF_SPECTATOR_LIST, "spectators");
-                spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_SPECTATOR_LIST_AUX, "Spectator Index");
+                spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "spectators");
+                spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Spectator Index");
                 spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
             } //_add
         } //_add
