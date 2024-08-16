@@ -9,8 +9,8 @@ constexpr long OFF_NAMELIST = 0xd3503c0; //[Miscellaneous]->NameList
 constexpr long OFF_VIEW_RENDER = 0x769b4d8; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
 constexpr long OFF_LEVEL = 0x17ec494; //[Miscellaneous]->LevelName
-constexpr long OFF_PROJECTILESPEED = 0x04ec + 0x19d8; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta].base
-constexpr long OFF_PROJECTILESCALE = OFF_PROJECTILESPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta].base
+constexpr long OFF_PROJECTILESPEED = 0x04ec + 0x19d8; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base
+constexpr long OFF_PROJECTILESCALE = OFF_PROJECTILESPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base
 constexpr long OFF_CAMERAORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_origin
 constexpr long OFF_STUDIOHDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 // [Buttons]
@@ -44,9 +44,11 @@ constexpr long OFF_ABSVELOCITY = 0x0170; //[DataMap.C_BaseEntity]->m_vecAbsVeloc
 constexpr long OFF_LOCAL_ORIGIN = 0x017c; //[DataMap.C_BaseEntity]->m_vecAbsOrigin
 // [DataMap.C_Player]
 constexpr long OFF_ZOOMING = 0x1be1; //[DataMap.C_Player]->m_bZooming
-constexpr long OFFSET_TIME_BASE = 0x2088; //[DataMap.C_Player]->m_currentFramePlayer.timeBase
+constexpr long OFF_TIME_BASE = 0x2088; //[DataMap.C_Player]->m_currentFramePlayer.timeBase
 constexpr long OFF_YAW = 0x223c - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8
 constexpr long OFF_VIEW_ANGLES = 0x2534 - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14
+// [DataMap.WeaponPlayerData]
+constexpr long OFF_ZOOM_FOV = 0x15e0 + 0x00bc; //[RecvTable.DT_WeaponX]->m_playerData + [DataMap.WeaponPlayerData]->m_targetZoomFOV
 // [ConVars]
 constexpr long OFF_GAMEMODE = 0x02421110; //[ConVars]->mp_gamemode
 // [Static]
