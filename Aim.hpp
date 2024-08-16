@@ -54,7 +54,8 @@ struct Aim {
 //_        if (!active()){ ReleaseTarget(); return; }
         if (!active(leftLock, rightLock)){ ReleaseTarget(); return; } //_add
         if (lp->inZoom) {
-            FinalFOV = cl->AIMBOT_FOV;
+//_            FinalFOV = cl->AIMBOT_FOV;
+            FinalFOV = cl->AIMBOT_FOV * lp->zoomFOV / 60; //_add
             FinalDistance = cl->AIMBOT_MAX_DISTANCE;
         }
         else {
