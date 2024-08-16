@@ -229,6 +229,13 @@ struct Sense {
             strncpy(warningText, txtWarning, sizeof(warningText));
             drawText(Canvas, DrawPosition, warningText, warningColor);
         }
+
+        // Draw FOV
+        if (lp->inZoom) {
+            ImVec2 center(screenWidth / 2, screenHeight / 2);
+            int radius = screenHeight / 60 * cl->AIMBOT_FOV;
+            Canvas->AddCircle(center, radius, ImColor(ImVec4(0.99, 0.99, 0.99, 0.99)));
+        }
     }
 
     static Vector3D RotatePoint(Vector3D LocalPlayerPos, Vector3D PlayerPos, int posX, int posY, int sizeX, int sizeY, float angle, float zoom, bool* viewCheck) {
