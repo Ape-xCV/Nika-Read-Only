@@ -39,6 +39,8 @@ m_bZooming=$(sed -nr "/^\[DataMap.C_Player\]/ { :l /^m_bZooming[ ]*=/ { s/[^=]*=
 timeBase=$(sed -nr "/^\[DataMap.C_Player\]/ { :l /^m_currentFramePlayer.timeBase[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 m_ammoPoolCount=$(sed -nr "/^\[DataMap.C_Player\]/ { :l /^m_currentFramePlayer.m_ammoPoolCount[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 m_ammoPoolCapacity=$(sed -nr "/^\[DataMap.C_Player\]/ { :l /^m_ammoPoolCapacity[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
+m_playerData=$(sed -nr "/^\[RecvTable.DT_WeaponX\]/ { :l /^m_playerData[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
+m_targetZoomFOV=$(sed -nr "/^\[DataMap.WeaponPlayerData\]/ { :l /^m_targetZoomFOV[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 mp_gamemode=$(sed -nr "/^\[DataMap.C_Player\]/ { :l /^mp_gamemode[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 
 echo "#pragma once"
@@ -90,6 +92,8 @@ echo "constexpr long OFF_ZOOMING = ${m_bZooming::-1}; //[DataMap.C_Player]->m_bZ
 echo "constexpr long OFFSET_TIME_BASE = ${timeBase::-1}; //[DataMap.C_Player]->m_currentFramePlayer.timeBase"
 echo "constexpr long OFF_YAW = ${m_ammoPoolCount::-1} - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8"
 echo "constexpr long OFF_VIEW_ANGLES = ${m_ammoPoolCapacity::-1} - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14"
+echo "// [DataMap.WeaponPlayerData]"
+echo "constexpr long OFF_ZOOM_FOV = ${m_playerData::-1} + ${m_targetZoomFOV::-1}; //[RecvTable.DT_WeaponX]->m_playerData + [DataMap.WeaponPlayerData]->m_targetZoomFOV"
 echo "// [ConVars]"
 echo "constexpr long OFF_GAMEMODE = ${mp_gamemode::-1}; //[ConVars]->mp_gamemode"
 echo "// [Static]"
