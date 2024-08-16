@@ -31,6 +31,7 @@ struct LocalPlayer {
     int currentHealth;
     float WeaponProjectileSpeed;
     float WeaponProjectileScale;
+    float zoomFOV; //_add
     float worldTime;
     float traversalStartTime;
     float traversalProgress;
@@ -60,7 +61,7 @@ struct LocalPlayer {
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
 
         frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
-        worldTime = mem::Read<float>(base + OFFSET_TIME_BASE, "LocalPlayer worldTime");
+        worldTime = mem::Read<float>(base + OFF_TIME_BASE, "LocalPlayer worldTime");
         if (cl->FEATURE_SUPER_GLIDE_ON) { //_add
             traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
             traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress");
@@ -88,6 +89,7 @@ struct LocalPlayer {
 //_            currentWeapon = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (actWeaponIDMasked << 5), "LocalPlayer current Weapon");
             WeaponProjectileSpeed = mem::Read<float>(weaponEntity + OFF_PROJECTILESPEED, "LocalPlayer WeaponProjectileSpeed");
             WeaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILESCALE, "LocalPlayer WeaponProjectileScale");
+            zoomFOV = mem::Read<float>(weaponEntity + OFF_ZOOM_FOV, "LocalPlayer zoomFOV"); //_add
         }
     }
     bool isValid() {
