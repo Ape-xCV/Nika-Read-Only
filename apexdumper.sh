@@ -89,7 +89,7 @@ echo "constexpr long OFF_ABSVELOCITY = ${m_vecAbsVelocity::-1}; //[DataMap.C_Bas
 echo "constexpr long OFF_LOCAL_ORIGIN = ${m_vecAbsOrigin::-1}; //[DataMap.C_BaseEntity]->m_vecAbsOrigin"
 echo "// [DataMap.C_Player]"
 echo "constexpr long OFF_ZOOMING = ${m_bZooming::-1}; //[DataMap.C_Player]->m_bZooming"
-echo "constexpr long OFFSET_TIME_BASE = ${timeBase::-1}; //[DataMap.C_Player]->m_currentFramePlayer.timeBase"
+echo "constexpr long OFF_TIME_BASE = ${timeBase::-1}; //[DataMap.C_Player]->m_currentFramePlayer.timeBase"
 echo "constexpr long OFF_YAW = ${m_ammoPoolCount::-1} - 0x8; //[DataMap.C_Player]->m_currentFramePlayer.m_ammoPoolCount - 0x8"
 echo "constexpr long OFF_VIEW_ANGLES = ${m_ammoPoolCapacity::-1} - 0x14; //[DataMap.C_Player]->m_ammoPoolCapacity - 0x14"
 echo "// [DataMap.WeaponPlayerData]"
