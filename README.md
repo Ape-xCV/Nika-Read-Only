@@ -134,3 +134,15 @@ cd /root
 - Set to "**Borderless Window**" in-game, press ESC >> Settings >> Video >> Display Mode
 - For KDE desktop environment (Wayland), open System Settings >> Window Management >> Window Rules >> Import... >> glfw.kwinrule
 - For Xfce desktop environment (X11), go to Settings >> Window Manager Tweaks >> Accessibility >> Key used to grab and move windows: None
+
+### 8. Update
+
+- Go to the (UC) Apex Legends Reversal, Structs and Offsets thread and copy the usual pastebin to `apexdumper.txt`
+- With `apexdumper.txt` in the same folder as `apexdumper.sh`:
+``` shell
+cd path/to/extracted/repository
+chmod +x apexdumper.sh
+./apexdumper.sh > Offsets.hpp
+chmod +x install.sh
+./install.sh
+```
