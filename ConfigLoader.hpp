@@ -186,7 +186,7 @@ struct ConfigLoader {
         printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);
         printf("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE\t\t\t\t%.4f\n", AIMBOT_SMOOTH_EXTRA_BY_DISTANCE);
         printf("AIMBOT_FOV\t\t\t\t\t\t%.2f\n", AIMBOT_FOV);
-        printf("AIMBOT_FOV_EXTRA_BY_DISTANCE\t\t\t\t%.2f\n", AIMBOT_FOV); //_add
+        printf("AIMBOT_FOV_EXTRA_BY_DISTANCE\t\t\t\t%.2f\n", AIMBOT_FOV_EXTRA_BY_DISTANCE); //_add
         printf("AIMBOT_FAST_AREA\t\t\t\t\t%.2f\n", AIMBOT_FAST_AREA); //_add
         printf("AIMBOT_SLOW_AREA\t\t\t\t\t%.2f\n", AIMBOT_SLOW_AREA); //_add
         printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.2f\n", AIMBOT_WEAKEN); //_add
