@@ -231,7 +231,7 @@ struct Sense {
         }
 
         // Draw FOV
-        if (lp->inZoom) {
+        if (cl->SENSE_SHOW_FOV && lp->inZoom) {
             ImVec2 center(screenWidth / 2, screenHeight / 2);
             int radius = screenHeight / 60 * cl->AIMBOT_FOV;
             Canvas->AddCircle(center, radius, ImColor(ImVec4(0.99, 0.99, 0.99, 0.99)));
