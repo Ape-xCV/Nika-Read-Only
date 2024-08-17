@@ -40,6 +40,7 @@ struct ConfigLoader {
     bool SENSE_SHOW_PLAYER_NAMES = false; //_add
     bool SENSE_SHOW_PLAYER_LEVELS = false; //_add
     bool SENSE_SHOW_DEAD = false; //_add
+    bool SENSE_SHOW_FOV = true; //_add
 
     //aimBot
     bool AIMBOT_ACTIVATED_BY_ATTACK = false;
@@ -93,6 +94,7 @@ struct ConfigLoader {
         SENSE_SHOW_PLAYER_NAMES = (key.compare("SENSE_SHOW_PLAYER_NAMES") != 0) ? SENSE_SHOW_PLAYER_NAMES : toBool(val); //_add
         SENSE_SHOW_PLAYER_LEVELS = (key.compare("SENSE_SHOW_PLAYER_LEVELS") != 0) ? SENSE_SHOW_PLAYER_LEVELS : toBool(val); //_add
         SENSE_SHOW_DEAD = (key.compare("SENSE_SHOW_DEAD") != 0) ? SENSE_SHOW_DEAD : toBool(val); //_add
+        SENSE_SHOW_FOV = (key.compare("SENSE_SHOW_FOV") != 0) ? SENSE_SHOW_FOV : toBool(val); //_add
         //aimBot
         AIMBOT_ACTIVATED_BY_ATTACK = (key.compare("AIMBOT_ACTIVATED_BY_ATTACK") != 0) ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
         AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
@@ -169,6 +171,7 @@ struct ConfigLoader {
         printf("SENSE_SHOW_PLAYER_NAMES\t\t\t\t\t%s\n", SENSE_SHOW_PLAYER_NAMES ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_PLAYER_LEVELS\t\t\t\t%s\n", SENSE_SHOW_PLAYER_LEVELS ? "YES" : "NO"); //_add
         printf("SENSE_SHOW_DEAD\t\t\t\t\t\t%s\n", SENSE_SHOW_DEAD ? "YES" : "NO"); //_add
+        printf("SENSE_SHOW_FOV\t\t\t\t\t\t%s\n", SENSE_SHOW_FOV ? "YES" : "NO"); //_add
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         //aimBot
         printf("AIMBOT_ACTIVATED_BY_ATTACK\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ATTACK ? "YES" : "NO");
