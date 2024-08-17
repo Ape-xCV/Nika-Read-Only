@@ -51,6 +51,7 @@ struct ConfigLoader {
     float AIMBOT_SMOOTH = 20;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1000;
     float AIMBOT_FOV = 10;
+    float AIMBOT_FOV_EXTRA_BY_DISTANCE = 0.2f; //_add
     float AIMBOT_FAST_AREA = 0.75f; //_add
     float AIMBOT_SLOW_AREA = 0.50f; //_add
     float AIMBOT_WEAKEN = 2; //_add
@@ -106,6 +107,7 @@ struct ConfigLoader {
         AIMBOT_SMOOTH = (key.compare("AIMBOT_SMOOTH") != 0) ? AIMBOT_SMOOTH : stod(val);
         AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = (key.compare("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE") != 0) ? AIMBOT_SMOOTH_EXTRA_BY_DISTANCE : stod(val);
         AIMBOT_FOV = (key.compare("AIMBOT_FOV") != 0) ? AIMBOT_FOV : stod(val);
+        AIMBOT_FOV_EXTRA_BY_DISTANCE = (key.compare("AIMBOT_FOV_EXTRA_BY_DISTANCE") != 0) ? AIMBOT_FOV_EXTRA_BY_DISTANCE : stod(val); //_add
         AIMBOT_FAST_AREA = (key.compare("AIMBOT_FAST_AREA") != 0) ? AIMBOT_FAST_AREA : stod(val); //_add
         AIMBOT_SLOW_AREA = (key.compare("AIMBOT_SLOW_AREA") != 0) ? AIMBOT_SLOW_AREA : stod(val); //_add
         AIMBOT_WEAKEN = (key.compare("AIMBOT_WEAKEN") != 0) ? AIMBOT_WEAKEN : stod(val); //_add
@@ -184,6 +186,7 @@ struct ConfigLoader {
         printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);
         printf("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE\t\t\t\t%.4f\n", AIMBOT_SMOOTH_EXTRA_BY_DISTANCE);
         printf("AIMBOT_FOV\t\t\t\t\t\t%.2f\n", AIMBOT_FOV);
+        printf("AIMBOT_FOV_EXTRA_BY_DISTANCE\t\t\t\t%.2f\n", AIMBOT_FOV); //_add
         printf("AIMBOT_FAST_AREA\t\t\t\t\t%.2f\n", AIMBOT_FAST_AREA); //_add
         printf("AIMBOT_SLOW_AREA\t\t\t\t\t%.2f\n", AIMBOT_SLOW_AREA); //_add
         printf("AIMBOT_WEAKEN\t\t\t\t\t\t%.2f\n", AIMBOT_WEAKEN); //_add
