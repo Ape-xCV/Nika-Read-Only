@@ -56,7 +56,7 @@ struct Aim {
         if (lp->inZoom) {
 //_            FinalFOV = cl->AIMBOT_FOV;
             FinalFOV = cl->AIMBOT_FOV * lp->zoomFOV / 60; //_add
-            FinalFOV += FinalFOV * (1 - 60/lp->zoomFOV) * cl->AIMBOT_FOV_EXTRA_BY_ZOOM; //_add
+            FinalFOV += FinalFOV * (60/lp->zoomFOV - 1) * cl->AIMBOT_FOV_EXTRA_BY_ZOOM; //_add
             FinalDistance = cl->AIMBOT_MAX_DISTANCE;
         }
         else {
