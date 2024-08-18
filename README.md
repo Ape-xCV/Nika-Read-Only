@@ -31,6 +31,10 @@
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [x] Terminate process with HOME
 
+## Notes
+
+- Open the cheat before the game, or always terminate process with HOME.
+
 ![Screenshot.jpg](Screenshot.jpg)
 
 ### 1. Environment set up in Linux
