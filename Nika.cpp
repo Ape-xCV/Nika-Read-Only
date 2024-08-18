@@ -248,6 +248,10 @@ int main(int argc, char* argv[]) { //_add
         std::this_thread::sleep_for(std::chrono::seconds(3)); //_add
         map->readFromMemory(); //_add
     } //_add
+    if (map->isLobby) { //_add
+        printf("Start in Lobby - Sleep 35 sec\n"); //_add
+        std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
+    } //_add
     system("mount -o remount,rw,hidepid=2 /proc"); //_add
 
 //_    ConfigLoader* cl = new ConfigLoader();
@@ -338,8 +342,9 @@ int main(int argc, char* argv[]) { //_add
 //_            if (counter % 20 == 0) cl->reloadFile();
             map->readFromMemory();
             if (!map->isPlayable) {
-                printf("Player in Lobby - Sleep 35 sec\n");
+//_                printf("Player in Lobby - Sleep 35 sec\n");
 //_                std::this_thread::sleep_for(std::chrono::seconds(35));
+                printf("Player in Lobby - Sleep 3 sec\n"); //_add
                 readError = 3000; //_add
                 continue;
             }
@@ -347,7 +352,7 @@ int main(int argc, char* argv[]) { //_add
             localPlayer->readFromMemory(map);
 //_            if (!localPlayer->isValid()) throw std::invalid_argument("Select Legend");
             if (!localPlayer->isValid()) { //_add
-                printf("Select Legend\n"); //_add
+                printf("Select Legend - Sleep 3 sec\n"); //_add
                 readError = 3000; //_add
                 continue; //_add
             } //_add
