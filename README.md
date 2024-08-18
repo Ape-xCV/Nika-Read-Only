@@ -15,6 +15,8 @@
 - [x] (UC) **Acknowledge**
 - [x] (UC) **Gerosity**
 
+![Screenshot.jpg](Screenshot.jpg)
+
 ## Features
 
 * [x] Window title **spoofing** (webpage title mimic)
@@ -34,8 +36,6 @@
 ## Notes
 
 - Open the cheat before the game, or always terminate process with HOME.
-
-![Screenshot.jpg](Screenshot.jpg)
 
 ### 1. Environment set up in Linux
 
