@@ -140,6 +140,7 @@ struct Aim {
         bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
         bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
         float width = (LocalOriginW2S.y - HeadPositionW2S.y) / 2;
+        width += width * util::inchesToMeters(CurrentTarget->distance2DToLocalPlayer) / 100;
         Vector2D TargetBoneW2S;
         Vector3D TargetBone3D = TargetBone3DCached;
         Vector2D ScreenSize = GameCamera->GetResolution();
@@ -210,7 +211,7 @@ struct Aim {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_MELEE &&
             weapon != WEAPON_THROWING_KNIFE) {
-            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width+10 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width+10) {
+            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
                 display->kbPress(cl->AIMBOT_FIRING_KEY);
                 keymap::AIMBOT_FIRING_KEY = true;
             }
