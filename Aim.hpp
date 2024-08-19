@@ -192,6 +192,7 @@ struct Aim {
         lastMoveY = totalPitchIncrementInt;
         lastMoveX = totalYawIncrementInt;
 
+        GameCamera->WorldToScreen(TargetBone3DCached, TargetBoneW2S);
         int weapon = lp->weaponIndex;
         if (weapon != WEAPON_SENTINEL &&
             weapon != WEAPON_BOCEK &&
@@ -223,7 +224,7 @@ struct Aim {
                 weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030)
-                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width+10 && abs(TargetBoneW2S.y - ScreenSize.y/2) < width+10) {
+                if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
                     std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) {
                         //display->mouseClickLeft();
