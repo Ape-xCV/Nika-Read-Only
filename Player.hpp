@@ -114,7 +114,7 @@ struct Player {
             if (cl->FEATURE_SPECTATORS_ON && counter % 100 == 0) { //_add
                 spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "spectators");
                 spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Spectator Index");
-                spctrBase =  mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
+                spctrBase = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
             } //_add
         } //_add
         isDead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
