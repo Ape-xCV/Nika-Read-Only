@@ -107,6 +107,7 @@ ConfigLoader* cl = new ConfigLoader();
 Level* map = new Level();
 LocalPlayer* localPlayer = new LocalPlayer(cl);
 std::vector<Player*>* players = new std::vector<Player*>;
+std::vector<Player*>* playersCache = new std::vector<Player*>;
 Sense* sense = new Sense(cl, map, localPlayer, players, GameCamera);
 int counter;
 int processingTime;
@@ -360,12 +361,22 @@ int main(int argc, char* argv[]) { //_add
             //read players
             players->clear();
             if (map->isTrainingArea)
-                for (int i = 0; i < dummyPlayers->size(); i++) {
-                    Player* p = dummyPlayers->at(i);
-//_                    p->readFromMemory();
-                    p->readFromMemory(counter); //_add
-                    if (p->isValid()) players->push_back(p);
-                }
+                if (counter % 200 == 0) { //_add
+                    playersCache->clear(); //_add
+                    for (int i = 0; i < dummyPlayers->size(); i++) {
+                        Player* p = dummyPlayers->at(i);
+//_                        p->readFromMemory();
+                        p->readFromMemory(counter); //_add
+//_                        if (p->isValid()) players->push_back(p);
+                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); } //_add
+                    }
+                } else { //_add
+                    for (int i = 0; i < playersCache->size(); i++) { //_add
+                        Player* p = playersCache->at(i); //_add
+                        p->readFromMemory(counter); //_add
+                        if (p->isValid()) players->push_back(p); //_add
+                    } //_add
+                } //_add
             else
                 for (int i = 0; i < humanPlayers->size(); i++) {
                     Player* p = humanPlayers->at(i);
