@@ -151,7 +151,7 @@ struct Player {
 //_        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible"); //_add
 //_        visible = isDummie() || aimedAt || lastTimeVisiblePrev < lastTimeVisible;
-        visible = (lastTimeVisible + 0.2) > lp->worldTime; //_add
+        visible = (lastTimeVisible + 0.2) > lp->worldTime || name == "drone_no_minimap_object"; //_add
 //_        lastTimeVisiblePrev = lastTimeVisible;
 
         if (lp->isValid()) {
