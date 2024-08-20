@@ -157,7 +157,7 @@ struct Player {
         if (lp->isValid()) {
             local = lp->base == base;
             friendly = SameTeam();
-            enemy = !friendly;
+            enemy = !friendly || name == "drone_no_minimap_object";
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.To2D().Distance(localOrigin.To2D());
 //_            if (visible) {
@@ -244,7 +244,7 @@ struct Player {
         return true;
     }
     bool isPlayer() {
-        return name == "player";
+        return name == "player" || name == "drone_no_minimap_object";
     }
     bool isDummie() {
         return teamNumber == 97;
