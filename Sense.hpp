@@ -119,7 +119,7 @@ struct Sense {
             Vector3D LocalOrigin3D = p->localOrigin;
             Vector3D HeadPosition3D = p->GetBonePosition(HitboxType::Head);
             Vector3D AboveHead3D = HeadPosition3D;
-            AboveHead3D.z += 10.f; // Y Offset
+            AboveHead3D.z += 10.0f;
 
             bool bLocalOriginW2SValid = GameCamera->WorldToScreen(LocalOrigin3D, LocalOriginW2S);
             bool bHeadPositionW2SValid = GameCamera->WorldToScreen(HeadPosition3D, HeadPositionW2S);
