@@ -8,7 +8,7 @@ ImDrawList* Canvas;
 
 const void SetStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
-    //
+    //https://github.com/ocornut/imgui/issues/707#issuecomment-917151020
     style.WindowPadding                             = ImVec2(8.00f, 8.00f);
     style.FramePadding                              = ImVec2(5.00f, 2.00f);
     style.CellPadding                               = ImVec2(6.00f, 6.00f);
