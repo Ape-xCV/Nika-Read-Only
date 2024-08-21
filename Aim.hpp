@@ -105,8 +105,8 @@ struct Aim {
 
 //_    void StartAiming() {
         QAngle DesiredAngles = QAngle(0.0f, 0.0f);
-//_        if (!GetAngle(CurrentTarget, DesiredAngles))
-//_            return;
+        if (!GetAngle(CurrentTarget, DesiredAngles))
+            return;
 
         Vector2D DesiredAnglesIncrement = Vector2D(CalculatePitchIncrement(DesiredAngles), CalculateYawIncrement(DesiredAngles));
 
