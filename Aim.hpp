@@ -110,8 +110,13 @@ struct Aim {
 
         Vector2D DesiredAnglesIncrement = Vector2D(CalculatePitchIncrement(DesiredAngles), CalculateYawIncrement(DesiredAngles));
 
-        float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
-        float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
+//_        float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
+//_        float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
+        float TotalSmooth; //_add
+        if (cl->AIMBOT_LEGACY_MODE) //_add
+            TotalSmooth = cl->AIMBOT_SMOOTH + cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE * 10 / CurrentTarget->distanceToLocalPlayer; //_add
+        else //_add
+            TotalSmooth = cl->AIMBOT_SMOOTH; //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
         if (!leftLock || !lp->inZoom || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
@@ -122,7 +127,7 @@ struct Aim {
 //_        double nrPitchIncrement = punchAnglesDiff.x;
 //_        double nrYawIncrement = -punchAnglesDiff.y;
 
-        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(TotalSmooth / 10);
+        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED * 10).Divide(TotalSmooth);
         double aimPitchIncrement = aimbotDelta.x;
         double aimYawIncrement = -aimbotDelta.y;
 
@@ -158,8 +163,8 @@ struct Aim {
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
-            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / (TotalSmooth * 10));
-            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / (TotalSmooth * 10));
+            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10);
+            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10);
         }
         zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
         hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
