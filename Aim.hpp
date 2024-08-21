@@ -156,8 +156,8 @@ struct Aim {
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
-            totalPitchIncrementInt = (TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
-            totalYawIncrementInt = (TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10;
+            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 5);
+            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 5);
         }
         zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
         hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
