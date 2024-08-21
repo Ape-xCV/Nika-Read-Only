@@ -127,10 +127,10 @@ struct Sense {
 
             // Colors - Players (Enemy)
             ImVec4 EnemyBoxColor, EnemyDistanceColor;
-            if (!p->isKnocked && p->visible) {
+            if (!p->isKnocked && p->isVisible) {
                 EnemyBoxColor = ImVec4(0, 0.99, 0, 0.99);
                 EnemyDistanceColor = ImVec4(0, 0.99, 0, 0.99);
-            } else if (!p->isKnocked && !p->visible) {
+            } else if (!p->isKnocked && !p->isVisible) {
                 EnemyBoxColor = ImVec4(0.99, 0, 0, 0.99);
                 EnemyDistanceColor = ImVec4(0.99, 0, 0, 0.99);
             } else if (p->isKnocked) {
@@ -139,7 +139,7 @@ struct Sense {
             }
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
-            if (!p->local && p->enemy && p->isValid() && distance < cl->SENSE_MAX_RANGE) {
+            if (!p->isLocal && p->isEnemy && p->isValid() && distance < cl->SENSE_MAX_RANGE) {
 
                 // Draw Boxes
                 if (bLocalOriginW2SValid && bHeadPositionW2SValid) {
@@ -191,17 +191,20 @@ struct Sense {
                     if (cl->SENSE_SHOW_PLAYER_NAMES) {
                         DrawPosition = DrawPosition.Subtract(Vector2D(0, 20));
                         const char* txtName;
-                        if (p->isPlayer())
+                        if (p->isPlayer)
                             txtName = p->getPlayerName().c_str();
-                        else if (p->isDummie())
-                            txtName = "Dummie";
+                        else
+                            if (p->isDrone)
+                                txtName = "Drone";
+                            else
+                                txtName = "Dummie";
                         char nameText[256];
                         strncpy(nameText, txtName, sizeof(nameText));
                         drawText(Canvas, DrawPosition, nameText, EnemyDistanceColor);
                     }
 
                     // Draw Level
-                    if (cl->SENSE_SHOW_PLAYER_LEVELS && p->isPlayer()) {
+                    if (cl->SENSE_SHOW_PLAYER_LEVELS && p->isPlayer) {
                         DrawPosition = DrawPosition.Subtract(Vector2D(0, 20));
                         const char* txtPrefix = "Lv ";
                         const char* txtLevel = std::to_string(p->GetPlayerLevel()).c_str();
@@ -215,7 +218,7 @@ struct Sense {
                 }
 
                 // Draw Warning
-                if (p->visible && !p->isKnocked)
+                if (p->isVisible && !p->isKnocked)
                     DrawVisibleWarning = true;
             }
         }
@@ -310,7 +313,7 @@ struct Sense {
 
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
-            if (!p->enemy || !p->isValid() || p->base == lp->base)
+            if (!p->isEnemy || !p->isValid() || p->isLocal)
                 continue;
 
             float radarDistance = util::inchesToMeters(p->distance2DToLocalPlayer);
@@ -321,7 +324,7 @@ struct Sense {
                 ImVec2 center(single.x, single.y);
                 int radius = 5;
                 Canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
-                if (p->visible)
+                if (p->isVisible)
                     Canvas->AddCircle(center, radius + 2, ImColor(ImVec4(0.99, 0.99, 0, 0.99)));
 
                 // Draw a line pointing in the direction of each player's aim
@@ -343,11 +346,11 @@ struct Sense {
             Player *p = players->at(i);
             if (!p->isValid())
                 continue;
-            if (p->friendly) 
+            if (p->isFriendly) 
                 continue;
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
-            if (!p->visible && !p->isKnocked && distance < cl->SENSE_MAX_RANGE) {
+            if (!p->isVisible && !p->isKnocked && distance < cl->SENSE_MAX_RANGE) {
                 p->setGlowEnable(1);
                 p->setGlowThroughWall(1);
 //_                int healthShield = p->currentHealth + p->currentShields;
