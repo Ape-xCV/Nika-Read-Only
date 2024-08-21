@@ -43,7 +43,7 @@ struct Aim {
     }
 //_    void update(int counter) {
     void update(int counter, double averageProcessingTime, bool leftLock, bool rightLock, bool autoFire, int boneID, int TotalSpectators) { //_add
-        if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || CurrentTarget != nullptr && !CurrentTarget->visible)) { //_add
+        if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || CurrentTarget != nullptr && !CurrentTarget->isVisible)) { //_add
             display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
             keymap::AIMBOT_FIRING_KEY = false; //_add
         } //_add
@@ -112,7 +112,6 @@ struct Aim {
 
         float Extra = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer;
         float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
-        TotalSmooth /= (1 + averageProcessingTime * 0.3f); //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
         if (!leftLock || !lp->inZoom || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
             TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
@@ -152,7 +151,7 @@ struct Aim {
                     TargetBone3D.z += Resolver::GetBasicBulletDrop(lp->CameraPosition, TargetBone3D, lp->WeaponProjectileSpeed, 1.0f);
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->WeaponProjectileSpeed > 999.9f)
                 //if (CurrentTarget->AbsoluteVelocity.IsZeroVector())
-                if (CurrentTarget->isDummie())
+                if (CurrentTarget->isDrone || CurrentTarget->isDummie)
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->velocity, bulletSpeed);
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
@@ -277,8 +276,8 @@ struct Aim {
         if (target == nullptr ||
 //_            !target->isValid() ||
             !target->isCombatReady() ||
-            !target->visible ||
-            !target->enemy ||
+            !target->isVisible ||
+            !target->isEnemy ||
             target->distance2DToLocalPlayer < util::metersToInches(cl->AIMBOT_MIN_DISTANCE) ||
             target->distance2DToLocalPlayer > util::metersToInches(FinalDistance))
             return false;
