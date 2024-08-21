@@ -139,7 +139,7 @@ struct Sense {
             }
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
-            if (!p->isLocal && p->isEnemy && p->isValid() && distance < cl->SENSE_MAX_RANGE) {
+            if (p->isEnemy && p->isValid() && !p->isLocal && distance < cl->SENSE_MAX_RANGE) {
 
                 // Draw Boxes
                 if (bLocalOriginW2SValid && bHeadPositionW2SValid) {
