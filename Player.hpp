@@ -8,6 +8,9 @@ struct Player {
     uintptr_t nameOffset;
     std::string name;
     int teamNumber;
+    bool isPlayer; //_add
+    bool isDrone; //_add
+    bool isDummie; //_add
     int plyrDataTable;
     uint64_t spectators;
     int spctrIndex;
@@ -39,11 +42,11 @@ struct Player {
 //_    int lastTimeAimedAtPrev;
 //_    int lastTimeVisible;
     float lastTimeVisible;
-    bool visible;
+    bool isVisible;
 //_    int lastTimeVisiblePrev;
-    bool local;
-    bool friendly;
-    bool enemy;
+    bool isLocal;
+    bool isFriendly;
+    bool isEnemy;
     float distanceToLocalPlayer;
     float distance2DToLocalPlayer;
 //_    Vector2D aimbotDesiredAngles;
@@ -108,8 +111,11 @@ struct Player {
         if (base == 0) return;
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
-        if (!isPlayer() && !isDummie()) { reset(); return; }
-        if (isPlayer()) { //_add
+        isPlayer = name == "player"; //_add
+        isDrone = name == "drone_no_minimap_object"; //_add
+        isDummie = teamNumber == 97; //_add
+        if (!isPlayer && !isDrone && !isDummie) { reset(); return; }
+        if (isPlayer) { //_add
             plyrDataTable = mem::Read<int>(base + OFF_NAMEINDEX, "Player Data Table");
             if (cl->FEATURE_SPECTATORS_ON && counter % 100 == 0) { //_add
                 spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "spectators");
@@ -117,13 +123,13 @@ struct Player {
                 spctrBase = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Spectator Base");
             } //_add
         } //_add
-        isDead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
-        isKnocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
+        isDead = (isDrone || isDummie) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player dead") > 0;
+        isKnocked = (isDrone || isDummie) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player knocked") > 0;
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime; //_add
-        if (isDummie()) { //_add
+        if (isDrone || isDummie) { //_add
             localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)); //_add
             timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4); //_add
             velocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
@@ -151,13 +157,13 @@ struct Player {
 //_        lastTimeVisible = mem::Read<int>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible"); //_add
 //_        visible = isDummie() || aimedAt || lastTimeVisiblePrev < lastTimeVisible;
-        visible = (lastTimeVisible + 0.2) > lp->worldTime || name == "drone_no_minimap_object"; //_add
+        isVisible = (lastTimeVisible + 0.2) > lp->worldTime || isDrone; //_add
 //_        lastTimeVisiblePrev = lastTimeVisible;
 
         if (lp->isValid()) {
-            local = lp->base == base;
-            friendly = SameTeam();
-            enemy = !friendly || name == "drone_no_minimap_object";
+            isLocal = lp->base == base;
+            isFriendly = isSameTeam();
+            isEnemy = !isFriendly || isDrone;
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.To2D().Distance(localOrigin.To2D());
 //_            if (visible) {
@@ -218,7 +224,7 @@ struct Player {
 //_            mem::Write<int>(basePointer + OFF_GLOW_FIX, 0);
         }
     }
-    bool SameTeam() {
+    bool isSameTeam() {
         if (level::isMixtape && lp->squadNumber == -1)
             return (teamNumber & 1) == (lp->teamNumber & 1);
         else
@@ -234,21 +240,21 @@ struct Player {
     }
 //_end
     bool isValid() {
-        return base != 0 && (isPlayer() || isDummie());
+        return base != 0 && (isPlayer || isDrone || isDummie);
     }
     bool isCombatReady() {
         if (!isValid()) return false;
-        if (isDummie()) return true;
+        if (isDrone || isDummie) return true;
         if (isDead) return false;
         if (isKnocked) return false;
         return true;
     }
-    bool isPlayer() {
-        return name == "player" || name == "drone_no_minimap_object";
-    }
-    bool isDummie() {
-        return teamNumber == 97;
-    }
+//_    bool isPlayer() {
+//_        return name == "player" || name == "drone_no_minimap_object";
+//_    }
+//_    bool isDummie() {
+//_        return teamNumber == 97;
+//_    }
     int getGlowThroughWall()
     {
 //_        int ptrInt = mem::Read<int>(base + OFF_GLOW_THROUGH_WALL, "Player GlowThroughWall");
