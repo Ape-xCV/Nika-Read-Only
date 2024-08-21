@@ -360,30 +360,30 @@ int main(int argc, char* argv[]) { //_add
 
             //read players
             players->clear();
-            if (map->isTrainingArea)
-                if (counter % 200 == 0) { //_add
-                    playersCache->clear(); //_add
-                    for (int i = 0; i < dummyPlayers->size(); i++) {
-                        Player* p = dummyPlayers->at(i);
-//_                        p->readFromMemory();
-                        p->readFromMemory(counter); //_add
-//_                        if (p->isValid()) players->push_back(p);
-                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); } //_add
-                    }
-                } else { //_add
-                    for (int i = 0; i < playersCache->size(); i++) { //_add
-                        Player* p = playersCache->at(i); //_add
-                        p->readFromMemory(counter); //_add
-                        if (p->isValid()) players->push_back(p); //_add
-                    } //_add
-                } //_add
-            else
-                for (int i = 0; i < humanPlayers->size(); i++) {
-                    Player* p = humanPlayers->at(i);
+//_            if (map->isTrainingArea)
+            if (counter % 99 == 0) { //_add
+                playersCache->clear(); //_add
+                for (int i = 0; i < dummyPlayers->size(); i++) {
+                    Player* p = dummyPlayers->at(i);
 //_                    p->readFromMemory();
+//_                    if (p->isValid()) players->push_back(p);
                     p->readFromMemory(counter); //_add
-                    if (p->isValid()) players->push_back(p);
+                    if (p->isValid()) { playersCache->push_back(p); players->push_back(p); } //_add
                 }
+                if (cl->SENSE_VERBOSE > 0) printf("Entities: %d\n", playersCache->size()); //_add
+            } else { //_add
+                for (int i = 0; i < playersCache->size(); i++) { //_add
+                    Player* p = playersCache->at(i); //_add
+                    p->readFromMemory(counter); //_add
+                    if (p->isValid()) players->push_back(p); //_add
+                } //_add
+            } //_add
+//_            else
+//_                for (int i = 0; i < humanPlayers->size(); i++) {
+//_                    Player* p = humanPlayers->at(i);
+//_                    p->readFromMemory();
+//_                    if (p->isValid()) players->push_back(p);
+//_                }
 
 //_            noRecoil->controlWeapon();
 //_            triggerBot->shootAtEnemy(counter);
@@ -402,35 +402,36 @@ int main(int argc, char* argv[]) { //_add
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
             std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
 
-            if (counter % 100 == 0) { //_add
-                if (cl->SENSE_VERBOSE > 0) { //_add
-                    if (cl->FEATURE_SPECTATORS_ON && !map->isTrainingArea) { //_add
-                        int TempTotalSpectators = 0; //_add
-                        std::vector<std::string> TempSpectators; //_add
-                        for (int i = 0; i < players->size(); i++) { //_add
-                            Player* p = players->at(i); //_add
-                            if (p->base == localPlayer->base) //_add
-                                continue; //_add
-                            if (p->isSpectating()) { //_add
-                                TempTotalSpectators++; //_add
-                                TempSpectators.push_back(p->getPlayerName()); //_add
-                                } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->isDead) { //_add
-                                TempTotalSpectators++; //_add
-                                TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
-                            } //_add
+            if (cl->SENSE_VERBOSE > 0 && counter % 101 == 0) { //_add
+                if (cl->FEATURE_SPECTATORS_ON) { //_add
+                    int TempTotalSpectators = 0; //_add
+                    std::vector<std::string> TempSpectators; //_add
+                    for (int i = 0; i < players->size(); i++) { //_add
+                        Player* p = players->at(i); //_add
+                        if (p->base == localPlayer->base) //_add
+                            continue; //_add
+                        if (p->isSpectating()) { //_add
+                            TempTotalSpectators++; //_add
+                            TempSpectators.push_back(p->getPlayerName()); //_add
+                            } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->isDead) { //_add
+                            TempTotalSpectators++; //_add
+                            TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
                         } //_add
-                        TotalSpectators = TempTotalSpectators; //_add
-                        Spectators = TempSpectators; //_add
-                        printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
-                        if (static_cast<int>(Spectators.size()) > 0) //_add
-                            for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
-                                printf("> %s\n", Spectators.at(i).c_str()); //_add
                     } //_add
-                    printf("%d %d %d ", leftLock, autoFire, rightLock); //_add
-                    if (boneID ==0) printf("BODY\n"); //_add
-                    else if (boneID == 1) printf("NECK\n"); //_add
-                    else printf("HEAD\n"); //_add
+                    TotalSpectators = TempTotalSpectators; //_add
+                    Spectators = TempSpectators; //_add
+                    printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
+                    if (static_cast<int>(Spectators.size()) > 0) //_add
+                        for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
+                            printf("> %s\n", Spectators.at(i).c_str()); //_add
                 } //_add
+                printf("%d %d %d ", leftLock, autoFire, rightLock); //_add
+                if (boneID == 0) printf("BODY\n"); //_add
+                else if (boneID == 1) printf("NECK\n"); //_add
+                else printf("HEAD\n"); //_add
+            } //_add
+
+            if (counter % 100 == 0) { //_add
                 //cl->reloadFile(); //_add
                 processingTimes.push_back(processingTime); //_add
                 if (processingTimes.size() > 10) //_add
@@ -447,11 +448,13 @@ int main(int argc, char* argv[]) { //_add
                 averageFPS = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0) * 10; //_add
                 frameCountPrev = localPlayer->frameCount; //_add
             } //_add
-            //print loop info every now and then
-            if (counter % 500 == 0)
 
+            //print loop info every now and then
+//_            if (counter % 500 == 0)
+            if (cl->SENSE_VERBOSE > 0 && counter % 500 == 0) //_add
                 printf("| [%04d] - Time: %02dms |\n",
                     counter, processingTime);
+
             //update counter
 //_            counter = (counter < 1000) ? ++counter : counter = 0;
             counter = (counter < 9999) ? ++counter : counter = 0; //_add
