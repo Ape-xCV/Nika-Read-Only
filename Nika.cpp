@@ -294,6 +294,7 @@ int main(int argc, char* argv[]) { //_add
                     OverlayWindow.Render(&RenderUI); //_add
                 display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
                 keymap::AIMBOT_FIRING_KEY = false; //_add
+                playersCache->clear(); //_add
                 std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
                 readError = 0; //_add
             } //_add
