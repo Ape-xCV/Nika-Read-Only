@@ -40,6 +40,7 @@
 ### 1. Environment set up in Linux
 
 - Install dependencies (<b>Arch</b>):
+
 ``` shell
 sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
 ```
@@ -47,6 +48,7 @@ sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
 or
 
 - Install dependencies (<b>Debian</b>):
+
 ``` shell
 sudo apt-get install -y libudev-dev
 sudo apt install cmake xorg-dev libglu1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
@@ -143,11 +145,13 @@ cd /root
 
 - Go to the (UC) Apex Legends Reversal, Structs and Offsets thread and copy the usual pastebin to `apexdumper.txt`
 - With `apexdumper.txt` in the same folder as `apexdumper.sh`:
+
 ``` shell
 cd path/to/extracted/repository
 chmod +x apexdumper.sh
 ./apexdumper.sh > Offsets.hpp
 ```
+
 - If your pastebin is missing GameVersion, open Offsets.hpp and change:
 
 `constexpr std::string OFF_GAME_VERSION = ""; //[Miscellaneous]->GameVersion`
