@@ -147,6 +147,19 @@ cd /root
 cd path/to/extracted/repository
 chmod +x apexdumper.sh
 ./apexdumper.sh > Offsets.hpp
+```
+- If your pastebin is missing GameVersion, open Offsets.hpp and change:
+
+`constexpr std::string OFF_GAME_VERSION = ""; //[Miscellaneous]->GameVersion`
+
+into (input your current GameVersion)
+
+`constexpr std::string OFF_GAME_VERSION = "v3.0.78.32"; //[Miscellaneous]->GameVersion`
+
+- Install update:
+
+```
+cd path/to/extracted/repository
 chmod +x install.sh
 ./install.sh
 ```
