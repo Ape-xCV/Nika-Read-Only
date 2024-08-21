@@ -122,15 +122,17 @@ struct Aim {
 //_        double nrPitchIncrement = punchAnglesDiff.x;
 //_        double nrYawIncrement = -punchAnglesDiff.y;
 
-        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(TotalSmooth);
+        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(TotalSmooth / 10);
         double aimPitchIncrement = aimbotDelta.x;
         double aimYawIncrement = -aimbotDelta.y;
 
         double totalPitchIncrement = aimPitchIncrement; //_+ nrPitchIncrement;
         double totalYawIncrement = aimYawIncrement; //_+ nrYawIncrement;
 
-        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
-        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
+//_        int totalPitchIncrementInt = RoundHalfEven(AL1AF0(totalPitchIncrement));
+//_        int totalYawIncrementInt = RoundHalfEven(AL1AF0(totalYawIncrement));
+        int totalPitchIncrementInt = std::round(totalPitchIncrement);
+        int totalYawIncrementInt = std::round(totalYawIncrement);
 
 //_begin
         Vector2D LocalOriginW2S, HeadPositionW2S;
@@ -156,8 +158,8 @@ struct Aim {
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
-            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 5);
-            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 5);
+            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / (TotalSmooth * 10));
+            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / (TotalSmooth * 10));
         }
         zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
         hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
