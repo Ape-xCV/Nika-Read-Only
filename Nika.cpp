@@ -290,55 +290,43 @@ int main(int argc, char* argv[]) { //_add
         try {
             long startTime = util::currentEpochMillis();
             if (readError > 0) { //_add
-                if (cl->SENSE_VERBOSE > 1) //_add
-                    OverlayWindow.Render(&RenderUI); //_add
+                //if (cl->SENSE_VERBOSE > 1) //_add
+                //    OverlayWindow.Render(&RenderUI); //_add
                 display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
                 keymap::AIMBOT_FIRING_KEY = false; //_add
                 playersCache->clear(); //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
-                readError = 0; //_add
+                //std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
+                //readError = 0; //_add
             } //_add
-            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY) || //_add
-                cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown()) //_add
-                keymap::AIMBOT_ACTIVATION_KEY = true; //_add
-            else //_add
-                keymap::AIMBOT_ACTIVATION_KEY = false; //_add
-            int grenade = localPlayer->grenadeID; //_add
-            int weapon = localPlayer->weaponIndex; //_add
-            if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
-                //grenade != -255 && grenade != -256 || //_add
-                weapon == WEAPON_SENTINEL || //_add
-                weapon == WEAPON_LONGBOW || //_add
-                weapon == WEAPON_KRABER || //_add
-                weapon == WEAPON_TRIPLE_TAKE)) { //_add
-                std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
-                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
-                    display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
-                    display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
-                    keymap::AIMBOT_FIRING_KEY = false; //_add
-                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
+            while (true) { //_add
+                if (display->isKeyDown("XK_Home")) { //_add
+                    system("mount -o remount,rw,hidepid=0 /proc"); //_add
+                    return -1; //_add
                 } //_add
-            } //_add
-            if (display->isKeyDown("XK_Home")) { //_add
-                system("mount -o remount,rw,hidepid=0 /proc"); //_add
-                return -1; //_add
-            } //_add
-            if (display->isKeyDown("XK_Left")) { //_add
-                leftLock = !leftLock; //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-            } //_add
-            if (display->isKeyDown("XK_Right")) { //_add
-                rightLock = !rightLock; //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-            } //_add
-            if (display->isKeyDown("XK_Up")) { //_add
-                autoFire = !autoFire; //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-            } //_add
-            if (display->isKeyDown("XK_Down")) { //_add
-                boneID++; //_add
-                if (boneID > 2) boneID = 0; //_add
-                std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+                if (display->isKeyDown("XK_Left")) { //_add
+                    leftLock = !leftLock; //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+                } //_add
+                if (display->isKeyDown("XK_Right")) { //_add
+                    rightLock = !rightLock; //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+                } //_add
+                if (display->isKeyDown("XK_Up")) { //_add
+                    autoFire = !autoFire; //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+                } //_add
+                if (display->isKeyDown("XK_Down")) { //_add
+                    boneID++; //_add
+                    if (boneID > 2) boneID = 0; //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
+                } //_add
+                if (readError > 0) { //_add
+                    if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50)); //_add
+                    readError -= 50; //_add
+                } else { //_add
+                    break; //_add
+                } //_add
             } //_add
 
 //_            if (counter % 20 == 0) cl->reloadFile();
@@ -357,6 +345,26 @@ int main(int argc, char* argv[]) { //_add
                 printf("Select Legend - Sleep 3 sec\n"); //_add
                 readError = 3000; //_add
                 continue; //_add
+            } //_add
+
+            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY) || //_add
+                cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown()) //_add
+                keymap::AIMBOT_ACTIVATION_KEY = true; //_add
+            else //_add
+                keymap::AIMBOT_ACTIVATION_KEY = false; //_add
+            int weapon = localPlayer->weaponIndex; //_add
+            if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
+                weapon == WEAPON_SENTINEL || //_add
+                weapon == WEAPON_LONGBOW || //_add
+                weapon == WEAPON_KRABER || //_add
+                weapon == WEAPON_TRIPLE_TAKE)) { //_add
+                std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
+                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
+                    display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
+                    display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
+                    keymap::AIMBOT_FIRING_KEY = false; //_add
+                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
+                } //_add
             } //_add
 
             //read players
