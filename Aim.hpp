@@ -118,10 +118,13 @@ struct Aim {
         else //_add
             TotalSmooth = cl->AIMBOT_SMOOTH; //_add
         float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
-        if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
-            if (lp->inZoom) TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
-            bulletSpeed -= bulletSpeed * (cl->AIMBOT_SMOOTH / 200) * cl->AIMBOT_WEAKEN; //_add
-        } //_add
+        if (!lp->inZoom) //_add
+            TotalSmooth *= 1.5f; //_add
+        else //_add
+            if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
+                TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
+                bulletSpeed -= bulletSpeed * (cl->AIMBOT_SMOOTH / 200) * cl->AIMBOT_WEAKEN; //_add
+            } //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Multiply(cl->AIMBOT_SPEED).Divide(cl->AIMBOT_SMOOTH);
 //_        double nrPitchIncrement = punchAnglesDiff.x;
