@@ -13,7 +13,7 @@ struct Resolver {
 
     static Vector3D GetTargetPosition(const Vector3D& targetPosition, Vector3D targetVelocity, float time) {
 //_        return targetPosition.Subtract((targetVelocity.Multiply(time)));
-        return targetPosition.Add((targetVelocity.Multiply(time + 0.1f))); //_add
+        return targetPosition.Add((targetVelocity.Multiply(time + 0.15f))); //_add
     }
 
     static float GetTimeToTarget(Vector3D startPosition, Vector3D endPosition, float bulletSpeed) {
