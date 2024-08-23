@@ -117,13 +117,13 @@ struct Aim {
             TotalSmooth = cl->AIMBOT_SMOOTH + cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE * 10 / CurrentTarget->distanceToLocalPlayer; //_add
         else //_add
             TotalSmooth = cl->AIMBOT_SMOOTH; //_add
-        float bulletSpeed = lp->WeaponProjectileSpeed * 0.95f; //_add
+        float bulletSpeed = lp->WeaponProjectileSpeed; //_add
         if (!lp->inZoom) //_add
             TotalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2; //_add
         else //_add
             if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && TotalSpectators > 0) { //_add
                 TotalSmooth *= cl->AIMBOT_WEAKEN; //_add
-                bulletSpeed -= bulletSpeed * (cl->AIMBOT_SMOOTH / 200) * cl->AIMBOT_WEAKEN; //_add
+                bulletSpeed /= cl->AIMBOT_WEAKEN; //_add
             } //_add
 
 //_        Vector2D punchAnglesDiff = lp->punchAnglesDiff.Multiply(cl->AIMBOT_SPEED).Divide(cl->AIMBOT_SMOOTH);
