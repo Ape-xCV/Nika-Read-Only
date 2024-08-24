@@ -218,6 +218,7 @@ struct Aim {
             weapon != WEAPON_TRIPLE_TAKE &&
             weapon != WEAPON_WINGMAN &&
             weapon != WEAPON_3030 &&
+            weapon != WEAPON_NEMESIS &&
             weapon != WEAPON_MELEE &&
             weapon != WEAPON_THROWING_KNIFE) {
             if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
@@ -233,7 +234,8 @@ struct Aim {
                 weapon == WEAPON_P2020 ||
                 weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
-                weapon == WEAPON_3030)
+                weapon == WEAPON_3030 ||
+                weapon == WEAPON_NEMESIS)
                 if (autoFire && keymap::AIMBOT_ACTIVATION_KEY && abs(TargetBoneW2S.x - ScreenSize.x/2) < width && abs(TargetBoneW2S.y - ScreenSize.y/2) < width) {
                     std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) {
