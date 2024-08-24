@@ -126,17 +126,11 @@ struct Sense {
             GameCamera->WorldToScreen(AboveHead3D, AboveHeadW2S);
 
             // Colors - Players (Enemy)
-            ImVec4 EnemyBoxColor, EnemyDistanceColor;
-            if (!p->isKnocked && p->isVisible) {
-                EnemyBoxColor = ImVec4(0, 0.99, 0, 0.99);
-                EnemyDistanceColor = ImVec4(0, 0.99, 0, 0.99);
-            } else if (!p->isKnocked && !p->isVisible) {
-                EnemyBoxColor = ImVec4(0.99, 0, 0, 0.99);
-                EnemyDistanceColor = ImVec4(0.99, 0, 0, 0.99);
-            } else if (p->isKnocked) {
-                EnemyBoxColor = ImVec4(0.99, 0.671, 0.119, 0.99);
-                EnemyDistanceColor = ImVec4(0.99, 0.671, 0.119, 0.99);
-            }
+            ImVec4 EnemyBoxColor;
+            if (p->isDrone) EnemyBoxColor = ImVec4(1.00f, 0.17f, 0.67f, 1.00f);
+            else if (p->isKnocked) EnemyBoxColor = ImVec4(1.00f, 0.67f, 0.17f, 1.00f);
+            else if (p->isVisible) EnemyBoxColor = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
+            else EnemyBoxColor = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (p->isEnemy && p->isValid() && !p->isLocal && distance < cl->SENSE_MAX_RANGE) {
@@ -184,7 +178,7 @@ struct Sense {
                         strncpy(distanceText, txtPrefix, sizeof(distanceText));
                         strncat(distanceText, txtDistance, sizeof(distanceText));
                         strncat(distanceText, txtSuffix, sizeof(distanceText));
-                        drawText(Canvas, DrawPosition, distanceText, EnemyDistanceColor);
+                        drawText(Canvas, DrawPosition, distanceText, EnemyBoxColor);
                     }
 
                     // Draw Name
@@ -200,7 +194,7 @@ struct Sense {
                                 txtName = "Dummie";
                         char nameText[256];
                         strncpy(nameText, txtName, sizeof(nameText));
-                        drawText(Canvas, DrawPosition, nameText, EnemyDistanceColor);
+                        drawText(Canvas, DrawPosition, nameText, EnemyBoxColor);
                     }
 
                     // Draw Level
@@ -213,7 +207,7 @@ struct Sense {
                         strncpy(levelText, txtPrefix, sizeof(levelText));
                         strncat(levelText, txtLevel, sizeof(levelText));
                         //strncat(levelText, txtSuffix, sizeof(levelText));
-                        drawText(Canvas, DrawPosition, levelText, EnemyDistanceColor);
+                        drawText(Canvas, DrawPosition, levelText, EnemyBoxColor);
                     }
                 }
 
