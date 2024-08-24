@@ -127,7 +127,7 @@ struct Sense {
 
             // Colors - Players (Enemy)
             ImVec4 EnemyBoxColor;
-            if (p->isDrone) EnemyBoxColor = ImVec4(1.00f, 0.17f, 0.67f, 1.00f);
+            if (p->isDrone) EnemyBoxColor = ImVec4(1.00f, 0.00f, 1.00f, 1.00f);
             else if (p->isKnocked) EnemyBoxColor = ImVec4(1.00f, 0.67f, 0.17f, 1.00f);
             else if (p->isVisible) EnemyBoxColor = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
             else EnemyBoxColor = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
