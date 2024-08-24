@@ -114,9 +114,9 @@ struct Aim {
 //_        float TotalSmooth = cl->AIMBOT_SMOOTH + Extra;
         float TotalSmooth; //_add
         if (cl->AIMBOT_LEGACY_MODE) //_add
-            TotalSmooth = cl->AIMBOT_SMOOTH + cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE * 10 / CurrentTarget->distanceToLocalPlayer; //_add
+            TotalSmooth = cl->AIMBOT_SMOOTH / 10 + cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / CurrentTarget->distanceToLocalPlayer; //_add
         else //_add
-            TotalSmooth = cl->AIMBOT_SMOOTH; //_add
+            TotalSmooth = cl->AIMBOT_SMOOTH * 10; //_add
         float bulletSpeed = lp->WeaponProjectileSpeed; //_add
         if (!lp->inZoom) //_add
             TotalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2; //_add
@@ -130,7 +130,7 @@ struct Aim {
 //_        double nrPitchIncrement = punchAnglesDiff.x;
 //_        double nrYawIncrement = -punchAnglesDiff.y;
 
-        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED * 10).Divide(TotalSmooth);
+        Vector2D aimbotDelta = DesiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(TotalSmooth);
         double aimPitchIncrement = aimbotDelta.x;
         double aimYawIncrement = -aimbotDelta.y;
 
@@ -166,8 +166,8 @@ struct Aim {
                 else
                     TargetBone3D = Resolver::GetTargetPosition(lp->CameraPosition, TargetBone3D, CurrentTarget->AbsoluteVelocity, bulletSpeed);
             GameCamera->WorldToScreen(TargetBone3D, TargetBoneW2S);
-            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth / 10);
-            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth / 10);
+            totalPitchIncrementInt = std::round((TargetBoneW2S.y - ScreenSize.y/2) * cl->AIMBOT_SPEED / TotalSmooth);
+            totalYawIncrementInt = std::round((TargetBoneW2S.x - ScreenSize.x/2) * cl->AIMBOT_SPEED / TotalSmooth);
         }
         zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
         hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
