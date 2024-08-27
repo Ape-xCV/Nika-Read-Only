@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) { //_add
     printf("Offsets.hpp %s\n", GameVersion.c_str()); //_add
     if (isOutdated()) { //_add
         printf("Please update Offsets.hpp and run install.sh from path/to/extracted/repository!\n"); //_add
-        return -1; //_add
+//        return -1; //_add
     } //_add
 //_    if (mem::GetPID() == 0) { std::cout << "OPEN APEX LEGENDS!\n"; return -1; }
     system("mount -o remount,rw,hidepid=0 /proc"); //_add

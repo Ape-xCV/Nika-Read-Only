@@ -64,7 +64,7 @@ struct Sense {
 
     void RenderSpectators(int counter, int TotalSpectators, std::vector<std::string> Spectators) {
         ImVec2 Center = ImGui::GetMainViewport()->GetCenter();
-        ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
+        ImGui::SetNextWindowPos(ImVec2(5.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.3f);
         ImGui::Begin("Spectators", nullptr,
             ImGuiWindowFlags_NoTitleBar |
@@ -142,7 +142,7 @@ struct Sense {
                     float height = head.y - foot.y;
                     float width = height / 2;
                     glColor3f(EnemyBoxColor.x, EnemyBoxColor.y, EnemyBoxColor.z);
-                    glLineWidth(1.5f);
+                    glLineWidth(1.0f);
                     glBegin(GL_LINE_LOOP);
                     glVertex2f(foot.x - width/2, foot.y);
                     glVertex2f(foot.x - width/2, head.y + height/5);
@@ -159,7 +159,7 @@ struct Sense {
                     else if (evo > 0) glColor3f(1.0f, 1.0f, 1.0f); // white shield
                     else glColor3f(1.0f, 1.0f, 0.0f); // no shield
 
-                    glLineWidth(5.0f);
+                    glLineWidth(2.5f);
                     glBegin(GL_LINES);
                     glVertex2f(head.x + width/2 - 5.0f, foot.y);
                     glVertex2f(head.x + width/2 - 5.0f, foot.y + (height + height/5) * life/100);
@@ -316,15 +316,16 @@ struct Sense {
                 Vector3D single = RotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
 
                 ImVec2 center(single.x, single.y);
-                int radius = 5;
-                Canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
-                if (p->isVisible)
-                    Canvas->AddCircle(center, radius + 2, ImColor(ImVec4(0.99, 0.99, 0, 0.99)));
+                int radius = 3;
+                Canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.69)));
+                Canvas->AddCircle(center, radius + 1, p->isVisible
+                  ? ImColor(ImVec4(0.99, 0.99, 0, 0.69))
+                  : ImColor(ImVec4(0, 0, 0, 0.75)));
 
-                // Draw a line pointing in the direction of each player's aim
-                float angle = (360.0f - p->viewYaw) * (M_PI / 180.0f);
-                ImVec2 endpoint(center.x + radius * cos(angle), center.y + radius * sin(angle));
-                Canvas->AddLine(center, endpoint, ImColor(ImVec4(0, 0, 0, 0.99)));
+                //// Draw a line pointing in the direction of each player's aim
+                //float angle = (360.0f - p->viewYaw) * (M_PI / 180.0f);
+                //ImVec2 endpoint(center.x + radius * cos(angle), center.y + radius * sin(angle));
+                //Canvas->AddLine(center, endpoint, ImColor(ImVec4(0, 0, 0, 0.99)));
             }
         }
         ImGui::End();
