@@ -1,4 +1,5 @@
 #pragma once
+
 struct Vector2D {
     float x, y;
 
@@ -6,56 +7,38 @@ struct Vector2D {
 
     Vector2D(float x_val, float y_val) : x(x_val), y(y_val) {}
 
-    Vector2D Subtract(const Vector2D& other) const {
-        return Vector2D(x - other.x, y - other.y);
-    }
     Vector2D Add(const Vector2D& other) const {
         return Vector2D(x + other.x, y + other.y);
     }
-    Vector2D Divide(const Vector2D& other) const {
-        return Vector2D(x / other.x, y / other.y);
-    }
-    Vector2D Divide(float scalar) const {
-        return Vector2D(x / scalar, y / scalar);
+    Vector2D Subtract(const Vector2D& other) const {
+        return Vector2D(x - other.x, y - other.y);
     }
     Vector2D Multiply(float scalar) const {
         return Vector2D(x * scalar, y * scalar);
     }
-    Vector2D Normalized() const {
-        Vector2D result;
-        float length = std::sqrt(x * x + y * y);
-        if (length != 0) {
-            result.x = x / length;
-            result.y = y / length;
-        }
-        return result;
+    Vector2D Divide(float scalar) const {
+        return Vector2D(x / scalar, y / scalar);
     }
-    Vector2D MultipliedByScalar(float scalar) const {
-        Vector2D result;
-        result.x = x * scalar;
-        result.y = y * scalar;
-        return result;
-    }
-    Vector2D Clamp() const {
-        float clampedX = x;
-        if (clampedX < -89) clampedX = -89;
-        if (clampedX > 89) clampedX = 89;
-        float clampedY = y;
-        if (clampedY < -180) clampedY += 360;
-        if (clampedY > 180) clampedY -= 360;
-        if (clampedX > 89 || clampedX < -89) throw std::invalid_argument("BAD PITCH CLAMPING. CHECK YOUR CODE");
-        if (clampedY > 180 || clampedY < -180) throw std::invalid_argument("BAD YAW CLAMPING. CHECK YOUR CODE");
-        return Vector2D(clampedX, clampedY);
-    }
-    float DotProduct(const Vector2D& other) const {
-        return x * other.x + y * other.y;
+    Vector2D Divide(const Vector2D& other) const {
+        return Vector2D(x / other.x, y / other.y);
     }
     float Magnitude() const {
         return std::sqrt(x * x + y * y);
     }
+    Vector2D& Normalize() {
+        float len = Magnitude();
+        if (len > 0) {
+            x /= len;
+            y /= len;
+        }
+        return *this;
+    }
     float Distance(const Vector2D& other) const {
         Vector2D diff = Subtract(other);
         return diff.Magnitude();
+    }
+    float DotProduct(const Vector2D& other) const {
+        return x * other.x + y * other.y;
     }
     bool IsZeroVector() {
         return x == 0 && y == 0;
@@ -77,17 +60,20 @@ struct Vector3D {
 
     Vector3D(float x_val, float y_val, float z_val) : x(x_val), y(y_val), z(z_val) {}
 
+    Vector3D Add(const Vector3D& other) const {
+        return Vector3D(x + other.x, y + other.y, z + other.z);
+    }
     Vector3D Subtract(const Vector3D& other) const {
         return Vector3D(x - other.x, y - other.y, z - other.z);
     }
-    Vector3D Add(const Vector3D& other) const {
-        return Vector3D(x + other.x, y + other.y, z + other.z);
+    Vector3D Multiply(float scalar) const {
+        return Vector3D(x * scalar, y * scalar, z * scalar);
     }
     Vector3D Divide(float scalar) const {
         return Vector3D(x / scalar, y / scalar, z / scalar);
     }
-    Vector3D Multiply(float scalar) const {
-        return Vector3D(x * scalar, y * scalar, z * scalar);
+    float Magnitude() const {
+        return std::sqrt(x * x + y * y + z * z);
     }
     Vector3D& Normalize() {
         float len = Magnitude();
@@ -98,36 +84,27 @@ struct Vector3D {
         }
         return *this;
     }
-    Vector2D To2D() const {
-        return Vector2D(x, y);
-    }
-    Vector3D& operator+=(const Vector3D& other) {
-        x += other.x;
-        y += other.y;
-        z += other.z;
-        return *this;
-    }
-    float DotProduct(const Vector3D& other) const {
-        return x * other.x + y * other.y + z * other.z;
-    }
-    float Magnitude() const {
-        return std::sqrt(x * x + y * y + z * z);
-    }
-    float Magnitude2D() const {
-        return std::sqrt(x * x + y * y);
-    }
     float Distance(const Vector3D& other) const {
         Vector3D diff = Subtract(other);
         return diff.Magnitude();
     }
+    float Magnitude2D() const {
+        return std::sqrt(x * x + y * y);
+    }
     float Distance2D(const Vector3D& other) const {
         return (other.Subtract(*this)).Magnitude2D();
-    };
+    }
+    Vector2D To2D() const {
+        return Vector2D(x, y);
+    }
+    float DotProduct(const Vector3D& other) const {
+        return x * other.x + y * other.y + z * other.z;
+    }
     bool IsZeroVector() {
         return x == 0 && y == 0 && z == 0;
     }
     bool IsValid() {
-        if(std::isnan(x) || std::isinf(x) || std::isnan(y) || std::isinf(y) || std::isnan(z) || std::isinf(z)) {
+        if (std::isnan(x) || std::isinf(x) || std::isnan(y) || std::isinf(y) || std::isnan(z) || std::isinf(z)) {
             return false;
         }
         return true;
@@ -140,5 +117,27 @@ struct Vector3D {
     }
     bool operator!=(const Vector3D& other) const {
         return !(*this == other);
+    }
+};
+
+struct Matrix3x4 {
+    float matrix[3][4];
+
+    Vector3D GetPosition() const {
+        return Vector3D(matrix[0][3], matrix[1][3], matrix[2][3]);
+    }
+};
+
+struct ViewMatrix {
+    float matrix[4][4];
+
+    Vector3D Transform(const Vector3D vector) const {
+        Vector3D transformed;
+
+        transformed.x = vector.y * matrix[0][1] + vector.x * matrix[0][0] + vector.z * matrix[0][2] + matrix[0][3];
+        transformed.y = vector.y * matrix[1][1] + vector.x * matrix[1][0] + vector.z * matrix[1][2] + matrix[1][3];
+        transformed.z = vector.y * matrix[3][1] + vector.x * matrix[3][0] + vector.z * matrix[3][2] + matrix[3][3];
+
+        return transformed;
     }
 };

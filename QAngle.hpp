@@ -1,9 +1,7 @@
 #pragma once
 
 struct QAngle {
-
-    float x;
-    float y;
+    float x, y;
 
     QAngle() : x(0), y(0) {}
 
@@ -11,7 +9,7 @@ struct QAngle {
 
     float distanceTo(const QAngle& other) const {
         return (other - *this).length();
-    };
+    }
     inline QAngle operator+(const QAngle& other) const {
         return QAngle(x + other.x, y + other.y);
     }

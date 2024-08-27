@@ -1,129 +1,53 @@
 #include "includes.hpp"
-//_begin
-#include "Utils/Overlay.hpp"
-#include "Utils/Camera.hpp"
-Overlay OverlayWindow = Overlay();
-Camera* GameCamera = new Camera();
-ImDrawList* Canvas;
 
-const void SetStyle() {
-    ImGuiStyle& style = ImGui::GetStyle();
-    //https://github.com/ocornut/imgui/issues/707#issuecomment-917151020
-    style.WindowPadding                             = ImVec2(8.00f, 8.00f);
-    style.FramePadding                              = ImVec2(5.00f, 2.00f);
-    style.CellPadding                               = ImVec2(6.00f, 6.00f);
-    style.ItemSpacing                               = ImVec2(6.00f, 6.00f);
-    style.ItemInnerSpacing                          = ImVec2(6.00f, 6.00f);
-    style.TouchExtraPadding                         = ImVec2(0.00f, 0.00f);
-    style.IndentSpacing                             = 25;
-    style.ScrollbarSize                             = 15;
-    style.GrabMinSize                               = 10;
-    style.WindowBorderSize                          = 1;
-    style.ChildBorderSize                           = 1;
-    style.PopupBorderSize                           = 1;
-    style.FrameBorderSize                           = 1;
-    style.TabBorderSize                             = 1;
-    style.WindowRounding                            = 7;
-    style.ChildRounding                             = 4;
-    style.FrameRounding                             = 3;
-    style.PopupRounding                             = 4;
-    style.ScrollbarRounding                         = 9;
-    style.GrabRounding                              = 3;
-    style.LogSliderDeadzone                         = 4;
-    style.TabRounding                               = 4;
-    style.Colors[ImGuiCol_Text]                     = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    style.Colors[ImGuiCol_TextDisabled]             = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-    style.Colors[ImGuiCol_WindowBg]                 = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
-    style.Colors[ImGuiCol_ChildBg]                  = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    style.Colors[ImGuiCol_PopupBg]                  = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
-    style.Colors[ImGuiCol_Border]                   = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
-    style.Colors[ImGuiCol_BorderShadow]             = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
-    style.Colors[ImGuiCol_FrameBg]                  = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-    style.Colors[ImGuiCol_FrameBgHovered]           = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
-    style.Colors[ImGuiCol_FrameBgActive]            = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-    style.Colors[ImGuiCol_TitleBg]                  = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_TitleBgActive]            = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
-    style.Colors[ImGuiCol_TitleBgCollapsed]         = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_MenuBarBg]                = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    style.Colors[ImGuiCol_ScrollbarBg]              = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-    style.Colors[ImGuiCol_ScrollbarGrab]            = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
-    style.Colors[ImGuiCol_ScrollbarGrabHovered]     = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
-    style.Colors[ImGuiCol_ScrollbarGrabActive]      = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
-    style.Colors[ImGuiCol_CheckMark]                = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-    style.Colors[ImGuiCol_SliderGrab]               = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
-    style.Colors[ImGuiCol_SliderGrabActive]         = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
-    style.Colors[ImGuiCol_Button]                   = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-    style.Colors[ImGuiCol_ButtonHovered]            = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
-    style.Colors[ImGuiCol_ButtonActive]             = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-    style.Colors[ImGuiCol_Header]                   = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-    style.Colors[ImGuiCol_HeaderHovered]            = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
-    style.Colors[ImGuiCol_HeaderActive]             = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
-    style.Colors[ImGuiCol_Separator]                = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-    style.Colors[ImGuiCol_SeparatorHovered]         = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
-    style.Colors[ImGuiCol_SeparatorActive]          = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
-    style.Colors[ImGuiCol_ResizeGrip]               = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-    style.Colors[ImGuiCol_ResizeGripHovered]        = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
-    style.Colors[ImGuiCol_ResizeGripActive]         = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
-    style.Colors[ImGuiCol_Tab]                      = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-    style.Colors[ImGuiCol_TabHovered]               = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    style.Colors[ImGuiCol_TabActive]                = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
-    style.Colors[ImGuiCol_TabUnfocused]             = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-    style.Colors[ImGuiCol_TabUnfocusedActive]       = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    //style.Colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-    //style.Colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_PlotLines]                = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_PlotLinesHovered]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_PlotHistogram]            = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_PlotHistogramHovered]     = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_TableHeaderBg]            = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-    style.Colors[ImGuiCol_TableBorderStrong]        = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-    style.Colors[ImGuiCol_TableBorderLight]         = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-    style.Colors[ImGuiCol_TableRowBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    style.Colors[ImGuiCol_TableRowBgAlt]            = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-    style.Colors[ImGuiCol_TextSelectedBg]           = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-    style.Colors[ImGuiCol_DragDropTarget]           = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-    style.Colors[ImGuiCol_NavHighlight]             = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_NavWindowingHighlight]    = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
-    style.Colors[ImGuiCol_NavWindowingDimBg]        = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
-    style.Colors[ImGuiCol_ModalWindowDimBg]         = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
-}
-
-bool InitializeOverlayWindow(const char* OverlayTitle) {
-    if (!OverlayWindow.InitializeOverlay(OverlayTitle)) {
-        OverlayWindow.DestroyOverlay();
-        return false;
-    }
-    OverlayWindow.CaptureInput(false);
-    int screenWidth;
-    int screenHeight;
-    OverlayWindow.GetScreenResolution(screenWidth, screenHeight);
-    GameCamera->Initialize(screenWidth, screenHeight);
-    std::cout << "Overlay Initialized!" << std::endl;
-    SetStyle();
-    return true;
-}
-
-ConfigLoader* cl = new ConfigLoader();
+// Create basic objects
+ConfigLoader* configLoader = new ConfigLoader();
+XDisplay* myDisplay = new XDisplay();
 Level* map = new Level();
-LocalPlayer* localPlayer = new LocalPlayer(cl);
+LocalPlayer* localPlayer = new LocalPlayer(configLoader);
+std::vector<Player*>* humanPlayers = new std::vector<Player*>;
+std::vector<Player*>* dummyPlayers = new std::vector<Player*>;
 std::vector<Player*>* players = new std::vector<Player*>;
 std::vector<Player*>* playersCache = new std::vector<Player*>;
-Sense* sense = new Sense(cl, map, localPlayer, players, GameCamera);
-int counter;
+Overlay overlayWindow = Overlay();
+Camera* gameCamera = new Camera();
+ImDrawList* canvas;
+
+// Create features
+AimBot* aimBot = new AimBot(configLoader, myDisplay, localPlayer, players, gameCamera);
+Sense* sense = new Sense(configLoader, localPlayer, players, gameCamera, aimBot);
+Other* other = new Other(configLoader, myDisplay, map, localPlayer, players);
+
+int counter = 1;
+int readError = 1000;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
 int frameCountPrev;
 std::vector<int> frameCountDiffs;
 std::vector<int> frameCountTimes;
-double averageFPS;
-int readError = 1000;
+double averageFps;
 bool leftLock = true;
-bool rightLock = cl->AIMBOT_ACTIVATED_BY_ADS;
-bool autoFire = cl->FEATURE_TRIGGERBOT_ON;
-int boneID = 0;
-int TotalSpectators = 0;
-std::vector<std::string> Spectators;
+bool rightLock = configLoader->AIMBOT_ACTIVATED_BY_ADS;
+bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
+int boneId = 2;
+int totalSpectators = 0;
+std::vector<std::string> spectators;
+
+bool InitializeOverlayWindow(const char* overlayTitle) {
+    if (!overlayWindow.InitializeOverlay(overlayTitle)) {
+        overlayWindow.DestroyOverlay();
+        return false;
+    }
+    overlayWindow.SetStyle();
+    overlayWindow.CaptureInput(false);
+    int screenWidth;
+    int screenHeight;
+    overlayWindow.GetScreenResolution(screenWidth, screenHeight);
+    gameCamera->Initialize(screenWidth, screenHeight);
+    std::cout << "Overlay Initialized!" << std::endl;
+    return true;
+}
 
 void RenderUI() {
     auto io = ImGui::GetIO();
@@ -138,346 +62,204 @@ void RenderUI() {
         ImGuiWindowFlags_NoBackground |
         ImGuiWindowFlags_NoSavedSettings |
         ImGuiWindowFlags_NoInputs);
-    Canvas = ImGui::GetWindowDrawList();
+    canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->RenderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneID);
+        sense->RenderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneId);
     } else {
-        sense->RenderStatus(averageProcessingTime, averageFPS, leftLock, rightLock, autoFire, boneID);
-        sense->RenderESP(Canvas, OverlayWindow);
-        if (cl->FEATURE_MAP_RADAR_ON) sense->RenderRadar(Canvas);
-        if (cl->FEATURE_SPECTATORS_ON) sense->RenderSpectators(counter, TotalSpectators, Spectators);
+        sense->RenderStatus(averageProcessingTime, averageFps, leftLock, rightLock, autoFire, boneId);
+        sense->RenderESP(canvas, overlayWindow);
+        if (configLoader->FEATURE_MAP_RADAR_ON) sense->RenderRadar(canvas);
+        if (configLoader->FEATURE_SPECTATORS_ON) sense->RenderSpectators(counter, totalSpectators, spectators);
     }
     ImGui::End();
 }
 
-std::string slurpFile(const std::string& absolutePath) {
-    std::string contents;
-    std::ifstream file;
-    file.open(absolutePath, std::ios::in);
-
-    if (file.fail()) {
-        return contents;
-    }
-
-    char c;
-    while (file.get(c)) {
-        contents += c;
-    }
-
-    file.close();
-    std::erase(contents, '\n');
-    std::erase(contents, '\r');
-    return contents;
-}
-
-#include <pwd.h>
-std::string GameVersion = OFF_GAME_VERSION;
-// isOutdated() by hir0xygen
-bool isOutdated() { // Scan possible Steam installation paths for "libraryfolders.vdf" to then scan existing library folders for "gameversion.txt"
-    // Get currently logged in user
-    struct passwd* pw;
-    const char* username = nullptr;
-    while ((pw = getpwent()) != nullptr) {
-        if (strncmp(pw->pw_dir, "/home/", 6) == 0) {
-            username = pw->pw_name;
-            break;
-        }
-    }
-    endpwent();
-
-    if (username == nullptr)
-        return true;
-
-    const std::string steamPaths[] = {
-      "/.steam/steam/config/libraryfolders.vdf",
-      "/.local/share/Steam/config/libraryfolders.vdf",
-      "/.var/app/com.valvesoftware.Steam/data/Steam/config/libraryfolders.vdf"
-    };
-
-    std::vector<std::string> extractedPaths;
-    for (const auto& steamPath : steamPaths) {
-        std::stringstream fullPath;
-        fullPath << "/home/" << username << steamPath;
-
-        std::string libraryfolders = slurpFile(fullPath.str());
-        size_t currentPos = 0;
-        while (true) {
-            const size_t pathPos = libraryfolders.find("path", currentPos);
-
-            if (pathPos == std::string::npos)
-                break;
-
-            const size_t pathStart = pathPos + 8;
-            const size_t pathEnd = libraryfolders.find('"', pathStart);
-
-            if (pathEnd != std::string::npos) {
-                std::string extractedPath = libraryfolders.substr(pathStart, pathEnd - pathStart);
-                std::stringstream finalPath;
-                finalPath << extractedPath << R"(/steamapps/common/Apex Legends/gameversion.txt)";
-
-                std::string version = slurpFile(finalPath.str());
-                printf("Apex Legends %s\n", version.c_str());
-                if (version == GameVersion) {
-                    return false;
-                }
-            }
-
-            currentPos = pathEnd;
-        }
-    }
-
-    return true;
-}
-
-//_end
-//_int main() {
-int main(int argc, char* argv[]) { //_add
+int main(int argc, char* argv[]) {
     if (getuid()) { std::cout << "RUN AS ROOT!\n"; return -1; }
-    printf("Offsets.hpp %s\n", GameVersion.c_str()); //_add
-    if (isOutdated()) { //_add
-        printf("Please update Offsets.hpp and run install.sh from path/to/extracted/repository!\n"); //_add
-        return -1; //_add
-    } //_add
-//_    if (mem::GetPID() == 0) { std::cout << "OPEN APEX LEGENDS!\n"; return -1; }
-    system("mount -o remount,rw,hidepid=0 /proc"); //_add
-    while (mem::GetPID() == 0) { //_add
-        std::cout << "OPEN APEX LEGENDS!\n"; //_add
-        std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
-    } //_add
-    while (!map->isLobby && !map->isPlayable) { //_add
-        std::cout << "." << std::flush; //_add
-        std::this_thread::sleep_for(std::chrono::seconds(3)); //_add
-        map->readFromMemory(); //_add
-    } //_add
-    if (map->isLobby) { //_add
-        printf("Start in Lobby - Sleep 35 sec\n"); //_add
-        std::this_thread::sleep_for(std::chrono::seconds(35)); //_add
-    } //_add
-    system("mount -o remount,rw,hidepid=2 /proc"); //_add
+    printf("Offsets.hpp %s\n", OFF_GAME_VERSION.c_str());
+    //if (util::isOutdated()) { std::cout << "Please update Offsets.hpp and run install.sh from path/to/extracted/repository!\n"; return -1; }
+    if (util::isOutdated()) { std::cout << "Press ENTER to continue\n"; system("read"); }
 
-//_    ConfigLoader* cl = new ConfigLoader();
-    MyDisplay* display = new MyDisplay();
-//_    Level* map = new Level();
-//_    LocalPlayer* localPlayer = new LocalPlayer();
-    std::vector<Player*>* humanPlayers = new std::vector<Player*>;
-    std::vector<Player*>* dummyPlayers = new std::vector<Player*>;
-//_    std::vector<Player*>* players = new std::vector<Player*>;
+    system("mount -o remount,rw,hidepid=0 /proc");
+    while (mem::getPid() == 0) {
+        std::cout << "OPEN APEX LEGENDS!\n";
+        util::sleep(35000);
+    }
+    while (!map->isLobby && !map->isPlayable) {
+        std::cout << "." << std::flush;
+        util::sleep(3000);
+        map->readFromMemory();
+    }
+    if (map->isLobby) {
+        std::cout << "Start in Lobby - Sleep 35 sec\n";
+        util::sleep(35000); // std::this_thread::sleep_for(std::chrono::seconds(35));
+    }
+    system("mount -o remount,rw,hidepid=2 /proc");
 
-    //fill in slots for players, dummies and items
-//_    for (int i = 0; i < 60; i++) humanPlayers->push_back(new Player(cl, i, localPlayer));
-//_    for (int i = 0; i < 15000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer));
-    for (int i = 0; i < 70; i++) humanPlayers->push_back(new Player(cl, i, localPlayer)); //_add
-    for (int i = 0; i < 10000; i++) dummyPlayers->push_back(new Player(cl, i, localPlayer)); //_add
-    std::cout << "Core Initialized!" << std::endl; //_add
+    // Fill in slots for players, dummies and items
+    for (int i = 0; i < 70; i++) humanPlayers->push_back(new Player(i));
+    for (int i = 0; i < 10000; i++) dummyPlayers->push_back(new Player(i));
+    std::cout << "Core Initialized!" << std::endl;
 
-    //create features
-//_    NoRecoil* noRecoil = new NoRecoil(cl, display, map, localPlayer);
-//_    TriggerBot* triggerBot = new TriggerBot(cl, display, localPlayer, players);
-//_    Sense* sense = new Sense(cl, map, localPlayer, players);
-//_    Aim* aim = new Aim(cl, display, localPlayer, players);
-    Aim* aim = new Aim(cl, display, localPlayer, players, GameCamera);
-    Random* random = new Random(cl, display, map, localPlayer, players);
+    // Load config
+    configLoader->reloadFile();
 
-//_    int counter = 0;
-    counter = 1; //_add
-    cl->reloadFile(); //_add
-    if (!InitializeOverlayWindow(argv[1])) //_add
-        return -1; //_add
-    if (cl->SENSE_VERBOSE < 2) OverlayWindow.DestroyOverlay(); //_add
+    if (!InitializeOverlayWindow(argv[1])) return -1;
+    if (configLoader->SENSE_VERBOSE < 2) overlayWindow.DestroyOverlay();
 
-    //while (!glfwWindowShouldClose(OverlayWindow)) { //_add
+    // Begin main loop
     while (true) {
         try {
             long startTime = util::currentEpochMillis();
-            if (readError > 0) { //_add
-                //if (cl->SENSE_VERBOSE > 1) //_add
-                //    OverlayWindow.Render(&RenderUI); //_add
-                display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
-                keymap::AIMBOT_FIRING_KEY = false; //_add
-                playersCache->clear(); //_add
-                //std::this_thread::sleep_for(std::chrono::milliseconds(readError)); //_add
-                //readError = 0; //_add
-            } //_add
-            while (true) { //_add
-                if (display->isKeyDown("XK_Home")) { //_add
-                    system("mount -o remount,rw,hidepid=0 /proc"); //_add
-                    return -1; //_add
-                } //_add
-                if (display->isKeyDown("XK_Left")) { //_add
-                    leftLock = !leftLock; //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-                } //_add
-                if (display->isKeyDown("XK_Right")) { //_add
-                    rightLock = !rightLock; //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-                } //_add
-                if (display->isKeyDown("XK_Up")) { //_add
-                    autoFire = !autoFire; //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-                } //_add
-                if (display->isKeyDown("XK_Down")) { //_add
-                    boneID++; //_add
-                    if (boneID > 2) boneID = 0; //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250)); //_add
-                } //_add
-                if (readError > 0) { //_add
-                    if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50)); //_add
-                    readError -= 50; //_add
-                } else { //_add
-                    break; //_add
-                } //_add
-            } //_add
+            if (readError > 0) {
+                myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
+                keymap::AIMBOT_FIRING_KEY = false;
+                playersCache->clear();
+            }
 
-//_            if (counter % 20 == 0) cl->reloadFile();
+            while (true) {
+                if (myDisplay->isKeyDown("XK_Home")) { system("mount -o remount,rw,hidepid=0 /proc"); return -1; }
+                if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Right")) { rightLock = !rightLock; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Up")) { autoFire = !autoFire; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Down")) {
+                    boneId--;
+                    if (boneId < 0) boneId = 2;
+                    util::sleep(250);
+                }
+                if (readError > 0) {
+                    if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&RenderUI);
+                    util::sleep(50);
+                    readError -= 50;
+                } else { break; }
+            }
+
+            // Read map and make sure it is playable
             map->readFromMemory();
             if (!map->isPlayable) {
-//_                printf("Player in Lobby - Sleep 35 sec\n");
-//_                std::this_thread::sleep_for(std::chrono::seconds(35));
-                printf("Player in Lobby - Sleep 3 sec\n"); //_add
-                readError = 3000; //_add
+                std::cout << "Player in Lobby - Sleep 3 sec\n";
+                readError = 3000;
                 continue;
             }
 
-            localPlayer->readFromMemory(map);
-//_            if (!localPlayer->isValid()) throw std::invalid_argument("Select Legend");
-            if (!localPlayer->isValid()) { //_add
-                printf("Select Legend - Sleep 3 sec\n"); //_add
-                readError = 3000; //_add
-                continue; //_add
-            } //_add
+            // Read localPlayer and make sure it is valid
+            localPlayer->readFromMemory();
+            if (!localPlayer->isValid()) {
+                std::cout << "Select Legend - Sleep 3 sec\n";
+                readError = 3000;
+                continue;
+            }
 
-            if (cl->AIMBOT_ACTIVATED_BY_KEY && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && display->isKeyDown(cl->AIMBOT_ACTIVATION_KEY) || //_add
-                cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown()) //_add
-                keymap::AIMBOT_ACTIVATION_KEY = true; //_add
-            else //_add
-                keymap::AIMBOT_ACTIVATION_KEY = false; //_add
-            int weapon = localPlayer->weaponIndex; //_add
-            if (cl->AIMBOT_ACTIVATED_BY_MOUSE && display->isLeftMouseButtonDown() && ( //_add
-                weapon == WEAPON_SENTINEL || //_add
-                weapon == WEAPON_LONGBOW || //_add
-                weapon == WEAPON_KRABER || //_add
-                weapon == WEAPON_TRIPLE_TAKE)) { //_add
-                std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
-                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) { //_add
-                    display->kbPress(cl->AIMBOT_FIRING_KEY); //_add
-                    display->kbRelease(cl->AIMBOT_FIRING_KEY); //_add
-                    keymap::AIMBOT_FIRING_KEY = false; //_add
-                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()); //_add
-                } //_add
-            } //_add
+            if (configLoader->AIMBOT_ACTIVATED_BY_KEY && (configLoader->AIMBOT_ACTIVATION_KEY != "" || "NONE") && myDisplay->isKeyDown(configLoader->AIMBOT_ACTIVATION_KEY) ||
+                configLoader->AIMBOT_ACTIVATED_BY_MOUSE && myDisplay->isLeftMouseButtonDown())
+                keymap::AIMBOT_ACTIVATION_KEY = true;
+            else
+                keymap::AIMBOT_ACTIVATION_KEY = false;
+            int weapon = localPlayer->weaponId;
+            if (configLoader->AIMBOT_ACTIVATED_BY_MOUSE && myDisplay->isLeftMouseButtonDown() && (
+                weapon == WEAPON_SENTINEL ||
+                weapon == WEAPON_LONGBOW ||
+                weapon == WEAPON_KRABER ||
+                weapon == WEAPON_TRIPLE_TAKE)) {
+                std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) {
+                    myDisplay->kbPress(configLoader->AIMBOT_FIRING_KEY);
+                    myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
+                    keymap::AIMBOT_FIRING_KEY = false;
+                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+                }
+            }
 
-            //read players
+            // Read players
             players->clear();
-//_            if (map->isTrainingArea)
-            if (counter % 99 == 0) { //_add
-                playersCache->clear(); //_add
+            if (counter % 99 == 0) {
+                playersCache->clear();
                 for (int i = 0; i < dummyPlayers->size(); i++) {
                     Player* p = dummyPlayers->at(i);
-//_                    p->readFromMemory();
-//_                    if (p->isValid()) players->push_back(p);
-                    p->readFromMemory(counter); //_add
-                    if (p->isValid()) { playersCache->push_back(p); players->push_back(p); } //_add
+                    p->readFromMemory(configLoader, counter, localPlayer, map);
+                    if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
                 }
-                if (cl->SENSE_VERBOSE > 0) printf("Entities: %d\n", playersCache->size()); //_add
-            } else { //_add
-                for (int i = 0; i < playersCache->size(); i++) { //_add
-                    Player* p = playersCache->at(i); //_add
-                    p->readFromMemory(counter); //_add
-                    if (p->isValid()) players->push_back(p); //_add
-                } //_add
-            } //_add
-//_            else
-//_                for (int i = 0; i < humanPlayers->size(); i++) {
-//_                    Player* p = humanPlayers->at(i);
-//_                    p->readFromMemory();
-//_                    if (p->isValid()) players->push_back(p);
-//_                }
 
-//_            noRecoil->controlWeapon();
-//_            triggerBot->shootAtEnemy(counter);
-            GameCamera->Update(); //_add
-//_            sense->update(counter);
-//_            sense->itemGlow(counter);
-//_            aim->update(counter);
-            aim->update(counter, averageProcessingTime, leftLock, rightLock, autoFire, boneID, TotalSpectators); //_add
-//_            random->runAll(counter);
-            random->superGlide(averageFPS); //_add
-            if (cl->SENSE_VERBOSE > 1) OverlayWindow.Render(&RenderUI); //_add
+                if (configLoader->SENSE_VERBOSE > 0) {
+                    printf("Entities: %d\n", playersCache->size());
 
-//_            int processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
-            processingTime = static_cast<int>(util::currentEpochMillis() - startTime); //_add
-            int goalSleepTime = 16.67; // 16.67ms=60HZ | 6.97ms=144HZ
+                    if (configLoader->FEATURE_SPECTATORS_ON) {
+                        int tempTotalSpectators = 0;
+                        std::vector<std::string> tempSpectators;
+                        for (int i = 0; i < players->size(); i++) {
+                            Player* p = players->at(i);
+                            if (p->base == localPlayer->base)
+                                continue;
+                            if (p->spctrBase == localPlayer->base) {
+                                tempTotalSpectators++;
+                                tempSpectators.push_back(p->getPlayerName());
+                                } else if (configLoader->FEATURE_SPECTATORS_SHOW_DEAD && p->isDead) {
+                                tempTotalSpectators++;
+                                tempSpectators.push_back("DEAD: " + p->getPlayerName());
+                            }
+                        }
+                        totalSpectators = tempTotalSpectators;
+                        spectators = tempSpectators;
+                        printf("Spectators: %d\n", static_cast<int>(spectators.size()));
+                        if (static_cast<int>(spectators.size()) > 0)
+                            for (int i = 0; i < static_cast<int>(spectators.size()); i++)
+                                printf("> %s\n", spectators.at(i).c_str());
+                    }
+                }
+            } else {
+                for (int i = 0; i < playersCache->size(); i++) {
+                    Player* p = playersCache->at(i);
+                    p->readFromMemory(configLoader, counter, localPlayer, map);
+                    if (p->isValid()) players->push_back(p);
+                }
+            }
+
+            // Run features
+            gameCamera->Update();
+            aimBot->update(counter, averageProcessingTime, leftLock, rightLock, autoFire, boneId, totalSpectators);
+            other->superGlide(averageFps);
+
+            if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&RenderUI);
+            processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
+            int goalSleepTime = 16.67; // 16.67ms=60Hz | 6.94ms=144Hz
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
-            std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
+            util::sleep(timeLeftToSleep);
+            if (counter % 100 == 0) {
+                if (configLoader->SENSE_VERBOSE > 0) {
+                    printf("%d %d %d ", leftLock, autoFire, rightLock);
+                    if (boneId == 0) printf("HEAD\n");
+                    else if (boneId == 1) printf("NECK\n");
+                    else printf("BODY\n");
+                }
+                processingTimes.push_back(processingTime);
+                if (processingTimes.size() > 10) processingTimes.erase(processingTimes.begin());
+                averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0f) / processingTimes.size();
+                if (frameCountPrev != 0) {
+                    frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev);
+                    frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime));
+                }
+                if (frameCountDiffs.size() > 10)
+                    frameCountDiffs.erase(frameCountDiffs.begin());
+                if (frameCountTimes.size() > 10)
+                    frameCountTimes.erase(frameCountTimes.begin());
+                averageFps = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0f) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0f) * 10;
+                frameCountPrev = localPlayer->frameCount;
+            }
 
-            if (cl->SENSE_VERBOSE > 0 && counter % 101 == 0) { //_add
-                if (cl->FEATURE_SPECTATORS_ON) { //_add
-                    int TempTotalSpectators = 0; //_add
-                    std::vector<std::string> TempSpectators; //_add
-                    for (int i = 0; i < players->size(); i++) { //_add
-                        Player* p = players->at(i); //_add
-                        if (p->base == localPlayer->base) //_add
-                            continue; //_add
-                        if (p->isSpectating()) { //_add
-                            TempTotalSpectators++; //_add
-                            TempSpectators.push_back(p->getPlayerName()); //_add
-                            } else if (cl->FEATURE_SPECTATORS_SHOW_DEAD && p->isDead) { //_add
-                            TempTotalSpectators++; //_add
-                            TempSpectators.push_back("DEAD: " + p->getPlayerName()); //_add
-                        } //_add
-                    } //_add
-                    TotalSpectators = TempTotalSpectators; //_add
-                    Spectators = TempSpectators; //_add
-                    printf("Spectators: %d\n", static_cast<int>(Spectators.size())); //_add
-                    if (static_cast<int>(Spectators.size()) > 0) //_add
-                        for (int i = 0; i < static_cast<int>(Spectators.size()); i++) //_add
-                            printf("> %s\n", Spectators.at(i).c_str()); //_add
-                } //_add
-                printf("%d %d %d ", leftLock, autoFire, rightLock); //_add
-                if (boneID == 0) printf("BODY\n"); //_add
-                else if (boneID == 1) printf("NECK\n"); //_add
-                else printf("HEAD\n"); //_add
-            } //_add
+            // Print loop info every now and then
+            if (configLoader->SENSE_VERBOSE > 0 && counter % 500 == 0)
+                printf("| [%04d] - Time: %02dms |\n", counter, processingTime);
 
-            if (counter % 100 == 0) { //_add
-                //cl->reloadFile(); //_add
-                processingTimes.push_back(processingTime); //_add
-                if (processingTimes.size() > 10) //_add
-                    processingTimes.erase(processingTimes.begin()); //_add
-                averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0) / processingTimes.size(); //_add
-                if (frameCountPrev != 0) { //_add
-                    frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev); //_add
-                    frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime)); //_add
-                } //_add
-                if (frameCountDiffs.size() > 10) //_add
-                    frameCountDiffs.erase(frameCountDiffs.begin()); //_add
-                if (frameCountTimes.size() > 10) //_add
-                    frameCountTimes.erase(frameCountTimes.begin()); //_add
-                averageFPS = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0) * 10; //_add
-                frameCountPrev = localPlayer->frameCount; //_add
-            } //_add
-
-            //print loop info every now and then
-//_            if (counter % 500 == 0)
-            if (cl->SENSE_VERBOSE > 0 && counter % 500 == 0) //_add
-                printf("| [%04d] - Time: %02dms |\n",
-                    counter, processingTime);
-
-            //update counter
-//_            counter = (counter < 1000) ? ++counter : counter = 0;
-            counter = (counter < 9999) ? ++counter : counter = 0; //_add
+            // Update counter
+            counter = (counter >= 9999) ? counter = 0 : ++counter;
         }
         catch (std::invalid_argument& e) {
             printf("[-] %s - SLEEP 5 SEC [-]\n", e.what());
-//_            std::this_thread::sleep_for(std::chrono::seconds(5));
-            readError = 5000; //_add
+            readError = 5000;
         }
         catch (...) {
             printf("[-] UNKNOWN ERROR - SLEEP 3 SEC [-]\n");
-//_            std::this_thread::sleep_for(std::chrono::seconds(3));
-            readError = 3000; //_add
+            readError = 3000;
         }
     }
-    //DestroyOverlay(); //_add
 }
