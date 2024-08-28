@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) {
 
             // Run features
             gameCamera->update();
-            aimBot->update(counter, averageProcessingTime, leftLock, rightLock, autoFire, boneId, totalSpectators);
+            aimBot->update(averageProcessingTime, leftLock, rightLock, autoFire, boneId, totalSpectators);
             other->superGlide(averageFps);
 
             if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
