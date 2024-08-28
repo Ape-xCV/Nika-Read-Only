@@ -1,33 +1,9 @@
-#include <sstream> // for std::stringstream
 #pragma once
-
-struct Color {
-    float red;
-    float green;
-    float blue;
-
-    bool operator==(const Color& other) const {
-        return (red == other.red) && (green == other.green) && (blue == other.blue);
-    }
-
-    bool operator!=(const Color& other) const {
-        return !(*this == other);
-    }
-};
-
-namespace keymap { //_add
-    bool AIMBOT_ACTIVATION_KEY; //_add
-    bool AIMBOT_FIRING_KEY; //_add
-    static std::chrono::milliseconds timeLastShot; //_add
-}; //_add
-
-namespace level {
-    bool isMixtape;
-};
+#include <pwd.h> // isOutdated()
 
 struct Level {
     std::string name;
-    bool isLobby; //_add
+    bool isLobby;
     bool isPlayable;
     bool isTrainingArea;
     char gameMode[64] = {0};
@@ -36,19 +12,92 @@ struct Level {
 
     void readFromMemory() {
         name = mem::ReadString(OFF_REGION + OFF_LEVEL, 1024, "Level name");
-        isLobby = name == "mp_lobby"; //_add
+        isLobby = name == "mp_lobby";
         isPlayable = !name.empty() && name != "mp_lobby";
         isTrainingArea = name == "mp_rr_canyonlands_staging_mu1";
         uint64_t gameModePtr = mem::Read<uint64_t>(OFF_REGION + OFF_GAMEMODE + 0x50, "gameModePtr");
         if (gameModePtr > 0) {
             mem::Read(gameModePtr, &gameMode, sizeof(gameMode));
             isMixtape=gameModes[gameMode];
-            level::isMixtape = isMixtape;
         }
     }
 };
 
+namespace keymap {
+    bool AIMBOT_ACTIVATION_KEY;
+    bool AIMBOT_FIRING_KEY;
+    static std::chrono::milliseconds timeLastShot;
+};
+
 namespace util {
+    std::string slurpFile(const std::string& absolutePath) {
+        std::string contents;
+        std::ifstream file;
+        file.open(absolutePath, std::ios::in);
+        if (file.fail()) {
+            return contents;
+        }
+        char c;
+        while (file.get(c)) {
+            contents += c;
+        }
+        file.close();
+        std::erase(contents, '\n');
+        std::erase(contents, '\r');
+        return contents;
+    }
+
+    // isOutdated() by hir0xygen
+    bool isOutdated() { // Scan possible Steam installation paths for "libraryfolders.vdf" to then scan existing library folders for "gameversion.txt"
+        // Get currently logged in user
+        struct passwd* pw;
+        const char* username = nullptr;
+        while ((pw = getpwent()) != nullptr) {
+            if (strncmp(pw->pw_dir, "/home/", 6) == 0) {
+                username = pw->pw_name;
+                break;
+            }
+        }
+        endpwent();
+        if (username == nullptr)
+            return true;
+        const std::string steamPaths[] = {
+            "/.steam/steam/config/libraryfolders.vdf",
+            "/.local/share/Steam/config/libraryfolders.vdf",
+            "/.var/app/com.valvesoftware.Steam/data/Steam/config/libraryfolders.vdf"
+        };
+        std::vector<std::string> extractedPaths;
+        for (const auto& steamPath : steamPaths) {
+            std::stringstream fullPath;
+            fullPath << "/home/" << username << steamPath;
+            std::string libraryfolders = slurpFile(fullPath.str());
+            size_t currentPos = 0;
+            while (true) {
+                const size_t pathPos = libraryfolders.find("path", currentPos);
+                if (pathPos == std::string::npos)
+                    break;
+                const size_t pathStart = pathPos + 8;
+                const size_t pathEnd = libraryfolders.find('"', pathStart);
+                if (pathEnd != std::string::npos) {
+                    std::string extractedPath = libraryfolders.substr(pathStart, pathEnd - pathStart);
+                    std::stringstream finalPath;
+                    finalPath << extractedPath << R"(/steamapps/common/Apex Legends/gameversion.txt)";
+                    std::string version = slurpFile(finalPath.str());
+                    printf("Apex Legends %s\n", version.c_str());
+                    if (version == OFF_GAME_VERSION) {
+                        return false;
+                    }
+                }
+                currentPos = pathEnd;
+            }
+        }
+        return true;
+    }
+
+    void sleep(int ms) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    }
+
     long long currentEpochMillis() {
         auto currentTime = std::chrono::system_clock::now();
         auto duration = currentTime.time_since_epoch();
@@ -68,57 +117,6 @@ namespace util {
         std::mt19937 gen(rd());
         std::uniform_real_distribution<float> dis(min, max);
         return dis(gen);
-    }
-
-    template <typename T>
-    std::string convertNumberToString(const T a_value)
-    {
-        std::ostringstream out;
-        out.precision(6);
-        out << std::fixed << a_value;
-        return out.str();
-    }
-    // trim from start (in place)
-    static inline void ltrim(std::string &s)
-    {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
-                                        { return !std::isspace(ch); }));
-    }
-
-    // trim from end (in place)
-    static inline void rtrim(std::string &s)
-    {
-        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
-                             { return !std::isspace(ch); })
-                    .base(),
-                s.end());
-    }
-
-    // trim from both ends (in place)
-    static inline void trim(std::string &s)
-    {
-        ltrim(s);
-        rtrim(s);
-    }
-
-    std::vector<std::string> static inline split(std::string s)
-    {
-        std::stringstream ss(s);
-        std::istream_iterator<std::string> begin(ss);
-        std::istream_iterator<std::string> end;
-        std::vector<std::string> tokens(begin, end);
-        return tokens;
-    }
-    bool toBool(std::string str)
-    {
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        std::istringstream is(str);
-        bool b;
-        is >> std::boolalpha >> b;
-        return b;
-    }
-    void clearScreen() {
-        printf("\e[H\e[2J\e[3J");
     }
 };
 
@@ -142,79 +140,3 @@ enum class HitboxType {
     RightKnees = 17,
     RightLeg = 14
 };
-
-struct Matrix3x4 {
-public:
-	float matrix[3][4];
-
-	Vector3D GetPosition() const {
-		return Vector3D(matrix[0][3], matrix[1][3], matrix[2][3]);
-	}
-
-	Vector3D GetPosition2() const {
-		return Vector3D(matrix[0][3], matrix[1][3], matrix[2][3]);
-	}
-};
-
-struct ViewMatrix {
-public:
-	float matrix[4][4];
-
-	Vector3D Transform(const Vector3D vector) const {
-		Vector3D transformed;
-
-		transformed.x = vector.y * matrix[0][1] + vector.x * matrix[0][0] + vector.z * matrix[0][2] + matrix[0][3];
-	    transformed.y = vector.y * matrix[1][1] + vector.x * matrix[1][0] + vector.z * matrix[1][2] + matrix[1][3];
-	    transformed.z = vector.y * matrix[3][1] + vector.x * matrix[3][0] + vector.z * matrix[3][2] + matrix[3][3];
-
-		return transformed;
-	}
-};
-
-struct GlowMode {
-    std::byte bodyStyle, borderStyle, borderWidth, transparency;
-
-    GlowMode() {}
-
-    GlowMode(int bodyStyle_val, int borderStyle_val, int borderWidth_val, int transparency_val) :
-        bodyStyle(static_cast<std::byte>(bodyStyle_val)),
-        borderStyle(static_cast<std::byte>(borderStyle_val)),
-        borderWidth(static_cast<std::byte>(borderWidth_val)),
-        transparency(static_cast<std::byte>(transparency_val)) {}
-
-
-    GlowMode(std::byte bodyStyle_val, std::byte borderStyle_val, std::byte borderWidth_val, std::byte transparency_val) :
-        bodyStyle(bodyStyle_val),
-        borderStyle(borderStyle_val),
-        borderWidth(borderWidth_val),
-        transparency(transparency_val) {}
-
-    bool isZeroVector() const {
-        return bodyStyle == std::byte(0)
-            && borderStyle == std::byte(0)
-            && borderWidth == std::byte(0)
-            && borderWidth == std::byte(0);
-    }
-
-    void print() const {
-        std::cout
-            << "bodyStyle:" << static_cast<int>(bodyStyle)
-            << " borderStyle:" << static_cast<int>(borderStyle)
-            << " borderWidth:" << static_cast<int>(borderWidth)
-            << " transparency:" << static_cast<int>(transparency)
-            << "\n";
-    }
-
-    bool operator==(const GlowMode& other) const {
-        return bodyStyle == other.bodyStyle
-            && borderStyle == other.borderStyle
-            && borderWidth == other.borderWidth
-            && transparency == other.transparency;
-    }
-
-    bool operator!=(const GlowMode& other) const {
-        return !(*this == other);
-    }
-};
-
-

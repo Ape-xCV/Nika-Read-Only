@@ -1,8 +1,9 @@
 #pragma once
+
 namespace mem {
     pid_t m_pid = 0;
 
-    pid_t GetPID() {
+    pid_t getPid() {
         if (m_pid > 0) return m_pid;
         char buf[512];
         FILE* cmd_pipe = popen("pidof -s r5apex.exe", "r");
@@ -28,7 +29,7 @@ namespace mem {
         if (size == 0)
             return false;
         void* pAddress = (void*)address;
-        pid_t pid = GetPID();
+        pid_t pid = getPid();
         struct iovec iovLocalAddressSpace[1]{ 0 };
         struct iovec iovRemoteAddressSpace[1]{ 0 };
         iovLocalAddressSpace[0].iov_base = pBuff;     // Store data in this buffer
@@ -53,7 +54,7 @@ namespace mem {
         if (size == 0)
             return false;
         void* pAddress = (void*)address;
-        pid_t pid = GetPID();
+        pid_t pid = getPid();
         struct iovec iovLocalAddressSpace[1]{ 0 };
         struct iovec iovRemoteAddressSpace[1]{ 0 };
         iovLocalAddressSpace[0].iov_base = pBuff;     // Store data in this buffer

@@ -8,7 +8,6 @@
 - This is a considerable improvement of: Pesci-Apu/Nika
 - With an overlay taken from: Gerosity/zap-client-Read-Only-
 - The code remains simple and clean. You can read it out and understand how the overlay is added.
-- Lines were commented out with a "**//_**" prefix or added with a "**//_add**" suffix. Also "**//_begin**" and "**//_end**" was used for large blocks.
 
 ## Credits
 
