@@ -13,7 +13,7 @@ cd /root/Nika-Read-Only/build
 cmake ..
 make
 cp main /root/main
-cp nika.ini /root/nika.ini
+[ -f /root/nika.ini ] && echo "nika.ini already exists" || cp nika.ini /root/nika.ini
 chmod +x main.sh
 cp main.sh /root/main.sh
 cp www.txt /root/www.txt
