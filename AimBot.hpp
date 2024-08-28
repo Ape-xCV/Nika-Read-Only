@@ -1,11 +1,11 @@
 #pragma once
 
 struct AimBot {
-    Camera* gameCamera;
     ConfigLoader* cl;
     XDisplay* myDisplay;
     LocalPlayer* lp;
     std::vector<Player*>* players;
+	Camera* gameCamera;
     Player* currentTarget = nullptr;
     bool targetSelected = false;
     float finalDistance = 0;
@@ -57,7 +57,7 @@ struct AimBot {
         float nearestDistance = 9999.9f;
         Player* bestTarget = nullptr;
         Vector3D cameraPosition = lp->cameraPosition;
-        QAngle currentAngle = QAngle(lp->viewAngles.x, lp->viewAngles.y).fixAngle();
+        Vector2D currentAngles = Vector2D(lp->viewAngles.x, lp->viewAngles.y).NormalizeAngles();
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
             if (!isValidTarget(p)) continue;
@@ -74,22 +74,21 @@ struct AimBot {
         return bestTarget;
     }
 
-    double calculateDistanceFromCrosshair(Vector3D targetPos) {
+    double calculateDistanceFromCrosshair(Vector3D targetPosition) {
         Vector3D cameraPosition = lp->cameraPosition;
-        QAngle currentAngle = QAngle(lp->viewAngles.x, lp->viewAngles.y).fixAngle();
+        Vector2D currentAngles = Vector2D(lp->viewAngles.x, lp->viewAngles.y).NormalizeAngles();
 
-        if (cameraPosition.Distance(targetPos) <= 0.001f)
+        if (cameraPosition.Distance(targetPosition) <= 0.001f)
             return -1;
 
-        QAngle targetAngle = Resolver::CalculateAngle(cameraPosition, targetPos);
-        if (!targetAngle.isValid())
+        Vector2D targetAngles = Resolver::CalculateAngles(cameraPosition, targetPosition);
+        if (!targetAngles.IsValid())
             return -1;
         
-        return currentAngle.distanceTo(targetAngle);
+        return currentAngles.Distance(targetAngles);
     }
 
-    void getAngleToTarget(Player* target, QAngle& angle) {
-        Vector3D targetPosition = target->getBonePosition(hitbox);
+    void getAnglesToTarget(Player* target, Vector3D targetPosition, Vector2D& angles) {
         if (cl->AIMBOT_PREDICT_BULLETDROP && lp->weaponProjectileSpeed > 999.9f)
             if (lp->weaponProjectileScale >= 0.5f && lp->weaponProjectileScale <= 1.6f)
                 targetPosition.z += Resolver::GetBulletDrop(lp->cameraPosition, targetPosition, lp->weaponProjectileSpeed, lp->weaponProjectileScale);
@@ -98,19 +97,19 @@ struct AimBot {
         if (cl->AIMBOT_PREDICT_MOVEMENT && lp->weaponProjectileSpeed > 999.9f)
             targetPosition = Resolver::GetTargetPosition(lp->cameraPosition, targetPosition, target->absoluteVelocity, lp->weaponProjectileSpeed);
 
-        angle = Resolver::CalculateAngle(lp->cameraPosition, targetPosition);
+        angles = Resolver::CalculateAngles(lp->cameraPosition, targetPosition);
     }
 
-    bool getAngle(Player* target, QAngle& angle) {
-        QAngle currentAngle = QAngle(lp->viewAngles.x, lp->viewAngles.y).fixAngle();
-        if (!currentAngle.isValid())
+    bool getAngles(Player* target, Vector3D targetPosition, Vector2D& angles) {
+        Vector2D currentAngles = Vector2D(lp->viewAngles.x, lp->viewAngles.y).NormalizeAngles();
+        if (!currentAngles.IsValid())
             return false;
 
-        getAngleToTarget(target, angle);
+        getAnglesToTarget(target, targetPosition, angles);
         return true;
     }
 
-    float calculateYawIncrement(QAngle aimbotDesiredAngles) {
+    float calculateYawIncrement(Vector2D aimbotDesiredAngles) {
         float wayA = aimbotDesiredAngles.y - lp->viewAngles.y;
         float wayB = 360.0f - abs(wayA);
         if (wayA > 0.0f && wayB > 0.0f)
@@ -120,7 +119,7 @@ struct AimBot {
         return wayB;
     }
 
-    float calculatePitchIncrement(QAngle aimbotDesiredAngles) {
+    float calculatePitchIncrement(Vector2D aimbotDesiredAngles) {
         float wayA = aimbotDesiredAngles.x - lp->viewAngles.x;
         float wayB = 180.0f - abs(wayA);
         if (wayA > 0.0f && wayB > 0.0f)
@@ -185,8 +184,8 @@ struct AimBot {
             maxDelta /= cl->AIMBOT_WEAKEN;
         }
 
-        QAngle desiredAngles = QAngle(0.0f, 0.0f);
-        if (!getAngle(currentTarget, desiredAngles))
+        Vector2D desiredAngles = Vector2D(0.0f, 0.0f);
+        if (!getAngles(currentTarget, targetBone3DCache, desiredAngles))
             return;
 
         Vector2D desiredAnglesIncrement = Vector2D(calculatePitchIncrement(desiredAngles), calculateYawIncrement(desiredAngles));
@@ -216,13 +215,13 @@ struct AimBot {
         Vector2D localOriginW2S, headPositionW2S;
         Vector3D localOrigin3D = currentTarget->localOrigin;
         Vector3D headPosition3D = currentTarget->getBonePosition(HitboxType::Head);
-        bool isLocalOriginW2SValid = gameCamera->WorldToScreen(localOrigin3D, localOriginW2S);
-        bool isHeadPositionW2SValid = gameCamera->WorldToScreen(headPosition3D, headPositionW2S);
+        bool isLocalOriginW2SValid = gameCamera->worldToScreen(localOrigin3D, localOriginW2S);
+        bool isHeadPositionW2SValid = gameCamera->worldToScreen(headPosition3D, headPositionW2S);
         float width = (localOriginW2S.y - headPositionW2S.y) / 2;
         width += width * util::inchesToMeters(currentTarget->distance2DToLocalPlayer) / 100;
         Vector2D targetBoneW2S;
         Vector3D targetBone3D = targetBone3DCache;
-        Vector2D screenSize = gameCamera->GetResolution();
+        Vector2D screenSize = gameCamera->getResolution();
         if (!cl->AIMBOT_LEGACY_MODE) {
             if (cl->AIMBOT_PREDICT_BULLETDROP && lp->weaponProjectileSpeed > 999.9f)
                 if (lp->weaponProjectileScale >= 0.5f && lp->weaponProjectileScale <= 1.6f)
@@ -231,7 +230,7 @@ struct AimBot {
                     targetBone3D.z += Resolver::GetBulletDrop(lp->cameraPosition, targetBone3D, lp->weaponProjectileSpeed, 1.0f);
             if (cl->AIMBOT_PREDICT_MOVEMENT && lp->weaponProjectileSpeed > 999.9f)
                 targetBone3D = Resolver::GetTargetPosition(lp->cameraPosition, targetBone3D, currentTarget->absoluteVelocity, bulletSpeed);
-            gameCamera->WorldToScreen(targetBone3D, targetBoneW2S);
+            gameCamera->worldToScreen(targetBone3D, targetBoneW2S);
             totalPitchIncrementInt = std::round((targetBoneW2S.y - screenSize.y/2) * cl->AIMBOT_SPEED / totalSmooth);
             totalYawIncrementInt = std::round((targetBoneW2S.x - screenSize.x/2) * cl->AIMBOT_SPEED / totalSmooth);
         }
@@ -265,7 +264,7 @@ struct AimBot {
         lastMoveY = totalPitchIncrementInt;
         lastMoveX = totalYawIncrementInt;
 
-        gameCamera->WorldToScreen(targetBone3DCache, targetBoneW2S);
+        gameCamera->worldToScreen(targetBone3DCache, targetBoneW2S);
         int weapon = lp->weaponId;
         if (weapon != WEAPON_SENTINEL &&
             weapon != WEAPON_BOCEK &&

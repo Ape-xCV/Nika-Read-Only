@@ -34,7 +34,7 @@ int boneId = 2;
 int totalSpectators = 0;
 std::vector<std::string> spectators;
 
-bool InitializeOverlayWindow(const char* overlayTitle) {
+bool initializeOverlayWindow(const char* overlayTitle) {
     if (!overlayWindow.InitializeOverlay(overlayTitle)) {
         overlayWindow.DestroyOverlay();
         return false;
@@ -44,12 +44,12 @@ bool InitializeOverlayWindow(const char* overlayTitle) {
     int screenWidth;
     int screenHeight;
     overlayWindow.GetScreenResolution(screenWidth, screenHeight);
-    gameCamera->Initialize(screenWidth, screenHeight);
+    gameCamera->initialize(screenWidth, screenHeight);
     std::cout << "Overlay Initialized!" << std::endl;
     return true;
 }
 
-void RenderUI() {
+void renderUI() {
     auto io = ImGui::GetIO();
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -64,12 +64,12 @@ void RenderUI() {
         ImGuiWindowFlags_NoInputs);
     canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->RenderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneId);
+        sense->renderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneId);
     } else {
-        sense->RenderStatus(averageProcessingTime, averageFps, leftLock, rightLock, autoFire, boneId);
-        sense->RenderESP(canvas, overlayWindow);
-        if (configLoader->FEATURE_MAP_RADAR_ON) sense->RenderRadar(canvas);
-        if (configLoader->FEATURE_SPECTATORS_ON) sense->RenderSpectators(counter, totalSpectators, spectators);
+        sense->renderStatus(averageProcessingTime, averageFps, leftLock, rightLock, autoFire, boneId);
+        sense->renderESP(canvas);
+        if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
+        if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);
     }
     ImGui::End();
 }
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
     // Load config
     configLoader->reloadFile();
 
-    if (!InitializeOverlayWindow(argv[1])) return -1;
+    if (!initializeOverlayWindow(argv[1])) return -1;
     if (configLoader->SENSE_VERBOSE < 2) overlayWindow.DestroyOverlay();
 
     // Begin main loop
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
                     util::sleep(250);
                 }
                 if (readError > 0) {
-                    if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&RenderUI);
+                    if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
                     util::sleep(50);
                     readError -= 50;
                 } else { break; }
@@ -215,11 +215,11 @@ int main(int argc, char* argv[]) {
             }
 
             // Run features
-            gameCamera->Update();
+            gameCamera->update();
             aimBot->update(counter, averageProcessingTime, leftLock, rightLock, autoFire, boneId, totalSpectators);
             other->superGlide(averageFps);
 
-            if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&RenderUI);
+            if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
             int goalSleepTime = 16.67; // 16.67ms=60Hz | 6.94ms=144Hz
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);

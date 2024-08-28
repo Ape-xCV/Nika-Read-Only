@@ -30,7 +30,6 @@
 #include "Offsets.hpp"
 #include "Weapons.hpp"
 #include "Vectors.hpp"
-#include "QAngle.hpp"
 #include "Resolver.hpp"
 #include "ConfigLoader.hpp"
 #include "XDisplay.hpp"

@@ -1,13 +1,10 @@
 #pragma once
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
 
 struct Sense {
-    Camera* gameCamera;
     ConfigLoader* cl;
     LocalPlayer* lp;
     std::vector<Player*>* players;
+    Camera* gameCamera;
     AimBot* aimBot;
 
     Sense(ConfigLoader* in_cl, LocalPlayer* in_lp, std::vector<Player*>* in_players, Camera* in_gameCamera, AimBot* in_aimBot) {
@@ -18,7 +15,7 @@ struct Sense {
         this->aimBot = in_aimBot;
     }
 
-    void RenderStatus(double averageProcessingTime, double averageFPS, bool leftLock, bool rightLock, bool autoFire, int boneId) {
+    void renderStatus(double averageProcessingTime, double averageFPS, bool leftLock, bool rightLock, bool autoFire, int boneId) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
@@ -56,29 +53,6 @@ struct Sense {
         ImGui::End();
     }
 
-    void RenderSpectators(int counter, int totalSpectators, std::vector<std::string> spectators) {
-        ImVec2 Center = ImGui::GetMainViewport()->GetCenter();
-        ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
-        ImGui::SetNextWindowBgAlpha(0.3f);
-        ImGui::Begin("Spectators", nullptr,
-            ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_AlwaysAutoResize |
-            ImGuiWindowFlags_NoSavedSettings |
-            ImGuiWindowFlags_NoInputs);
-
-        ImGui::Text("Spectators: ");
-        ImGui::SameLine(); ImGui::TextColored(totalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", totalSpectators);
-        if (static_cast<int>(spectators.size()) > 0) {
-            ImGui::Separator();
-            for (int i = 0; i < static_cast<int>(spectators.size()); i++)
-                ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", spectators.at(i).c_str());
-        }
-        ImGui::End();
-    }
-
     void drawText(ImDrawList* canvas, Vector2D textPosition, const char* text, ImVec4 color) {
         int textX = textPosition.x;
         int textY = textPosition.y;
@@ -99,12 +73,9 @@ struct Sense {
         canvas->AddText({ textPosition.x - horizontalOffset, textPosition.y - verticalOffset }, textColor, buffer);
     }
 
-    void RenderESP(ImDrawList* canvas, Overlay OverlayWindow) {
-        int screenWidth;
-        int screenHeight;
-        OverlayWindow.GetScreenResolution(screenWidth, screenHeight);
-
+    void renderESP(ImDrawList* canvas) {
         Vector2D drawPosition;
+        Vector2D screenSize = gameCamera->getResolution();
         bool drawVisibleWarning = false;
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
@@ -116,16 +87,16 @@ struct Sense {
             Vector3D aboveHead3D = headPosition3D;
             aboveHead3D.z += 10.0f;
 
-            bool isLocalOriginW2SValid = gameCamera->WorldToScreen(localOrigin3D, localOriginW2S);
-            bool isHeadPositionW2SValid = gameCamera->WorldToScreen(headPosition3D, headPositionW2S);
-            gameCamera->WorldToScreen(aboveHead3D, aboveHeadW2S);
+            bool isLocalOriginW2SValid = gameCamera->worldToScreen(localOrigin3D, localOriginW2S);
+            bool isHeadPositionW2SValid = gameCamera->worldToScreen(headPosition3D, headPositionW2S);
+            gameCamera->worldToScreen(aboveHead3D, aboveHeadW2S);
 
             // Colors - Players (Enemy)
             ImVec4 enemyBoxColor;
-            if (p->isDrone) enemyBoxColor = ImVec4(1.00f, 0.00f, 1.00f, 1.00f);
+            if (p->isDrone) enemyBoxColor =        ImVec4(1.00f, 0.00f, 1.00f, 1.00f);
             else if (p->isKnocked) enemyBoxColor = ImVec4(1.00f, 0.67f, 0.17f, 1.00f);
             else if (p->isVisible) enemyBoxColor = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
-            else enemyBoxColor = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+            else enemyBoxColor =                   ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (p->isEnemy && p->isValid() && !p->isLocal && distance < cl->SENSE_MAX_RANGE) {
@@ -148,11 +119,11 @@ struct Sense {
 
                     int life = p->currentHealth;
                     int evo = p->currentShields;
-                    if (evo > 100)     glColor3f(1.00f, 0.25f, 0.00f); // red shield
-                    else if (evo > 75) glColor3f(1.00f, 0.25f, 1.00f); // purple shield
-                    else if (evo > 50) glColor3f(0.00f, 0.75f, 1.00f); // blue shield
-                    else if (evo > 0)  glColor3f(1.00f, 1.00f, 1.00f); // white shield
-                    else               glColor3f(1.00f, 1.00f, 0.00f); // no shield
+                    if (evo > 100)     glColor3f(1.00f, 0.25f, 0.00f); // Red shields
+                    else if (evo > 75) glColor3f(1.00f, 0.25f, 1.00f); // Purple shields
+                    else if (evo > 50) glColor3f(0.00f, 0.75f, 1.00f); // Blue shields
+                    else if (evo > 0)  glColor3f(1.00f, 1.00f, 1.00f); // White shields
+                    else               glColor3f(1.00f, 1.00f, 0.00f); // No shields
 
                     glLineWidth(5.0f);
                     glBegin(GL_LINES);
@@ -210,7 +181,7 @@ struct Sense {
 
         if (drawVisibleWarning) {
             ImVec4 warningColor = ImColor(ImVec4(0.00f, 1.00f, 0.00f, 1.00f));
-            drawPosition = Vector2D(screenWidth / 2, screenHeight * 3/4);
+            drawPosition = Vector2D(screenSize.x / 2, screenSize.y * 3/4);
             const char* txtWarning;
             txtWarning = "VISIBLE WARNING";
             char warningText[256];
@@ -220,8 +191,8 @@ struct Sense {
 
         // Draw FOV circle
         if (cl->SENSE_SHOW_FOV && lp->inZoom) {
-            ImVec2 center(screenWidth / 2, screenHeight / 2);
-            int radius = screenHeight / 60 * cl->AIMBOT_FOV;
+            ImVec2 center(screenSize.x / 2, screenSize.y / 2);
+            int radius = screenSize.y / 60 * cl->AIMBOT_FOV;
             radius += radius * (60/lp->zoomFov - 1) * cl->AIMBOT_FOV_EXTRA_BY_ZOOM;
             canvas->AddCircle(center, radius, ImColor(ImVec4(1.00f, 1.00f, 1.00f, 1.00f)));
         }
@@ -229,22 +200,22 @@ struct Sense {
         // Draw target line
         if (cl->SENSE_SHOW_TARGET && aimBot->targetSelected) {
             Vector2D targetBoneW2S;
-            gameCamera->WorldToScreen(aimBot->targetBone3DCache, targetBoneW2S);
+            gameCamera->worldToScreen(aimBot->targetBone3DCache, targetBoneW2S);
             glColor3f(1.00f, 1.00f, 1.00f);
             glLineWidth(1.0f);
             glBegin(GL_LINES);
-            glVertex2f(screenWidth / 2, screenHeight / 2);
+            glVertex2f(screenSize.x / 2, screenSize.y / 2);
             glVertex2f(targetBoneW2S.x, targetBoneW2S.y);
             glEnd();
         }
     }
 
-    static Vector3D RotatePoint(Vector3D LocalPlayerPos, Vector3D PlayerPos, int posX, int posY, int sizeX, int sizeY, float angle, float zoom, bool* viewCheck) {
+    static Vector3D rotatePoint(Vector3D localPlayerPos, Vector3D playerPos, int posX, int posY, int sizeX, int sizeY, float angle, float zoom, bool* viewCheck) {
         float r_1, r_2;
         float x_1, y_1;
 
-        r_1 = -(PlayerPos.y - LocalPlayerPos.y);
-        r_2 = PlayerPos.x - LocalPlayerPos.x;
+        r_1 = -(playerPos.y - localPlayerPos.y);
+        r_2 = playerPos.x - localPlayerPos.x;
 
         float yawToRadian = angle * (float)(M_PI / 180.0f);
         x_1 = (float)(r_2 * (float)cos((double)(yawToRadian)) - r_1 * sin((double)(yawToRadian))) / 20;
@@ -276,7 +247,7 @@ struct Sense {
         return Vector3D(x_1, y_1, 0);
     }
 
-    void RenderRadar(ImDrawList* canvas) {
+    void renderRadar(ImDrawList* canvas) {
         // 1920*1080: 215 x 215
         // 2560*1440: 335 x 335
         ImGui::SetNextWindowSize({ cl->FEATURE_MAP_RADAR_X, cl->FEATURE_MAP_RADAR_Y });
@@ -316,7 +287,7 @@ struct Sense {
             float radarDistance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (radarDistance >= 0.0f && radarDistance < cl->SENSE_MAX_RANGE) {
                 bool viewCheck = false;
-                Vector3D single = RotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
+                Vector3D single = rotatePoint(lp->localOrigin, p->localOrigin, drawPos.x, drawPos.y, drawSize.x, drawSize.y, p->viewAngles.y, 0.3f, &viewCheck);
 
                 ImVec2 center(single.x, single.y);
                 int radius = 5;
@@ -329,6 +300,29 @@ struct Sense {
                 ImVec2 endpoint(center.x + radius * cos(angle), center.y + radius * sin(angle));
                 canvas->AddLine(center, endpoint, ImColor(ImVec4(0, 0, 0, 0.99)));
             }
+        }
+        ImGui::End();
+    }
+
+    void renderSpectators(int totalSpectators, std::vector<std::string> spectators) {
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(ImVec2(0.0f, center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
+        ImGui::SetNextWindowBgAlpha(0.3f);
+        ImGui::Begin("Spectators", nullptr,
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs);
+
+        ImGui::Text("Spectators: ");
+        ImGui::SameLine(); ImGui::TextColored(totalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", totalSpectators);
+        if (static_cast<int>(spectators.size()) > 0) {
+            ImGui::Separator();
+            for (int i = 0; i < static_cast<int>(spectators.size()); i++)
+                ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", spectators.at(i).c_str());
         }
         ImGui::End();
     }

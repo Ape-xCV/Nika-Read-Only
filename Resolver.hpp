@@ -22,13 +22,13 @@ struct Resolver {
         return GetTargetPosition(targetPosition, targetVelocity, time);
     }
 
-    static QAngle CalculateAngle(Vector3D from, Vector3D to) {
+    static Vector2D CalculateAngles(Vector3D from, Vector3D to) {
         Vector3D newDirection = to.Subtract(from);
         newDirection.Normalize();
 
-        float pitch = -asinf(newDirection.z) * (180.0f / M_PI);
         float yaw = atan2f(newDirection.y, newDirection.x) * (180.0f / M_PI);
+        float pitch = -asinf(newDirection.z) * (180.0f / M_PI);
 
-        return QAngle(pitch, yaw);
+        return Vector2D(pitch, yaw);
     }
 };

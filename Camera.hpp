@@ -4,21 +4,21 @@ struct Camera {
     Vector2D screenSize;
     ViewMatrix gameViewMatrix;
 
-    void Initialize(int width, int height) {
+    void initialize(int width, int height) {
         screenSize = Vector2D(width, height);
     }
 
-    const Vector2D& GetResolution() {
+    const Vector2D& getResolution() {
         return screenSize;
     }
 
-    void Update() {
+    void update() {
         long renderPtr = mem::Read<long>(OFF_REGION + OFF_VIEW_RENDER, "Camera renderPtr");
         long matrixPtr = mem::Read<long>(renderPtr + OFF_VIEW_MATRIX, "Camera matrixPtr");
         gameViewMatrix = mem::Read<ViewMatrix>(matrixPtr, "Camera gameViewMatrix");
     }
 
-    bool WorldToScreen(Vector3D worldPosition, Vector2D& screenPosition) const {
+    bool worldToScreen(Vector3D worldPosition, Vector2D& screenPosition) const {
         Vector3D transformed = gameViewMatrix.Transform(worldPosition);
 
         if (transformed.z < 0.001f) {

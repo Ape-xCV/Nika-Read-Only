@@ -180,11 +180,11 @@ struct ConfigLoader {
     void parseLines() {
         for (int i = 0; i < lines->size(); i++) {
             std::vector<std::string> lineParts = split(lines->at(i));
-            // line key
+            // Line key
             std::string key(lineParts.at(0));
             trim(key);
             if (key.empty()) throw "Cannot parse the config. Bad key";
-            // line value
+            // Line value
             std::string value(lineParts.at(1));
             trim(value);
             if (value.empty()) throw "Cannot parse the config. Bad value";

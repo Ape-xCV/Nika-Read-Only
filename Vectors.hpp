@@ -19,9 +19,6 @@ struct Vector2D {
     Vector2D Divide(float scalar) const {
         return Vector2D(x / scalar, y / scalar);
     }
-    Vector2D Divide(const Vector2D& other) const {
-        return Vector2D(x / other.x, y / other.y);
-    }
     float Magnitude() const {
         return std::sqrt(x * x + y * y);
     }
@@ -37,8 +34,25 @@ struct Vector2D {
         Vector2D diff = Subtract(other);
         return diff.Magnitude();
     }
-    float DotProduct(const Vector2D& other) const {
-        return x * other.x + y * other.y;
+    bool IsValid() {
+        if (std::isnan(x) || std::isinf(x) || std::isnan(y) || std::isinf(y)) {
+            return false;
+        }
+        return true;
+    }
+    Vector2D& NormalizeAngles() {
+        if(!IsValid()) {
+            return *this;
+        }
+        while (x > 90.0f)
+            x -= 180.f;
+        while (x < -90.0f)
+            x += 180.f;
+        while (y > 180.f)
+            y -= 360.f;
+        while (y < -180.f)
+            y += 360.f;
+        return *this;
     }
     bool IsZeroVector() {
         return x == 0 && y == 0;
@@ -97,17 +111,14 @@ struct Vector3D {
     Vector2D To2D() const {
         return Vector2D(x, y);
     }
-    float DotProduct(const Vector3D& other) const {
-        return x * other.x + y * other.y + z * other.z;
-    }
-    bool IsZeroVector() {
-        return x == 0 && y == 0 && z == 0;
-    }
     bool IsValid() {
         if (std::isnan(x) || std::isinf(x) || std::isnan(y) || std::isinf(y) || std::isnan(z) || std::isinf(z)) {
             return false;
         }
         return true;
+    }
+    bool IsZeroVector() {
+        return x == 0 && y == 0 && z == 0;
     }
     bool operator==(const Vector3D& other) const {
         float epsilon = 1e-5;
@@ -122,7 +133,6 @@ struct Vector3D {
 
 struct Matrix3x4 {
     float matrix[3][4];
-
     Vector3D GetPosition() const {
         return Vector3D(matrix[0][3], matrix[1][3], matrix[2][3]);
     }
@@ -130,14 +140,11 @@ struct Matrix3x4 {
 
 struct ViewMatrix {
     float matrix[4][4];
-
     Vector3D Transform(const Vector3D vector) const {
         Vector3D transformed;
-
         transformed.x = vector.y * matrix[0][1] + vector.x * matrix[0][0] + vector.z * matrix[0][2] + matrix[0][3];
         transformed.y = vector.y * matrix[1][1] + vector.x * matrix[1][0] + vector.z * matrix[1][2] + matrix[1][3];
         transformed.z = vector.y * matrix[3][1] + vector.x * matrix[3][0] + vector.z * matrix[3][2] + matrix[3][3];
-
         return transformed;
     }
 };
