@@ -129,7 +129,7 @@ struct AimBot {
         return wayB;
     }
 
-    void update(double averageProcessingTime, bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
+    void update(bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
         if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || currentTarget != nullptr && !currentTarget->isVisible)) {
             myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = false;
