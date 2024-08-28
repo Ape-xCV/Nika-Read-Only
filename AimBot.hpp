@@ -161,7 +161,7 @@ struct AimBot {
             targetSelected = true;
         }
 
-        if (boneId == 0) hitbox = HitboxType::Head;
+        if (boneId == 0 || currentTarget->isDrone) hitbox = HitboxType::Head;
         else if (boneId == 1) hitbox = HitboxType::Neck;
         else hitbox = HitboxType::UpperChest;
         targetBone3DCache = currentTarget->getBonePosition(hitbox);
