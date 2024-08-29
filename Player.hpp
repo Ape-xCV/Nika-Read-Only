@@ -51,14 +51,14 @@ struct Player {
         base = 0;
     }
 
-    bool isSameTeam(LocalPlayer* lp, Level* map) {
-        if (lp->squadNumber == -1 && map->isMixtape)
+    bool isSameTeam(Level* map, LocalPlayer* lp) {
+        if (map->isMixtape && lp->squadNumber == -1)
             return (teamNumber & 1) == (lp->teamNumber & 1);
         else
             return teamNumber == lp->teamNumber;
     }
 
-    void readFromMemory(ConfigLoader* cl, int counter, LocalPlayer* lp, Level* map) {
+    void readFromMemory(ConfigLoader* cl, Level* map, LocalPlayer* lp, int counter) {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
@@ -102,11 +102,11 @@ struct Player {
         //lastTimeAimedAtPrev = lastTimeAimedAt;
 
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
-        isVisible = (lastTimeVisible + 0.2f) > lp->worldTime || isDrone;
+        isVisible = (lastTimeVisible + 0.3f) > lp->worldTime || isDrone;
 
         if (lp->isValid()) {
             isLocal = base == lp->base;
-            isFriendly = isSameTeam(lp, map);
+            isFriendly = isSameTeam(map, lp);
             isEnemy = !isFriendly || isDrone;
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.Distance2D(localOrigin);

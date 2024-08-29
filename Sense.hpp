@@ -15,7 +15,7 @@ struct Sense {
         this->aimBot = in_aimBot;
     }
 
-    void renderStatus(double averageProcessingTime, double averageFPS, bool leftLock, bool rightLock, bool autoFire, int boneId) {
+    void renderStatus(bool leftLock, bool rightLock, bool autoFire, int boneId, double averageProcessingTime, double averageFPS) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,

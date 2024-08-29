@@ -18,8 +18,12 @@ AimBot* aimBot = new AimBot(configLoader, myDisplay, localPlayer, players, gameC
 Sense* sense = new Sense(configLoader, localPlayer, players, gameCamera, aimBot);
 Other* other = new Other(configLoader, myDisplay, map, localPlayer, players);
 
-int counter = 1;
 int readError = 1000;
+int counter = 1;
+bool leftLock = true;
+bool rightLock = configLoader->AIMBOT_ACTIVATED_BY_ADS;
+bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
+int boneId = 2;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
@@ -27,10 +31,6 @@ int frameCountPrev;
 std::vector<int> frameCountDiffs;
 std::vector<int> frameCountTimes;
 double averageFps;
-bool leftLock = true;
-bool rightLock = configLoader->AIMBOT_ACTIVATED_BY_ADS;
-bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
-int boneId = 2;
 int totalSpectators = 0;
 std::vector<std::string> spectators;
 
@@ -66,7 +66,7 @@ void renderUI() {
     if (readError > 0) {
         sense->renderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneId);
     } else {
-        sense->renderStatus(averageProcessingTime, averageFps, leftLock, rightLock, autoFire, boneId);
+        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps);
         sense->renderESP(canvas);
         if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
         if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
                 playersCache->clear();
                 for (int i = 0; i < dummyPlayers->size(); i++) {
                     Player* p = dummyPlayers->at(i);
-                    p->readFromMemory(configLoader, counter, localPlayer, map);
+                    p->readFromMemory(configLoader, map, localPlayer, counter);
                     if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
                 }
 
@@ -209,7 +209,7 @@ int main(int argc, char* argv[]) {
             } else {
                 for (int i = 0; i < playersCache->size(); i++) {
                     Player* p = playersCache->at(i);
-                    p->readFromMemory(configLoader, counter, localPlayer, map);
+                    p->readFromMemory(configLoader, map, localPlayer, counter);
                     if (p->isValid()) players->push_back(p);
                 }
             }

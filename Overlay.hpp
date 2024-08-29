@@ -10,10 +10,10 @@ class Overlay {
 private:
     GLFWwindow* overlayWindow = nullptr;
     const GLFWvidmode* vidMode = nullptr;
-    int screenWidth;
-    int screenHeight;
     int screenPosX;
     int screenPosY;
+    int screenWidth;
+    int screenHeight;
 
     void GrabScreenSize() {
         GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
