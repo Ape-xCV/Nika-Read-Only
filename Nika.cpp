@@ -64,7 +64,7 @@ void renderUI() {
         ImGuiWindowFlags_NoInputs);
     canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->renderStatus(0.0f, 0.0f, leftLock, rightLock, autoFire, boneId);
+        sense->renderStatus(leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f);
     } else {
         sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps);
         sense->renderESP(canvas);
