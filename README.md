@@ -153,11 +153,11 @@ chmod +x apexdumper.sh
 
 - If your pastebin is missing GameVersion, open Offsets.hpp and change:
 
-`constexpr std::string OFF_GAME_VERSION = ""; //[Miscellaneous]->GameVersion`
+`constexpr char OFF_GAME_VERSION[] = ""; //[Miscellaneous]->GameVersion`
 
 into (input your current GameVersion)
 
-`constexpr std::string OFF_GAME_VERSION = "v3.0.78.32"; //[Miscellaneous]->GameVersion`
+`constexpr char OFF_GAME_VERSION[] = "v3.0.78.32"; //[Miscellaneous]->GameVersion`
 
 - Install update:
 
