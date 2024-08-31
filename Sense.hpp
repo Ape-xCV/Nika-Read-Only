@@ -48,8 +48,10 @@ struct Sense {
         ImGui::Text("interval: ");
         ImGui::SameLine();
         ImGui::TextColored(processingTimeColor, "%.2fms ", averageProcessingTime);
-        ImGui::SameLine();
-        ImGui::Text("fps: %.2f", averageFPS);
+        if (cl->FEATURE_SUPER_GLIDE_ON) {
+            ImGui::SameLine();
+            ImGui::Text("fps: %.2f", averageFPS);
+        }
         ImGui::End();
     }
 
