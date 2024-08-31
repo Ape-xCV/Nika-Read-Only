@@ -234,16 +234,18 @@ int main(int argc, char* argv[]) {
                 processingTimes.push_back(processingTime);
                 if (processingTimes.size() > 10) processingTimes.erase(processingTimes.begin());
                 averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0f) / processingTimes.size();
-                if (frameCountPrev != 0) {
-                    frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev);
-                    frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime));
+                if (cl->FEATURE_SUPER_GLIDE_ON) {
+                    if (frameCountPrev != 0) {
+                        frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev);
+                        frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime));
+                    }
+                    if (frameCountDiffs.size() > 10)
+                        frameCountDiffs.erase(frameCountDiffs.begin());
+                    if (frameCountTimes.size() > 10)
+                        frameCountTimes.erase(frameCountTimes.begin());
+                    averageFps = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0f) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0f) * 10;
+                    frameCountPrev = localPlayer->frameCount;
                 }
-                if (frameCountDiffs.size() > 10)
-                    frameCountDiffs.erase(frameCountDiffs.begin());
-                if (frameCountTimes.size() > 10)
-                    frameCountTimes.erase(frameCountTimes.begin());
-                averageFps = std::accumulate(frameCountDiffs.begin(), frameCountDiffs.end(), 0.0f) / std::accumulate(frameCountTimes.begin(), frameCountTimes.end(), 0.0f) * 10;
-                frameCountPrev = localPlayer->frameCount;
             }
 
             // Print loop info every now and then
