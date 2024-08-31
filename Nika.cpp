@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
                 processingTimes.push_back(processingTime);
                 if (processingTimes.size() > 10) processingTimes.erase(processingTimes.begin());
                 averageProcessingTime = std::accumulate(processingTimes.begin(), processingTimes.end(), 0.0f) / processingTimes.size();
-                if (cl->FEATURE_SUPER_GLIDE_ON) {
+                if (configLoader->FEATURE_SUPER_GLIDE_ON) {
                     if (frameCountPrev != 0) {
                         frameCountDiffs.push_back(localPlayer->frameCount - frameCountPrev);
                         frameCountTimes.push_back(static_cast<int>(util::currentEpochMillis() - startTime));
