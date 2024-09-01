@@ -183,12 +183,12 @@ struct Player {
         if (bone < 0 || bone > 255)
             return localOrigin.Add(offset);
 
-        long bonePtr = mem::Read<long>(base + OFF_BONE, "Player bonePtr");
-        bonePtr += (bone * sizeof(Matrix3x4));
-        if (!mem::IsValidPointer(bonePtr))
+        long boneMatrixPtr = mem::Read<long>(base + OFF_BONE, "Player boneMatrixPtr");
+        boneMatrixPtr += (bone * sizeof(Matrix3x4));
+        if (!mem::IsValidPointer(boneMatrixPtr))
             return localOrigin.Add(offset);
 
-        Matrix3x4 boneMatrix = mem::Read<Matrix3x4>(bonePtr, "Player boneMatrix");
+        Matrix3x4 boneMatrix = mem::Read<Matrix3x4>(boneMatrixPtr, "Player boneMatrix");
         Vector3D bonePosition = boneMatrix.GetPosition();
         if (!bonePosition.IsValid())
             return localOrigin.Add(offset);
