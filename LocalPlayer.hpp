@@ -43,7 +43,7 @@ struct LocalPlayer {
         squadNumber = mem::Read<int>(base + OFF_SQUAD_ID, "LocalPlayer squadNumber");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
         worldTime = mem::Read<float>(base + OFF_TIME_BASE, "LocalPlayer worldTime");
-        currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "LocalPlayer currentHealth");
+        currentHealth = mem::Read<int>(base + OFF_HEALTH, "LocalPlayer currentHealth");
         isDead = mem::Read<short>(base + OFF_LIFE_STATE, "LocalPlayer isDead") > 0;
         isKnocked = mem::Read<short>(base + OFF_BLEEDOUT_STATE, "LocalPlayer isKnocked") > 0;
         if (!isDead && !isKnocked) {
@@ -53,19 +53,19 @@ struct LocalPlayer {
             weaponHandleMasked = weaponHandle & 0xffff;
             weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5), "LocalPlayer weaponEntity");
             weaponId = mem::Read<int>(weaponEntity + OFF_WEAPON_INDEX, "LocalPlayer weaponId");
-            weaponProjectileSpeed = mem::Read<float>(weaponEntity + OFF_PROJECTILESPEED, "LocalPlayer weaponProjectileSpeed");
-            weaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILESCALE, "LocalPlayer weaponProjectileScale");
+            weaponProjectileSpeed = mem::Read<float>(weaponEntity + OFF_PROJECTILE_SPEED, "LocalPlayer weaponProjectileSpeed");
+            weaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILE_SCALE, "LocalPlayer weaponProjectileScale");
             zoomFov = mem::Read<float>(weaponEntity + OFF_ZOOM_FOV, "LocalPlayer zoomFov");
         }
         inAttack = mem::Read<bool>(OFF_REGION + OFF_IN_ATTACK, "LocalPlayer inAttack") > 0;
         inZoom = mem::Read<short>(base + OFF_ZOOMING, "LocalPlayer inZoom") > 0;
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "LocalPlayer viewAngles");
-        cameraPosition = mem::Read<Vector3D>(base + OFF_CAMERAORIGIN, "LocalPlayer cameraPosition");
+        cameraPosition = mem::Read<Vector3D>(base + OFF_CAMERA_ORIGIN, "LocalPlayer cameraPosition");
         if (cl->FEATURE_SUPER_GLIDE_ON) {
             frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
-            traversalStartTime = mem::Read<float>(base + OFFSET_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
-            traversalProgress = mem::Read<float>(base + OFFSET_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress");
-            traversalReleaseTime = mem::Read<float>(base + OFFSET_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime");
+            traversalStartTime = mem::Read<float>(base + OFF_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
+            traversalProgress = mem::Read<float>(base + OFF_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress");
+            traversalReleaseTime = mem::Read<float>(base + OFF_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime");
         }
     }
 

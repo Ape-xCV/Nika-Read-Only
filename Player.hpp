@@ -31,7 +31,7 @@ struct Player {
     bool isDead;
     bool isKnocked;
     int currentHealth;
-    int currentShields;
+    int currentShield;
     //int lastTimeAimedAt;
     //bool isAimedAt;
     //int lastTimeAimedAtPrev;
@@ -82,10 +82,10 @@ struct Player {
             timeLocalOriginPrev2 = timeLocalOriginPrev;
             timeLocalOriginPrev = timeLocalOrigin;
         } else {
-            absoluteVelocity = mem::Read<Vector3D>(base + OFF_ABSVELOCITY, "Player absoluteVelocity");
+            absoluteVelocity = mem::Read<Vector3D>(base + OFF_ABS_VELOCITY, "Player absoluteVelocity");
             viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles");
             viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw");
-            plyrDataTable = mem::Read<int>(base + OFF_NAMEINDEX, "Player plyrDataTable");
+            plyrDataTable = mem::Read<int>(base + OFF_NAME_INDEX, "Player plyrDataTable");
             if (cl->FEATURE_SPECTATORS_ON && counter % 99 == 0) {
                 spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "Player spectators");
                 spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Player spctrIndex");
@@ -94,8 +94,8 @@ struct Player {
         }
         isDead = (isDrone || isDummie) ? false : mem::Read<short>(base + OFF_LIFE_STATE, "Player isDead") > 0;
         isKnocked = (isDrone || isDummie) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE, "Player isKnocked") > 0;
-        currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH, "Player currentHealth");
-        currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS, "Player currentShields");
+        currentHealth = mem::Read<int>(base + OFF_HEALTH, "Player currentHealth");
+        currentShield = mem::Read<int>(base + OFF_SHIELD, "Player currentShield");
 
         //lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
         //isAimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
@@ -126,13 +126,13 @@ struct Player {
     }
 
     std::string getPlayerName(){
-        uintptr_t nameOffset = mem::Read<uintptr_t>(OFF_REGION + OFF_NAMELIST + ((plyrDataTable - 1) * 24 ), "Player nameOffset");
+        uintptr_t nameOffset = mem::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((plyrDataTable - 1) * 24 ), "Player nameOffset");
         std::string playerName = mem::ReadString(nameOffset, 64, "Player playerName");
         return playerName;
     }
 
     int GetPlayerLevel() {
-        int m_xp = mem::Read<int>(base + OFF_XPLEVEL, "Player xpLevel");
+        int m_xp = mem::Read<int>(base + OFF_XP_LEVEL, "Player m_xp");
         if (m_xp < 0) return 0;
         if (m_xp < 100) return 1;
 
@@ -154,7 +154,7 @@ struct Player {
     }
 
     int getBoneFromHitbox(HitboxType hitbox) const {
-        long modelPointer = mem::Read<long>(base + OFF_STUDIOHDR, "Player modelPointer");
+        long modelPointer = mem::Read<long>(base + OFF_STUDIO_HDR, "Player modelPointer");
         if (!mem::IsValidPointer(modelPointer))
             return -1;
 
@@ -183,7 +183,7 @@ struct Player {
         if (bone < 0 || bone > 255)
             return localOrigin.Add(offset);
 
-        long bonePtr = mem::Read<long>(base + OFF_BONES, "Player bonePtr");
+        long bonePtr = mem::Read<long>(base + OFF_BONE, "Player bonePtr");
         bonePtr += (bone * sizeof(Matrix3x4));
         if (!mem::IsValidPointer(bonePtr))
             return localOrigin.Add(offset);

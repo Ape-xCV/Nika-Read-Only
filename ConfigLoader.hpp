@@ -12,9 +12,7 @@ struct ConfigLoader {
     // Features
     bool FEATURE_AIMBOT_ON = true;
     bool FEATURE_TRIGGERBOT_ON = true;
-    bool FEATURE_SENSE_ON = false;
-    bool FEATURE_ITEM_GLOW_ON = false;
-    bool FEATURE_SPECTATORS_ON = true;
+    bool FEATURE_SPECTATORS_ON = false;
     bool FEATURE_SPECTATORS_SHOW_DEAD = false;
     bool FEATURE_SUPER_GLIDE_ON = false;
     bool FEATURE_MAP_RADAR_ON = true;
@@ -26,9 +24,11 @@ struct ConfigLoader {
     // Sense
     int SENSE_VERBOSE = 2;
     int SENSE_MAX_RANGE = 250;
+    bool SENSE_SHOW_PLAYER_BARS = true;
     bool SENSE_SHOW_PLAYER_DISTANCES = true;
     bool SENSE_SHOW_PLAYER_NAMES = false;
     bool SENSE_SHOW_PLAYER_LEVELS = false;
+    bool SENSE_TEXT_BOTTOM = true;
     bool SENSE_SHOW_DEAD = false;
     bool SENSE_SHOW_FOV = true;
     bool SENSE_SHOW_TARGET = true;
@@ -137,9 +137,11 @@ struct ConfigLoader {
         // Sense
         SENSE_VERBOSE = (key.compare("SENSE_VERBOSE") != 0) ? SENSE_VERBOSE : stoi(val);
         SENSE_MAX_RANGE = (key.compare("SENSE_MAX_RANGE") != 0) ? SENSE_MAX_RANGE : stoi(val);
+        SENSE_SHOW_PLAYER_BARS = (key.compare("SENSE_SHOW_PLAYER_BARS") != 0) ? SENSE_SHOW_PLAYER_BARS : toBool(val);
         SENSE_SHOW_PLAYER_DISTANCES = (key.compare("SENSE_SHOW_PLAYER_DISTANCES") != 0) ? SENSE_SHOW_PLAYER_DISTANCES : toBool(val);
         SENSE_SHOW_PLAYER_NAMES = (key.compare("SENSE_SHOW_PLAYER_NAMES") != 0) ? SENSE_SHOW_PLAYER_NAMES : toBool(val);
         SENSE_SHOW_PLAYER_LEVELS = (key.compare("SENSE_SHOW_PLAYER_LEVELS") != 0) ? SENSE_SHOW_PLAYER_LEVELS : toBool(val);
+        SENSE_TEXT_BOTTOM = (key.compare("SENSE_TEXT_BOTTOM") != 0) ? SENSE_TEXT_BOTTOM : toBool(val);
         SENSE_SHOW_DEAD = (key.compare("SENSE_SHOW_DEAD") != 0) ? SENSE_SHOW_DEAD : toBool(val);
         SENSE_SHOW_FOV = (key.compare("SENSE_SHOW_FOV") != 0) ? SENSE_SHOW_FOV : toBool(val);
         SENSE_SHOW_TARGET = (key.compare("SENSE_SHOW_TARGET") != 0) ? SENSE_SHOW_TARGET : toBool(val);
@@ -211,9 +213,11 @@ struct ConfigLoader {
         // Sense
         printf("SENSE_VERBOSE\t\t\t\t\t\t%d\n", SENSE_VERBOSE);
         printf("SENSE_MAX_RANGE\t\t\t\t\t\t%d\n", SENSE_MAX_RANGE);
+        printf("SENSE_SHOW_PLAYER_BARS\t\t\t\t\t%s\n", SENSE_SHOW_PLAYER_BARS ? "YES" : "NO");
         printf("SENSE_SHOW_PLAYER_DISTANCES\t\t\t\t%s\n", SENSE_SHOW_PLAYER_DISTANCES ? "YES" : "NO");
         printf("SENSE_SHOW_PLAYER_NAMES\t\t\t\t\t%s\n", SENSE_SHOW_PLAYER_NAMES ? "YES" : "NO");
         printf("SENSE_SHOW_PLAYER_LEVELS\t\t\t\t%s\n", SENSE_SHOW_PLAYER_LEVELS ? "YES" : "NO");
+        printf("SENSE_TEXT_BOTTOM\t\t\t\t\t%s\n", SENSE_TEXT_BOTTOM ? "YES" : "NO");
         printf("SENSE_SHOW_DEAD\t\t\t\t\t\t%s\n", SENSE_SHOW_DEAD ? "YES" : "NO");
         printf("SENSE_SHOW_FOV\t\t\t\t\t\t%s\n", SENSE_SHOW_FOV ? "YES" : "NO");
         printf("SENSE_SHOW_TARGET\t\t\t\t\t%s\n", SENSE_SHOW_TARGET ? "YES" : "NO");

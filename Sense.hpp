@@ -119,24 +119,33 @@ struct Sense {
                     glEnd();
                     //canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width / 2), head.y + (height / 5)), ImColor(enemyBoxColor), 0.0f, 0, 2);
 
-                    int life = p->currentHealth;
-                    int evo = p->currentShields;
-                    if (evo > 100)     glColor3f(1.00f, 0.25f, 0.00f); // Red shields
-                    else if (evo > 75) glColor3f(1.00f, 0.25f, 1.00f); // Purple shields
-                    else if (evo > 50) glColor3f(0.00f, 0.75f, 1.00f); // Blue shields
-                    else if (evo > 0)  glColor3f(1.00f, 1.00f, 1.00f); // White shields
-                    else               glColor3f(1.00f, 1.00f, 0.00f); // No shields
+                    // Draw bar
+                    if (cl->SENSE_SHOW_PLAYER_BARS) {
+                        int life = p->currentHealth;
+                        int evo = p->currentShield;
+                        if (evo > 100)     glColor3f(1.00f, 0.25f, 0.00f); // Red shield
+                        else if (evo > 75) glColor3f(1.00f, 0.25f, 1.00f); // Purple shield
+                        else if (evo > 50) glColor3f(0.00f, 0.75f, 1.00f); // Blue shield
+                        else if (evo > 0)  glColor3f(1.00f, 1.00f, 1.00f); // White shield
+                        else               glColor3f(1.00f, 1.00f, 0.00f); // No shield
 
-                    glLineWidth(5.0f);
-                    glBegin(GL_LINES);
-                    glVertex2f(head.x + width/2 - 5.0f, foot.y);
-                    glVertex2f(head.x + width/2 - 5.0f, foot.y + (height + height/5) * life/100);
-                    glEnd();
+                        glLineWidth(5.0f);
+                        glBegin(GL_LINES);
+                        glVertex2f(head.x + width/2 - 5.0f, foot.y);
+                        glVertex2f(head.x + width/2 - 5.0f, foot.y + (height + height/5) * life/100);
+                        glEnd();
+                    }
 
-                    drawPosition = aboveHeadW2S.Subtract(Vector2D(0, 10));
+                    if (cl->SENSE_TEXT_BOTTOM)
+                        drawPosition = localOriginW2S.Subtract(Vector2D(0, 10));
+                    else
+                        drawPosition = aboveHeadW2S.Subtract(Vector2D(0, 10));
                     // Draw Distance
                     if (cl->SENSE_SHOW_PLAYER_DISTANCES) {
-                        drawPosition = drawPosition.Subtract(Vector2D(0, 20));
+                        if (cl->SENSE_TEXT_BOTTOM)
+                            drawPosition = drawPosition.Add(Vector2D(0, 20));
+                        else
+                            drawPosition = drawPosition.Subtract(Vector2D(0, 20));
                         const char* txtPrefix = "[";
                         const char* txtDistance = std::to_string((int)distance).c_str();
                         const char* txtSuffix = " M]";
@@ -148,7 +157,10 @@ struct Sense {
                     }
                     // Draw Name
                     if (cl->SENSE_SHOW_PLAYER_NAMES) {
-                        drawPosition = drawPosition.Subtract(Vector2D(0, 20));
+                        if (cl->SENSE_TEXT_BOTTOM)
+                            drawPosition = drawPosition.Add(Vector2D(0, 20));
+                        else
+                            drawPosition = drawPosition.Subtract(Vector2D(0, 20));
                         const char* txtName;
                         if (p->isPlayer)
                             txtName = p->getPlayerName().c_str();
@@ -163,7 +175,10 @@ struct Sense {
                     }
                     // Draw Level
                     if (cl->SENSE_SHOW_PLAYER_LEVELS && p->isPlayer) {
-                        drawPosition = drawPosition.Subtract(Vector2D(0, 20));
+                        if (cl->SENSE_TEXT_BOTTOM)
+                            drawPosition = drawPosition.Add(Vector2D(0, 20));
+                        else
+                            drawPosition = drawPosition.Subtract(Vector2D(0, 20));
                         const char* txtPrefix = "Lv ";
                         const char* txtLevel = std::to_string(p->GetPlayerLevel()).c_str();
                         //const char* txtSuffix = "";
