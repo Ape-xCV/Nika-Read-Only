@@ -22,7 +22,6 @@
 * [x] Memory writing Glow ESP was replaced with overlay based ESP
 * [x] Map radar (overlay based)
 * [x] Spectators list (overlay or CLI based)
-* [x] **Smooth** dynamically adjusts with performance; Firing Range settings will now act the same during matches
 * [x] Added _AIMBOT_ZOOMED_MAX_MOVE_ / _AIMBOT_HIPFIRE_MAX_MOVE_ / _AIMBOT_MAX_DELTA_ to limit mouse speed
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire, or to **super glide**
 * [x] Partially disable/enable **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
@@ -30,6 +29,7 @@
 * [x] Quickly disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 - **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
+* [x] Efficient entities cache, enabling Crypto drone targeting.
 * [x] Terminate process with HOME
 
 ## Notes
