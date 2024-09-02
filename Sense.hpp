@@ -15,7 +15,7 @@ struct Sense {
         this->aimBot = in_aimBot;
     }
 
-    void renderStatus(bool leftLock, bool rightLock, bool autoFire, int boneId, double averageProcessingTime, double averageFPS) {
+    void renderStatus(bool leftLock, bool rightLock, bool autoFire, int boneId, double averageProcessingTime, double averageFPS, int cache) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
@@ -50,8 +50,10 @@ struct Sense {
         ImGui::TextColored(processingTimeColor, "%.2fms ", averageProcessingTime);
         if (cl->FEATURE_SUPER_GLIDE_ON) {
             ImGui::SameLine();
-            ImGui::Text("fps: %.2f", averageFPS);
+            ImGui::Text("fps: %.2f ", averageFPS);
         }
+        ImGui::SameLine();
+        ImGui::Text("cache: %d", cache);
         ImGui::End();
     }
 

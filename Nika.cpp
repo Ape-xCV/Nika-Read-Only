@@ -31,6 +31,7 @@ int frameCountPrev;
 std::vector<int> frameCountDiffs;
 std::vector<int> frameCountTimes;
 double averageFps;
+int cache;
 int totalSpectators = 0;
 std::vector<std::string> spectators;
 
@@ -64,9 +65,9 @@ void renderUI() {
         ImGuiWindowFlags_NoInputs);
     canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->renderStatus(leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f);
+        sense->renderStatus(leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f, 0);
     } else {
-        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps);
+        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps, cache);
         sense->renderESP(canvas);
         if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
         if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);
@@ -181,7 +182,8 @@ int main(int argc, char* argv[]) {
                 }
 
                 if (configLoader->SENSE_VERBOSE > 0) {
-                    printf("Entities: %d\n", playersCache->size());
+                    cache = playersCache->size();
+                    printf("Entities: %d\n", cache);
 
                     if (configLoader->FEATURE_SPECTATORS_ON) {
                         int tempTotalSpectators = 0;
