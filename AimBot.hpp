@@ -62,7 +62,11 @@ struct AimBot {
             Player* p = players->at(i);
             if (!isValidTarget(p)) continue;
 
-            double distanceFromCrosshair = calculateDistanceFromCrosshair(p->getBonePosition(hitbox));
+            double distanceFromCrosshair;
+            if (p->isDrone)
+                distanceFromCrosshair = calculateDistanceFromCrosshair(p->getBonePosition(HitboxType::Head));
+            else
+                distanceFromCrosshair = calculateDistanceFromCrosshair(p->getBonePosition(hitbox));
             if (distanceFromCrosshair > finalFov || distanceFromCrosshair == -1)
                 continue;
 
@@ -200,7 +204,7 @@ struct AimBot {
             //totalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2;
             totalSmooth *= cl->AIMBOT_WEAKEN;
         else
-            if (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && totalSpectators > 0) {
+            if (!currentTarget->isDrone && (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && totalSpectators > 0)) {
                 totalSmooth *= cl->AIMBOT_WEAKEN;
                 bulletSpeed /= cl->AIMBOT_WEAKEN;
             }
