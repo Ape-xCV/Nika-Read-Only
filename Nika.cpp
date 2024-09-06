@@ -31,7 +31,7 @@ int frameCountPrev;
 std::vector<int> frameCountDiffs;
 std::vector<int> frameCountTimes;
 double averageFps;
-int cache;
+int cache = 0;
 int totalSpectators = 0;
 std::vector<std::string> spectators;
 
