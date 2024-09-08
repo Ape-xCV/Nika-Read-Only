@@ -62,11 +62,15 @@ struct Player {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
         name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
-        teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         isPlayer = name == "player";
         isDrone = name == "drone_no_minimap_object";
-        isDummie = teamNumber == 97;
+        if (map->isTrainingArea) {
+            teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
+            isDummie = teamNumber == 97;
+        } else { isDummie = false; }
         if (!isPlayer && !isDrone && !isDummie) { reset(); return; }
+        if (!map->isTrainingArea)
+            teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime;
         if (!isPlayer) {
