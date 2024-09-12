@@ -100,7 +100,7 @@ echo "constexpr long OFF_NAME_LIST = ${NameList}; //[Miscellaneous]->NameList"
 echo "constexpr long OFF_VIEW_RENDER = ${ViewRender}; //[Miscellaneous]->ViewRender"
 echo "constexpr long OFF_VIEW_MATRIX = ${ViewMatrix}; //[Miscellaneous]->ViewMatrix"
 echo "constexpr long OFF_LEVEL_NAME = ${LevelName}; //[Miscellaneous]->LevelName"
-if [[ "$projectile_launch_speed" == "" ]]; then
+if [[ "$projectile_launch_speed" == "" ]] || [[ "$base" == "" ]] || [[ ${base%%[[:cntrl:]]} == 0x0000 ]]; then
   m_flProjectileSpeed=$(sed -n -e "s/constexpr long OFF_PROJECTILE_SPEED\s*=\s*//p" Offsets.tmp)
   m_flProjectileSpeed=${m_flProjectileSpeed%%;*}
   echo "constexpr long OFF_PROJECTILE_SPEED = $m_flProjectileSpeed; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base"
@@ -175,5 +175,5 @@ echo "constexpr long OFF_GAME_MODE = ${mp_gamemode}; //[ConVars]->mp_gamemode"
 echo "// [Static]"
 echo "constexpr long OFF_REGION = 0x140000000; //[Static]->Region"
 echo "// [IDA]"
-echo "constexpr long OFF_OBSERVER_LIST = 0x1f17fa8; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]"
+echo "constexpr long OFF_OBSERVER_LIST = 0x1f57fd8;//0x1f17fa8; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]"
 echo "constexpr long OFF_OBSERVER_ARRAY = 0x964 + 0x10;"
