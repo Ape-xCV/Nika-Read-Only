@@ -148,7 +148,7 @@ cd /root
 ``` shell
 cd path/to/extracted/repository
 chmod +x apexdumper.sh
-./apexdumper.sh > Offsets.hpp
+./apexdumper.sh
 ```
 
 - If your pastebin is missing GameVersion, open Offsets.hpp and change:
