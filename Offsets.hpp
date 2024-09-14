@@ -4,7 +4,7 @@
 constexpr char OFF_GAME_VERSION[] = "v3.0.79.51"; //[Miscellaneous]->GameVersion
 constexpr long OFF_ENTITY_LIST = 0x1f55fb8; //[Miscellaneous]->cl_entitylist
 constexpr long OFF_LOCAL_PLAYER = 0x2429238; //[Miscellaneous]->LocalPlayer
-constexpr long OFF_GLOBAL_VARS = 0x17ec040; //[Miscellaneous]->GlobalVars
+constexpr long OFF_GLOBAL_VARS = 0x182c050;//0x17ec040; //[Miscellaneous]->GlobalVars
 constexpr long OFF_NAME_LIST = 0xd3c9fd0; //[Miscellaneous]->NameList
 constexpr long OFF_VIEW_RENDER = 0x76dd0d8; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
