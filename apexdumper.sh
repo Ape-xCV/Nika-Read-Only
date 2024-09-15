@@ -15,7 +15,6 @@ projectile_launch_speed=$(sed -nr ":l /^projectile_launch_speed[ ]*=/ { s/[^=]*=
 base=$(sed -nr ":l /^base[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 camera_origin=$(sed -nr ":l /^CPlayer!camera_origin[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_pStudioHdr=$(sed -nr ":l /^CBaseAnimating!m_pStudioHdr[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
-in_attack=$(sed -nr ":l /^in_attack[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_nForceBone=$(sed -nr ":l /^m_nForceBone[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_latestPrimaryWeapons=$(sed -nr ":l /^m_latestPrimaryWeapons[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_latestNonOffhandWeapons=$(sed -nr ":l /^m_latestNonOffhandWeapons[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
@@ -65,7 +64,6 @@ ViewMatrix=$(parse_hpp ViewMatrix "constexpr long OFF_VIEW_MATRIX")
 LevelName=$(parse_hpp LevelName "constexpr long OFF_LEVEL_NAME")
 camera_origin=$(parse_hpp camera_origin "constexpr long OFF_CAMERA_ORIGIN")
 m_pStudioHdr=$(parse_hpp m_pStudioHdr "constexpr long OFF_STUDIO_HDR")
-in_attack=$(parse_hpp in_attack "constexpr long OFF_IN_ATTACK")
 m_latestPrimaryWeapons=$(parse_hpp m_latestPrimaryWeapons "constexpr long OFF_WEAPON_HANDLE")
 m_latestNonOffhandWeapons=$(parse_hpp m_latestNonOffhandWeapons "constexpr long OFF_GRENADE_HANDLE")
 lastVisibleTime=$(parse_hpp lastVisibleTime "constexpr long OFF_LAST_VISIBLE_TIME")
@@ -110,8 +108,6 @@ fi
 echo "constexpr long OFF_PROJECTILE_SCALE = OFF_PROJECTILE_SPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base" >> Offsets.hpp
 echo "constexpr long OFF_CAMERA_ORIGIN = ${camera_origin}; //[Miscellaneous]->CPlayer!camera_origin" >> Offsets.hpp
 echo "constexpr long OFF_STUDIO_HDR = ${m_pStudioHdr}; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr" >> Offsets.hpp
-echo "// [Buttons]" >> Offsets.hpp
-echo "constexpr long OFF_IN_ATTACK = ${in_attack}; //[Buttons]->in_attack" >> Offsets.hpp
 echo "// [RecvTable.DT_BaseAnimating]" >> Offsets.hpp
 if [[ "$m_nForceBone" == "" ]]; then
   m_nForceBone=$(sed -n -e "s/constexpr long OFF_BONE\s*=\s*//p" Offsets.tmp)
