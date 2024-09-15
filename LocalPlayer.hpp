@@ -19,7 +19,6 @@ struct LocalPlayer {
     float weaponProjectileSpeed;
     float weaponProjectileScale;
     float zoomFov;
-    bool inAttack;
     bool inZoom;
     Vector2D viewAngles;
     Vector3D cameraPosition;
@@ -57,7 +56,6 @@ struct LocalPlayer {
             weaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILE_SCALE, "LocalPlayer weaponProjectileScale");
             zoomFov = mem::Read<float>(weaponEntity + OFF_ZOOM_FOV, "LocalPlayer zoomFov");
         }
-        inAttack = mem::Read<bool>(OFF_REGION + OFF_IN_ATTACK, "LocalPlayer inAttack") > 0;
         inZoom = mem::Read<short>(base + OFF_ZOOMING, "LocalPlayer inZoom") > 0;
         viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "LocalPlayer viewAngles");
         cameraPosition = mem::Read<Vector3D>(base + OFF_CAMERA_ORIGIN, "LocalPlayer cameraPosition");
