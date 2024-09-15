@@ -26,7 +26,6 @@ m_squadID=$(sed -nr ":l /^m_squadID[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$
 m_iName=$(sed -nr ":l /^m_iName[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_traversalProgress=$(sed -nr ":l /^m_traversalProgress[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_traversalStartTime=$(sed -nr ":l /^m_traversalStartTime[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
-m_traversalReleaseTime=$(sed -nr ":l /^m_traversalReleaseTime[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_iHealth=$(sed -nr ":l /^m_iHealth[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_lifeState=$(sed -nr ":l /^m_lifeState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_bleedoutState=$(sed -nr ":l /^m_bleedoutState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
@@ -74,7 +73,6 @@ m_squadID=$(parse_hpp m_squadID "constexpr long OFF_SQUAD_ID")
 m_iName=$(parse_hpp m_iName "constexpr long OFF_NAME")
 m_traversalProgress=$(parse_hpp m_traversalProgress "constexpr long OFF_TRAVERSAL_PROGRESS")
 m_traversalStartTime=$(parse_hpp m_traversalStartTime "constexpr long OFF_TRAVERSAL_START_TIME")
-m_traversalReleaseTime=$(parse_hpp m_traversalReleaseTime "constexpr long OFF_TRAVERSAL_RELEASE_TIME")
 m_iHealth=$(parse_hpp m_iHealth "constexpr long OFF_HEALTH")
 m_lifeState=$(parse_hpp m_lifeState "constexpr long OFF_LIFE_STATE")
 m_bleedoutState=$(parse_hpp m_bleedoutState "constexpr long OFF_BLEEDOUT_STATE")
@@ -130,7 +128,6 @@ echo "constexpr long OFF_NAME_INDEX = 0x38; //[RecvTable.DT_BaseEntity]" >> Offs
 echo "// [RecvTable.DT_LocalPlayerExclusive]" >> Offsets.hpp
 echo "constexpr long OFF_TRAVERSAL_PROGRESS = ${m_traversalProgress}; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalProgress" >> Offsets.hpp
 echo "constexpr long OFF_TRAVERSAL_START_TIME = ${m_traversalStartTime}; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalStartTime" >> Offsets.hpp
-echo "constexpr long OFF_TRAVERSAL_RELEASE_TIME = ${m_traversalReleaseTime}; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalReleaseTime" >> Offsets.hpp
 echo "// [RecvTable.DT_Player]" >> Offsets.hpp
 echo "constexpr long OFF_HEALTH = ${m_iHealth}; //[RecvTable.DT_Player]->m_iHealth" >> Offsets.hpp
 echo "constexpr long OFF_LIFE_STATE = ${m_lifeState}; //[RecvTable.DT_Player]->m_lifeState" >> Offsets.hpp
