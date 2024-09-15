@@ -31,7 +31,6 @@ m_lifeState=$(sed -nr ":l /^m_lifeState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;"
 m_bleedoutState=$(sed -nr ":l /^m_bleedoutState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_xp=$(sed -nr ":l /^m_xp[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_weaponNameIndex=$(sed -nr "/^\[RecvTable.DT_WeaponX\]/ { :l /^m_weaponNameIndex[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
-m_vecAbsVelocity=$(sed -nr ":l /^m_vecAbsVelocity[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_vecAbsOrigin=$(sed -nr "/^\[DataMap.C_BaseEntity\]/ { :l /^m_vecAbsOrigin[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 m_bZooming=$(sed -nr ":l /^m_bZooming[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 timeBase=$(sed -nr ":l /^m_currentFramePlayer.timeBase[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
@@ -78,7 +77,6 @@ m_lifeState=$(parse_hpp m_lifeState "constexpr long OFF_LIFE_STATE")
 m_bleedoutState=$(parse_hpp m_bleedoutState "constexpr long OFF_BLEEDOUT_STATE")
 m_xp=$(parse_hpp m_xp "constexpr long OFF_XP_LEVEL")
 m_weaponNameIndex=$(parse_hpp m_weaponNameIndex "constexpr long OFF_WEAPON_INDEX")
-m_vecAbsVelocity=$(parse_hpp m_vecAbsVelocity "constexpr long OFF_ABS_VELOCITY")
 m_vecAbsOrigin=$(parse_hpp m_vecAbsOrigin "constexpr long OFF_LOCAL_ORIGIN")
 m_bZooming=$(parse_hpp m_bZooming "constexpr long OFF_ZOOMING")
 timeBase=$(parse_hpp timeBase "constexpr long OFF_TIME_BASE")
@@ -136,7 +134,6 @@ echo "constexpr long OFF_XP_LEVEL = ${m_xp}; //[RecvTable.DT_Player]->m_xp" >> O
 echo "// [RecvTable.DT_WeaponX]" >> Offsets.hpp
 echo "constexpr long OFF_WEAPON_INDEX = ${m_weaponNameIndex}; //[RecvTable.DT_WeaponX]->m_weaponNameIndex" >> Offsets.hpp
 echo "// [DataMap.C_BaseEntity]" >> Offsets.hpp
-echo "constexpr long OFF_ABS_VELOCITY = ${m_vecAbsVelocity}; //[DataMap.C_BaseEntity]->m_vecAbsVelocity" >> Offsets.hpp
 echo "constexpr long OFF_LOCAL_ORIGIN = ${m_vecAbsOrigin}; //[DataMap.C_BaseEntity]->m_vecAbsOrigin" >> Offsets.hpp
 echo "// [DataMap.C_Player]" >> Offsets.hpp
 echo "constexpr long OFF_ZOOMING = ${m_bZooming}; //[DataMap.C_Player]->m_bZooming" >> Offsets.hpp
