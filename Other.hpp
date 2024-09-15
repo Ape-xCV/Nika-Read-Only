@@ -18,14 +18,15 @@ struct Other
 
     void superGlide(double averageFPS) {
         if (cl->FEATURE_SUPER_GLIDE_ON && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && myDisplay->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) {
+            static float traversalStartTimePrev;
             float traversalStartTime = lp->traversalStartTime;
             float traversalProgress = lp->traversalProgress;
-            float traversalReleaseTime = lp->traversalReleaseTime;
 
             float time = lp->worldTime;
             float hangOnWall = time - traversalStartTime;
 
-            if (traversalProgress > 0.85f && traversalReleaseTime == 0.0f && hangOnWall < 1.5f) {
+            if (traversalStartTimePrev < traversalStartTime && traversalProgress > 0.85f && hangOnWall < 1.5f) {
+                traversalStartTimePrev = traversalStartTime;
                 myDisplay->kbPress("XK_space");
                 std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(1/averageFPS*1000)));
                 myDisplay->kbPress("XK_c");
