@@ -29,7 +29,6 @@ constexpr long OFF_NAME_INDEX = 0x38; //[RecvTable.DT_BaseEntity]
 // [RecvTable.DT_LocalPlayerExclusive]
 constexpr long OFF_TRAVERSAL_PROGRESS = 0x2b6c; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalProgress
 constexpr long OFF_TRAVERSAL_START_TIME = 0x2b70; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalStartTime
-constexpr long OFF_TRAVERSAL_RELEASE_TIME = 0x2b78; //[RecvTable.DT_LocalPlayerExclusive]->m_traversalReleaseTime
 // [RecvTable.DT_Player]
 constexpr long OFF_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
