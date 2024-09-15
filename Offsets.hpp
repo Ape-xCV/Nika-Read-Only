@@ -37,7 +37,6 @@ constexpr long OFF_XP_LEVEL = 0x3724; //[RecvTable.DT_Player]->m_xp
 // [RecvTable.DT_WeaponX]
 constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 // [DataMap.C_BaseEntity]
-constexpr long OFF_ABS_VELOCITY = 0x0170; //[DataMap.C_BaseEntity]->m_vecAbsVelocity
 constexpr long OFF_LOCAL_ORIGIN = 0x017c; //[DataMap.C_BaseEntity]->m_vecAbsOrigin
 // [DataMap.C_Player]
 constexpr long OFF_ZOOMING = 0x1be1; //[DataMap.C_Player]->m_bZooming
