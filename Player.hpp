@@ -73,7 +73,7 @@ struct Player {
             teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime;
-        if (!isPlayer) {
+        //if (!isPlayer) {
             localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4));
             timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4);
             absoluteVelocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
@@ -85,8 +85,9 @@ struct Player {
             timeLocalOriginPrev3 = timeLocalOriginPrev2;
             timeLocalOriginPrev2 = timeLocalOriginPrev;
             timeLocalOriginPrev = timeLocalOrigin;
-        } else {
-            absoluteVelocity = mem::Read<Vector3D>(base + OFF_ABS_VELOCITY, "Player absoluteVelocity");
+        //} else {
+        //    absoluteVelocity = mem::Read<Vector3D>(base + OFF_ABS_VELOCITY, "Player absoluteVelocity");
+        if (isPlayer) {
             viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles");
             viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw");
             plyrDataTable = mem::Read<int>(base + OFF_NAME_INDEX, "Player plyrDataTable");
