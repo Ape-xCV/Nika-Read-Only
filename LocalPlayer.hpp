@@ -25,7 +25,6 @@ struct LocalPlayer {
     int frameCount; 
     float traversalStartTime;
     float traversalProgress;
-    float traversalReleaseTime;
 
     LocalPlayer(ConfigLoader* in_cl) {
         this->cl = in_cl;
@@ -63,7 +62,6 @@ struct LocalPlayer {
             frameCount = mem::Read<int>(OFF_REGION + OFF_GLOBAL_VARS + sizeof(double), "LocalPlayer frameCount");
             traversalStartTime = mem::Read<float>(base + OFF_TRAVERSAL_START_TIME, "LocalPlayer traversalStartTime");
             traversalProgress = mem::Read<float>(base + OFF_TRAVERSAL_PROGRESS, "LocalPlayer traversalProgress");
-            traversalReleaseTime = mem::Read<float>(base + OFF_TRAVERSAL_RELEASE_TIME, "LocalPlayer traversalReleaseTime");
         }
     }
 
