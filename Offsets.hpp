@@ -13,8 +13,6 @@ constexpr long OFF_PROJECTILE_SPEED = 0x04ec + 0x19d8; //[Miscellaneous]->CWeapo
 constexpr long OFF_PROJECTILE_SCALE = OFF_PROJECTILE_SPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base
 constexpr long OFF_CAMERA_ORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_origin
 constexpr long OFF_STUDIO_HDR = 0x1000; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
-// [Buttons]
-constexpr long OFF_IN_ATTACK = 0x0769b658; //[Buttons]->in_attack
 // [RecvTable.DT_BaseAnimating]
 constexpr long OFF_BONE = 0x0db0 + 0x48; //[RecvTable.DT_BaseAnimating]->m_nForceBone + 0x48
 // [RecvTable.DT_BaseCombatCharacter]
