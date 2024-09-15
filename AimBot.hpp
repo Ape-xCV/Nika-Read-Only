@@ -165,7 +165,7 @@ struct AimBot {
         else hitbox = HitboxType::UpperChest;
         targetBone3DCache = currentTarget->getBonePosition(hitbox);
         double distanceFromCrosshair = calculateDistanceFromCrosshair(targetBone3DCache);
-        if (!lp->inAttack && (rightLock && !lp->inZoom) && !keymap::AIMBOT_ACTIVATION_KEY || distanceFromCrosshair == -1) {
+        if ((rightLock && !lp->inZoom) && !keymap::AIMBOT_ACTIVATION_KEY || distanceFromCrosshair == -1) {
             releaseTarget();
             return;
         }
