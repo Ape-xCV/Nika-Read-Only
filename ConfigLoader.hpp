@@ -33,7 +33,6 @@ struct ConfigLoader {
     bool SENSE_SHOW_FOV = true;
     bool SENSE_SHOW_TARGET = true;
     // AimBot
-    bool AIMBOT_ACTIVATED_BY_ATTACK = false;
     bool AIMBOT_ACTIVATED_BY_ADS = false;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
     bool AIMBOT_ACTIVATED_BY_MOUSE = true;
@@ -146,7 +145,6 @@ struct ConfigLoader {
         SENSE_SHOW_FOV = (key.compare("SENSE_SHOW_FOV") != 0) ? SENSE_SHOW_FOV : toBool(val);
         SENSE_SHOW_TARGET = (key.compare("SENSE_SHOW_TARGET") != 0) ? SENSE_SHOW_TARGET : toBool(val);
         // AimBot
-        AIMBOT_ACTIVATED_BY_ATTACK = (key.compare("AIMBOT_ACTIVATED_BY_ATTACK") != 0) ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
         AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
         AIMBOT_ACTIVATED_BY_KEY = (key.compare("AIMBOT_ACTIVATED_BY_KEY") != 0) ? AIMBOT_ACTIVATED_BY_KEY : toBool(val);
         AIMBOT_ACTIVATED_BY_MOUSE = (key.compare("AIMBOT_ACTIVATED_BY_MOUSE") != 0) ? AIMBOT_ACTIVATED_BY_MOUSE : toBool(val);
@@ -223,7 +221,6 @@ struct ConfigLoader {
         printf("SENSE_SHOW_TARGET\t\t\t\t\t%s\n", SENSE_SHOW_TARGET ? "YES" : "NO");
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // AimBot
-        printf("AIMBOT_ACTIVATED_BY_ATTACK\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ATTACK ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_KEY ? "YES" : "NO");
         printf("AIMBOT_ACTIVATED_BY_MOUSE\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_MOUSE ? "YES" : "NO");
