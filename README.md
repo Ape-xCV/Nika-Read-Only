@@ -74,7 +74,24 @@ into
         //extensionSupportedEGL("EGL_EXT_present_opaque");
 ```
 
-- For exclusively using **Wayland**:
+- For **compatible** GLFW:
+
+``` shell
+su
+chmod 700 /root
+cd /root
+git clone https://github.com/glfw/glfw.git
+cd glfw
+mkdir build
+cd build
+cmake ..
+make
+make install
+```
+
+or
+
+- For **secure** GLFW (exclusively using **Wayland**):
 
 ``` shell
 su
@@ -86,23 +103,6 @@ nano src/egl_context.c
 mkdir build
 cd build
 cmake .. -D GLFW_BUILD_X11=0
-make
-make install
-```
-
-or
-
-- For exclusively using **X11**:
-
-``` shell
-su
-chmod 700 /root
-cd /root
-git clone https://github.com/glfw/glfw.git
-cd glfw
-mkdir build
-cd build
-cmake .. -D GLFW_BUILD_WAYLAND=0
 make
 make install
 ```
