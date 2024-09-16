@@ -1,12 +1,12 @@
 #pragma once
 
-struct Other
-{
+struct Other {
     ConfigLoader* cl;
     XDisplay* myDisplay;
     Level* map;
     LocalPlayer* lp;
     std::vector<Player*>* players;
+    float traversalStartTimePrev;
 
     Other(ConfigLoader* in_cl, XDisplay* in_myDisplay, Level* in_map, LocalPlayer* in_lp, std::vector<Player*>* in_players) {
         cl = in_cl;
@@ -18,7 +18,6 @@ struct Other
 
     void superGlide(double averageFPS) {
         if (cl->FEATURE_SUPER_GLIDE_ON && (cl->AIMBOT_ACTIVATION_KEY != "" || "NONE") && myDisplay->isKeyDown(cl->AIMBOT_ACTIVATION_KEY)) {
-            static float traversalStartTimePrev;
             float traversalStartTime = lp->traversalStartTime;
             float traversalProgress = lp->traversalProgress;
 
