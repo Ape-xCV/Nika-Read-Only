@@ -1,17 +1,33 @@
 #pragma once
+#include <filesystem> // getPid()
 
 namespace mem {
     pid_t m_pid = 0;
 
+    //pid_t getPid() {
+    //    if (m_pid > 0) return m_pid;
+    //    char buf[512];
+    //    FILE* cmd_pipe = popen("pidof -s r5apex.exe", "r");
+    //    fgets(buf, 512, cmd_pipe);
+    //    pid_t pid = strtoul(buf, NULL, 10);
+    //    pclose(cmd_pipe);
+    //    m_pid = pid;
+    //    return pid;
+    //}
     pid_t getPid() {
         if (m_pid > 0) return m_pid;
-        char buf[512];
-        FILE* cmd_pipe = popen("pidof -s r5apex.exe", "r");
-        fgets(buf, 512, cmd_pipe);
-        pid_t pid = strtoul(buf, NULL, 10);
-        pclose(cmd_pipe);
-        m_pid = pid;
-        return pid;
+        for (const auto& Entry : std::filesystem::directory_iterator("/proc")) {
+            if (!Entry.is_directory())
+                continue;
+            std::ifstream CommandFile(std::string(Entry.path()) + "/cmdline");
+            std::string CommandLine;
+            std::getline(CommandFile, CommandLine);
+            if (CommandLine.find("r5apex.exe") != std::string::npos) {
+                m_pid = std::stoi(Entry.path().filename());
+                break;
+            }
+        }
+        return m_pid;
     }
 
     bool IsValidPointer(long Pointer) {
