@@ -112,7 +112,7 @@ struct Player {
         if (lp->isValid()) {
             isLocal = base == lp->base;
             isFriendly = isSameTeam(map, lp);
-            isEnemy = !isFriendly || map->isTrainingArea && isDrone;
+            isEnemy = !isFriendly || cl->AIMBOT_FRIENDLY_FIRE;// || map->isTrainingArea && isDrone;
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.Distance2D(localOrigin);
             //distance2DToLocalPlayer = lp->localOrigin.To2D().Distance(localOrigin.To2D());
