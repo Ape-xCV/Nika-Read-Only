@@ -166,4 +166,4 @@ echo "// [Static]" >> Offsets.hpp
 echo "constexpr long OFF_REGION = 0x140000000; //[Static]->Region" >> Offsets.hpp
 echo "// [IDA]" >> Offsets.hpp
 echo "constexpr long OFF_OBSERVER_LIST = 0x1f24048; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
-echo "constexpr long OFF_OBSERVER_ARRAY = 0x964 + 0x10;" >> Offsets.hpp
+echo "constexpr long OFF_OBSERVER_ARRAY = 0x974; //IDA signature >> [8B 84 C8 ? ? ? ? 83 F8]" >> Offsets.hpp
