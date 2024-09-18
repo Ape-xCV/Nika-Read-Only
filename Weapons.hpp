@@ -30,4 +30,4 @@ constexpr int WEAPON_3030 = 118;
 constexpr int WEAPON_CAR = 119;
 constexpr int WEAPON_NEMESIS = 120;
 constexpr int WEAPON_MELEE = 121;
-constexpr int WEAPON_THROWING_KNIFE = 176;
+constexpr int WEAPON_THROWING_KNIFE = 178;
