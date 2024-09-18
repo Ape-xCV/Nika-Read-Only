@@ -48,6 +48,7 @@ struct ConfigLoader {
     bool AIMBOT_PREDICT_BULLETDROP = true;
     bool AIMBOT_PREDICT_MOVEMENT = true;
     bool AIMBOT_ALLOW_TARGET_SWITCH = false;
+    bool AIMBOT_FRIENDLY_FIRE = false;
     bool AIMBOT_LEGACY_MODE = false;
     int AIMBOT_MAX_DISTANCE = 250;
     int AIMBOT_MIN_DISTANCE = 0;
@@ -162,6 +163,7 @@ struct ConfigLoader {
         AIMBOT_PREDICT_BULLETDROP = (key.compare("AIMBOT_PREDICT_BULLETDROP") != 0) ? AIMBOT_PREDICT_BULLETDROP : toBool(val);
         AIMBOT_PREDICT_MOVEMENT = (key.compare("AIMBOT_PREDICT_MOVEMENT") != 0) ? AIMBOT_PREDICT_MOVEMENT : toBool(val);
         AIMBOT_ALLOW_TARGET_SWITCH = (key.compare("AIMBOT_ALLOW_TARGET_SWITCH") != 0) ? AIMBOT_ALLOW_TARGET_SWITCH : toBool(val);
+        AIMBOT_FRIENDLY_FIRE = (key.compare("AIMBOT_FRIENDLY_FIRE") != 0) ? AIMBOT_FRIENDLY_FIRE : toBool(val);
         AIMBOT_LEGACY_MODE = (key.compare("AIMBOT_LEGACY_MODE") != 0) ? AIMBOT_LEGACY_MODE : toBool(val);
         AIMBOT_MAX_DISTANCE = (key.compare("AIMBOT_MAX_DISTANCE") != 0) ? AIMBOT_MAX_DISTANCE : stoi(val);
         AIMBOT_MIN_DISTANCE = (key.compare("AIMBOT_MIN_DISTANCE") != 0) ? AIMBOT_MIN_DISTANCE : stoi(val);
@@ -238,6 +240,7 @@ struct ConfigLoader {
         printf("AIMBOT_PREDICT_BULLETDROP\t\t\t\t%s\n", AIMBOT_PREDICT_BULLETDROP ? "YES" : "NO");
         printf("AIMBOT_PREDICT_MOVEMENT\t\t\t\t\t%s\n", AIMBOT_PREDICT_MOVEMENT ? "YES" : "NO");
         printf("AIMBOT_ALLOW_TARGET_SWITCH\t\t\t\t%s\n", AIMBOT_ALLOW_TARGET_SWITCH ? "YES" : "NO");
+        printf("AIMBOT_FRIENDLY_FIRE\t\t\t\t\t%s\n", AIMBOT_FRIENDLY_FIRE ? "YES" : "NO");
         printf("AIMBOT_LEGACY_MODE\t\t\t\t\t%s\n", AIMBOT_LEGACY_MODE ? "YES" : "NO");
         printf("AIMBOT_MAX_DISTANCE\t\t\t\t\t%d\n", AIMBOT_MAX_DISTANCE);
         printf("AIMBOT_MIN_DISTANCE\t\t\t\t\t%d\n", AIMBOT_MIN_DISTANCE);
