@@ -2,7 +2,9 @@
 
 struct LocalPlayer {
     ConfigLoader* cl;
-    uint64_t base;
+    uint16_t index;
+    uintptr_t base;
+    //uint64_t base;
     int teamNumber;
     int squadNumber;
     Vector3D localOrigin;
@@ -35,7 +37,9 @@ struct LocalPlayer {
     }
 
     void readFromMemory() {
-        base = mem::Read<long>(OFF_REGION + OFF_LOCAL_PLAYER, "LocalPlayer base");
+        index = mem::Read<uint16_t>(OFF_REGION + OFF_LOCAL_ENTITY_HANDLE, "LocalPlayer index");
+        base = mem::Read<uintptr_t>(OFF_REGION + OFF_ENTITY_LIST + ((index) << 5), "LocalPlayer base");
+        //base = mem::Read<long>(OFF_REGION + OFF_LOCAL_PLAYER, "LocalPlayer base");
         if (base == 0) return;
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "LocalPlayer teamNumber");
         squadNumber = mem::Read<int>(base + OFF_SQUAD_ID, "LocalPlayer squadNumber");
