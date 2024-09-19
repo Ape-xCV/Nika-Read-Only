@@ -4,7 +4,7 @@
 constexpr char OFF_GAME_VERSION[] = "v3.0.80.27"; //[Miscellaneous]->GameVersion
 constexpr long OFF_ENTITY_LIST = 0x1f61048; //[Miscellaneous]->cl_entitylist
 constexpr long OFF_LOCAL_ENTITY_HANDLE = 0x1766238; //[Miscellaneous]->LocalEntityHandle
-constexpr long OFF_LOCAL_PLAYER = 0x24342B8; //[Miscellaneous]->LocalPlayer
+constexpr long OFF_LOCAL_PLAYER = 0x24342b8; //[Miscellaneous]->LocalPlayer
 constexpr long OFF_GLOBAL_VARS = 0x18351c0; //[Miscellaneous]->GlobalVars
 constexpr long OFF_NAME_LIST = 0xd425fe0;//0xd3e54d0; //[Miscellaneous]->NameList
 constexpr long OFF_VIEW_RENDER = 0x76e8738;//0x76a7c38; //[Miscellaneous]->ViewRender
@@ -51,5 +51,5 @@ constexpr long OFF_GAME_MODE = 0x0246c460; //[ConVars]->mp_gamemode
 // [Static]
 constexpr long OFF_REGION = 0x140000000; //[Static]->Region
 // [IDA]
-constexpr long OFF_OBSERVER_LIST = 0x1f24048; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
+constexpr long OFF_OBSERVER_LIST = 0x1f63068;//0x1f24048; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]
 constexpr long OFF_OBSERVER_ARRAY = 0x974; //IDA signature >> [8B 84 C8 ? ? ? ? 83 F8]
