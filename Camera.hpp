@@ -15,7 +15,7 @@ struct Camera {
     void update() {
         long renderPtr = mem::Read<long>(OFF_REGION + OFF_VIEW_RENDER, "Camera renderPtr");
         long matrixPtr = mem::Read<long>(renderPtr + OFF_VIEW_MATRIX, "Camera matrixPtr");
-        //gameViewMatrix = mem::Read<ViewMatrix>(matrixPtr, "Camera gameViewMatrix");
+        gameViewMatrix = mem::Read<ViewMatrix>(matrixPtr, "Camera gameViewMatrix");
     }
 
     bool worldToScreen(Vector3D worldPosition, Vector2D& screenPosition) const {
