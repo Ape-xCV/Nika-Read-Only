@@ -128,7 +128,7 @@ struct AimBot {
         return wayB;
     }
 
-    void update(bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
+    void update(bool leftLock, bool autoFire, int boneId, int totalSpectators) {
         if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || currentTarget != nullptr && !currentTarget->isVisible)) {
             myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = false;
@@ -165,7 +165,7 @@ struct AimBot {
         else hitbox = HitboxType::UpperChest;
         targetBone3DCache = currentTarget->getBonePosition(hitbox);
         double distanceFromCrosshair = calculateDistanceFromCrosshair(targetBone3DCache);
-        if ((rightLock && !lp->inZoom) && !keymap::AIMBOT_ACTIVATION_KEY || distanceFromCrosshair == -1) {
+        if (distanceFromCrosshair == -1) {
             releaseTarget();
             return;
         }
