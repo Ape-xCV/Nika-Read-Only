@@ -40,6 +40,8 @@ m_ammoPoolCapacity=$(sed -nr ":l /^m_ammoPoolCapacity[ ]*=/ { s/[^=]*=[ ]*//; p;
 m_playerData=$(sed -nr ":l /^m_playerData[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_targetZoomFOV=$(sed -nr ":l /^m_targetZoomFOV[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 mp_gamemode=$(sed -nr ":l /^mp_gamemode[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
+gamepad_aim_assist_melee=$(sed -nr ":l /^gamepad_aim_assist_melee[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
+m_playerObserver=$(sed -nr ":l /^m_playerObserver[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 
 parse_hpp () {
 func_in=$(eval echo \$$1)
@@ -83,6 +85,8 @@ m_vecAbsOrigin=$(parse_hpp m_vecAbsOrigin "constexpr long OFF_LOCAL_ORIGIN")
 m_bZooming=$(parse_hpp m_bZooming "constexpr long OFF_ZOOMING")
 timeBase=$(parse_hpp timeBase "constexpr long OFF_TIME_BASE")
 mp_gamemode=$(parse_hpp mp_gamemode "constexpr long OFF_GAME_MODE")
+gamepad_aim_assist_melee=$(parse_hpp gamepad_aim_assist_melee "constexpr long OFF_OBSERVER_LIST")
+m_playerObserver=$(parse_hpp m_playerObserver "constexpr long OFF_OBSERVER_ARRAY")
 
 cp Offsets.hpp Offsets.tmp
 echo "#pragma once" > Offsets.hpp
@@ -168,5 +172,5 @@ echo "constexpr long OFF_GAME_MODE = ${mp_gamemode}; //[ConVars]->mp_gamemode" >
 echo "// [Static]" >> Offsets.hpp
 echo "constexpr long OFF_REGION = 0x140000000; //[Static]->Region" >> Offsets.hpp
 echo "// [IDA]" >> Offsets.hpp
-echo "constexpr long OFF_OBSERVER_LIST = 0x1f63068; //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
-echo "constexpr long OFF_OBSERVER_ARRAY = 0x974; //IDA signature >> [8B 84 C8 ? ? ? ? 83 F8]" >> Offsets.hpp
+echo "constexpr long OFF_OBSERVER_LIST = ${gamepad_aim_assist_melee} + 0x20c8; //[ConVars]->gamepad_aim_assist_melee + 0x20c8 //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
+echo "constexpr long OFF_OBSERVER_ARRAY = ${m_playerObserver}; //[RecvTable.DT_GlobalNonRewinding]->m_playerObserver" >> Offsets.hpp
