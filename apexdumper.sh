@@ -172,5 +172,11 @@ echo "constexpr long OFF_GAME_MODE = ${mp_gamemode}; //[ConVars]->mp_gamemode" >
 echo "// [Static]" >> Offsets.hpp
 echo "constexpr long OFF_REGION = 0x140000000; //[Static]->Region" >> Offsets.hpp
 echo "// [IDA]" >> Offsets.hpp
-echo "constexpr long OFF_OBSERVER_LIST = ${gamepad_aim_assist_melee} + 0x20c8; //[ConVars]->gamepad_aim_assist_melee + 0x20c8 //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
+if [[ "$gamepad_aim_assist_melee" == "" ]]; then
+  gamepad_aim_assist_melee=$(sed -n -e "s/constexpr long OFF_OBSERVER_LIST\s*=\s*//p" Offsets.tmp)
+  gamepad_aim_assist_melee=${gamepad_aim_assist_melee%%;*}
+  echo "constexpr long OFF_OBSERVER_LIST = $gamepad_aim_assist_melee; //[ConVars]->gamepad_aim_assist_melee + 0x20c8 //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
+else
+  echo "constexpr long OFF_OBSERVER_LIST = ${gamepad_aim_assist_melee%%[[:cntrl:]]} + 0x20c8; //[ConVars]->gamepad_aim_assist_melee + 0x20c8 //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
+fi
 echo "constexpr long OFF_OBSERVER_ARRAY = ${m_playerObserver}; //[RecvTable.DT_GlobalNonRewinding]->m_playerObserver" >> Offsets.hpp
