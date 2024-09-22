@@ -196,11 +196,10 @@ struct AimBot {
             totalSmooth = cl->AIMBOT_SMOOTH * 10;
         float bulletSpeed = lp->weaponProjectileSpeed;
         if (!lp->inZoom)
-            //totalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2;
             totalSmooth *= cl->AIMBOT_WEAKEN;
         else
             if (!currentTarget->isDrone && (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && totalSpectators > 0)) {
-                totalSmooth *= cl->AIMBOT_WEAKEN;
+                totalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2;
                 bulletSpeed /= cl->AIMBOT_WEAKEN;
             }
 
