@@ -232,8 +232,8 @@ struct AimBot {
             totalPitchIncrementInt = std::round((targetBoneW2S.y - screenSize.y/2) * cl->AIMBOT_SPEED / totalSmooth);
             totalYawIncrementInt = std::round((targetBoneW2S.x - screenSize.x/2) * cl->AIMBOT_SPEED / totalSmooth);
         }
-        zoomedMaxMove *= util::randomFloat(1.0f, 1.25f);
-        hipfireMaxMove *= util::randomFloat(1.0f, 1.25f);
+        zoomedMaxMove *= util::randomFloat(1.0f, 1.5f);
+        hipfireMaxMove *= util::randomFloat(1.0f, 1.5f);
 
         if (lp->inZoom) {
             if (totalPitchIncrementInt > zoomedMaxMove) totalPitchIncrementInt = zoomedMaxMove;
