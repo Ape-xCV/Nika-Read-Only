@@ -176,11 +176,18 @@ int main(int argc, char* argv[]) {
             players->clear();
             if (counter % 99 == 0) {
                 playersCache->clear();
-                for (int i = 0; i < dummyPlayers->size(); i++) {
-                    Player* p = dummyPlayers->at(i);
-                    p->readFromMemory(configLoader, map, localPlayer, counter);
-                    if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
-                }
+                if (!rightLock)
+                    for (int i = 0; i < humanPlayers->size(); i++) {
+                        Player* p = humanPlayers->at(i);
+                        p->readFromMemory(configLoader, map, localPlayer, counter);
+                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
+                    }
+                else
+                    for (int i = 0; i < dummyPlayers->size(); i++) {
+                        Player* p = dummyPlayers->at(i);
+                        p->readFromMemory(configLoader, map, localPlayer, counter);
+                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
+                    }
 
                 if (configLoader->SENSE_VERBOSE > 0) {
                     cache = playersCache->size();
