@@ -123,7 +123,7 @@ cd /root
 ./main.sh
 ```
 
-### 5. HWID unban (optional, no dual boot)
+### 5. HWID unban (optional, GRUB bootloader, no dual boot)
 
 - My storage serial numbers were collected most likely from **dbus**. Widely adopted Linux **systemd** `init` as currently being distributed has the security profile of an internet **meme**.
 - Run `spoof.sh` then reboot.
