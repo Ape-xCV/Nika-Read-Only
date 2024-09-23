@@ -41,7 +41,7 @@ m_playerData=$(sed -nr ":l /^m_playerData[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l
 m_targetZoomFOV=$(sed -nr ":l /^m_targetZoomFOV[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 mp_gamemode=$(sed -nr ":l /^mp_gamemode[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 gamepad_aim_assist_melee=$(sed -nr ":l /^gamepad_aim_assist_melee[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
-m_playerObserver=$(sed -nr ":l /^m_playerObserver[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
+m_gameTimescale=$(sed -nr ":l /^m_gameTimescale[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 
 parse_hpp () {
 func_in=$(eval echo \$$1)
@@ -86,7 +86,7 @@ m_bZooming=$(parse_hpp m_bZooming "constexpr long OFF_ZOOMING")
 timeBase=$(parse_hpp timeBase "constexpr long OFF_TIME_BASE")
 mp_gamemode=$(parse_hpp mp_gamemode "constexpr long OFF_GAME_MODE")
 gamepad_aim_assist_melee=$(parse_hpp gamepad_aim_assist_melee "constexpr long OFF_OBSERVER_LIST")
-m_playerObserver=$(parse_hpp m_playerObserver "constexpr long OFF_OBSERVER_ARRAY")
+m_gameTimescale=$(parse_hpp m_gameTimescale "constexpr long OFF_OBSERVER_ARRAY")
 
 cp Offsets.hpp Offsets.tmp
 echo "#pragma once" > Offsets.hpp
@@ -179,4 +179,4 @@ if [[ "$gamepad_aim_assist_melee" == "" ]]; then
 else
   echo "constexpr long OFF_OBSERVER_LIST = ${gamepad_aim_assist_melee%%[[:cntrl:]]} + 0x20c8; //[ConVars]->gamepad_aim_assist_melee + 0x20c8 //IDA signature >> [48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 01 FF ? ? 48 85 C0 74 ? 48 63 4E 38]" >> Offsets.hpp
 fi
-echo "constexpr long OFF_OBSERVER_ARRAY = ${m_playerObserver}; //[RecvTable.DT_GlobalNonRewinding]->m_playerObserver" >> Offsets.hpp
+echo "constexpr long OFF_OBSERVER_ARRAY = ${m_gameTimescale}; //[RecvTable.DT_GlobalNonRewinding]->m_gameTimescale //IDA signature >> [8B 84 C8 ? ? ? ? 83 F8]" >> Offsets.hpp
