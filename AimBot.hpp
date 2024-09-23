@@ -148,8 +148,8 @@ struct AimBot {
 
         Player* target = currentTarget;
         if (!isValidTarget(target)) {
-            if(targetSelected && !cl->AIMBOT_ALLOW_TARGET_SWITCH)
-                return;
+//            if(targetSelected && !cl->AIMBOT_ALLOW_TARGET_SWITCH)
+//                return;
 
             target = findBestTarget();
             if (!isValidTarget(target)) {
