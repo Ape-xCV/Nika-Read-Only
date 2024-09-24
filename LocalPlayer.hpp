@@ -40,7 +40,7 @@ struct LocalPlayer {
         index = mem::Read<uint16_t>(OFF_REGION + OFF_LOCAL_ENTITY_HANDLE, "LocalPlayer index");
         long basePointer = static_cast<long>(OFF_REGION + OFF_ENTITY_LIST + (index << 5));
         if (!mem::IsValidPointer(basePointer)) { reset(); return; }
-        base = mem::Read<uintptr_t>(basePointer), "LocalPlayer base");
+        base = mem::Read<uintptr_t>(basePointer, "LocalPlayer base");
         //base = mem::Read<long>(OFF_REGION + OFF_LOCAL_PLAYER, "LocalPlayer base");
         if (base == 0) return;
         teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "LocalPlayer teamNumber");
