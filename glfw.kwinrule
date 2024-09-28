@@ -8,6 +8,8 @@ types=1
 
 [Window settings for GLFW]
 Description=Window settings for GLFW
+fullscreen=true
+fullscreenrule=3
 noborder=true
 noborderrule=3
 types=1
