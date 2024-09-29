@@ -18,9 +18,6 @@ struct ConfigLoader {
     bool FEATURE_MAP_RADAR_ON = true;
     int FEATURE_MAP_RADAR_X = 220;
     int FEATURE_MAP_RADAR_Y = 220;
-    // TriggerBot
-//  int TRIGGERBOT_ZOOMED_RANGE = 180;
-    int TRIGGERBOT_HIPFIRE_RANGE = 60;
     // Sense
     int SENSE_VERBOSE = 2;
     int SENSE_MAX_RANGE = 250;
@@ -32,10 +29,10 @@ struct ConfigLoader {
     bool SENSE_SHOW_DEAD = false;
     bool SENSE_SHOW_FOV = true;
     bool SENSE_SHOW_TARGET = true;
+    // TriggerBot
+    //  int TRIGGERBOT_ZOOMED_RANGE = 180;
+    int TRIGGERBOT_HIPFIRE_RANGE = 60;
     // AimBot
-    bool AIMBOT_ACTIVATED_BY_ADS = false;
-    bool AIMBOT_ACTIVATED_BY_KEY = true;
-    bool AIMBOT_ACTIVATED_BY_MOUSE = true;
     float AIMBOT_SPEED = 20;
     float AIMBOT_SMOOTH = 20;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1500;
@@ -55,9 +52,13 @@ struct ConfigLoader {
     int AIMBOT_ZOOMED_MAX_MOVE = 30;
     int AIMBOT_HIPFIRE_MAX_MOVE = 30;
     int AIMBOT_MAX_DELTA = 10;
+    bool AIMBOT_ACTIVATED_BY_ADS = false;
+    bool AIMBOT_ACTIVATED_BY_MOUSE = true;
+    bool AIMBOT_ACTIVATED_BY_KEY = true;
     // Keys
     std::string AIMBOT_ACTIVATION_KEY = "XK_Shift_L";
     std::string AIMBOT_FIRING_KEY = "XK_x";
+    std::string SUPER_GLIDE_ACTIVATION_KEY = "XK_Caps_Lock";
 
     bool loadFileIntoVector() {
         struct stat result;
@@ -131,9 +132,12 @@ struct ConfigLoader {
         // Features
         FEATURE_AIMBOT_ON = (key.compare("FEATURE_AIMBOT_ON") != 0) ? FEATURE_AIMBOT_ON : toBool(val);
         FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
-        // TriggerBot
-//      TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
-        TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
+        FEATURE_SPECTATORS_ON = (key.compare("FEATURE_SPECTATORS_ON") != 0) ? FEATURE_SPECTATORS_ON : toBool(val);
+        FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val);
+        FEATURE_SUPER_GLIDE_ON = (key.compare("FEATURE_SUPER_GLIDE_ON") != 0) ? FEATURE_SUPER_GLIDE_ON : toBool(val);
+        FEATURE_MAP_RADAR_ON = (key.compare("FEATURE_MAP_RADAR_ON") != 0) ? FEATURE_MAP_RADAR_ON : toBool(val);
+        FEATURE_MAP_RADAR_X = (key.compare("FEATURE_MAP_RADAR_X") != 0) ? FEATURE_MAP_RADAR_X : stoi(val);
+        FEATURE_MAP_RADAR_Y = (key.compare("FEATURE_MAP_RADAR_Y") != 0) ? FEATURE_MAP_RADAR_Y : stoi(val);
         // Sense
         SENSE_VERBOSE = (key.compare("SENSE_VERBOSE") != 0) ? SENSE_VERBOSE : stoi(val);
         SENSE_MAX_RANGE = (key.compare("SENSE_MAX_RANGE") != 0) ? SENSE_MAX_RANGE : stoi(val);
@@ -145,12 +149,10 @@ struct ConfigLoader {
         SENSE_SHOW_DEAD = (key.compare("SENSE_SHOW_DEAD") != 0) ? SENSE_SHOW_DEAD : toBool(val);
         SENSE_SHOW_FOV = (key.compare("SENSE_SHOW_FOV") != 0) ? SENSE_SHOW_FOV : toBool(val);
         SENSE_SHOW_TARGET = (key.compare("SENSE_SHOW_TARGET") != 0) ? SENSE_SHOW_TARGET : toBool(val);
+        // TriggerBot
+        //      TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
+        TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
         // AimBot
-        AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
-        AIMBOT_ACTIVATED_BY_KEY = (key.compare("AIMBOT_ACTIVATED_BY_KEY") != 0) ? AIMBOT_ACTIVATED_BY_KEY : toBool(val);
-        AIMBOT_ACTIVATED_BY_MOUSE = (key.compare("AIMBOT_ACTIVATED_BY_MOUSE") != 0) ? AIMBOT_ACTIVATED_BY_MOUSE : toBool(val);
-        AIMBOT_ACTIVATION_KEY = (key.compare("AIMBOT_ACTIVATION_KEY") != 0) ? AIMBOT_ACTIVATION_KEY : trimConstructive(val);
-        AIMBOT_FIRING_KEY = (key.compare("AIMBOT_FIRING_KEY") != 0) ? AIMBOT_FIRING_KEY : trimConstructive(val);
         AIMBOT_SPEED = (key.compare("AIMBOT_SPEED") != 0) ? AIMBOT_SPEED : stod(val);
         AIMBOT_SMOOTH = (key.compare("AIMBOT_SMOOTH") != 0) ? AIMBOT_SMOOTH : stod(val);
         AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = (key.compare("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE") != 0) ? AIMBOT_SMOOTH_EXTRA_BY_DISTANCE : stod(val);
@@ -170,13 +172,13 @@ struct ConfigLoader {
         AIMBOT_ZOOMED_MAX_MOVE = (key.compare("AIMBOT_ZOOMED_MAX_MOVE") != 0) ? AIMBOT_ZOOMED_MAX_MOVE : stoi(val);
         AIMBOT_HIPFIRE_MAX_MOVE = (key.compare("AIMBOT_HIPFIRE_MAX_MOVE") != 0) ? AIMBOT_HIPFIRE_MAX_MOVE : stoi(val);
         AIMBOT_MAX_DELTA = (key.compare("AIMBOT_MAX_DELTA") != 0) ? AIMBOT_MAX_DELTA : stoi(val);
-        // Other
-        FEATURE_SPECTATORS_ON = (key.compare("FEATURE_SPECTATORS_ON") != 0) ? FEATURE_SPECTATORS_ON : toBool(val);
-        FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val);
-        FEATURE_SUPER_GLIDE_ON = (key.compare("FEATURE_SUPER_GLIDE_ON") != 0) ? FEATURE_SUPER_GLIDE_ON : toBool(val);
-        FEATURE_MAP_RADAR_ON = (key.compare("FEATURE_MAP_RADAR_ON") != 0) ? FEATURE_MAP_RADAR_ON : toBool(val); 
-        FEATURE_MAP_RADAR_X = (key.compare("FEATURE_MAP_RADAR_X") != 0) ? FEATURE_MAP_RADAR_X : stoi(val);
-        FEATURE_MAP_RADAR_Y = (key.compare("FEATURE_MAP_RADAR_Y") != 0) ? FEATURE_MAP_RADAR_Y : stoi(val);
+        AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
+        AIMBOT_ACTIVATED_BY_MOUSE = (key.compare("AIMBOT_ACTIVATED_BY_MOUSE") != 0) ? AIMBOT_ACTIVATED_BY_MOUSE : toBool(val);
+        AIMBOT_ACTIVATED_BY_KEY = (key.compare("AIMBOT_ACTIVATED_BY_KEY") != 0) ? AIMBOT_ACTIVATED_BY_KEY : toBool(val);
+        // Keys
+        AIMBOT_ACTIVATION_KEY = (key.compare("AIMBOT_ACTIVATION_KEY") != 0) ? AIMBOT_ACTIVATION_KEY : trimConstructive(val);
+        AIMBOT_FIRING_KEY = (key.compare("AIMBOT_FIRING_KEY") != 0) ? AIMBOT_FIRING_KEY : trimConstructive(val);
+        SUPER_GLIDE_ACTIVATION_KEY = (key.compare("SUPER_GLIDE_ACTIVATION_KEY") != 0) ? SUPER_GLIDE_ACTIVATION_KEY : trimConstructive(val);
     }
 
     void parseLines() {
@@ -206,10 +208,6 @@ struct ConfigLoader {
         printf("FEATURE_MAP_RADAR_X\t\t\t\t\t%d\n", FEATURE_MAP_RADAR_X);
         printf("FEATURE_MAP_RADAR_Y\t\t\t\t\t%d\n", FEATURE_MAP_RADAR_Y);
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        // TriggerBot
-//      printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
-        printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
-        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // Sense
         printf("SENSE_VERBOSE\t\t\t\t\t\t%d\n", SENSE_VERBOSE);
         printf("SENSE_MAX_RANGE\t\t\t\t\t\t%d\n", SENSE_MAX_RANGE);
@@ -222,12 +220,11 @@ struct ConfigLoader {
         printf("SENSE_SHOW_FOV\t\t\t\t\t\t%s\n", SENSE_SHOW_FOV ? "YES" : "NO");
         printf("SENSE_SHOW_TARGET\t\t\t\t\t%s\n", SENSE_SHOW_TARGET ? "YES" : "NO");
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        // TriggerBot
+        //      printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
+        printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // AimBot
-        printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
-        printf("AIMBOT_ACTIVATED_BY_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_KEY ? "YES" : "NO");
-        printf("AIMBOT_ACTIVATED_BY_MOUSE\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_MOUSE ? "YES" : "NO");
-        printf("AIMBOT_ACTIVATION_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATION_KEY.c_str());
-        printf("AIMBOT_FIRING_KEY\t\t\t\t\t%s\n", AIMBOT_FIRING_KEY.c_str());
         printf("AIMBOT_SPEED\t\t\t\t\t\t%.4f\n", AIMBOT_SPEED);
         printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);
         printf("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE\t\t\t\t%.4f\n", AIMBOT_SMOOTH_EXTRA_BY_DISTANCE);
@@ -247,6 +244,14 @@ struct ConfigLoader {
         printf("AIMBOT_ZOOMED_MAX_MOVE\t\t\t\t\t%d\n", AIMBOT_ZOOMED_MAX_MOVE);
         printf("AIMBOT_HIPFIRE_MAX_MOVE\t\t\t\t\t%d\n", AIMBOT_HIPFIRE_MAX_MOVE);
         printf("AIMBOT_MAX_DELTA\t\t\t\t\t%d\n", AIMBOT_MAX_DELTA);
+        printf("AIMBOT_ACTIVATED_BY_ADS\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_ADS ? "YES" : "NO");
+        printf("AIMBOT_ACTIVATED_BY_MOUSE\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_MOUSE ? "YES" : "NO");
+        printf("AIMBOT_ACTIVATED_BY_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATED_BY_KEY ? "YES" : "NO");
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        // Keys
+        printf("AIMBOT_ACTIVATION_KEY\t\t\t\t\t%s\n", AIMBOT_ACTIVATION_KEY.c_str());
+        printf("AIMBOT_FIRING_KEY\t\t\t\t\t%s\n", AIMBOT_FIRING_KEY.c_str());
+        printf("SUPER_GLIDE_ACTIVATION_KEY\t\t\t\t%s\n", SUPER_GLIDE_ACTIVATION_KEY.c_str());
         printf("====================================================================\n\n");
     }
 
