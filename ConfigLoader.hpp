@@ -30,7 +30,7 @@ struct ConfigLoader {
     bool SENSE_SHOW_FOV = true;
     bool SENSE_SHOW_TARGET = true;
     // TriggerBot
-    //  int TRIGGERBOT_ZOOMED_RANGE = 180;
+//    int TRIGGERBOT_ZOOMED_RANGE = 180;
     int TRIGGERBOT_HIPFIRE_RANGE = 60;
     // AimBot
     float AIMBOT_SPEED = 20;
@@ -150,7 +150,7 @@ struct ConfigLoader {
         SENSE_SHOW_FOV = (key.compare("SENSE_SHOW_FOV") != 0) ? SENSE_SHOW_FOV : toBool(val);
         SENSE_SHOW_TARGET = (key.compare("SENSE_SHOW_TARGET") != 0) ? SENSE_SHOW_TARGET : toBool(val);
         // TriggerBot
-        //      TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
+//        TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
         TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
         // AimBot
         AIMBOT_SPEED = (key.compare("AIMBOT_SPEED") != 0) ? AIMBOT_SPEED : stod(val);
@@ -221,7 +221,7 @@ struct ConfigLoader {
         printf("SENSE_SHOW_TARGET\t\t\t\t\t%s\n", SENSE_SHOW_TARGET ? "YES" : "NO");
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // TriggerBot
-        //      printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
+//        printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
         printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // AimBot
