@@ -17,7 +17,9 @@ struct Other {
     }
 
     void superGlide(double averageFPS) {
-        if (cl->FEATURE_SUPER_GLIDE_ON && (cl->SUPER_GLIDE_ACTIVATION_KEY != "" || "NONE") && myDisplay->isKeyDown(cl->SUPER_GLIDE_ACTIVATION_KEY)) {
+        if (cl->FEATURE_SUPER_GLIDE_ON
+            && ((cl->SUPER_GLIDE_ACTIVATION_KEY == "" || cl->SUPER_GLIDE_ACTIVATION_KEY == "NONE")
+            || ((cl->SUPER_GLIDE_ACTIVATION_KEY != "" || "NONE") && myDisplay->isKeyDown(cl->SUPER_GLIDE_ACTIVATION_KEY)))) {
             float traversalStartTime = lp->traversalStartTime;
             float traversalProgress = lp->traversalProgress;
 
