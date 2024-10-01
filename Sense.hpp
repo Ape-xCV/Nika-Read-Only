@@ -83,11 +83,16 @@ struct Sense {
         bool drawVisibleWarning = false;
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
-            if (!cl->SENSE_SHOW_DEAD && !p->currentHealth > 0) continue;
+            if (!p->isItem && !cl->SENSE_SHOW_DEAD && !p->currentHealth > 0) continue;
 
             Vector2D localOriginW2S, headPositionW2S, aboveHeadW2S;
             Vector3D localOrigin3D = p->localOrigin;
-            Vector3D headPosition3D = p->getBonePosition(HitboxType::Head);
+            Vector3D headPosition3D;
+            if (!p->isPlayer && !p->isDrone && !p->isDummie) {
+                headPosition3D = localOrigin3D;
+                headPosition3D.z += 10.0f;
+            } else { headPosition3D = p->getBonePosition(HitboxType::Head); }
+//            Vector3D headPosition3D = p->getBonePosition(HitboxType::Head);
             Vector3D aboveHead3D = headPosition3D;
             aboveHead3D.z += 10.0f;
 
@@ -97,10 +102,10 @@ struct Sense {
 
             // Colors - Players (Enemy)
             ImVec4 enemyBoxColor;
-            if (p->isDrone) enemyBoxColor =        ImVec4(1.00f, 0.00f, 1.00f, 1.00f);
-            else if (p->isKnocked) enemyBoxColor = ImVec4(1.00f, 0.67f, 0.17f, 1.00f);
-            else if (p->isVisible) enemyBoxColor = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
-            else enemyBoxColor =                   ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+            if (p->isDrone || p->isItem) enemyBoxColor = ImVec4(1.00f, 0.00f, 1.00f, 1.00f);
+            else if (p->isKnocked) enemyBoxColor =       ImVec4(1.00f, 0.67f, 0.17f, 1.00f);
+            else if (p->isVisible) enemyBoxColor =       ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
+            else enemyBoxColor =                         ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 
             float distance = util::inchesToMeters(p->distance2DToLocalPlayer);
             if (p->isEnemy && p->isValid() && !p->isLocal && distance < cl->SENSE_MAX_RANGE) {
@@ -122,7 +127,7 @@ struct Sense {
                     //canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width / 2), head.y + (height / 5)), ImColor(enemyBoxColor), 0.0f, 0, 2);
 
                     // Draw bar
-                    if (cl->SENSE_SHOW_PLAYER_BARS) {
+                    if (cl->SENSE_SHOW_PLAYER_BARS && !p->isItem) {
                         int life = p->currentHealth;
                         int evo = p->currentShield;
                         if (evo > 100)     glColor3f(1.00f, 0.25f, 0.00f); // Red shield
@@ -158,7 +163,7 @@ struct Sense {
                         drawText(canvas, drawPosition, distanceText, enemyBoxColor);
                     }
                     // Draw Name
-                    if (cl->SENSE_SHOW_PLAYER_NAMES) {
+                    if (cl->SENSE_SHOW_PLAYER_NAMES || p->isItem) {
                         if (cl->SENSE_TEXT_BOTTOM)
                             drawPosition = drawPosition.Add(Vector2D(0, 20));
                         else
@@ -170,7 +175,10 @@ struct Sense {
                             if (p->isDrone)
                                 txtName = "Drone";
                             else
-                                txtName = "Dummie";
+                                if (p->isDummie)
+                                    txtName = "Dummie";
+                                else
+                                    txtName = data::items[data::selectedRadio][0].c_str();
                         char nameText[256];
                         strncpy(nameText, txtName, sizeof(nameText));
                         drawText(canvas, drawPosition, nameText, enemyBoxColor);
@@ -343,6 +351,27 @@ struct Sense {
             for (int i = 0; i < static_cast<int>(spectators.size()); i++)
                 ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", spectators.at(i).c_str());
         }
+        ImGui::End();
+    }
+
+    void renderMenu() {
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowBgAlpha(0.67f);
+        ImGui::Begin("Items");
+        ImGui::BeginTable("Rows", 5);
+        for (int i = 0; i < static_cast<int>(sizeof data::items / sizeof data::items[0]); i++)
+        {
+            ImGui::TableNextColumn();
+            std::string id = data::items[i][0];
+            if (ImGui::RadioButton(id.c_str(), &data::selectedRadio, i))
+            {
+                int row = ImGui::TableGetRowIndex();
+                int col = ImGui::TableGetColumnIndex();
+                std::cout << row << ";" << col << ";" << data::selectedRadio << std::endl;
+            }
+        }
+        ImGui::EndTable();
         ImGui::End();
     }
 };

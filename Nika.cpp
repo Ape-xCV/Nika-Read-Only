@@ -40,8 +40,8 @@ bool initializeOverlayWindow(const char* overlayTitle) {
         overlayWindow.DestroyOverlay();
         return false;
     }
-    overlayWindow.SetStyle();
     overlayWindow.CaptureInput(false);
+    overlayWindow.SetStyle();
     int screenWidth;
     int screenHeight;
     overlayWindow.GetScreenResolution(screenWidth, screenHeight);
@@ -71,6 +71,10 @@ void renderUI() {
         sense->renderESP(canvas);
         if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
         if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);
+        if (keymap::showMenu) {
+            overlayWindow.CaptureInput(true);
+            sense->renderMenu();
+        } else { overlayWindow.CaptureInput(false); }
     }
     ImGui::End();
 }
@@ -121,6 +125,7 @@ int main(int argc, char* argv[]) {
 
             while (true) {
                 if (myDisplay->isKeyDown("XK_Home")) { system("mount -o remount,rw,hidepid=0 /proc"); return -1; }
+                if (myDisplay->isKeyDown("XK_Shift_R")) { keymap::showMenu = !keymap::showMenu; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Right")) { rightLock = !rightLock; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Up")) { autoFire = !autoFire; util::sleep(250); }

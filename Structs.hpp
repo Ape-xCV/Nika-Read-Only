@@ -27,6 +27,7 @@ namespace keymap {
     bool AIMBOT_ACTIVATION_KEY;
     bool AIMBOT_FIRING_KEY;
     static std::chrono::milliseconds timeLastShot;
+    bool showMenu = false;
 };
 
 namespace util {

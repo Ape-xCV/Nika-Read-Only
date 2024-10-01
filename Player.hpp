@@ -9,6 +9,8 @@ struct Player {
     bool isPlayer;
     bool isDrone;
     bool isDummie;
+    bool isItem;
+    int itemId;
     Vector3D localOrigin;
     Vector3D localOriginDiff;
     Vector3D localOriginPrev;
@@ -68,7 +70,17 @@ struct Player {
             teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
             isDummie = teamNumber == 97;
         } else { isDummie = false; }
-        if (!isPlayer && !isDrone && !isDummie) { reset(); return; }
+        if (!isPlayer && !isDrone && !isDummie) {
+            itemId = mem::Read<int>(base + 0x1568, "Player itemId"); //[RecvTable.DT_PropSurvival]->m_customScriptInt=0x1568
+            isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
+            if (isItem) {
+                localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
+                isEnemy = true;
+                if (lp->isValid()) distance2DToLocalPlayer = lp->localOrigin.Distance2D(localOrigin);
+                return;
+            }
+            reset(); return;
+        }
         if (!map->isTrainingArea)
             teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
@@ -112,7 +124,7 @@ struct Player {
         if (lp->isValid()) {
             isLocal = base == lp->base;
             isFriendly = isSameTeam(map, lp);
-            isEnemy = !isFriendly || cl->AIMBOT_FRIENDLY_FIRE;// || map->isTrainingArea && isDrone;
+            isEnemy = !isFriendly || isItem || cl->AIMBOT_FRIENDLY_FIRE;// || map->isTrainingArea && isDrone;
             distanceToLocalPlayer = lp->localOrigin.Distance(localOrigin);
             distance2DToLocalPlayer = lp->localOrigin.Distance2D(localOrigin);
             //distance2DToLocalPlayer = lp->localOrigin.To2D().Distance(localOrigin.To2D());
@@ -120,7 +132,7 @@ struct Player {
     }
 
     bool isValid() {
-        return base != 0 && (isPlayer || isDrone || isDummie);
+        return base != 0 && (isPlayer || isDrone || isDummie || isItem);
     }
 
     bool isCombatReady() {
