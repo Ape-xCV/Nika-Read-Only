@@ -81,6 +81,7 @@ struct Sense {
         Vector2D drawPosition;
         Vector2D screenSize = gameCamera->getResolution();
         bool drawVisibleWarning = false;
+        bool drawDroneWarning = false;
         for (int i = 0; i < players->size(); i++) {
             Player* p = players->at(i);
             if (!p->isItem && !cl->SENSE_SHOW_DEAD && !p->currentHealth > 0) continue;
@@ -201,8 +202,11 @@ struct Sense {
                 }
 
                 // Draw Warning
-                if (p->isVisible && !p->isKnocked)
-                    drawVisibleWarning = true;
+                if (p->isDrone)
+                    drawDroneWarning = true;
+                else
+                    if (p->isVisible && !p->isKnocked)
+                        drawVisibleWarning = true;
             }
         }
 
@@ -211,6 +215,16 @@ struct Sense {
             drawPosition = Vector2D(screenSize.x / 2, screenSize.y * 3/4);
             const char* txtWarning;
             txtWarning = "VISIBLE WARNING";
+            char warningText[256];
+            strncpy(warningText, txtWarning, sizeof(warningText));
+            drawText(canvas, drawPosition, warningText, warningColor);
+        }
+
+        if (drawDroneWarning) {
+            ImVec4 warningColor = ImColor(ImVec4(1.00f, 0.00f, 1.00f, 1.00f));
+            drawPosition = Vector2D(screenSize.x / 2, screenSize.y * 3/4 + 20);
+            const char* txtWarning;
+            txtWarning = "DRONE WARNING";
             char warningText[256];
             strncpy(warningText, txtWarning, sizeof(warningText));
             drawText(canvas, drawPosition, warningText, warningColor);
