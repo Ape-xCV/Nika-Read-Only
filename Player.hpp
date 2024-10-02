@@ -71,7 +71,7 @@ struct Player {
             isDummie = teamNumber == 97;
         } else { isDummie = false; }
         if (!isPlayer && !isDrone && !isDummie) {
-//            itemId = mem::Read<int>(base + 0x1568, "Player itemId"); //[RecvTable.DT_PropSurvival]->m_customScriptInt=0x1568
+            itemId = mem::ReadInt(base + 0x1568, "Player itemId"); //[RecvTable.DT_PropSurvival]->m_customScriptInt=0x1568
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
@@ -143,7 +143,7 @@ struct Player {
     }
 
     std::string getPlayerName(){
-        uintptr_t nameOffset = mem::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((plyrDataTable - 1) * 24 ), "Player nameOffset");
+        uintptr_t nameOffset = mem::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((plyrDataTable - 1) * 24), "Player nameOffset");
         std::string playerName = mem::ReadString(nameOffset, 64, "Player playerName");
         return playerName;
     }
