@@ -63,7 +63,7 @@ struct Player {
     void readFromMemory(ConfigLoader* cl, Level* map, LocalPlayer* lp, int counter) {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
-        name = mem::ReadString(base + OFF_NAME, 1024, "Player name");
+        name = mem::ReadString(base + OFF_NAME, 64, "Player name");
         isPlayer = name == "player";
         isDrone = name == "drone_no_minimap_object";
         if (map->isTrainingArea) {
@@ -71,7 +71,7 @@ struct Player {
             isDummie = teamNumber == 97;
         } else { isDummie = false; }
         if (!isPlayer && !isDrone && !isDummie) {
-            itemId = mem::ReadInt(base + 0x1568, "Player itemId"); //[RecvTable.DT_PropSurvival]->m_customScriptInt=0x1568
+            itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
