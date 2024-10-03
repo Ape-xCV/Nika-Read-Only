@@ -35,6 +35,8 @@ constexpr long OFF_HEALTH = 0x0328; //[RecvTable.DT_Player]->m_iHealth
 constexpr long OFF_LIFE_STATE = 0x0690; //[RecvTable.DT_Player]->m_lifeState
 constexpr long OFF_BLEEDOUT_STATE = 0x2760; //[RecvTable.DT_Player]->m_bleedoutState
 constexpr long OFF_XP_LEVEL = 0x3784; //[RecvTable.DT_Player]->m_xp
+//[RecvTable.DT_PropSurvival]
+constexpr long OFF_ITEM_HANDLE = 0x1568; //[RecvTable.DT_PropSurvival]->m_customScriptInt
 // [RecvTable.DT_WeaponX]
 constexpr long OFF_WEAPON_INDEX = 0x1788; //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 // [DataMap.C_BaseEntity]
