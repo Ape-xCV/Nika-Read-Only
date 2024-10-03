@@ -10,6 +10,7 @@ struct Player {
     bool isDrone;
     bool isDummie;
     bool isItem;
+    //char signifierName[64] = {0};
     int itemId;
     Vector3D localOrigin;
     Vector3D localOriginDiff;
@@ -70,7 +71,12 @@ struct Player {
             teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
             isDummie = teamNumber == 97;
         } else { isDummie = false; }
+        isItem = false;
         if (!isPlayer && !isDrone && !isDummie) {
+            //uint64_t signifierNamePtr = mem::Read<uint64_t>(base + 0x0478, "Player signifierNamePtr"); //[RecvTable.DT_PropSurvival]->m_iSignifierName=0x0478
+            //mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
+            //size_t found = static_cast<std::string>(signifierName).find("prop_survival");
+            //if (found == std::string::npos) { reset(); return; }
             itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (isItem) {
