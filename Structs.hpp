@@ -11,14 +11,14 @@ struct Level {
     bool isMixtape;
 
     void readFromMemory() {
-        name = mem::ReadString(OFF_REGION + OFF_LEVEL_NAME, 1024, "Level name");
+        name = mem::ReadString(OFF_REGION + OFF_LEVEL_NAME, 64, "Level name");
         isLobby = name == "mp_lobby";
         isPlayable = !name.empty() && name != "mp_lobby";
         isTrainingArea = name == "mp_rr_canyonlands_staging_mu1";
         uint64_t gameModePtr = mem::Read<uint64_t>(OFF_REGION + OFF_GAME_MODE + 0x50, "Level gameModePtr");
         if (gameModePtr > 0) {
             mem::Read(gameModePtr, &gameMode, sizeof(gameMode));
-            isMixtape=gameModes[gameMode];
+            isMixtape = gameModes[gameMode];
         }
     }
 };
