@@ -32,6 +32,7 @@
 - **Unbind LMB (Left Mouse Button) in-game from fire, so that the cheat will fire for you instead** (AIMBOT_ACTIVATED_BY_MOUSE default YES)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [x] Efficient entities cache, enabling Crypto drone targeting
+* [x] Press RIGHT_SHIFT to select Item ESP
 * [x] Terminate process with HOME
 
 ## Notes
