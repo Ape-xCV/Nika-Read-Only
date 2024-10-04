@@ -53,6 +53,8 @@ struct Sense {
             ImGui::Text("fps: %.2f ", averageFPS);
         }
         ImGui::SameLine();
+        ImGui::Text("esp: %s ", data::items[data::selectedRadio][0].c_str());
+        ImGui::SameLine();
         ImGui::Text("cache: %d", cache);
         ImGui::End();
     }
