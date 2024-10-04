@@ -87,6 +87,7 @@ struct Player {
                 if (itemId == stoi(data::itemsLongScope[0][1]) || itemId == stoi(data::itemsLongScope[1][1]) || itemId == stoi(data::itemsLongScope[2][1])) isItem = true;
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
+                isVisible = false;
                 isEnemy = true;
                 if (lp->isValid()) distance2DToLocalPlayer = lp->localOrigin.Distance2D(localOrigin);
                 return;
