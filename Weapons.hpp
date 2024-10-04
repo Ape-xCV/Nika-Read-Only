@@ -36,35 +36,35 @@ namespace data {
     int selectedRadio = 0;
     const std::string items[][2] = {
         { "DRONE / DUMMIE",  "-1" },
+        { "G7 SCOUT",        "39" },
+        { "ALTERNATOR",      "44" },
+        { "R-99",            "49" },
+        { "SPITFIRE",        "75" },
         { "R-301",           "80" },
+        { "P2020",          "113" },
+        { "RE-45",          "122" },
+        { "L-STAR",           "7" },
+        { "HAVOC",           "13" },
+        { "DEVOTION",        "19" },
+        { "TRIPLE_TAKE",     "24" },
+        { "VOLT",            "60" },
+        { "NEMESIS",        "139" },
+        { "MASTIFF",          "2" },
+        { "EVA-8",           "85" },
+        { "PEACEKEEPER",     "90" },
+        { "MOZAMBIQUE",      "95" },
+        { "FLATLINE",        "29" },
+        { "HEMLOK",          "34" },
+        { "PROWLER",         "55" },
+        { "30-30",          "133" },
+        { "RAMPAGE",        "150" },
+        { "C.A.R.",         "155" },
+        { "KRABER",           "1" },
+        { "LONGBOW",         "65" },
+        { "CHARGE_RIFLE",    "70" },
+        { "WINGMAN",        "108" },
         { "SENTINEL",       "127" },
         { "BOCEK",          "132" },
-        { "RAMPAGE",        "150" },
-        { "ALTERNATOR",      "44" },
-        { "RE-45",          "122" },
-        { "CHARGE_RIFLE",    "70" },
-        { "DEVOTION",        "19" },
-        { "LONGBOW",         "65" },
-        { "HAVOC",           "13" },
-        { "EVA-8",           "85" },
-        { "FLATLINE",        "29" },
-        { "G7 SCOUT",        "39" },
-        { "HEMLOK",          "34" },
-        { "KRABER",           "1" },
-        { "L-STAR",           "7" },
-        { "MASTIFF",          "2" },
-        { "MOZAMBIQUE",      "95" },
-        { "PROWLER",         "55" },
-        { "PEACEKEEPER",     "90" },
-        { "R-99",            "49" },
-        { "P2020",          "113" },
-        { "SPITFIRE",        "75" },
-        { "TRIPLE_TAKE",     "24" },
-        { "WINGMAN",        "108" },
-        { "VOLT",            "60" },
-        { "30-30",          "133" },
-        { "C.A.R.",         "155" },
-        { "NEMESIS",        "139" },
         { "LIGHT_AMMO",     "144" },
         { "ENERGY_AMMO",    "145" },
         { "SHOTGUN_AMMO",   "146" },
@@ -81,6 +81,22 @@ namespace data {
         { "4X-10X_SNIPER",  "240" },
         { "HEAT_SHIELD",    "296" },
         { "MOBILE_RESPAWN", "297" },
-        { "EVAC_TOWER",     "300" }
+        { "EVAC_TOWER",     "300" },
+        { "SHORT_SCOPE",     "-2" },
+        { "MEDIUM_SCOPE",    "-2" },
+        { "LONG_SCOPE",      "-2" }
+    };
+    const std::string itemsShortScope[][2] = {
+        { "2X_HCOG",        "232" },
+        { "1X-2X_HOLO",     "234" }
+    };
+    const std::string itemsMediumScope[][2] = {
+        { "3X_HCOG",        "236" },
+        { "2X-4X_AOG",      "237" }
+    };
+    const std::string itemsLongScope[][2] = {
+        { "6X_SNIPER",      "238" },
+        { "4X-8X_SNIPER",   "239" },
+        { "4X-10X_SNIPER",  "240" }
     };
 };
