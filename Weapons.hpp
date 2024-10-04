@@ -82,9 +82,9 @@ namespace data {
         { "HEAT_SHIELD",    "296" },
         { "MOBILE_RESPAWN", "297" },
         { "EVAC_TOWER",     "300" },
-        { "SHORT_SCOPE",     "-2" },
-        { "MEDIUM_SCOPE",    "-2" },
-        { "LONG_SCOPE",      "-2" }
+        { "SHORT_SCOPE",     "-1" },
+        { "MEDIUM_SCOPE",    "-1" },
+        { "LONG_SCOPE",      "-1" }
     };
     const std::string itemsShortScope[][2] = {
         { "2X_HCOG",        "232" },
