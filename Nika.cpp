@@ -124,8 +124,14 @@ int main(int argc, char* argv[]) {
             }
 
             while (true) {
-                if (myDisplay->isKeyDown("XK_Home")) { system("mount -o remount,rw,hidepid=0 /proc"); return -1; }
+                if (myDisplay->isKeyDown("XK_F9")) { system("mount -o remount,rw,hidepid=0 /proc"); return -1; }
                 if (myDisplay->isKeyDown("XK_Shift_R")) { keymap::showMenu = !keymap::showMenu; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Insert")) { data::selectedRadio++; if (data::selectedRadio < 1 || data::selectedRadio > 7) data::selectedRadio = 1; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Delete")) { data::selectedRadio++; if (data::selectedRadio < 8 || data::selectedRadio > 13) data::selectedRadio = 8; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Home")) { data::selectedRadio++; if (data::selectedRadio < 14 || data::selectedRadio > 17) data::selectedRadio = 14; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_End")) { data::selectedRadio++; if (data::selectedRadio < 18 || data::selectedRadio > 23) data::selectedRadio = 18; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Page_Up")) { data::selectedRadio++; if (data::selectedRadio < 42 || data::selectedRadio > 44) data::selectedRadio = 42; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Page_Down")) { data::selectedRadio++; if (data::selectedRadio < 45 || data::selectedRadio > 47) data::selectedRadio = 45; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Right")) { rightLock = !rightLock; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Up")) { autoFire = !autoFire; util::sleep(250); }
