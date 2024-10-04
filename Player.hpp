@@ -79,6 +79,12 @@ struct Player {
             //if (found == std::string::npos) { reset(); return; }
             itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
+            if (data::items[data::selectedRadio][0] == "SHORT_SCOPE")
+                if (itemId == stoi(data::itemsShortScope[0][1]) || itemId == stoi(data::itemsShortScope[1][1])) isItem = true;
+            if (data::items[data::selectedRadio][0] == "MEDIUM_SCOPE")
+                if (itemId == stoi(data::itemsMediumScope[0][1]) || itemId == stoi(data::itemsMediumScope[1][1])) isItem = true;
+            if (data::items[data::selectedRadio][0] == "LONG_SCOPE")
+                if (itemId == stoi(data::itemsLongScope[0][1]) || itemId == stoi(data::itemsLongScope[1][1]) || itemId == stoi(data::itemsLongScope[2][1])) isItem = true;
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
                 isEnemy = true;
