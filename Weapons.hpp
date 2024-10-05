@@ -70,9 +70,7 @@ namespace data {
         { "SHOTGUN_AMMO",   "146" },
         { "HEAVY_AMMO",     "147" },
         { "SNIPER_AMMO",    "148" },
-//        { "1X_HCOG",        "231" },
         { "2X_HCOG",        "232" },
-//        { "1X_HOLO",        "233" },
         { "1X-2X_HOLO",     "234" },
         { "3X_HCOG",        "236" },
         { "2X-4X_AOG",      "237" },
@@ -84,7 +82,24 @@ namespace data {
         { "EVAC_TOWER",     "300" },
         { "SHORT_SCOPE",     "-1" },
         { "MEDIUM_SCOPE",    "-1" },
-        { "LONG_SCOPE",      "-1" }
+        { "LONG_SCOPE",      "-1" },
+        { "EPIC_GEAR",       "-1" },
+        { "LEGENDARY_GEAR",  "-1" },
+        { "ULTIMATE_ACCEL", "193" },
+        { "BARREL_STBLZR",  "243" },
+        { "LASER_SIGHT",    "247" },
+        { "STNDRD_STOCK",   "270" },
+        { "SNIPER_STOCK",   "273" },
+        { "P_LIGHT_MAG",    "250" },
+        { "P_ENERGY_MAG",   "258" },
+        { "P_SHOTGUN_BOLT", "266" },
+        { "P_HEAVY_MAG",    "254" },
+        { "P_SNIPER_MAG",   "262" },
+        { "G_LIGHT_MAG",    "251" },
+        { "G_ENERGY_MAG",   "259" },
+        { "G_SHOTGUN_BOLT", "267" },
+        { "G_HEAVY_MAG",    "255" },
+        { "G_SNIPER_MAG",   "263" }
     };
     const std::string itemsShortScope[][2] = {
         { "2X_HCOG",        "232" },
@@ -98,5 +113,24 @@ namespace data {
         { "6X_SNIPER",      "238" },
         { "4X-8X_SNIPER",   "239" },
         { "4X-10X_SNIPER",  "240" }
+    };
+    const std::string itemsEpicGear[][2] = {
+        { "ULTIMATE_ACCEL", "193" },
+        { "BARREL_STBLZR",  "243" },
+        { "LASER_SIGHT",    "247" },
+        { "STNDRD_STOCK",   "270" },
+        { "SNIPER_STOCK",   "273" },
+        { "P_LIGHT_MAG",    "250" },
+        { "P_ENERGY_MAG",   "258" },
+        { "P_SHOTGUN_BOLT", "266" },
+        { "P_HEAVY_MAG",    "254" },
+        { "P_SNIPER_MAG",   "262" }
+    };
+    const std::string itemsLegendaryGear[][2] = {
+        { "G_LIGHT_MAG",    "251" },
+        { "G_ENERGY_MAG",   "259" },
+        { "G_SHOTGUN_BOLT", "267" },
+        { "G_HEAVY_MAG",    "255" },
+        { "G_SNIPER_MAG",   "263" }
     };
 };
