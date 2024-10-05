@@ -31,6 +31,7 @@ m_iHealth=$(sed -nr ":l /^m_iHealth[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$
 m_lifeState=$(sed -nr ":l /^m_lifeState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_bleedoutState=$(sed -nr ":l /^m_bleedoutState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_xp=$(sed -nr ":l /^m_xp[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
+m_customScriptInt=$(sed -nr ":l /^m_customScriptInt[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 m_weaponNameIndex=$(sed -nr "/^\[RecvTable.DT_WeaponX\]/ { :l /^m_weaponNameIndex[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 m_vecAbsOrigin=$(sed -nr "/^\[DataMap.C_BaseEntity\]/ { :l /^m_vecAbsOrigin[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" ./$target.txt)
 m_bZooming=$(sed -nr ":l /^m_bZooming[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
@@ -80,6 +81,7 @@ m_iHealth=$(parse_hpp m_iHealth "constexpr long OFF_HEALTH")
 m_lifeState=$(parse_hpp m_lifeState "constexpr long OFF_LIFE_STATE")
 m_bleedoutState=$(parse_hpp m_bleedoutState "constexpr long OFF_BLEEDOUT_STATE")
 m_xp=$(parse_hpp m_xp "constexpr long OFF_XP_LEVEL")
+m_customScriptInt=$(parse_hpp m_customScriptInt "constexpr long OFF_ITEM_HANDLE")
 m_weaponNameIndex=$(parse_hpp m_weaponNameIndex "constexpr long OFF_WEAPON_INDEX")
 m_vecAbsOrigin=$(parse_hpp m_vecAbsOrigin "constexpr long OFF_LOCAL_ORIGIN")
 m_bZooming=$(parse_hpp m_bZooming "constexpr long OFF_ZOOMING")
@@ -138,6 +140,8 @@ echo "constexpr long OFF_HEALTH = ${m_iHealth}; //[RecvTable.DT_Player]->m_iHeal
 echo "constexpr long OFF_LIFE_STATE = ${m_lifeState}; //[RecvTable.DT_Player]->m_lifeState" >> Offsets.hpp
 echo "constexpr long OFF_BLEEDOUT_STATE = ${m_bleedoutState}; //[RecvTable.DT_Player]->m_bleedoutState" >> Offsets.hpp
 echo "constexpr long OFF_XP_LEVEL = ${m_xp}; //[RecvTable.DT_Player]->m_xp" >> Offsets.hpp
+echo "// [RecvTable.DT_PropSurvival]" >> Offsets.hpp
+echo "constexpr long OFF_ITEM_HANDLE = ${m_customScriptInt}; //[RecvTable.DT_PropSurvival]->m_customScriptInt" >> Offsets.hpp
 echo "// [RecvTable.DT_WeaponX]" >> Offsets.hpp
 echo "constexpr long OFF_WEAPON_INDEX = ${m_weaponNameIndex}; //[RecvTable.DT_WeaponX]->m_weaponNameIndex" >> Offsets.hpp
 echo "// [DataMap.C_BaseEntity]" >> Offsets.hpp
