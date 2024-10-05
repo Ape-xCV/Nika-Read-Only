@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
             players->clear();
             if (counter % 99 == 0) {
                 playersCache->clear();
-                if (!rightLock)
+                if (!rightLock || data::selectedRadio == 69)
                     for (int i = 0; i < humanPlayers->size(); i++) {
                         Player* p = humanPlayers->at(i);
                         p->readFromMemory(configLoader, map, localPlayer, counter);
