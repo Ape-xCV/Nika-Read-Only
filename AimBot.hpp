@@ -23,10 +23,10 @@ struct AimBot {
         this->gameCamera = in_gameCamera;
     }
 
-    bool active() {
+    bool active(bool rightLock) {
         bool isAimbotOn = cl->FEATURE_AIMBOT_ON;
         bool isCombatReady = lp->isCombatReady();
-        bool activatedByAds = cl->AIMBOT_ACTIVATED_BY_ADS && lp->inZoom;
+        bool activatedByAds = rightLock && lp->inZoom;
         bool activatedByKey = keymap::AIMBOT_ACTIVATION_KEY;
         bool active = isAimbotOn && isCombatReady && (activatedByAds || activatedByKey);
         return active;
@@ -128,14 +128,14 @@ struct AimBot {
         return wayB;
     }
 
-    void update(bool leftLock, bool autoFire, int boneId, int totalSpectators) {
+    void update(bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
         if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || currentTarget != nullptr && !currentTarget->isVisible)) {
             myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = false;
         }
 
         if (lp->grippingGrenade){ releaseTarget(); return; }
-        if (!active()) { releaseTarget(); return; }
+        if (!active(rightLock)) { releaseTarget(); return; }
 
         if (lp->inZoom) {
             finalFov = cl->AIMBOT_FOV * lp->zoomFov / 60;
