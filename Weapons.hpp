@@ -100,10 +100,10 @@ namespace data {
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
-        { "PINK_HELMET",    "201" },
         { "PINK_BACKPACK",  "225" },
         { "GOLD_HELMET",    "202" },
         { "GOLD_BACKPACK",  "226" },
+        { "GOLD_KNOCKDOWN", "222" },
         { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsShortScope[][2] = {
@@ -130,7 +130,6 @@ namespace data {
         { "P_SHOTGUN_BOLT", "266" },
         { "P_HEAVY_MAG",    "254" },
         { "P_SNIPER_MAG",   "262" },
-        { "PINK_HELMET",    "201" },
         { "PINK_BACKPACK",  "225" }
     };
     const std::string itemsLegendaryGear[][2] = {
@@ -140,6 +139,7 @@ namespace data {
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
         { "GOLD_HELMET",    "202" },
-        { "GOLD_BACKPACK",  "226" }
+        { "GOLD_BACKPACK",  "226" },
+        { "GOLD_KNOCKDOWN", "222" }
     };
 };
