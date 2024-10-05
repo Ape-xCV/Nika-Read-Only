@@ -99,7 +99,11 @@ namespace data {
         { "G_ENERGY_MAG",   "259" },
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
-        { "G_SNIPER_MAG",   "263" }
+        { "G_SNIPER_MAG",   "263" },
+        { "PINK_HELMET",    "201" },
+        { "PINK_BACKPACK",  "225" },
+        { "GOLD_HELMET",    "202" },
+        { "GOLD_BACKPACK",  "226" }
     };
     const std::string itemsShortScope[][2] = {
         { "2X_HCOG",        "232" },
@@ -124,13 +128,17 @@ namespace data {
         { "P_ENERGY_MAG",   "258" },
         { "P_SHOTGUN_BOLT", "266" },
         { "P_HEAVY_MAG",    "254" },
-        { "P_SNIPER_MAG",   "262" }
+        { "P_SNIPER_MAG",   "262" },
+        { "PINK_HELMET",    "201" },
+        { "PINK_BACKPACK",  "225" }
     };
     const std::string itemsLegendaryGear[][2] = {
         { "G_LIGHT_MAG",    "251" },
         { "G_ENERGY_MAG",   "259" },
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
-        { "G_SNIPER_MAG",   "263" }
+        { "G_SNIPER_MAG",   "263" },
+        { "GOLD_HELMET",    "202" },
+        { "GOLD_BACKPACK",  "226" }
     };
 };
