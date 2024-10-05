@@ -33,7 +33,8 @@
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [x] Efficient entities cache, enabling Crypto drone targeting
 * [x] Press RIGHT_SHIFT to select Item ESP
-* [x] Terminate process with HOME
+* [x] Press INSERT / DELETE / HOME / END / PAGE_UP / PAGE_DOWN to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SURVIVAL / GEAR items
+* [x] Terminate process with F9
 
 ## Notes
 
