@@ -26,7 +26,6 @@ struct Sense {
             ImGuiWindowFlags_AlwaysAutoResize |
             ImGuiWindowFlags_NoSavedSettings |
             ImGuiWindowFlags_NoInputs);
-        const ImGuiStyle& style = ImGui::GetStyle();
 
         const ImVec4 leftLockColor = leftLock ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
         const ImVec4 rightLockColor = rightLock ? ImVec4(0.4, 1, 0.343, 1) : ImVec4(1, 0.343, 0.475, 1);
@@ -376,18 +375,19 @@ struct Sense {
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.67f);
-        ImGui::Begin("Items");
+        ImGui::Begin("Items", nullptr,
+            //ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoSavedSettings);
+
         ImGui::BeginTable("Rows", 5);
-        for (int i = 0; i < static_cast<int>(sizeof data::items / sizeof data::items[0]); i++)
-        {
+        for (int i = 0; i < static_cast<int>(sizeof data::items / sizeof data::items[0]); i++) {
             ImGui::TableNextColumn();
             std::string id = data::items[i][0];
-            if (ImGui::RadioButton(id.c_str(), &data::selectedRadio, i))
-            {
-                int row = ImGui::TableGetRowIndex();
-                int col = ImGui::TableGetColumnIndex();
-                std::cout << row << ";" << col << ";" << data::selectedRadio << std::endl;
-            }
+            if (ImGui::RadioButton(id.c_str(), &data::selectedRadio, i)) printf("%d\n", data::selectedRadio);
         }
         ImGui::EndTable();
         ImGui::End();
