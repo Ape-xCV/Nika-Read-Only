@@ -73,6 +73,7 @@ struct Player {
         } else { isDummie = false; }
         isItem = false;
         if (!isPlayer && !isDrone && !isDummie) {
+            if (data::selectedRadio == 0) { reset(); return; }
             //uint64_t signifierNamePtr = mem::Read<uint64_t>(base + 0x0478, "Player signifierNamePtr"); //[RecvTable.DT_PropSurvival]->m_iSignifierName=0x0478
             //mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
             //size_t found = static_cast<std::string>(signifierName).find("prop_survival");
@@ -85,6 +86,12 @@ struct Player {
                 if (itemId == stoi(data::itemsMediumScope[0][1]) || itemId == stoi(data::itemsMediumScope[1][1])) isItem = true;
             if (data::items[data::selectedRadio][0] == "LONG_SCOPE")
                 if (itemId == stoi(data::itemsLongScope[0][1]) || itemId == stoi(data::itemsLongScope[1][1]) || itemId == stoi(data::itemsLongScope[2][1])) isItem = true;
+            if (data::items[data::selectedRadio][0] == "EPIC_GEAR")
+                for (int arraySize = sizeof(data::itemsEpicGear) / sizeof(data::itemsEpicGear[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsEpicGear[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "LEGENDARY_GEAR")
+                for (int arraySize = sizeof(data::itemsLegendaryGear) / sizeof(data::itemsLegendaryGear[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsLegendaryGear[i][1])) { isItem = true; break; }
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
                 isVisible = false;
