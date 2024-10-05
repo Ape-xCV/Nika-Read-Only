@@ -21,7 +21,7 @@ Other* other = new Other(configLoader, myDisplay, map, localPlayer, players);
 int readError = 1000;
 int counter = 1;
 bool leftLock = false;
-bool rightLock = true;
+bool rightLock = configLoader->AIMBOT_ACTIVATED_BY_ADS;
 bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
 int boneId = 2;
 int processingTime;
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
             players->clear();
             if (counter % 99 == 0) {
                 playersCache->clear();
-                if (!rightLock || data::selectedRadio == 69)
+                if (data::selectedRadio == 69)
                     for (int i = 0; i < humanPlayers->size(); i++) {
                         Player* p = humanPlayers->at(i);
                         p->readFromMemory(configLoader, map, localPlayer, counter);
@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 
             // Run features
             gameCamera->update();
-            aimBot->update(leftLock, autoFire, boneId, totalSpectators);
+            aimBot->update(leftLock, rightLock, autoFire, boneId, totalSpectators);
             other->superGlide(averageFps);
 
             if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
