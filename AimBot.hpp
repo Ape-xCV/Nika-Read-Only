@@ -265,8 +265,8 @@ struct AimBot {
         gameCamera->worldToScreen(targetBone3DCache, targetBoneW2S);
         int weapon = lp->weaponId;
         if (weapon != WEAPON_SENTINEL &&
-            weapon != WEAPON_BOCEK &&
-            weapon != WEAPON_CHARGE_RIFLE &&
+            //weapon != WEAPON_BOCEK &&
+            //weapon != WEAPON_CHARGE_RIFLE &&
             weapon != WEAPON_LONGBOW &&
             weapon != WEAPON_G7 &&
             weapon != WEAPON_HEMLOCK &&
@@ -280,7 +280,7 @@ struct AimBot {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_NEMESIS &&
             weapon != WEAPON_MELEE &&
-            weapon != WEAPON_THROWING_KNIFE &&
+            //weapon != WEAPON_THROWING_KNIFE &&
             autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY &&
             abs(targetBoneW2S.x - screenSize.x/2) < width &&
             abs(targetBoneW2S.y - screenSize.y/2) < width) {
@@ -296,7 +296,8 @@ struct AimBot {
                 weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030 ||
-                weapon == WEAPON_NEMESIS)
+                weapon == WEAPON_NEMESIS ||
+		weapon == WEAPON_MELEE)
                 if (autoFire && keymap::AIMBOT_ACTIVATION_KEY &&
                     abs(targetBoneW2S.x - screenSize.x/2) < width &&
                     abs(targetBoneW2S.y - screenSize.y/2) < width) {
