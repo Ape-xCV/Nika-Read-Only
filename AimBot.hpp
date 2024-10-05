@@ -26,7 +26,7 @@ struct AimBot {
     bool active(bool rightLock) {
         bool isAimbotOn = cl->FEATURE_AIMBOT_ON;
         bool isCombatReady = lp->isCombatReady();
-        bool activatedByAds = rightLock && lp->inZoom;
+        bool activatedByAds = cl->AIMBOT_ACTIVATED_BY_ADS && rightLock && lp->inZoom;
         bool activatedByKey = keymap::AIMBOT_ACTIVATION_KEY;
         bool active = isAimbotOn && isCombatReady && (activatedByAds || activatedByKey);
         return active;
