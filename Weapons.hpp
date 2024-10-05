@@ -35,7 +35,7 @@ constexpr int WEAPON_THROWING_KNIFE = 178;
 namespace data {
     int selectedRadio = 0;
     const std::string items[][2] = {
-        { "DRONE / DUMMIE",  "-1" },
+        { "DRONE_DUMMIE",    "-1" },
         { "G7 SCOUT",        "39" },
         { "ALTERNATOR",      "44" },
         { "R-99",            "49" },
@@ -103,7 +103,8 @@ namespace data {
         { "PINK_HELMET",    "201" },
         { "PINK_BACKPACK",  "225" },
         { "GOLD_HELMET",    "202" },
-        { "GOLD_BACKPACK",  "226" }
+        { "GOLD_BACKPACK",  "226" },
+        { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsShortScope[][2] = {
         { "2X_HCOG",        "232" },
