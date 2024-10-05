@@ -181,7 +181,9 @@ struct Sense {
                                 if (p->isDummie)
                                     txtName = "Dummie";
                                 else
-                                    txtName = data::items[data::selectedRadio][0].c_str();
+                                    for (int arraySize = sizeof(data::items) / sizeof(data::items[0]), i = 0; i < arraySize; i++)
+                                        if (p->itemId == stoi(data::items[i][1])) { txtName = data::items[i][0].c_str(); break; }
+                                    //txtName = data::items[data::selectedRadio][0].c_str();
                         char nameText[256];
                         strncpy(nameText, txtName, sizeof(nameText));
                         drawText(canvas, drawPosition, nameText, enemyBoxColor);
