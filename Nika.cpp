@@ -21,7 +21,7 @@ Other* other = new Other(configLoader, myDisplay, map, localPlayer, players);
 int readError = 1000;
 int counter = 1;
 bool leftLock = false;
-bool rightLock = configLoader->AIMBOT_ACTIVATED_BY_ADS;
+bool rightLock = false;
 bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
 int boneId = 2;
 int processingTime;
