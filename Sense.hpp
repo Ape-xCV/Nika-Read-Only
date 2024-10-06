@@ -335,7 +335,10 @@ struct Sense {
 
                 ImVec2 center(single.x, single.y);
                 int radius = 5;
-                canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
+                if (p->isItem)
+                    canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0, 0.99, 0.99, 0.99)));
+                else
+                    canvas->AddCircleFilled(center, radius, ImColor(ImVec4(0.99, 0, 0.99, 0.99)));
                 if (p->isVisible)
                     canvas->AddCircle(center, radius + 2, ImColor(ImVec4(0.99, 0.99, 0, 0.99)));
 
