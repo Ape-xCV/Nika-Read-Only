@@ -105,7 +105,7 @@ struct Player {
                 for (int arraySize = sizeof(data::itemsOptic) / sizeof(data::itemsOptic[0]), i = 0; i < arraySize; i++)
                     if (itemId == stoi(data::itemsOptic[i][1])) { isItem = true; break; }
             if (data::items[data::selectedRadio][0] == "SURVIVAL")
-                if (itemId == stoi(data::items[42][1]) || itemId == stoi(data::items[43][1]) || itemId == stoi(data::items[44][1])) isItem = true;
+                if (itemId == stoi(data::items[47][1]) || itemId == stoi(data::items[48][1]) || itemId == stoi(data::items[49][1])) isItem = true;
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
                 isVisible = false;
