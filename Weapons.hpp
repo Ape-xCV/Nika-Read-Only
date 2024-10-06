@@ -107,6 +107,7 @@ namespace data {
         { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsEpicGear[][2] = {
+        { "SHIELD_BATTERY", "197" },
         { "BARREL_STBLZR",  "243" },
         { "LASER_SIGHT",    "247" },
         { "STNDRD_STOCK",   "270" },
@@ -116,7 +117,6 @@ namespace data {
         { "P_SHOTGUN_BOLT", "266" },
         { "P_HEAVY_MAG",    "254" },
         { "P_SNIPER_MAG",   "262" },
-        { "SHIELD_BATTERY", "197" },
         { "BLUE_BACKPACK",  "224" },
         { "PINK_BACKPACK",  "225" }
     };
