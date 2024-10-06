@@ -287,7 +287,8 @@ struct AimBot {
             myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = true;
         } else {
-            if (weapon == WEAPON_G7 ||
+            if (myDisplay->isLeftMouseButtonDown() && (weapon == WEAPON_SENTINEL || weapon == WEAPON_LONGBOW || weapon == WEAPON_KRABER || weapon == WEAPON_TRIPLE_TAKE) ||
+		weapon == WEAPON_G7 ||
                 weapon == WEAPON_HEMLOCK ||
                 weapon == WEAPON_MASTIFF ||
                 weapon == WEAPON_PROWLER ||
