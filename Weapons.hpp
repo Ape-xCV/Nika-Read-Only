@@ -80,7 +80,7 @@ namespace data {
         { "HEAT_SHIELD",    "296" },
         { "MOBILE_RESPAWN", "297" },
         { "EVAC_TOWER",     "300" },
-        { "ULTIMATE_ACCEL", "193" },
+        { "SHIELD_BATTERY", "197" },
         { "BARREL_STBLZR",  "243" },
         { "LASER_SIGHT",    "247" },
         { "STNDRD_STOCK",   "270" },
@@ -98,22 +98,13 @@ namespace data {
         { "EPIC_GEAR",       "-1" },
         { "LEGENDARY_GEAR",  "-1" },
         { "OPTIC",           "-1" },
-        { "SHIELD_BATTERY", "197" },
+        { "SURVIVAL",        "-1" },
         { "BLUE_BACKPACK",  "224" },
         { "PINK_BACKPACK",  "225" },
         { "GOLD_HELMET",    "202" },
         { "GOLD_KNOCKDOWN", "222" },
         { "GOLD_BACKPACK",  "226" },
         { "PLAYER_ONLY",     "-1" }
-    };
-    const std::string itemsOptic[][2] = {
-        { "2X_HCOG",        "232" },
-        { "1X-2X_HOLO",     "234" },
-        { "3X_HCOG",        "236" },
-        { "2X-4X_AOG",      "237" },
-        { "6X_SNIPER",      "238" },
-        { "4X-8X_SNIPER",   "239" },
-        { "4X-10X_SNIPER",  "240" }
     };
     const std::string itemsEpicGear[][2] = {
         { "ULTIMATE_ACCEL", "193" },
@@ -139,5 +130,14 @@ namespace data {
         { "GOLD_HELMET",    "202" },
         { "GOLD_KNOCKDOWN", "222" },
         { "GOLD_BACKPACK",  "226" }
+    };
+    const std::string itemsOptic[][2] = {
+        { "2X_HCOG",        "232" },
+        { "1X-2X_HOLO",     "234" },
+        { "3X_HCOG",        "236" },
+        { "2X-4X_AOG",      "237" },
+        { "6X_SNIPER",      "238" },
+        { "4X-8X_SNIPER",   "239" },
+        { "4X-10X_SNIPER",  "240" }
     };
 };
