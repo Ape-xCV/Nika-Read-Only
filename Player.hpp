@@ -10,7 +10,7 @@ struct Player {
     bool isDrone;
     bool isDummie;
     bool isItem;
-    //char signifierName[64] = {0};
+    char signifierName[16] = {0};
     int itemId;
     Vector3D localOrigin;
     Vector3D localOriginDiff;
@@ -64,7 +64,7 @@ struct Player {
     void readFromMemory(ConfigLoader* cl, Level* map, LocalPlayer* lp, int counter) {
         base = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((index + 1) << 5), "Player base");
         if (base == 0) return;
-        name = mem::ReadString(base + OFF_NAME, 64, "Player name");
+        name = mem::ReadString(base + OFF_NAME, 32, "Player name");
         isPlayer = name == "player";
         isDrone = name == "drone_no_minimap_object";
         if (map->isTrainingArea) {
@@ -74,10 +74,10 @@ struct Player {
         isItem = false;
         if (!isPlayer && !isDrone && !isDummie) {
             if (data::selectedRadio == 0) { reset(); return; }
-            //uint64_t signifierNamePtr = mem::Read<uint64_t>(base + 0x0478, "Player signifierNamePtr"); //[RecvTable.DT_PropSurvival]->m_iSignifierName=0x0478
-            //mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
-            //size_t found = static_cast<std::string>(signifierName).find("prop_survival");
-            //if (found == std::string::npos) { reset(); return; }
+            uint64_t signifierNamePtr = mem::Read<uint64_t>(base + OFF_SIGNIFIER_NAME, "Player signifierNamePtr");
+            mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
+            size_t found = static_cast<std::string>(signifierName).find("prop_survival");
+            if (found == std::string::npos) { reset(); return; }
             itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (data::items[data::selectedRadio][0] == "OPTIC")
