@@ -78,8 +78,7 @@ struct Player {
             mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
             size_t found = static_cast<std::string>(signifierName).find("prop_survival");
             if (found == std::string::npos) { reset(); return; }
-            itemId = mem::Read<uint16_t>(base + OFF_ITEM_HANDLE, "Player itemId");
-            //itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
+            itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (data::items[data::selectedRadio][0] == "OPTIC")
                 for (int arraySize = sizeof(data::itemsOptic) / sizeof(data::itemsOptic[0]), i = 0; i < arraySize; i++)
