@@ -113,8 +113,8 @@ namespace mem {
     }
 
     int ReadInt(long address, std::string whatAreYouReading) {
-        int buffer;
-        bool success = Read(address, &buffer, sizeof(int));
+        uint16_t buffer;
+        bool success = Read(address, &buffer, sizeof(uint16_t));
         //if (!success) {
         //    m_pid = 0;
         //    throw std::invalid_argument("Failed to read memory string [" + whatAreYouReading + "] at address : " + convertPointerToHexString(address));
