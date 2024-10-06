@@ -75,10 +75,12 @@ struct Player {
         if (!isPlayer && !isDrone && !isDummie) {
             if (data::selectedRadio == 0) { reset(); return; }
             uint64_t signifierNamePtr = mem::Read<uint64_t>(base + OFF_SIGNIFIER_NAME, "Player signifierNamePtr");
+            if (!mem::IsValidPointer(signifierNamePtr)) { reset(); return; }
             mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
             size_t found = static_cast<std::string>(signifierName).find("prop_survival");
             if (found == std::string::npos) { reset(); return; }
-            itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
+            itemId = mem::Read<uint16_t>(base + OFF_ITEM_HANDLE, "Player itemId");
+            //itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
             if (data::items[data::selectedRadio][0] == "LIGHT_WEAPON")
                 for (int arraySize = sizeof(data::itemsLightWeapon) / sizeof(data::itemsLightWeapon[0]), i = 0; i < arraySize; i++)
