@@ -80,15 +80,17 @@ struct Player {
             if (found == std::string::npos) { reset(); return; }
             itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
-            if (data::items[data::selectedRadio][0] == "OPTIC")
-                for (int arraySize = sizeof(data::itemsOptic) / sizeof(data::itemsOptic[0]), i = 0; i < arraySize; i++)
-                    if (itemId == stoi(data::itemsOptic[i][1])) { isItem = true; break; }
             if (data::items[data::selectedRadio][0] == "EPIC_GEAR")
                 for (int arraySize = sizeof(data::itemsEpicGear) / sizeof(data::itemsEpicGear[0]), i = 0; i < arraySize; i++)
                     if (itemId == stoi(data::itemsEpicGear[i][1])) { isItem = true; break; }
             if (data::items[data::selectedRadio][0] == "LEGENDARY_GEAR")
                 for (int arraySize = sizeof(data::itemsLegendaryGear) / sizeof(data::itemsLegendaryGear[0]), i = 0; i < arraySize; i++)
                     if (itemId == stoi(data::itemsLegendaryGear[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "OPTIC")
+                for (int arraySize = sizeof(data::itemsOptic) / sizeof(data::itemsOptic[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsOptic[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "SURVIVAL")
+                if (itemId == stoi(data::items[42][1]) || itemId == stoi(data::items[43][1]) || itemId == stoi(data::items[44][1])) isItem = true;
             if (isItem) {
                 localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
                 isVisible = false;
