@@ -95,7 +95,7 @@ namespace data {
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
-        { "WEAPON_SCOPE",    "-1" },
+        { "OPTIC",           "-1" },
         { "EPIC_GEAR",       "-1" },
         { "LEGENDARY_GEAR",  "-1" },
         { "SHIELD_BATTERY", "197" },
@@ -106,7 +106,7 @@ namespace data {
         { "GOLD_BACKPACK",  "226" },
         { "PLAYER_ONLY",     "-1" }
     };
-    const std::string itemsScope[][2] = {
+    const std::string itemsOptic[][2] = {
         { "2X_HCOG",        "232" },
         { "1X-2X_HOLO",     "234" },
         { "3X_HCOG",        "236" },
