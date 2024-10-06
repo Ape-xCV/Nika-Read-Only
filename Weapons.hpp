@@ -106,20 +106,11 @@ namespace data {
         { "GOLD_BACKPACK",  "226" },
         { "PLAYER_ONLY",     "-1" }
     };
-    const std::string itemsShortScope[][2] = {
+    const std::string itemsScope[][2] = {
         { "2X_HCOG",        "232" },
         { "1X-2X_HOLO",     "234" },
         { "3X_HCOG",        "236" },
         { "2X-4X_AOG",      "237" },
-        { "6X_SNIPER",      "238" },
-        { "4X-8X_SNIPER",   "239" },
-        { "4X-10X_SNIPER",  "240" }
-    };
-    const std::string itemsMediumScope[][2] = {
-        { "3X_HCOG",        "236" },
-        { "2X-4X_AOG",      "237" }
-    };
-    const std::string itemsLongScope[][2] = {
         { "6X_SNIPER",      "238" },
         { "4X-8X_SNIPER",   "239" },
         { "4X-10X_SNIPER",  "240" }
