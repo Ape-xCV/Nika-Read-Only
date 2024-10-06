@@ -107,7 +107,6 @@ namespace data {
         { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsEpicGear[][2] = {
-        { "ULTIMATE_ACCEL", "193" },
         { "BARREL_STBLZR",  "243" },
         { "LASER_SIGHT",    "247" },
         { "STNDRD_STOCK",   "270" },
