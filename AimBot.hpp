@@ -200,7 +200,7 @@ struct AimBot {
         else
             if (!currentTarget->isDrone && (!leftLock || cl->AIMBOT_SPECTATORS_WEAKEN && totalSpectators > 0)) {
                 totalSmooth *= (cl->AIMBOT_WEAKEN + 1) / 2;
-                bulletSpeed /= cl->AIMBOT_WEAKEN;
+                bulletSpeed /= (cl->AIMBOT_WEAKEN + 1) / 2;
             }
 
         Vector2D aimbotDelta = desiredAnglesIncrement.Multiply(cl->AIMBOT_SPEED).Divide(totalSmooth);
