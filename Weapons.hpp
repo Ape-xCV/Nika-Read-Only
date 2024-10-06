@@ -36,6 +36,7 @@ namespace data {
     int selectedRadio = 0;
     const std::string items[][2] = {
         { "DRONE_DUMMIE",    "-1" },
+        { "LIGHT_WEAPON",    "-1" },
         { "G7_SCOUT",        "39" },
         { "ALTERNATOR",      "44" },
         { "R-99",            "49" },
@@ -43,22 +44,26 @@ namespace data {
         { "R-301",           "80" },
         { "P2020",          "113" },
         { "RE-45",          "122" },
+        { "ENERGY_WEAPON",   "-1" },
         { "L-STAR",           "7" },
         { "HAVOC",           "13" },
         { "DEVOTION",        "19" },
         { "TRIPLE_TAKE",     "24" },
         { "VOLT",            "60" },
         { "NEMESIS",        "139" },
+        { "SHOTGUN_WEAPON",  "-1" },
         { "MASTIFF",          "2" },
         { "EVA-8",           "85" },
         { "PEACEKEEPER",     "90" },
         { "MOZAMBIQUE",      "95" },
+        { "HEAVY_WEAPON",    "-1" },
         { "FLATLINE",        "29" },
         { "HEMLOK",          "34" },
         { "PROWLER",         "55" },
         { "30-30",          "133" },
         { "RAMPAGE",        "150" },
         { "C.A.R.",         "155" },
+        { "SNIPER_WEAPON",   "-1" },
         { "KRABER",           "1" },
         { "LONGBOW",         "65" },
         { "CHARGE_RIFLE",    "70" },
@@ -105,6 +110,45 @@ namespace data {
         { "GOLD_KNOCKDOWN", "222" },
         { "GOLD_BACKPACK",  "226" },
         { "PLAYER_ONLY",     "-1" }
+    };
+    const std::string itemsLightWeapon[][2] = {
+        { "G7_SCOUT",        "39" },
+        { "ALTERNATOR",      "44" },
+        { "R-99",            "49" },
+        { "SPITFIRE",        "75" },
+        { "R-301",           "80" },
+        { "P2020",          "113" },
+        { "RE-45",          "122" }
+    };
+    const std::string itemsEnergyWeapon[][2] = {
+        { "L-STAR",           "7" },
+        { "HAVOC",           "13" },
+        { "DEVOTION",        "19" },
+        { "TRIPLE_TAKE",     "24" },
+        { "VOLT",            "60" },
+        { "NEMESIS",        "139" }
+    };
+    const std::string itemsShotgunWeapon[][2] = {
+        { "MASTIFF",          "2" },
+        { "EVA-8",           "85" },
+        { "PEACEKEEPER",     "90" },
+        { "MOZAMBIQUE",      "95" }
+    };
+    const std::string itemsHeavyWeapon[][2] = {
+        { "FLATLINE",        "29" },
+        { "HEMLOK",          "34" },
+        { "PROWLER",         "55" },
+        { "30-30",          "133" },
+        { "RAMPAGE",        "150" },
+        { "C.A.R.",         "155" }
+    };
+    const std::string itemsSniperWeapon[][2] = {
+        { "KRABER",           "1" },
+        { "LONGBOW",         "65" },
+        { "CHARGE_RIFLE",    "70" },
+        { "WINGMAN",        "108" },
+        { "SENTINEL",       "127" },
+        { "BOCEK",          "132" }
     };
     const std::string itemsEpicGear[][2] = {
         { "SHIELD_BATTERY", "197" },

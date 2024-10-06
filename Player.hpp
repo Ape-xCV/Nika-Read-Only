@@ -80,6 +80,21 @@ struct Player {
             if (found == std::string::npos) { reset(); return; }
             itemId = mem::ReadInt(base + OFF_ITEM_HANDLE, "Player itemId");
             isItem = itemId != -1 && itemId == stoi(data::items[data::selectedRadio][1]);
+            if (data::items[data::selectedRadio][0] == "LIGHT_WEAPON")
+                for (int arraySize = sizeof(data::itemsLightWeapon) / sizeof(data::itemsLightWeapon[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsLightWeapon[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "ENERGY_WEAPON")
+                for (int arraySize = sizeof(data::itemsEnergyWeapon) / sizeof(data::itemsEnergyWeapon[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsEnergyWeapon[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "SHOTGUN_WEAPON")
+                for (int arraySize = sizeof(data::itemsShotgunWeapon) / sizeof(data::itemsShotgunWeapon[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsShotgunWeapon[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "HEAVY_WEAPON")
+                for (int arraySize = sizeof(data::itemsHeavyWeapon) / sizeof(data::itemsHeavyWeapon[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsHeavyWeapon[i][1])) { isItem = true; break; }
+            if (data::items[data::selectedRadio][0] == "SNIPER_WEAPON")
+                for (int arraySize = sizeof(data::itemsSniperWeapon) / sizeof(data::itemsSniperWeapon[0]), i = 0; i < arraySize; i++)
+                    if (itemId == stoi(data::itemsSniperWeapon[i][1])) { isItem = true; break; }
             if (data::items[data::selectedRadio][0] == "EPIC_GEAR")
                 for (int arraySize = sizeof(data::itemsEpicGear) / sizeof(data::itemsEpicGear[0]), i = 0; i < arraySize; i++)
                     if (itemId == stoi(data::itemsEpicGear[i][1])) { isItem = true; break; }
