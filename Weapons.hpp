@@ -36,7 +36,7 @@ namespace data {
     int selectedRadio = 0;
     const std::string items[][2] = {
         { "DRONE_DUMMIE",    "-1" },
-        { "G7 SCOUT",        "39" },
+        { "G7_SCOUT",        "39" },
         { "ALTERNATOR",      "44" },
         { "R-99",            "49" },
         { "SPITFIRE",        "75" },
@@ -80,11 +80,6 @@ namespace data {
         { "HEAT_SHIELD",    "296" },
         { "MOBILE_RESPAWN", "297" },
         { "EVAC_TOWER",     "300" },
-        { "SHORT_SCOPE",     "-1" },
-        { "MEDIUM_SCOPE",    "-1" },
-        { "LONG_SCOPE",      "-1" },
-        { "EPIC_GEAR",       "-1" },
-        { "LEGENDARY_GEAR",  "-1" },
         { "ULTIMATE_ACCEL", "193" },
         { "BARREL_STBLZR",  "243" },
         { "LASER_SIGHT",    "247" },
@@ -100,15 +95,25 @@ namespace data {
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
+        { "WEAPON_SCOPE",    "-1" },
+        { "EPIC_GEAR",       "-1" },
+        { "LEGENDARY_GEAR",  "-1" },
+        { "SHIELD_BATTERY", "197" },
+        { "BLUE_BACKPACK",  "224" },
         { "PINK_BACKPACK",  "225" },
         { "GOLD_HELMET",    "202" },
-        { "GOLD_BACKPACK",  "226" },
         { "GOLD_KNOCKDOWN", "222" },
+        { "GOLD_BACKPACK",  "226" },
         { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsShortScope[][2] = {
         { "2X_HCOG",        "232" },
-        { "1X-2X_HOLO",     "234" }
+        { "1X-2X_HOLO",     "234" },
+        { "3X_HCOG",        "236" },
+        { "2X-4X_AOG",      "237" },
+        { "6X_SNIPER",      "238" },
+        { "4X-8X_SNIPER",   "239" },
+        { "4X-10X_SNIPER",  "240" }
     };
     const std::string itemsMediumScope[][2] = {
         { "3X_HCOG",        "236" },
@@ -130,6 +135,8 @@ namespace data {
         { "P_SHOTGUN_BOLT", "266" },
         { "P_HEAVY_MAG",    "254" },
         { "P_SNIPER_MAG",   "262" },
+        { "SHIELD_BATTERY", "197" },
+        { "BLUE_BACKPACK",  "224" },
         { "PINK_BACKPACK",  "225" }
     };
     const std::string itemsLegendaryGear[][2] = {
@@ -139,7 +146,7 @@ namespace data {
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
         { "GOLD_HELMET",    "202" },
-        { "GOLD_BACKPACK",  "226" },
-        { "GOLD_KNOCKDOWN", "222" }
+        { "GOLD_KNOCKDOWN", "222" },
+        { "GOLD_BACKPACK",  "226" }
     };
 };
