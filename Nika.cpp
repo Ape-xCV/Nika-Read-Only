@@ -178,20 +178,6 @@ int main(int argc, char* argv[]) {
                 keymap::AIMBOT_ACTIVATION_KEY = true;
             else
                 keymap::AIMBOT_ACTIVATION_KEY = false;
-            int weapon = localPlayer->weaponId;
-            if (configLoader->AIMBOT_ACTIVATED_BY_MOUSE && myDisplay->isLeftMouseButtonDown() && (
-                weapon == WEAPON_SENTINEL ||
-                weapon == WEAPON_LONGBOW ||
-                weapon == WEAPON_KRABER ||
-                weapon == WEAPON_TRIPLE_TAKE)) {
-                std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-                if (timeNow > keymap::timeLastShot + std::chrono::milliseconds(125)) {
-                    myDisplay->kbPress(configLoader->AIMBOT_FIRING_KEY);
-                    myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
-                    keymap::AIMBOT_FIRING_KEY = false;
-                    keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-                }
-            }
 
             // Read players
             players->clear();
