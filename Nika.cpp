@@ -138,8 +138,8 @@ int main(int argc, char* argv[]) {
                 }
                 if (myDisplay->isKeyDown("XK_Page_Down")) {
                     data::selectedRadio++;
-                    if (data::selectedRadio < 45) data::selectedRadio = 45;
-                    if (data::selectedRadio > 49) data::selectedRadio = 0;
+                    if (data::selectedRadio < 60) data::selectedRadio = 60;
+                    if (data::selectedRadio > 62) data::selectedRadio = 0;
                     util::sleep(250);
                 }
                 if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
