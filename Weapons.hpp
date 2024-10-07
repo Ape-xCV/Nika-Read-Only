@@ -100,15 +100,20 @@ namespace data {
         { "G_SHOTGUN_BOLT", "267" },
         { "G_HEAVY_MAG",    "255" },
         { "G_SNIPER_MAG",   "263" },
-        { "EPIC_GEAR",       "-1" },
-        { "LEGENDARY_GEAR",  "-1" },
-        { "OPTIC",           "-1" },
-        { "SURVIVAL",        "-1" },
         { "BLUE_BACKPACK",  "224" },
         { "PINK_BACKPACK",  "225" },
         { "GOLD_HELMET",    "202" },
         { "GOLD_KNOCKDOWN", "222" },
         { "GOLD_BACKPACK",  "226" },
+        { "MED_KIT",        "195" },
+        { "PHOENIX_KIT",    "194" },
+        { "HAMMERPOINT",    "280" },
+        { "BOOSTED_LOADER", "288" },
+        { "GUN_SHIELD",     "289" },
+        { "EPIC_GEAR",       "-1" },
+        { "LEGENDARY_GEAR",  "-1" },
+        { "OPTIC",           "-1" },
+        { "SURVIVAL",        "-1" },
         { "PLAYER_ONLY",     "-1" }
     };
     const std::string itemsLightWeapon[][2] = {
@@ -172,7 +177,12 @@ namespace data {
         { "G_SNIPER_MAG",   "263" },
         { "GOLD_HELMET",    "202" },
         { "GOLD_KNOCKDOWN", "222" },
-        { "GOLD_BACKPACK",  "226" }
+        { "GOLD_BACKPACK",  "226" },
+        { "MED_KIT",        "195" },
+        { "PHOENIX_KIT",    "194" },
+        { "HAMMERPOINT",    "280" },
+        { "BOOSTED_LOADER", "288" },
+        { "GUN_SHIELD",     "289" }
     };
     const std::string itemsOptic[][2] = {
         { "2X_HCOG",        "232" },
