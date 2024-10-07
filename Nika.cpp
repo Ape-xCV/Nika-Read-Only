@@ -133,8 +133,8 @@ int main(int argc, char* argv[]) {
                 if (myDisplay->isKeyDown("XK_Page_Up")) { data::selectedRadio++; if (data::selectedRadio < 28 || data::selectedRadio > 34) data::selectedRadio = 28; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Page_Down")) {
                     data::selectedRadio++;
-                    if (data::selectedRadio < 65) data::selectedRadio = 65;
-                    if (data::selectedRadio > 68) data::selectedRadio = 0;
+                    if (data::selectedRadio < 75) data::selectedRadio = 75;
+                    if (data::selectedRadio > 78) data::selectedRadio = 0;
                     util::sleep(250);
                 }
                 if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
             players->clear();
             if (counter % 99 == 0) {
                 playersCache->clear();
-                if (data::selectedRadio == 69)
+                if (data::selectedRadio == 79)
                     for (int i = 0; i < humanPlayers->size(); i++) {
                         Player* p = humanPlayers->at(i);
                         p->readFromMemory(configLoader, map, localPlayer, counter);
