@@ -4,12 +4,12 @@
 constexpr char OFF_GAME_VERSION[] = "v3.0.82.42"; //[Miscellaneous]->GameVersion
 constexpr long OFF_ENTITY_LIST = 0x1f62278; //[Miscellaneous]->cl_entitylist
 constexpr long OFF_LOCAL_ENTITY_HANDLE = 0x1767248; //[Miscellaneous]->LocalEntityHandle
-constexpr long OFF_LOCAL_PLAYER = 0x246d860; //[Miscellaneous]->LocalPlayer
+constexpr long OFF_LOCAL_PLAYER = 0x24354f8; //[Miscellaneous]->LocalPlayer
 constexpr long OFF_GLOBAL_VARS = 0x1836330; //[Miscellaneous]->GlobalVars
 constexpr long OFF_NAME_LIST = 0xd427360; //[Miscellaneous]->NameList
 constexpr long OFF_VIEW_RENDER = 0x76e9ab8; //[Miscellaneous]->ViewRender
 constexpr long OFF_VIEW_MATRIX = 0x11a350; //[Miscellaneous]->ViewMatrix
-constexpr long OFF_LEVEL_NAME = 0x18356c4; //[Miscellaneous]->LevelName
+constexpr long OFF_LEVEL_NAME = 0x1836834; //[Miscellaneous]->LevelName
 constexpr long OFF_PROJECTILE_SPEED = 0x04ec + 0x19d8; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base
 constexpr long OFF_PROJECTILE_SCALE = OFF_PROJECTILE_SPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base
 constexpr long OFF_CAMERA_ORIGIN = 0x1ee0; //[Miscellaneous]->CPlayer!camera_origin
