@@ -67,10 +67,10 @@ struct Player {
         name = mem::ReadString(base + OFF_NAME, 32, "Player name");
         isPlayer = name == "player";
         isDrone = name == "drone_no_minimap_object";
-        if (map->isTrainingArea) {
+        //if (map->isTrainingArea) {
             teamNumber = mem::Read<int>(base + OFF_TEAM_NUMBER, "Player teamNumber");
             isDummie = teamNumber == 97;
-        } else { isDummie = false; }
+        //} else { isDummie = false; }
         isItem = false;
         if (!isPlayer && !isDrone && !isDummie) {
             if (data::selectedRadio == 0) { reset(); return; }
