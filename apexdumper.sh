@@ -11,7 +11,7 @@ GlobalVars=$(sed -nr ":l /^GlobalVars[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" .
 NameList=$(sed -nr ":l /^NameList[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 ViewRender=$(sed -nr ":l /^ViewRender[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 ViewMatrix=$(sed -nr ":l /^ViewMatrix[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
-LevelName=$(sed -nr ":l /^LevelName[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
+ClientState=$(sed -nr ":l /^ClientState[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 projectile_launch_speed=$(sed -nr ":l /^projectile_launch_speed[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 base=$(sed -nr ":l /^base[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
 camera_origin=$(sed -nr ":l /^CPlayer!camera_origin[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;" ./$target.txt)
@@ -65,7 +65,6 @@ GlobalVars=$(parse_hpp GlobalVars "constexpr long OFF_GLOBAL_VARS")
 NameList=$(parse_hpp NameList "constexpr long OFF_NAME_LIST")
 ViewRender=$(parse_hpp ViewRender "constexpr long OFF_VIEW_RENDER")
 ViewMatrix=$(parse_hpp ViewMatrix "constexpr long OFF_VIEW_MATRIX")
-LevelName=$(parse_hpp LevelName "constexpr long OFF_LEVEL_NAME")
 camera_origin=$(parse_hpp camera_origin "constexpr long OFF_CAMERA_ORIGIN")
 m_pStudioHdr=$(parse_hpp m_pStudioHdr "constexpr long OFF_STUDIO_HDR")
 m_latestPrimaryWeapons=$(parse_hpp m_latestPrimaryWeapons "constexpr long OFF_WEAPON_HANDLE")
@@ -89,7 +88,6 @@ m_vecAbsOrigin=$(parse_hpp m_vecAbsOrigin "constexpr long OFF_LOCAL_ORIGIN")
 m_bZooming=$(parse_hpp m_bZooming "constexpr long OFF_ZOOMING")
 timeBase=$(parse_hpp timeBase "constexpr long OFF_TIME_BASE")
 mp_gamemode=$(parse_hpp mp_gamemode "constexpr long OFF_GAME_MODE")
-gamepad_aim_assist_melee=$(parse_hpp gamepad_aim_assist_melee "constexpr long OFF_OBSERVER_LIST")
 m_gameTimescale=$(parse_hpp m_gameTimescale "constexpr long OFF_OBSERVER_ARRAY")
 
 cp Offsets.hpp Offsets.tmp
@@ -104,7 +102,13 @@ echo "constexpr long OFF_GLOBAL_VARS = ${GlobalVars}; //[Miscellaneous]->GlobalV
 echo "constexpr long OFF_NAME_LIST = ${NameList}; //[Miscellaneous]->NameList" >> Offsets.hpp
 echo "constexpr long OFF_VIEW_RENDER = ${ViewRender}; //[Miscellaneous]->ViewRender" >> Offsets.hpp
 echo "constexpr long OFF_VIEW_MATRIX = ${ViewMatrix}; //[Miscellaneous]->ViewMatrix" >> Offsets.hpp
-echo "constexpr long OFF_LEVEL_NAME = ${LevelName}; //[Miscellaneous]->LevelName" >> Offsets.hpp
+if [[ "$ClientState" == "" ]]; then
+  ClientState=$(sed -n -e "s/constexpr long OFF_LEVEL_NAME\s*=\s*//p" Offsets.tmp)
+  ClientState=${ClientState%%;*}
+  echo "constexpr long OFF_LEVEL_NAME = $ClientState; //[Miscellaneous]->ClientState + 0x01c4" >> Offsets.hpp
+else
+  echo "constexpr long OFF_LEVEL_NAME = ${ClientState%%[[:cntrl:]]} + 0x01c4; //[Miscellaneous]->ClientState + 0x01c4" >> Offsets.hpp
+fi
 if [[ "$projectile_launch_speed" == "" ]] || [[ "$base" == "" ]] || [[ ${base%%[[:cntrl:]]} == 0x0000 ]]; then
   m_flProjectileSpeed=$(sed -n -e "s/constexpr long OFF_PROJECTILE_SPEED\s*=\s*//p" Offsets.tmp)
   m_flProjectileSpeed=${m_flProjectileSpeed%%;*}
