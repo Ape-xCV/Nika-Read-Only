@@ -38,7 +38,7 @@
 
 ## Notes
 
-- Open the cheat before the game, or always terminate process with HOME.
+- Open the cheat before the game, or always terminate process with F9.
 
 ### 1. Environment set up in Linux
 
