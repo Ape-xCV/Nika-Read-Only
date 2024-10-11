@@ -6,17 +6,17 @@ struct Level {
     bool isLobby;
     bool isPlayable;
     bool isTrainingArea;
-    char gameMode[64] = {0};
+    char gameMode[16] = {0};
     std::unordered_map<std::string, bool> gameModes = {{"control", true}, {"freedm", true}};
     bool isMixtape;
 
     void readFromMemory() {
-        name = mem::ReadString(OFF_REGION + OFF_LEVEL_NAME, 64, "Level name");
+        name = mem::ReadString(OFF_REGION + OFF_LEVEL_NAME, 32, "Level name");
         isLobby = name == "mp_lobby";
         isPlayable = !name.empty() && name != "mp_lobby";
         isTrainingArea = name == "mp_rr_canyonlands_staging_mu1";
         uint64_t gameModePtr = mem::Read<uint64_t>(OFF_REGION + OFF_GAME_MODE + 0x50, "Level gameModePtr");
-        if (gameModePtr > 0) {
+        if (mem::IsValidPointer(gameModePtr)) {
             mem::Read(gameModePtr, &gameMode, sizeof(gameMode));
             isMixtape = gameModes[gameMode];
         }
