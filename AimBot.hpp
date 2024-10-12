@@ -274,7 +274,7 @@ struct AimBot {
             weapon != WEAPON_HEMLOCK &&
             weapon != WEAPON_KRABER &&
             weapon != WEAPON_MASTIFF &&
-            weapon != WEAPON_MOZAMBIQUE &&
+            //weapon != WEAPON_MOZAMBIQUE &&
             weapon != WEAPON_PROWLER &&
             weapon != WEAPON_PEACEKEEPER &&
             //weapon != WEAPON_P2020 &&

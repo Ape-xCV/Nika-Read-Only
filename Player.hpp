@@ -35,9 +35,8 @@ struct Player {
     bool isKnocked;
     int currentHealth;
     int currentShield;
-    int lastTimeAimedAt;
+    float lastTimeAimedAt;
     bool isAimedAt;
-    int lastTimeAimedAtPrev;
     float lastTimeVisible;
     bool isVisible;
     bool isLocal;
@@ -150,9 +149,8 @@ struct Player {
         currentHealth = mem::Read<int>(base + OFF_HEALTH, "Player currentHealth");
         currentShield = mem::Read<int>(base + OFF_SHIELD, "Player currentShield");
 
-        lastTimeAimedAt = mem::Read<int>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
-        isAimedAt = lastTimeAimedAtPrev < lastTimeAimedAt;
-        lastTimeAimedAtPrev = lastTimeAimedAt;
+        lastTimeAimedAt = mem::Read<float>(base + OFF_LAST_AIMEDAT_TIME, "Player lastTimeAimedAt");
+        isAimedAt = (lastTimeAimedAt + 0.2f) > lp->worldTime;
 
         lastTimeVisible = mem::Read<float>(base + OFF_LAST_VISIBLE_TIME, "Player lastTimeVisible");
         isVisible = (lastTimeVisible + 0.3f) > lp->worldTime || isDrone;
