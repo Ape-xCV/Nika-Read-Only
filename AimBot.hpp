@@ -269,13 +269,15 @@ struct AimBot {
             //weapon != WEAPON_BOCEK &&
             //weapon != WEAPON_CHARGE_RIFLE &&
             weapon != WEAPON_LONGBOW &&
+            //weapon != WEAPON_EVA8 &&
             weapon != WEAPON_G7 &&
             weapon != WEAPON_HEMLOCK &&
             weapon != WEAPON_KRABER &&
             weapon != WEAPON_MASTIFF &&
+            weapon != WEAPON_MOZAMBIQUE &&
             weapon != WEAPON_PROWLER &&
             weapon != WEAPON_PEACEKEEPER &&
-            weapon != WEAPON_P2020 &&
+            //weapon != WEAPON_P2020 &&
             weapon != WEAPON_TRIPLE_TAKE &&
             weapon != WEAPON_WINGMAN &&
             weapon != WEAPON_3030 &&
@@ -291,10 +293,8 @@ struct AimBot {
             if (myDisplay->isLeftMouseButtonDown() && (weapon == WEAPON_SENTINEL || weapon == WEAPON_LONGBOW || weapon == WEAPON_KRABER || weapon == WEAPON_TRIPLE_TAKE) ||
 		weapon == WEAPON_G7 ||
                 weapon == WEAPON_HEMLOCK ||
-                weapon == WEAPON_MASTIFF ||
                 weapon == WEAPON_PROWLER ||
-                weapon == WEAPON_PEACEKEEPER ||
-                weapon == WEAPON_P2020 ||
+                //weapon == WEAPON_P2020 ||
                 weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030 ||
