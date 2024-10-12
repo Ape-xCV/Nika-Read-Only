@@ -138,7 +138,7 @@ struct Player {
             viewAngles = mem::Read<Vector2D>(base + OFF_VIEW_ANGLES, "Player viewAngles");
             viewYaw = mem::Read<float>(base + OFF_YAW, "Player viewYaw");
             plyrDataTable = mem::Read<int>(base + OFF_NAME_INDEX, "Player plyrDataTable");
-            if (cl->FEATURE_SPECTATORS_ON && counter % 99 == 0) {
+            if (cl->FEATURE_SPECTATORS_ON && counter % 199 == 0) {
                 spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "Player spectators");
                 spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Player spctrIndex");
                 spctrBase = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Player spctrBase");
