@@ -244,12 +244,12 @@ int main(int argc, char* argv[]) {
 
             // Run features
             gameCamera->update();
-            aimBot->update(leftLock, rightLock, autoFire, boneId, totalSpectators);
+            aimBot->update(counter, leftLock, rightLock, autoFire, boneId, totalSpectators);
             other->superGlide(averageFps);
 
             if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
-            int goalSleepTime = 16.67; // 16.67ms=60Hz | 6.94ms=144Hz
+            int goalSleepTime = 6.94; // 16.67ms=60Hz | 6.94ms=144Hz
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
             util::sleep(timeLeftToSleep);
             if (counter % 100 == 0) {
