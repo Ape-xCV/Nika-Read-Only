@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
             // Read players
             std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
             players->clear();
-            if (counter % 99 == 0) {
+            if (counter % 199 == 0) {
                 playersCache->clear();
                 if (data::selectedRadio == 79)
                     for (int i = 0; i < humanPlayers->size(); i++) {
@@ -252,7 +252,7 @@ int main(int argc, char* argv[]) {
             int goalSleepTime = 6.94; // 16.67ms=60Hz | 6.94ms=144Hz
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
             util::sleep(timeLeftToSleep);
-            if (counter % 100 == 0) {
+            if (counter % 200 == 0) {
                 if (configLoader->SENSE_VERBOSE > 0) {
                     printf("%d %d %d ", leftLock, autoFire, rightLock);
                     if (boneId == 0) printf("HEAD\n");
