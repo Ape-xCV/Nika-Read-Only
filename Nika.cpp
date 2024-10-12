@@ -79,6 +79,21 @@ void renderUI() {
     ImGui::End();
 }
 
+void shootAtEnemy(Player* p, std::chrono::milliseconds timeNow) {
+    if (autoFire && p->isAimedAt && p->isEnemy && p->isCombatReady()
+        && timeNow > keymap::timeLastShot + std::chrono::milliseconds(125) && localPlayer->isCombatReady()
+        && util::inchesToMeters(p->distanceToLocalPlayer) < configLoader->TRIGGERBOT_HIPFIRE_RANGE) {
+        int weapon = localPlayer->weaponId;
+        if (weapon == WEAPON_EVA8 || weapon == WEAPON_MASTIFF || weapon == WEAPON_MOZAMBIQUE || weapon == WEAPON_PEACEKEEPER) {
+            //myDisplay->mouseClickLeft();
+            myDisplay->kbPress(configLoader->AIMBOT_FIRING_KEY);
+            myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
+            keymap::AIMBOT_FIRING_KEY = false;
+            keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+        }
+    }
+}
+
 int main(int argc, char* argv[]) {
     if (getuid()) { std::cout << "RUN AS ROOT!\n"; return -1; }
     printf("Offsets.hpp %s\n", OFF_GAME_VERSION);
@@ -175,6 +190,7 @@ int main(int argc, char* argv[]) {
                 keymap::AIMBOT_ACTIVATION_KEY = false;
 
             // Read players
+            std::chrono::milliseconds timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
             players->clear();
             if (counter % 99 == 0) {
                 playersCache->clear();
@@ -182,13 +198,13 @@ int main(int argc, char* argv[]) {
                     for (int i = 0; i < humanPlayers->size(); i++) {
                         Player* p = humanPlayers->at(i);
                         p->readFromMemory(configLoader, map, localPlayer, counter);
-                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
+                        if (p->isValid()) { shootAtEnemy(p, timeNow); players->push_back(p); playersCache->push_back(p); }
                     }
                 else
                     for (int i = 0; i < dummyPlayers->size(); i++) {
                         Player* p = dummyPlayers->at(i);
                         p->readFromMemory(configLoader, map, localPlayer, counter);
-                        if (p->isValid()) { playersCache->push_back(p); players->push_back(p); }
+                        if (p->isValid()) { shootAtEnemy(p, timeNow); players->push_back(p); playersCache->push_back(p); }
                     }
 
                 if (configLoader->SENSE_VERBOSE > 0) {
@@ -222,7 +238,7 @@ int main(int argc, char* argv[]) {
                 for (int i = 0; i < playersCache->size(); i++) {
                     Player* p = playersCache->at(i);
                     p->readFromMemory(configLoader, map, localPlayer, counter);
-                    if (p->isValid()) players->push_back(p);
+                    if (p->isValid()) { shootAtEnemy(p, timeNow); players->push_back(p); }
                 }
             }
 

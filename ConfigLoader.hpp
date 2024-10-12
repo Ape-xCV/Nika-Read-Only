@@ -31,7 +31,7 @@ struct ConfigLoader {
     bool SENSE_SHOW_TARGET = true;
     // TriggerBot
 //    int TRIGGERBOT_ZOOMED_RANGE = 180;
-    int TRIGGERBOT_HIPFIRE_RANGE = 60;
+    int TRIGGERBOT_HIPFIRE_RANGE = 45;
     // AimBot
     float AIMBOT_SPEED = 20;
     float AIMBOT_SMOOTH = 20;
@@ -49,9 +49,9 @@ struct ConfigLoader {
     bool AIMBOT_LEGACY_MODE = false;
     int AIMBOT_MAX_DISTANCE = 250;
     int AIMBOT_MIN_DISTANCE = 0;
-    int AIMBOT_ZOOMED_MAX_MOVE = 30;
+    int AIMBOT_ZOOMED_MAX_MOVE = 45;
     int AIMBOT_HIPFIRE_MAX_MOVE = 30;
-    int AIMBOT_MAX_DELTA = 10;
+    int AIMBOT_MAX_DELTA = 15;
     bool AIMBOT_ACTIVATED_BY_ADS = false;
     bool AIMBOT_ACTIVATED_BY_MOUSE = true;
     bool AIMBOT_ACTIVATED_BY_KEY = true;
