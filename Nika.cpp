@@ -84,7 +84,7 @@ void shootAtEnemy(Player* p, std::chrono::milliseconds timeNow) {
         && timeNow > keymap::timeLastShot + std::chrono::milliseconds(125) && localPlayer->isCombatReady()
         && util::inchesToMeters(p->distanceToLocalPlayer) < configLoader->TRIGGERBOT_HIPFIRE_RANGE) {
         int weapon = localPlayer->weaponId;
-        if (weapon == WEAPON_EVA8 || weapon == WEAPON_MASTIFF || weapon == WEAPON_MOZAMBIQUE || weapon == WEAPON_PEACEKEEPER) {
+        if (weapon == WEAPON_MASTIFF || weapon == WEAPON_PEACEKEEPER) {
             //myDisplay->mouseClickLeft();
             myDisplay->kbPress(configLoader->AIMBOT_FIRING_KEY);
             myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
