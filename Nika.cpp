@@ -18,12 +18,13 @@ AimBot* aimBot = new AimBot(configLoader, myDisplay, localPlayer, players, gameC
 Sense* sense = new Sense(configLoader, localPlayer, players, gameCamera, aimBot);
 Other* other = new Other(configLoader, myDisplay, map, localPlayer, players);
 
+int interval = 1000 / configLoader->AIMBOT_HZ;
 int readError = 1000;
 int counter = 1;
 bool leftLock = false;
 bool rightLock = false;
 bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
-int boneId = 2;
+int boneId = 1;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
@@ -244,12 +245,13 @@ int main(int argc, char* argv[]) {
 
             // Run features
             gameCamera->update();
-            aimBot->update(counter, leftLock, rightLock, autoFire, boneId, totalSpectators);
+            if (counter % configLoader->AIMBOT_DELAY == 0)
+                aimBot->update(leftLock, rightLock, autoFire, boneId, totalSpectators);
             other->superGlide(averageFps);
 
             if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
-            int goalSleepTime = 6.94; // 16.67ms=60Hz | 6.94ms=144Hz
+            int goalSleepTime = interval; // 16.67ms=60Hz | 6.94ms=144Hz
             int timeLeftToSleep = std::max(0, goalSleepTime - processingTime);
             util::sleep(timeLeftToSleep);
             if (counter % 200 == 0) {

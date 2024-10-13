@@ -33,6 +33,7 @@ struct ConfigLoader {
 //    int TRIGGERBOT_ZOOMED_RANGE = 180;
     int TRIGGERBOT_HIPFIRE_RANGE = 45;
     // AimBot
+    int AIMBOT_HZ = 144;
     int AIMBOT_DELAY = 2;
     float AIMBOT_SPEED = 20;
     float AIMBOT_SMOOTH = 20;
@@ -154,6 +155,7 @@ struct ConfigLoader {
 //        TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
         TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
         // AimBot
+        AIMBOT_HZ = (key.compare("AIMBOT_HZ") != 0) ? AIMBOT_HZ : stod(val);
         AIMBOT_DELAY = (key.compare("AIMBOT_DELAY") != 0) ? AIMBOT_DELAY : stod(val);
         AIMBOT_SPEED = (key.compare("AIMBOT_SPEED") != 0) ? AIMBOT_SPEED : stod(val);
         AIMBOT_SMOOTH = (key.compare("AIMBOT_SMOOTH") != 0) ? AIMBOT_SMOOTH : stod(val);
@@ -227,6 +229,7 @@ struct ConfigLoader {
         printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // AimBot
+        printf("AIMBOT_HZ\t\t\t\t\t\t%d\n", AIMBOT_HZ);
         printf("AIMBOT_DELAY\t\t\t\t\t\t%d\n", AIMBOT_DELAY);
         printf("AIMBOT_SPEED\t\t\t\t\t\t%.4f\n", AIMBOT_SPEED);
         printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);

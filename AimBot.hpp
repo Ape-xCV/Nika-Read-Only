@@ -128,7 +128,7 @@ struct AimBot {
         return wayB;
     }
 
-    void update(int counter, bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
+    void update(bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
         if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || currentTarget != nullptr && !currentTarget->isVisible)) {
             myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = false;
@@ -258,7 +258,6 @@ struct AimBot {
             else
                 totalYawIncrementInt = lastMoveX - maxDelta;
 
-        if (counter % cl->AIMBOT_DELAY != 0) return;
         myDisplay->moveMouseRelative(totalYawIncrementInt, totalPitchIncrementInt);
         lastMoveY = totalPitchIncrementInt;
         lastMoveX = totalYawIncrementInt;
