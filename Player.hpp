@@ -124,14 +124,16 @@ struct Player {
             localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4));
             timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4);
             absoluteVelocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
-            localOriginPrev4 = localOriginPrev3;
-            localOriginPrev3 = localOriginPrev2;
-            localOriginPrev2 = localOriginPrev;
-            localOriginPrev = localOrigin;
-            timeLocalOriginPrev4 = timeLocalOriginPrev3;
-            timeLocalOriginPrev3 = timeLocalOriginPrev2;
-            timeLocalOriginPrev2 = timeLocalOriginPrev;
-            timeLocalOriginPrev = timeLocalOrigin;
+            if (counter % cl->AIMBOT_DELAY == 0) {
+                localOriginPrev4 = localOriginPrev3;
+                localOriginPrev3 = localOriginPrev2;
+                localOriginPrev2 = localOriginPrev;
+                localOriginPrev = localOrigin;
+                timeLocalOriginPrev4 = timeLocalOriginPrev3;
+                timeLocalOriginPrev3 = timeLocalOriginPrev2;
+                timeLocalOriginPrev2 = timeLocalOriginPrev;
+                timeLocalOriginPrev = timeLocalOrigin;
+            }
         //} else {
         //    absoluteVelocity = mem::Read<Vector3D>(base + OFF_ABS_VELOCITY, "Player absoluteVelocity");
         if (isPlayer) {
