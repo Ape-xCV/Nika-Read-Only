@@ -234,7 +234,7 @@ struct ConfigLoader {
         printf("AIMBOT_SPEED\t\t\t\t\t\t%.4f\n", AIMBOT_SPEED);
         printf("AIMBOT_SMOOTH\t\t\t\t\t\t%.4f\n", AIMBOT_SMOOTH);
         printf("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE\t\t\t\t%.4f\n", AIMBOT_SMOOTH_EXTRA_BY_DISTANCE);
-        printf("         , - - - - - - - ,\n");
+        printf("         , - ~ ~ ~ ~ ~ - ,\n");
         printf("     , '      _ _ _ _      ' ,\n");
         printf("   ,'     , '         ' ,     ',\n");
         printf("  ,     ,'     F O V     ',     ,\n");
