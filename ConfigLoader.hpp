@@ -34,11 +34,11 @@ struct ConfigLoader {
     int TRIGGERBOT_HIPFIRE_RANGE = 45;
     // AimBot
     int AIMBOT_HZ = 144;
-    int AIMBOT_DELAY = 2;
-    float AIMBOT_SPEED = 20;
+    int AIMBOT_DELAY = 3;
+    float AIMBOT_SPEED = 30;
     float AIMBOT_SMOOTH = 20;
     float AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = 1500;
-    float AIMBOT_FOV = 7.5f;
+    float AIMBOT_FOV = 5.0f;
     float AIMBOT_FOV_EXTRA_BY_ZOOM = 0.2f;
     float AIMBOT_FAST_AREA = 0.75f;
     float AIMBOT_SLOW_AREA = 0.50f;
@@ -242,7 +242,7 @@ struct ConfigLoader {
         printf(" , FULL, FAST,  SLOW , FAST, FULL,      <- AREA SPEED\n");
         printf(" ,     ,     ,   +   ,     ,     ,\n");
         printf("1.00  0.75  0.50    0.50  0.75  1.00    <- (SIZE & SPEED) MULTIPLIER\n");
-        printf(" ,     ,        ' '        ,     ,\n");
+        printf(" ,     ,      ' _ _ '      ,     ,\n");
         printf("  ,     ,                 ,     ,\n");
         printf("   ,     ',             ,'     ,\n");
         printf("    ',      ' - - - - '      ,'\n");
