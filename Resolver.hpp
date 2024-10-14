@@ -14,12 +14,12 @@ struct Resolver {
     }
 
     static Vector3D GetTargetPosition(Vector3D& targetPosition, Vector3D targetVelocity, float time) {
-        return targetPosition.Add((targetVelocity.Multiply(time + 0.2f)));
+        return targetPosition.Add((targetVelocity.Multiply(time)));
     }
 
-    static Vector3D GetTargetPosition(Vector3D localPosition, Vector3D targetPosition, Vector3D targetVelocity, float bulletSpeed) {
+    static Vector3D GetTargetPosition(Vector3D localPosition, Vector3D targetPosition, Vector3D targetVelocity, float bulletSpeed, float timeOffset) {
         float time = GetTimeToTarget(localPosition, targetPosition, bulletSpeed);
-        return GetTargetPosition(targetPosition, targetVelocity, time);
+        return GetTargetPosition(targetPosition, targetVelocity, time + timeOffset);
     }
 
     static Vector2D CalculateAngles(Vector3D from, Vector3D to) {
