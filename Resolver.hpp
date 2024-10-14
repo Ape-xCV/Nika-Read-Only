@@ -14,7 +14,7 @@ struct Resolver {
     }
 
     static Vector3D GetTargetPosition(Vector3D& targetPosition, Vector3D targetVelocity, float time) {
-        return targetPosition.Add((targetVelocity.Multiply(time)));
+        return targetPosition.Add(targetVelocity.Multiply(time));
     }
 
     static Vector3D GetTargetPosition(Vector3D localPosition, Vector3D targetPosition, Vector3D targetVelocity, float bulletSpeed, float timeOffset) {
