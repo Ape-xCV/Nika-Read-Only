@@ -9,6 +9,7 @@ struct LocalPlayer {
     int squadNumber;
     Vector3D localOrigin;
     float worldTime;
+    float worldTimePrev;
     int currentHealth;
     bool isDead;
     bool isKnocked;
@@ -47,6 +48,8 @@ struct LocalPlayer {
         squadNumber = mem::Read<int>(base + OFF_SQUAD_ID, "LocalPlayer squadNumber");
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "LocalPlayer localOrigin");
         worldTime = mem::Read<float>(base + OFF_TIME_BASE, "LocalPlayer worldTime");
+        if (worldTimePrev + 0.01f < worldTime)
+            worldTimePrev = worldTime;
         currentHealth = mem::Read<int>(base + OFF_HEALTH, "LocalPlayer currentHealth");
         isDead = mem::Read<short>(base + OFF_LIFE_STATE, "LocalPlayer isDead") > 0;
         isKnocked = mem::Read<short>(base + OFF_BLEEDOUT_STATE, "LocalPlayer isKnocked") > 0;
