@@ -136,6 +136,7 @@ int main(int argc, char* argv[]) {
                 myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
                 keymap::AIMBOT_FIRING_KEY = false;
                 playersCache->clear();
+                localPlayer->worldTimePrev = 0.0f;
                 other->traversalStartTimePrev = 0.0f;
             }
 
