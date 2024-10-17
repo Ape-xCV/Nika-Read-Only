@@ -10,7 +10,7 @@ struct Player {
     bool isDrone;
     bool isDummie;
     bool isItem;
-    char signifierName[16] = {0};
+    char signifierName[16];
     uint16_t itemId;
     Vector3D localOrigin;
     Vector3D localOriginDiff;
@@ -75,6 +75,7 @@ struct Player {
             if (data::selectedRadio == 0) { reset(); return; }
             uint64_t signifierNamePtr = mem::Read<uint64_t>(base + OFF_SIGNIFIER_NAME, "Player signifierNamePtr");
             if (!mem::IsValidPointer(signifierNamePtr)) { reset(); return; }
+            signifierName[16] = {0};
             mem::Read(signifierNamePtr, &signifierName, sizeof(signifierName));
             size_t found = static_cast<std::string>(signifierName).find("prop_survival");
             if (found == std::string::npos) { reset(); return; }
