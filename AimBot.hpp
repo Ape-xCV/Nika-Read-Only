@@ -189,7 +189,7 @@ struct AimBot {
         }
 
         Vector2D desiredAngles = Vector2D(0.0f, 0.0f);
-        float timeOffset = 0.1f * (1 + !leftLock * (cl->AIMBOT_WEAKEN - 1) / 2);
+        float timeOffset = 0.075f * (1 + !leftLock * (cl->AIMBOT_WEAKEN - 1) / 2);
         if (!getAngles(currentTarget, targetBone3DCache, desiredAngles, timeOffset))
             return;
 
