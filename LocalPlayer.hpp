@@ -62,8 +62,8 @@ struct LocalPlayer {
             weaponHandleMasked = weaponHandle & 0xffff;
             weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5), "LocalPlayer weaponEntity");
             weaponId = mem::Read<int>(weaponEntity + OFF_WEAPON_INDEX, "LocalPlayer weaponId");
-            weaponProjectileSpeed = mem::Read<float>(weaponEntity + OFF_PROJECTILE_SPEED, "LocalPlayer weaponProjectileSpeed");
-            weaponProjectileScale = mem::Read<float>(weaponEntity + OFF_PROJECTILE_SCALE, "LocalPlayer weaponProjectileScale");
+            weaponProjectileSpeed = ultimateId == 4 ? 24000.0f : 0.7f * mem::Read<float>(weaponEntity + OFF_PROJECTILE_SPEED, "LocalPlayer weaponProjectileSpeed");
+            weaponProjectileScale = ultimateId == 4 ? 0.5f : 0.5f * mem::Read<float>(weaponEntity + OFF_PROJECTILE_SCALE, "LocalPlayer weaponProjectileScale");
             zoomFov = mem::Read<float>(weaponEntity + OFF_ZOOM_FOV, "LocalPlayer zoomFov");
         }
         inZoom = mem::Read<short>(base + OFF_ZOOMING, "LocalPlayer inZoom") > 0;
