@@ -13,7 +13,8 @@ struct LocalPlayer {
     int currentHealth;
     bool isDead;
     bool isKnocked;
-    int grenadeId;
+    uint8_t grenadeId;
+    uint8_t ultimateId;
     bool grippingGrenade;
     long weaponHandle;
     long weaponHandleMasked;
@@ -54,7 +55,8 @@ struct LocalPlayer {
         isDead = mem::Read<short>(base + OFF_LIFE_STATE, "LocalPlayer isDead") > 0;
         isKnocked = mem::Read<short>(base + OFF_BLEEDOUT_STATE, "LocalPlayer isKnocked") > 0;
         if (!isDead && !isKnocked) {
-            grenadeId = mem::Read<int>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeId");
+            grenadeId = mem::Read<uint8_t>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeId");
+            ultimateId = mem::Read<uint8_t>(base + OFF_GRENADE_HANDLE + 0x2, "LocalPlayer ultimateId");
             grippingGrenade = grenadeId == -251 ? true : false;
             weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
             weaponHandleMasked = weaponHandle & 0xffff;

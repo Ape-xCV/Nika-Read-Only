@@ -263,16 +263,20 @@ struct AimBot {
 
         gameCamera->worldToScreen(targetBone3DCache, targetBoneW2S);
         int weapon = lp->weaponId;
-        if (weapon != WEAPON_SENTINEL &&
-            //weapon != WEAPON_BOCEK &&
-            //weapon != WEAPON_CHARGE_RIFLE &&
+        if (myDisplay->isLeftMouseButtonDown() && (
+            lp->ultimateId != 255 ||
+            weapon == WEAPON_SENTINEL ||
+            weapon == WEAPON_LONGBOW ||
+            weapon == WEAPON_KRABER ||
+            weapon == WEAPON_TRIPLE_TAKE ||
+            weapon == WEAPON_MELEE) ||
+            lp->ultimateId == 255 &&
+            weapon != WEAPON_SENTINEL &&
             weapon != WEAPON_LONGBOW &&
-            //weapon != WEAPON_EVA8 &&
             weapon != WEAPON_G7 &&
             weapon != WEAPON_HEMLOCK &&
             weapon != WEAPON_KRABER &&
             weapon != WEAPON_MASTIFF &&
-            //weapon != WEAPON_MOZAMBIQUE &&
             weapon != WEAPON_PROWLER &&
             weapon != WEAPON_PEACEKEEPER &&
             //weapon != WEAPON_P2020 &&
@@ -280,24 +284,23 @@ struct AimBot {
             weapon != WEAPON_WINGMAN &&
             weapon != WEAPON_3030 &&
             weapon != WEAPON_NEMESIS &&
-            weapon != WEAPON_MELEE &&
-            //weapon != WEAPON_THROWING_KNIFE &&
-            autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY &&
-            abs(targetBoneW2S.x - screenSize.x/2) < width &&
-            abs(targetBoneW2S.y - screenSize.y/2) < width) {
-            myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);
-            keymap::AIMBOT_FIRING_KEY = true;
+            weapon != WEAPON_MELEE) {
+            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY &&
+                abs(targetBoneW2S.x - screenSize.x/2) < width &&
+                abs(targetBoneW2S.y - screenSize.y/2) < width) {
+                myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);
+                keymap::AIMBOT_FIRING_KEY = true;
+            }
         } else {
-            if (myDisplay->isLeftMouseButtonDown() && (weapon == WEAPON_SENTINEL || weapon == WEAPON_LONGBOW || weapon == WEAPON_KRABER || weapon == WEAPON_TRIPLE_TAKE) ||
-		weapon == WEAPON_G7 ||
+            if (lp->ultimateId == 255 && (
+                weapon == WEAPON_G7 ||
                 weapon == WEAPON_HEMLOCK ||
                 weapon == WEAPON_PROWLER ||
                 //weapon == WEAPON_P2020 ||
                 weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
                 weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030 ||
-                weapon == WEAPON_NEMESIS ||
-		weapon == WEAPON_MELEE)
+                weapon == WEAPON_NEMESIS))
                 if (autoFire && keymap::AIMBOT_ACTIVATION_KEY &&
                     abs(targetBoneW2S.x - screenSize.x/2) < width &&
                     abs(targetBoneW2S.y - screenSize.y/2) < width) {
@@ -310,6 +313,10 @@ struct AimBot {
                         keymap::timeLastShot = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
                     }
                 }
+            if (!myDisplay->isLeftMouseButtonDown() && keymap::AIMBOT_FIRING_KEY) {
+                myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
+                keymap::AIMBOT_FIRING_KEY = false;
+            }
         }
     }
 };
