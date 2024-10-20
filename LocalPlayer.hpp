@@ -57,7 +57,7 @@ struct LocalPlayer {
         if (!isDead && !isKnocked) {
             grenadeId = mem::Read<uint8_t>(base + OFF_GRENADE_HANDLE, "LocalPlayer grenadeId");
             ultimateId = mem::Read<uint8_t>(base + OFF_GRENADE_HANDLE + 0x2, "LocalPlayer ultimateId");
-            grippingGrenade = grenadeId == -251 ? true : false;
+            grippingGrenade = (grenadeId == 5 || grenadeId == 6) && ultimateId == 255 ? true : false;
             weaponHandle = mem::Read<long>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
             weaponHandleMasked = weaponHandle & 0xffff;
             weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5), "LocalPlayer weaponEntity");
