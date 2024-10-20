@@ -18,12 +18,14 @@ struct Player {
     Vector3D localOriginPrev2;
     Vector3D localOriginPrev3;
     Vector3D localOriginPrev4;
+    Vector3D localOriginPrev5;
     float timeLocalOrigin;
     float timeLocalOriginDiff;
     float timeLocalOriginPrev;
     float timeLocalOriginPrev2;
     float timeLocalOriginPrev3;
     float timeLocalOriginPrev4;
+    float timeLocalOriginPrev5;
     Vector3D absoluteVelocity;
     Vector2D viewAngles;
     float viewYaw;
@@ -122,14 +124,16 @@ struct Player {
         localOrigin = mem::Read<Vector3D>(base + OFF_LOCAL_ORIGIN, "Player localOrigin");
         timeLocalOrigin = lp->worldTime;
         //if (!isPlayer) {
-            localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4));
-            timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4);
+            localOriginDiff = localOrigin.Subtract(localOriginPrev).Add(localOriginPrev.Subtract(localOriginPrev2)).Add(localOriginPrev2.Subtract(localOriginPrev3)).Add(localOriginPrev3.Subtract(localOriginPrev4)).Add(localOriginPrev4.Subtract(localOriginPrev5));
+            timeLocalOriginDiff = (timeLocalOrigin - timeLocalOriginPrev) + (timeLocalOriginPrev - timeLocalOriginPrev2) + (timeLocalOriginPrev2 - timeLocalOriginPrev3) + (timeLocalOriginPrev3 - timeLocalOriginPrev4) + (timeLocalOriginPrev4 - timeLocalOriginPrev5);
             absoluteVelocity = localOriginDiff.Divide(timeLocalOriginDiff); // v = d/t
             if (lp->worldTimePrev = lp->worldTime) {
+                localOriginPrev5 = localOriginPrev4;
                 localOriginPrev4 = localOriginPrev3;
                 localOriginPrev3 = localOriginPrev2;
                 localOriginPrev2 = localOriginPrev;
                 localOriginPrev = localOrigin;
+                timeLocalOriginPrev5 = timeLocalOriginPrev4;
                 timeLocalOriginPrev4 = timeLocalOriginPrev3;
                 timeLocalOriginPrev3 = timeLocalOriginPrev2;
                 timeLocalOriginPrev2 = timeLocalOriginPrev;
