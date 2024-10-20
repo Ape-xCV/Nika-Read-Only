@@ -134,6 +134,11 @@ struct AimBot {
             keymap::AIMBOT_FIRING_KEY = false;
         }
 
+        if (myDisplay->isLeftMouseButtonDown() && !keymap::AIMBOT_FIRING_KEY && lp->grippingGrenade) {
+            myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);
+            keymap::AIMBOT_FIRING_KEY = true;
+        }
+
         if (lp->grippingGrenade){ releaseTarget(); return; }
         if (!active(rightLock)) { releaseTarget(); return; }
 
