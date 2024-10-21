@@ -126,17 +126,19 @@ cd /root
 ./main.sh
 ```
 
-### 5. HWID unban (optional, EndeavourOS / CachyOS, GRUB bootloader, no dual boot)
+### 5. Configure
+
+Change settings with:
+
+``` shell
+sudo nano /root/nika.ini
+```
+
+### 6. HWID unban (optional, EndeavourOS / CachyOS, GRUB bootloader, no dual boot)
 
 - My storage serial numbers were collected most likely from **dbus**. Widely adopted Linux **systemd** `init` as currently being distributed has the security profile of an internet **meme**.
 - Run `spoof.sh` then reboot.
 - The following command is run by the game in this context: `dbus-send --system --dest=org.freedesktop.UDisks2 --type=method_call --print-reply  /org/freedesktop/UDisks2 org.freedesktop.DBus.ObjectManager.GetManagedObjects`
-
-### 6. GNU MAC Changer
-
-- Install (Arch): `sudo pacman -S macchanger`
-- Install (Debian): `sudo apt install macchanger`
-- Edit **spoof.sh** and modify it where needed: `sudo nano /root/spoof.sh`
 
 ### 7. EndeavourOS / CachyOS
 
