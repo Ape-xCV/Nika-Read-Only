@@ -24,7 +24,7 @@ int counter = 1;
 bool leftLock = false;
 bool rightLock = false;
 bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
-int boneId = 1;
+int boneId = 2;
 int processingTime;
 std::vector<int> processingTimes;
 double averageProcessingTime;
@@ -159,6 +159,7 @@ int main(int argc, char* argv[]) {
                 if (myDisplay->isKeyDown("XK_Up")) { autoFire = !autoFire; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Down")) {
                     boneId--;
+                    if (!configLoader->AIMBOT_HITBOX_HEAD && boneId < 1) boneId = 2;
                     if (boneId < 0) boneId = 2;
                     util::sleep(250);
                 }
