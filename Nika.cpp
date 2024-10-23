@@ -68,7 +68,7 @@ void renderUI() {
     if (readError > 0) {
         sense->renderStatus(leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f, 0);
     } else {
-        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps, cache);
+        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps/2, cache);
         sense->renderESP(canvas);
         if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
         if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);
@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
             gameCamera->update();
             if (counter % configLoader->AIMBOT_DELAY == 0)
                 aimBot->update(leftLock, rightLock, autoFire, boneId, totalSpectators);
-            other->superGlide(averageFps);
+            other->superGlide(averageFps/2);
 
             if (configLoader->SENSE_VERBOSE > 1) overlayWindow.Render(&renderUI);
             processingTime = static_cast<int>(util::currentEpochMillis() - startTime);
