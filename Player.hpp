@@ -147,7 +147,7 @@ struct Player {
             plyrDataTable = mem::Read<int>(base + OFF_NAME_INDEX, "Player plyrDataTable");
             if (cl->FEATURE_SPECTATORS_ON && counter % 199 == 0) {
                 spectators = mem::Read<uint64_t>(OFF_REGION + OFF_OBSERVER_LIST, "Player spectators");
-                spctrIndex = mem::Read<int>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Player spctrIndex");
+                spctrIndex = mem::Read<uint16_t>(spectators + plyrDataTable * 8 + OFF_OBSERVER_ARRAY, "Player spctrIndex");
                 spctrBase = mem::Read<uint64_t>(OFF_REGION + OFF_ENTITY_LIST + ((spctrIndex & 0xFFFF) << 5), "Player spctrBase");
             }
         }
@@ -185,7 +185,7 @@ struct Player {
 
     std::string getPlayerName(){
         uintptr_t nameOffset = mem::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((plyrDataTable - 1) * 24), "Player nameOffset");
-        std::string playerName = mem::ReadString(nameOffset, 64, "Player playerName");
+        std::string playerName = mem::ReadString(nameOffset, 16, "Player playerName");
         return playerName;
     }
 

@@ -215,8 +215,10 @@ int main(int argc, char* argv[]) {
                     printf("Entities: %d\n", cache);
 
                     if (configLoader->FEATURE_SPECTATORS_ON) {
-                        int tempTotalSpectators = 0;
+                        int tempTotalSpectators;
                         std::vector<std::string> tempSpectators;
+                        tempTotalSpectators= 0;
+                        tempSpectators.clear();
                         for (int i = 0; i < players->size(); i++) {
                             Player* p = players->at(i);
                             if (p->base == localPlayer->base)
@@ -232,9 +234,9 @@ int main(int argc, char* argv[]) {
                         totalSpectators = tempTotalSpectators;
                         spectators = tempSpectators;
                         printf("Spectators: %d\n", static_cast<int>(spectators.size()));
-                        if (static_cast<int>(spectators.size()) > 0)
-                            for (int i = 0; i < static_cast<int>(spectators.size()); i++)
-                                printf("> %s\n", spectators.at(i).c_str());
+//                        if (static_cast<int>(spectators.size()) > 0)
+//                            for (int i = 0; i < static_cast<int>(spectators.size()); i++)
+//                                printf("> %s\n", spectators.at(i).c_str());
                     }
                 }
             } else {
