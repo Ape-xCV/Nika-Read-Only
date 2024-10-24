@@ -134,11 +134,6 @@ struct AimBot {
             keymap::AIMBOT_FIRING_KEY = false;
         }
 
-        if (myDisplay->isLeftMouseButtonDown() && !keymap::AIMBOT_FIRING_KEY && lp->grippingGrenade) {
-            myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);
-            keymap::AIMBOT_FIRING_KEY = true;
-        }
-
         if (lp->grippingGrenade){ releaseTarget(); return; }
         if (!active(rightLock)) { releaseTarget(); return; }
 
@@ -269,13 +264,13 @@ struct AimBot {
         gameCamera->worldToScreen(targetBone3DCache, targetBoneW2S);
         int weapon = lp->weaponId;
         if (myDisplay->isLeftMouseButtonDown() && (
-            lp->ultimateId != 255 ||
+            lp->ultimateId == 4 ||
             weapon == WEAPON_SENTINEL ||
             weapon == WEAPON_LONGBOW ||
             weapon == WEAPON_KRABER ||
             weapon == WEAPON_TRIPLE_TAKE ||
             weapon == WEAPON_MELEE) ||
-            lp->ultimateId == 255 &&
+            lp->ultimateId != 4 &&
             weapon != WEAPON_SENTINEL &&
             weapon != WEAPON_LONGBOW &&
             weapon != WEAPON_G7 &&
