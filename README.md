@@ -38,44 +38,34 @@
 
 ## Notes
 
-- Open the cheat before the game, or always terminate process with F9.
+- Open the cheat in match; and always terminate process with F9.
 
-### 1. Environment set up in Linux
+### 1. Environment set up in Linux (choose one)
 
-- Install dependencies (<b>Arch</b>):
+<details>
+<summary>Install dependencies <b>Fedora (Nobara Linux)</b>:</summary>
 
-``` shell
-sudo pacman -Sy libudev0 cmake xorg-server git base-devel libx11 libxtst
-```
+    sudo yum install cmake wayland-devel libxkbcommon-devel libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel
+    sudo yum install g++ libXtst-devel mesa-libGLU-devel libudev-devel
+</details>
 
-or
+<details>
+<summary>Install dependencies <b>Arch (EndeavourOS / CachyOS)</b>:</summary>
 
-- Install dependencies (<b>Debian</b>):
+    sudo pacman -Syu libudev0 cmake xorg-server git base-devel libx11 libxtst
+</details>
 
-``` shell
-sudo apt-get install -y libudev-dev
-sudo apt install cmake xorg-dev libglu1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
-sudo apt install -y libudev-dev libglu1-mesa-dev libxkbcommon-dev libwayland-dev git cmake g++ gcc libinput-dev libsoil-dev
-sudo apt-get install build-essential
-sudo apt-get install libx11-dev
-sudo apt-get install libxtst-dev
-```
+<details>
+<summary>Install dependencies <b>Debian</b>:</summary>
+
+    ,-.  ,--. ,-.  ,  ,.  .  .   ,  ,-.    ;-.   ,-.   ,-.  ;-.  
+    |  \ |    |  ) | /  \ |\ |   | (   `   |  ) /   \ /   \ |  ) 
+    |  | |-   |-<  | |--| | \|   |  `-.    |-'  |   | |   | |-'  
+    |  / |    |  ) | |  | |  |   | .   )   |    \   / \   / |    
+    `-'  `--' `-'  ' '  ' '  '   '  `-'    '     `-'   `-'  '    
+</details>
 
 ### 2. Build & Install GLFW
-
-IMPORTANT: When using `nano src/egl_context.c` below, you must change:
-
-``` shell
-    _glfw.egl.EXT_present_opaque =
-        extensionSupportedEGL("EGL_EXT_present_opaque");
-```
-
-into
-
-``` shell
-    _glfw.egl.EXT_present_opaque = GLFW_FALSE;
-        //extensionSupportedEGL("EGL_EXT_present_opaque");
-```
 
 - For **compatible** GLFW:
 
@@ -108,6 +98,20 @@ cd build
 cmake .. -D GLFW_BUILD_X11=0
 make
 make install
+```
+
+IMPORTANT: When using `nano src/egl_context.c` above, you must change:
+
+``` shell
+    _glfw.egl.EXT_present_opaque =
+        extensionSupportedEGL("EGL_EXT_present_opaque");
+```
+
+into
+
+``` shell
+    _glfw.egl.EXT_present_opaque = GLFW_FALSE;
+        //extensionSupportedEGL("EGL_EXT_present_opaque");
 ```
 
 ### 3. Install
