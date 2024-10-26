@@ -60,6 +60,8 @@ echo ", ENV{ID_SERIAL_SHORT}=\"${serial3}\" \\" >> new.txt
 echo ",          ENV{ID_WWN}=\"${wwid3}\" \\" >> new.txt
 echo ",        ENV{ID_MODEL}=\"${model3}\" \\" >> new.txt
 echo ",       ENV{ID_SERIAL}=\"${model3} ${serial3}\"" >> new.txt
+# tail -n +64 rules | head -84 >> new.txt
+# tail -15 rules >> new.txt
 tail -112 rules >> new.txt
 
 if [[ ! -f /lib/udev/rules.d/60-persistent-storage.rules_ ]]; then
