@@ -52,7 +52,7 @@
 <details>
 <summary>Install dependencies <b>Arch (EndeavourOS / CachyOS)</b>:</summary>
 
-    sudo pacman -Syu libudev0 cmake xorg-server git base-devel libx11 libxtst
+    sudo pacman -Syu cmake
 </details>
 
 <details>
