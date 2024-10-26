@@ -58,11 +58,11 @@
 <details>
 <summary>Install dependencies <b>Debian</b>:</summary>
 
-    ,-.  ,--. ,-.  ,  ,.  .  .   ,  ,-.    ;-.   ,-.   ,-.  ;-.  
-    |  \ |    |  ) | /  \ |\ |   | (   `   |  ) /   \ /   \ |  ) 
-    |  | |-   |-<  | |--| | \|   |  `-.    |-'  |   | |   | |-'  
-    |  / |    |  ) | |  | |  |   | .   )   |    \   / \   / |    
-    `-'  `--' `-'  ' '  ' '  '   '  `-'    '     `-'   `-'  '    
+    ,-.  ,--. ,-.  ,  ,.  .  .   ,  ,-.    ;-.   ,-.   ,-.  ;-. 
+    |  \ |    |  ) | /  \ |\ |   | (   `   |  ) /   \ /   \ |  )
+    |  | |-   |-<  | |--| | \|   |  `-.    |-'  |   | |   | |-' 
+    |  / |    |  ) | |  | |  |   | .   )   |    \   / \   / |   
+    `-'  `--' `-'  ' '  ' '  '   '  `-'    '     `-'   `-'  '   
 </details>
 
 ### 2. Build & Install GLFW
@@ -138,7 +138,7 @@ Change settings with:
 sudo nano /root/nika.ini
 ```
 
-### 6. HWID unban (optional, EndeavourOS / CachyOS, GRUB bootloader, no dual boot)
+### 6. HWID unban (optional, Fedora / Arch, GRUB bootloader, no dual boot)
 
 - My storage serial numbers were collected most likely from **dbus**. Widely adopted Linux **systemd** `init` as currently being distributed has the security profile of an internet **meme**.
 - Run `spoof.sh` then reboot.
