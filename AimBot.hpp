@@ -297,8 +297,6 @@ struct AimBot {
                 weapon == WEAPON_HEMLOCK ||
                 weapon == WEAPON_PROWLER ||
                 //weapon == WEAPON_P2020 ||
-                weapon == WEAPON_TRIPLE_TAKE && !lp->inZoom ||
-                weapon == WEAPON_WINGMAN ||
                 weapon == WEAPON_3030 ||
                 weapon == WEAPON_NEMESIS))
                 if (autoFire && keymap::AIMBOT_ACTIVATION_KEY &&
