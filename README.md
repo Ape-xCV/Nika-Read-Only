@@ -39,6 +39,7 @@
 ## Notes
 
 - Open the cheat in match; and always terminate process with F9.
+- Terminate **BEFORE** you go back in lobby; and restart once again in match.
 
 ### 1. Environment set up in Linux (choose one)
 
