@@ -11,7 +11,7 @@ struct ConfigLoader {
 
     // Features
     bool FEATURE_AIMBOT_ON = true;
-    bool FEATURE_TRIGGERBOT_ON = true;
+//    bool FEATURE_TRIGGERBOT_ON = true;
     bool FEATURE_SPECTATORS_ON = false;
     bool FEATURE_SPECTATORS_SHOW_DEAD = false;
     bool FEATURE_SUPER_GLIDE_ON = false;
@@ -32,6 +32,7 @@ struct ConfigLoader {
     // TriggerBot
 //    int TRIGGERBOT_ZOOMED_RANGE = 180;
     int TRIGGERBOT_HIPFIRE_RANGE = 45;
+    int TRIGGERBOT_STATE = 45;
     // AimBot
     int AIMBOT_HZ = 144;
     int AIMBOT_DELAY = 3;
@@ -134,7 +135,7 @@ struct ConfigLoader {
     void loadVariables(std::string key, std::string val) {
         // Features
         FEATURE_AIMBOT_ON = (key.compare("FEATURE_AIMBOT_ON") != 0) ? FEATURE_AIMBOT_ON : toBool(val);
-        FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
+//        FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
         FEATURE_SPECTATORS_ON = (key.compare("FEATURE_SPECTATORS_ON") != 0) ? FEATURE_SPECTATORS_ON : toBool(val);
         FEATURE_SPECTATORS_SHOW_DEAD = (key.compare("FEATURE_SPECTATORS_SHOW_DEAD") != 0) ? FEATURE_SPECTATORS_SHOW_DEAD : toBool(val);
         FEATURE_SUPER_GLIDE_ON = (key.compare("FEATURE_SUPER_GLIDE_ON") != 0) ? FEATURE_SUPER_GLIDE_ON : toBool(val);
@@ -155,6 +156,7 @@ struct ConfigLoader {
         // TriggerBot
 //        TRIGGERBOT_ZOOMED_RANGE = (key.compare("TRIGGERBOT_ZOOMED_RANGE") != 0) ? TRIGGERBOT_ZOOMED_RANGE : stoi(val);
         TRIGGERBOT_HIPFIRE_RANGE = (key.compare("TRIGGERBOT_HIPFIRE_RANGE") != 0) ? TRIGGERBOT_HIPFIRE_RANGE : stoi(val);
+        TRIGGERBOT_STATE = (key.compare("TRIGGERBOT_STATE") != 0) ? TRIGGERBOT_STATE : stoi(val);
         // AimBot
         AIMBOT_HZ = (key.compare("AIMBOT_HZ") != 0) ? AIMBOT_HZ : stod(val);
         AIMBOT_DELAY = (key.compare("AIMBOT_DELAY") != 0) ? AIMBOT_DELAY : stod(val);
@@ -206,7 +208,7 @@ struct ConfigLoader {
         printf("\n======================== NIKA CONFIG LOADED ========================\n");
         // Features
         printf("FEATURE_AIMBOT_ON\t\t\t\t\t%s\n", FEATURE_AIMBOT_ON ? "YES" : "NO");
-        printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
+//        printf("FEATURE_TRIGGERBOT_ON\t\t\t\t\t%s\n", FEATURE_TRIGGERBOT_ON ? "YES" : "NO");
         printf("FEATURE_SPECTATORS_ON\t\t\t\t\t%s\n", FEATURE_SPECTATORS_ON ? "YES" : "NO");
         printf("FEATURE_SPECTATORS_SHOW_DEAD\t\t\t\t%s\n", FEATURE_SPECTATORS_SHOW_DEAD ? "YES" : "NO");
         printf("FEATURE_SUPER_GLIDE_ON\t\t\t\t\t%s\n", FEATURE_SUPER_GLIDE_ON ? "YES" : "NO");
@@ -229,6 +231,7 @@ struct ConfigLoader {
         // TriggerBot
 //        printf("TRIGGERBOT_ZOOMED_RANGE\t\t\t\t\t%d\n", TRIGGERBOT_ZOOMED_RANGE);
         printf("TRIGGERBOT_HIPFIRE_RANGE\t\t\t\t%d\n", TRIGGERBOT_HIPFIRE_RANGE);
+        printf("TRIGGERBOT_STATE\t\t\t\t\t%d\n", TRIGGERBOT_STATE);
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         // AimBot
         printf("AIMBOT_HZ\t\t\t\t\t\t%d\n", AIMBOT_HZ);

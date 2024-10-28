@@ -128,7 +128,7 @@ struct AimBot {
         return wayB;
     }
 
-    void update(bool leftLock, bool rightLock, bool autoFire, int boneId, int totalSpectators) {
+    void update(bool leftLock, bool rightLock, int autoFire, int boneId, int totalSpectators) {
         if (keymap::AIMBOT_FIRING_KEY && (!keymap::AIMBOT_ACTIVATION_KEY || currentTarget != nullptr && !currentTarget->isVisible)) {
             myDisplay->kbRelease(cl->AIMBOT_FIRING_KEY);
             keymap::AIMBOT_FIRING_KEY = false;
@@ -273,10 +273,12 @@ struct AimBot {
             lp->ultimateId != 4 &&
             weapon != WEAPON_SENTINEL &&
             weapon != WEAPON_LONGBOW &&
+            (autoFire != 2 || weapon != WEAPON_EVA8) &&
             weapon != WEAPON_G7 &&
             weapon != WEAPON_HEMLOCK &&
             weapon != WEAPON_KRABER &&
             weapon != WEAPON_MASTIFF &&
+            (autoFire != 2 || weapon != WEAPON_MOZAMBIQUE) &&
             weapon != WEAPON_PROWLER &&
             weapon != WEAPON_PEACEKEEPER &&
             //weapon != WEAPON_P2020 &&
@@ -285,7 +287,7 @@ struct AimBot {
             weapon != WEAPON_3030 &&
             weapon != WEAPON_NEMESIS &&
             weapon != WEAPON_MELEE) {
-            if (autoFire && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY &&
+            if (autoFire > 0 && !keymap::AIMBOT_FIRING_KEY && keymap::AIMBOT_ACTIVATION_KEY &&
                 abs(targetBoneW2S.x - screenSize.x/2) < width &&
                 abs(targetBoneW2S.y - screenSize.y/2) < width) {
                 myDisplay->kbPress(cl->AIMBOT_FIRING_KEY);

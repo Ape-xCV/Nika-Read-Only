@@ -23,7 +23,7 @@ int readError = 1000;
 int counter = 1;
 bool leftLock = false;
 bool rightLock = false;
-bool autoFire = configLoader->FEATURE_TRIGGERBOT_ON;
+int autoFire = configLoader->TRIGGERBOT_STATE;
 int boneId = 2;
 int processingTime;
 std::vector<int> processingTimes;
@@ -81,11 +81,15 @@ void renderUI() {
 }
 
 void shootAtEnemy(Player* p, std::chrono::milliseconds timeNow) {
-    if (autoFire && p->isAimedAt && p->isEnemy && p->isCombatReady()
+    if (autoFire > 0 && p->isAimedAt && p->isEnemy && p->isCombatReady()
         && timeNow > keymap::timeLastShot + std::chrono::milliseconds(125) && localPlayer->isCombatReady()
         && util::inchesToMeters(p->distanceToLocalPlayer) < configLoader->TRIGGERBOT_HIPFIRE_RANGE) {
         int weapon = localPlayer->weaponId;
-        if (weapon == WEAPON_MASTIFF || weapon == WEAPON_PEACEKEEPER || weapon == WEAPON_TRIPLE_TAKE && !localPlayer->inZoom || weapon == WEAPON_WINGMAN) {
+        if (weapon == WEAPON_MASTIFF ||
+            weapon == WEAPON_PEACEKEEPER ||
+            weapon == WEAPON_TRIPLE_TAKE && !localPlayer->inZoom ||
+            weapon == WEAPON_WINGMAN ||
+            autoFire == 2 && (weapon == WEAPON_EVA8 || weapon == WEAPON_MOZAMBIQUE)) {
             //myDisplay->mouseClickLeft();
             myDisplay->kbPress(configLoader->AIMBOT_FIRING_KEY);
             myDisplay->kbRelease(configLoader->AIMBOT_FIRING_KEY);
@@ -156,7 +160,11 @@ int main(int argc, char* argv[]) {
                 }
                 if (myDisplay->isKeyDown("XK_Left")) { leftLock = !leftLock; util::sleep(250); }
                 if (myDisplay->isKeyDown("XK_Right")) { rightLock = !rightLock; util::sleep(250); }
-                if (myDisplay->isKeyDown("XK_Up")) { autoFire = !autoFire; util::sleep(250); }
+                if (myDisplay->isKeyDown("XK_Up")) {
+                    autoFire++;
+                    if (autoFire > 2) autoFire = 0;
+                    util::sleep(250);
+                }
                 if (myDisplay->isKeyDown("XK_Down")) {
                     boneId--;
                     if (!configLoader->AIMBOT_HITBOX_HEAD && boneId < 1) boneId = 2;
