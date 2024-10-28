@@ -18,7 +18,7 @@ struct LocalPlayer {
     bool grippingGrenade;
     uint16_t weaponHandle;
     long weaponEntity;
-    int weaponId;
+    uint16_t weaponId;
     float weaponProjectileSpeed;
     float weaponProjectileScale;
     float zoomFov;
@@ -59,7 +59,7 @@ struct LocalPlayer {
             grippingGrenade = (grenadeId == 5 || grenadeId == 6) && ultimateId == 255 ? true : false;
             weaponHandle = mem::Read<uint16_t>(base + OFF_WEAPON_HANDLE, "LocalPlayer weaponHandle");
             weaponEntity = mem::Read<long>(OFF_REGION + OFF_ENTITY_LIST + ((weaponHandle & 0xFFFF) << 5), "LocalPlayer weaponEntity");
-            weaponId = mem::Read<int>(weaponEntity + OFF_WEAPON_INDEX, "LocalPlayer weaponId");
+            weaponId = mem::Read<uint16_t>(weaponEntity + OFF_WEAPON_INDEX, "LocalPlayer weaponId");
             weaponProjectileSpeed = ultimateId == 4 ? 24000.0f : 0.7f * mem::Read<float>(weaponEntity + OFF_PROJECTILE_SPEED, "LocalPlayer weaponProjectileSpeed");
             weaponProjectileScale = ultimateId == 4 ? 0.5f : 0.5f * mem::Read<float>(weaponEntity + OFF_PROJECTILE_SCALE, "LocalPlayer weaponProjectileScale");
             zoomFov = mem::Read<float>(weaponEntity + OFF_ZOOM_FOV, "LocalPlayer zoomFov");
