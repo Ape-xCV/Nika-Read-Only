@@ -66,9 +66,9 @@ void renderUI() {
         ImGuiWindowFlags_NoInputs);
     canvas = ImGui::GetWindowDrawList();
     if (readError > 0) {
-        sense->renderStatus(leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f, 0);
+        sense->renderStatus(counter, leftLock, rightLock, autoFire, boneId, 0.0f, 0.0f, 0);
     } else {
-        sense->renderStatus(leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps/2, cache);
+        sense->renderStatus(counter, leftLock, rightLock, autoFire, boneId, averageProcessingTime, averageFps/2, cache);
         sense->renderESP(canvas);
         if (configLoader->FEATURE_MAP_RADAR_ON) sense->renderRadar(canvas);
         if (configLoader->FEATURE_SPECTATORS_ON) sense->renderSpectators(totalSpectators, spectators);

@@ -15,7 +15,7 @@ struct Sense {
         this->aimBot = in_aimBot;
     }
 
-    void renderStatus(bool leftLock, bool rightLock, int autoFire, int boneId, double averageProcessingTime, double averageFPS, int cache) {
+    void renderStatus(int counter, bool leftLock, bool rightLock, int autoFire, int boneId, double averageProcessingTime, double averageFPS, int cache) {
         ImGui::SetNextWindowPos(ImVec2(10.0f, 25.0f), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0.50f);
         ImGui::Begin("Status", nullptr,
@@ -27,14 +27,14 @@ struct Sense {
             ImGuiWindowFlags_NoSavedSettings |
             ImGuiWindowFlags_NoInputs);
 
-        const ImVec4 leftLockColor = leftLock ?                         ImVec4(0.43f, 1.00f, 0.34f, 1.00f) : ImVec4(1.00f, 0.43f, 0.34f, 1.00f);
-        const ImVec4 rightLockColor = rightLock ?                       ImVec4(0.43f, 1.00f, 0.34f, 1.00f) : ImVec4(1.00f, 0.43f, 0.34f, 1.00f);
         ImVec4 autoFireColor;
-        if (autoFire == 0) autoFireColor =                                                                   ImVec4(1.00f, 0.43f, 0.34f, 1.00f);
-        else if (autoFire == 1) autoFireColor =                         ImVec4(0.43f, 1.00f, 0.34f, 1.00f);
-        else autoFireColor =       ImVec4(1.00f, 1.00f, 0.34f, 1.00f);
-        const ImVec4 boneIdColor = ImVec4(1.00f, 1.00f, 0.34f, 1.00f);
-        const ImVec4 processingTimeColor = averageProcessingTime < 20 ? ImVec4(0.43f, 1.00f, 0.34f, 1.00f) : ImVec4(1.00f, 0.43f, 0.34f, 1.00f);
+        const ImVec4 processingTimeColor = averageProcessingTime < 20 ? ImVec4(0.50f, 1.00f, 0.50f, 1.00f) : ImVec4(1.00f, 0.50f, 0.50f, 1.00f);
+        const ImVec4 leftLockColor = leftLock ?                         ImVec4(0.50f, 1.00f, 0.50f, 1.00f) : ImVec4(1.00f, 0.50f, 0.50f, 1.00f);
+        const ImVec4 rightLockColor = rightLock ?                       ImVec4(0.50f, 1.00f, 0.50f, 1.00f) : ImVec4(1.00f, 0.50f, 0.50f, 1.00f);
+        if (autoFire == 0) autoFireColor =                                                                   ImVec4(1.00f, 0.50f, 0.50f, 1.00f);
+        else if (autoFire == 1) autoFireColor =                         ImVec4(0.50f, 1.00f, 0.50f, 1.00f);
+        else autoFireColor = counter & (1 << 6) ? ImVec4(1.00f, 1.00f, 0.50f, 1.00f) : ImVec4(0.50f, 0.50f, 1.00f, 1.00f);
+        const ImVec4 boneIdColor =                ImVec4(1.00f, 1.00f, 0.50f, 1.00f);
         ImGui::TextColored(leftLockColor, "< ");
         ImGui::SameLine();
         ImGui::TextColored(autoFireColor, "^ ");
@@ -368,11 +368,11 @@ struct Sense {
             ImGuiWindowFlags_NoInputs);
 
         ImGui::Text("Spectators: ");
-        ImGui::SameLine(); ImGui::TextColored(totalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", totalSpectators);
+        ImGui::SameLine(); ImGui::TextColored(totalSpectators > 0 ? ImVec4(1.00f, 0.50f, 0.50f, 1.00f) : ImVec4(0.50f, 1.00f, 0.50f, 1.00f), "%d", totalSpectators);
         if (static_cast<int>(spectators.size()) > 0) {
             ImGui::Separator();
             for (int i = 0; i < static_cast<int>(spectators.size()); i++)
-                ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", spectators.at(i).c_str());
+                ImGui::TextColored(ImVec4(1.00f, 0.50f, 0.50f, 1.00f), "> %s", spectators.at(i).c_str());
         }
         ImGui::End();
     }
