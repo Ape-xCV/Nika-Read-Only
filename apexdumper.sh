@@ -109,15 +109,16 @@ if [[ "$ClientState" == "" ]]; then
 else
   echo "constexpr long OFF_LEVEL_NAME = ${ClientState%%[[:cntrl:]]} + 0x01c4; //[Miscellaneous]->ClientState + 0x01c4" >> Offsets.hpp
 fi
-if [[ "$projectile_launch_speed" == "" ]] || [[ "$base" == "" ]] || [[ ${base%%[[:cntrl:]]} == 0x0000 ]]; then
-  m_flProjectileSpeed=$(sed -n -e "s/constexpr long OFF_PROJECTILE_SPEED\s*=\s*//p" Offsets.tmp)
-  m_flProjectileSpeed=${m_flProjectileSpeed%%;*}
-  echo "constexpr long OFF_PROJECTILE_SPEED = $m_flProjectileSpeed; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base" >> Offsets.hpp
-else
-  echo "constexpr long OFF_PROJECTILE_SPEED = ${projectile_launch_speed%%[[:cntrl:]]} + ${base%%[[:cntrl:]]}; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base" >> Offsets.hpp
-fi
-echo "constexpr long OFF_PROJECTILE_SCALE = OFF_PROJECTILE_SPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileScale //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base" >> Offsets.hpp
+# if [[ "$projectile_launch_speed" == "" ]] || [[ "$base" == "" ]] || [[ ${base%%[[:cntrl:]]} == 0x0000 ]]; then
+#   m_flProjectileSpeed=$(sed -n -e "s/constexpr long OFF_PROJECTILE_SPEED\s*=\s*//p" Offsets.tmp)
+#   m_flProjectileSpeed=${m_flProjectileSpeed%%;*}
+#   echo "constexpr long OFF_PROJECTILE_SPEED = $m_flProjectileSpeed; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base" >> Offsets.hpp
+# else
+#   echo "constexpr long OFF_PROJECTILE_SPEED = ${projectile_launch_speed%%[[:cntrl:]]} + ${base%%[[:cntrl:]]}; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base" >> Offsets.hpp
+# fi
 echo "constexpr long OFF_CAMERA_ORIGIN = ${camera_origin}; //[Miscellaneous]->CPlayer!camera_origin" >> Offsets.hpp
+echo "constexpr long OFF_PROJECTILE_SPEED = OFF_CAMERA_ORIGIN - 0x1c; //[Miscellaneous]->CPlayer!camera_origin - 0x1c //[WeaponSettings]->projectile_launch_speed + [WeaponSettingsMeta]->base" >> Offsets.hpp
+echo "constexpr long OFF_PROJECTILE_SCALE = OFF_PROJECTILE_SPEED + 0x8; //[Miscellaneous]->CWeaponX!m_flProjectileSpeed + 0x8 //[WeaponSettings]->projectile_gravity_scale + [WeaponSettingsMeta]->base" >> Offsets.hpp
 echo "constexpr long OFF_STUDIO_HDR = ${m_pStudioHdr}; //[Miscellaneous]->CBaseAnimating!m_pStudioHdr" >> Offsets.hpp
 echo "// [RecvTable.DT_BaseAnimating]" >> Offsets.hpp
 if [[ "$m_nForceBone" == "" ]]; then
