@@ -24,7 +24,7 @@
 * [ ] Spectators list
 * [x] Humanized aimbot
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
-* [ ] Increase/decrease **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
+* [x] Increase/decrease **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [ ] Disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 - **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
