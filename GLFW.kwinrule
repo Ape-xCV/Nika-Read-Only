@@ -1,0 +1,6 @@
+[Window settings for Looking Glass (client)]
+Description=Window settings for Looking Glass (client)
+below=true
+belowrule=3
+title=Looking Glass (client)
+titlematch=1
