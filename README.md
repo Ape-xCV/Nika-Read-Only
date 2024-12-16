@@ -21,7 +21,7 @@
 * [x] Overlay based ESP for players and items
 * [x] Press INSERT / DELETE / HOME / END / PAGE_UP / PAGE_DOWN to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
-* [ ] Spectators list
+* [x] Spectators list
 * [x] Humanized aimbot
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
 * [x] Increase/decrease **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
