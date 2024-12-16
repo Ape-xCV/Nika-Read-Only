@@ -1,16 +1,6 @@
-[Window settings for Apex Legends]
-Description=Window settings for Apex Legends
+[Window settings for Looking Glass (client)]
+Description=Looking Glass (client)
 below=true
 belowrule=3
-title=Apex Legends
+title=Looking Glass (client)
 titlematch=1
-types=1
-
-[Window settings for GLFW]
-Description=Window settings for GLFW
-fullscreen=true
-fullscreenrule=3
-noborder=true
-noborderrule=3
-types=1
-wmclassmatch=1
