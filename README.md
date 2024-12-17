@@ -53,10 +53,17 @@ echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
 
 
   <details>
-    <summary>Install on <b>Arch (EndeavourOS)</b>:</summary>
+    <summary>Install on <b>Arch Linux (EndeavourOS)</b>:</summary>
 
     sudo pacman -S qemu-desktop
     sudo pacman -S virt-manager
+  </details>
+
+
+  <details>
+    <summary>Install on <b>Fedora Linux (Fedora KDE)</b>:</summary>
+
+    sudo dnf install @virtualization
   </details>
 
 ### 1.1. Configure libvirt
