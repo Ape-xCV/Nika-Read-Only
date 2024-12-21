@@ -307,7 +307,7 @@ Find PCI IDs with: `lspci -n -s 02:00`
 
 Edit `/etc/default/grub` (use either **intel_iommu=on** or **amd_iommu=on**):
 ```shell
-GRUB_CMDLINE_LINUX="module_blacklist=nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX="module_blacklist=nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off intel_iommu=on iommu=pt"
 ```
 
 Update GRUB and restart Linux PC:
