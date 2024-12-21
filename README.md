@@ -326,6 +326,12 @@ Update GRUB and restart Linux PC:
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
+or
+
+```shell
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+
 ### 3.1 Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
