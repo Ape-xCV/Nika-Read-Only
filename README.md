@@ -53,7 +53,7 @@ echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
 
 
   <details>
-    <summary>Install on <b>Arch Linux (EndeavourOS)</b>:</summary>
+    <summary>Install on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
 
     sudo pacman -S qemu-desktop
     sudo pacman -S virt-manager
@@ -309,16 +309,16 @@ Edit `/etc/default/grub` (use either **intel_iommu=on** or **amd_iommu=on**).
 
 
   <details>
-    <summary>Blacklist on <b>Arch Linux (EndeavourOS)</b>:</summary>
+    <summary>Blacklist on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
 
-    GRUB_CMDLINE_LINUX="module_blacklist=nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off intel_iommu=on iommu=pt"
+    GRUB_CMDLINE_LINUX="module_blacklist=nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off pcie_aspm.policy=performance intel_iommu=on iommu=pt"
   </details>
 
 
   <details>
     <summary>Blacklist on <b>Fedora Linux (Fedora KDE)</b>:</summary>
 
-    GRUB_CMDLINE_LINUX="rdblacklist=nouveau rd.driver.pre=vfio-pci vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off intel_iommu=on iommu=pt"
+    GRUB_CMDLINE_LINUX="rdblacklist=nouveau rd.driver.pre=vfio-pci vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off pcie_aspm.policy=performance intel_iommu=on iommu=pt"
   </details>
 
 Update GRUB and restart Linux PC:
