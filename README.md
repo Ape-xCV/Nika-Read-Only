@@ -17,7 +17,7 @@
 
 ## Features
 
-* [x] Press F9 to dump **r5apex** and scan for offsets
+* [x] Press F8 to dump **r5apex** and scan for offsets
 * [x] Overlay based ESP for players and items
 * [x] Press INSERT / DELETE / HOME / END / PAGE_UP / PAGE_DOWN to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
@@ -31,6 +31,7 @@
 - **Unbind LMB (Left Mouse Button) in-game from fire, so that the cheat will fire for you instead** (AIMBOT_ACTIVATED_BY_MOUSE default YES)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [ ] Hold CAPS_LOCK to **super glide**
+* [x] Terminate cheat with F9
 
 ### 1. Environment set up in Linux
 
