@@ -390,6 +390,7 @@ https://github.com/memflow/memflow-kvm/releases
 
 - Install:
 ```shell
+sudo dnf install dkms
 sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```
 
