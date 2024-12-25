@@ -52,6 +52,11 @@ sudo su
 echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
 ```
 
+- Update initramfs:
+```shell
+sudo dracut --force
+```
+
 
   <details>
     <summary>Install on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
@@ -59,7 +64,6 @@ echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
     sudo pacman -S qemu-desktop
     sudo pacman -S virt-manager
   </details>
-
 
   <details>
     <summary>Install on <b>Fedora Linux (Fedora KDE)</b>:</summary>
@@ -255,20 +259,6 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
   ```
   </details>
 
-
-- Replace `<audio id="1" type="spice"/>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <audio id="1" type="pipewire" runtimeDir="/run/user/1000">
-    <input name="qemuinput"/>
-    <output name="qemuoutput"/>
-  </audio>
-  ```
-  </details>
-
-
 ### 2.2 Install Windows
 
 - Where do you want to install Windows?
@@ -280,13 +270,13 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 ### 3. VFIO GPU passthrough (on Linux PC)
 
-Find GPU location with: `lspci -v | grep VGA`
+- Find GPU location with: `lspci -v | grep VGA`
 ```shell
 00:02.0 VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) (prog-if 00 [VGA controller])
 02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
 ```
 
-GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep NVIDIA`
+- GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep NVIDIA`
 ```shell
 02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
         Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
@@ -298,7 +288,7 @@ GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep NVIDIA`
         Subsystem: NVIDIA Corporation Device 1f02
 ```
 
-Find PCI IDs with: `lspci -n -s 02:00`
+- Find PCI IDs with: `lspci -n -s 02:00`
 ```shell
 02:00.0 0300: 10de:1f02 (rev a1)
 02:00.1 0403: 10de:10f9 (rev a1)
@@ -306,30 +296,14 @@ Find PCI IDs with: `lspci -n -s 02:00`
 02:00.3 0c80: 10de:1adb (rev a1)
 ```
 
-Edit `/etc/default/grub` (use either **intel_iommu=on** or **amd_iommu=on**).
-
-
-  <details>
-    <summary>Blacklist on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
-
-    GRUB_CMDLINE_LINUX="module_blacklist=nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off pcie_aspm.policy=performance intel_iommu=on iommu=pt"
-  </details>
-
-
-  <details>
-    <summary>Blacklist on <b>Fedora Linux (Fedora KDE)</b>:</summary>
-
-    GRUB_CMDLINE_LINUX="rdblacklist=nouveau rd.driver.pre=vfio-pci vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb pcie_port_pm=off pcie_aspm.policy=performance intel_iommu=on iommu=pt"
-  </details>
-
-Update GRUB and restart Linux PC:
+- Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-sudo grub-mkconfig -o /boot/grub/grub.cfg
+GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt pcie_port_pm=off pcie_aspm.policy=performance"
 ```
 
-or
-
+- Update GRUB and restart Linux PC:
 ```shell
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
@@ -354,9 +328,21 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 ### 3.3 Looking Glass B6 (on Linux PC)
 
-- https://looking-glass.io/downloads >> Source
+  <details>
+    <summary>Install <u>dependencies</u> on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
 
-- You can install Looking Glass B6 with:
+    sudo pacman -S cmake
+  </details>
+
+  <details>
+    <summary>Install <u>dependencies</u> on <b>Fedora Linux (Fedora KDE)</b>:</summary>
+
+    sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
+  </details>
+
+https://looking-glass.io/downloads >> Source
+
+- Build Looking Glass B6:
 ```shell
 sudo pacman -S cmake
 cd path/to/extracted/repository
