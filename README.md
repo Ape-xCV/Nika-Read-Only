@@ -340,7 +340,7 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
     sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
   </details>
 
-https://looking-glass.io/downloads >> Source
+- https://looking-glass.io/downloads >> Source
 
 - Build Looking Glass B6:
 ```shell
