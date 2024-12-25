@@ -42,13 +42,13 @@
 
 - Nested Virtualization for Intel:
 ```shell
-su
+sudo su
 echo "options kvm_intel nested=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
-su
+sudo su
 echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
 ```
 
@@ -395,4 +395,19 @@ chmod +x nika
 ```shell
 cd path/to/extracted/repository
 sudo ./nika
+```
+
+### 6. memflow-kvm
+
+- Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
+https://github.com/memflow/memflow-kvm/releases
+
+- Install:
+```shell
+sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
+```
+
+- Run (before `sudo ./nika`):
+```shell
+modprobe memflow
 ```
