@@ -30,7 +30,7 @@
 - **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
 - **Unbind LMB (Left Mouse Button) in-game from fire, so that the cheat will fire for you instead** (AIMBOT_ACTIVATED_BY_MOUSE default YES)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
-* [ ] Hold CAPS_LOCK to **super glide**
+* [ ] Hold CAPS_LOCK to **superglide**
 * [x] Terminate cheat with F9
 
 ### 1. Environment set up in Linux
@@ -388,9 +388,6 @@ DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 - Install:
 ```shell
 cd path/to/extracted/repository
-chmod +x libmemflow_kvm.so
-chmod +x libmemflow_qemu.so
-chmod +x libmemflow_win32.so
 chmod +x nika
 ```
 
