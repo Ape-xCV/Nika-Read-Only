@@ -407,7 +407,9 @@ https://github.com/memflow/memflow-kvm/releases
 sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```
 
-- Run (before `sudo ./nika`):
+- Run:
 ```shell
 modprobe memflow
+cd path/to/extracted/repository
+sudo ./nika
 ```
