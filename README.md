@@ -409,7 +409,7 @@ sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 
 - Run:
 ```shell
-modprobe memflow
+sudo modprobe memflow
 cd path/to/extracted/repository
 sudo ./nika
 ```
