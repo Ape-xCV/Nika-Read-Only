@@ -307,7 +307,21 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
-### 3.1 Add passthrough GPU devices to Windows VM
+### 3.1 Fedora KDE extra isolation
+- GPU on `02:00.0` is isolated. Find path for GPU on `00:02.0` with: `ls -l /dev/dri/by-path/ | grep 00:02.0-card`
+```shell
+lrwxrwxrwx. 1 root root  8 Dec 26 21:38 pci-0000:00:02.0-card -> ../card1
+```
+
+- Set KWIN to use GPU on `00:02.0` with:
+```shell
+sudo su
+echo export KWIN_DRM_DEVICES=/dev/dri/card1 > /etc/profile.d/vfio-kwin.sh
+```
+
+- Restart Linux PC.
+
+### 3.2 Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
@@ -318,7 +332,7 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 - Install GPU drivers on Windows VM.
 
-### 3.2 Looking Glass B6 (on Windows VM)
+### 4. Looking Glass B6 (on Windows VM)
 
 - If your `Windows10.iso` is updated to poop level:
   - Search >> Reputation-based protection >> Check apps and files >> Off
@@ -326,7 +340,7 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   - At least one GPU display port needs to be populated, shop online for HDMI Dummy Plug if needed.
   - Windows Host Binary will not start without it.
 
-### 3.3 Looking Glass B6 (on Linux PC)
+### 4.1 Looking Glass B6 (on Linux PC)
 
   <details>
     <summary>Install <u>dependencies</u> on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
@@ -362,14 +376,14 @@ cd client/build
 ./looking-glass-client
 ```
 
-### 4. Install Hyper-V (on Windows VM)
+### 5. Install Hyper-V (on Windows VM)
 
 - Open a Command Prompt as Administrator:
 ```shell
 DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 ```
 
-### 5. Nika Read Only (on Linux PC)
+### 6. Nika Read Only (on Linux PC)
 
 - Install:
 ```shell
@@ -383,7 +397,7 @@ cd path/to/extracted/repository
 sudo ./nika
 ```
 
-### 6. memflow-kvm
+### 7. memflow-kvm
 
 - Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
 https://github.com/memflow/memflow-kvm/releases
