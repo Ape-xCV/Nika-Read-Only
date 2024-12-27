@@ -52,6 +52,13 @@ sudo su
 echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
 ```
 
+- Preload `vfio-pci` module so it can bind to PCI IDs:
+```shell
+sudo su
+echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+```
+
 - Update initramfs:
 ```shell
 sudo dracut --force
@@ -307,21 +314,7 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
-### 3.1 Fedora KDE extra isolation
-- GPU on `02:00.0` is isolated. Find path for GPU on `00:02.0` with: `ls -l /dev/dri/by-path/ | grep 00:02.0-card`
-```shell
-lrwxrwxrwx. 1 root root  8 Dec 26 21:38 pci-0000:00:02.0-card -> ../card1
-```
-
-- Set KWIN to use GPU on `00:02.0` with:
-```shell
-sudo su
-echo export KWIN_DRM_DEVICES=/dev/dri/card1 > /etc/profile.d/vfio-kwin.sh
-```
-
-- Restart Linux PC.
-
-### 3.2 Add passthrough GPU devices to Windows VM
+### 3.1 Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
