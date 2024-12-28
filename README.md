@@ -351,7 +351,6 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 - Build Looking Glass B6:
 ```shell
-sudo pacman -S cmake
 cd path/to/extracted/repository
 cd client
 mkdir build
