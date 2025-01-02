@@ -36,9 +36,10 @@
 ### 1. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
-  - VT-d for Intel
-  - AMD-V for AMD
-
+    - VT-d for Intel (VMX)
+    - AMD-Vi for AMD (SVM)
+  - Enable "IOMMU"
+  - Disable "Above 4G Decoding"
 
 - Nested Virtualization for Intel:
 ```shell
@@ -139,7 +140,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=1,manufacturer=ASUS,product=ASUS Zenbook 14X UX1337,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=2,manufacturer=ASUS,product=87FD,version=34.21,serial=B1C2D3E4F56789"/>
+      <qemu:arg value="type=2,manufacturer=ASUS,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=3,manufacturer=ASUS,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
@@ -277,13 +278,13 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 ### 3. VFIO GPU passthrough (on Linux PC)
 
-- Find GPU location with: `lspci -v | grep VGA`
+- Find GPU location with: `lspci -v | grep -i VGA`
 ```shell
 00:02.0 VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) (prog-if 00 [VGA controller])
 02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
 ```
 
-- GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep NVIDIA`
+- GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep -i NVIDIA`
 ```shell
 02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
         Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
@@ -312,6 +313,23 @@ GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:
 ```shell
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+
+- Inspect IOMMU enabled with: `sudo dmesg | grep -i DMAR`
+```shell
+[    0.029744] DMAR: IOMMU enabled
+```
+
+- Inspect kernel driver in use (example for `01:00`) with: `lspci -k -s 01:00`
+```shell
+01:00.0 VGA compatible controller: NVIDIA Corporation GA102 [GeForce RTX 3080 12GB] (rev a1)
+        Subsystem: Palit Microsystems Inc. Device 220a
+        Kernel driver in use: vfio-pci
+        Kernel modules: nouveau
+01:00.1 Audio device: NVIDIA Corporation GA102 High Definition Audio Controller (rev a1)
+        Subsystem: Palit Microsystems Inc. Device 220a
+        Kernel driver in use: vfio-pci
+        Kernel modules: snd_hda_intel
 ```
 
 ### 3.1 Add passthrough GPU devices to Windows VM
