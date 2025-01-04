@@ -407,7 +407,7 @@ cd path/to/extracted/repository
 sudo ./nika
 ```
 
-### 7. memflow-kvm
+### 7. memflow-kvm (will trigger "The client failed an anti-cheat backend check.")
 
 - Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
 https://github.com/memflow/memflow-kvm/releases
