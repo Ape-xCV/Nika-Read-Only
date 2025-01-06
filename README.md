@@ -19,7 +19,7 @@
 
 * [x] Press F8 to dump **r5apex** and scan for offsets
 * [x] Overlay based ESP for players and items
-* [x] Press INSERT / DELETE / HOME / END / PAGE_UP / PAGE_DOWN to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
+* [x] Press 5 / 6 / 7 / 8 / 9 / 0 to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
 * [x] Spectators list
 * [x] Humanized aimbot
