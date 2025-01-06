@@ -306,7 +306,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 - Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt pcie_port_pm=off pcie_aspm.policy=performance"
+GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
 ```
 
 - Update GRUB and restart Linux PC:
@@ -320,17 +320,26 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 [    0.029744] DMAR: IOMMU enabled
 ```
 
-- Inspect kernel driver in use (example for `01:00`) with: `lspci -k -s 01:00`
-```shell
-01:00.0 VGA compatible controller: NVIDIA Corporation GA102 [GeForce RTX 3080 12GB] (rev a1)
-        Subsystem: Palit Microsystems Inc. Device 220a
+- Inspect kernel driver in use with: `lspci -k -s 02:00`
+```lua
+02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1)
+        Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
         Kernel driver in use: vfio-pci
         Kernel modules: nouveau
-01:00.1 Audio device: NVIDIA Corporation GA102 High Definition Audio Controller (rev a1)
-        Subsystem: Palit Microsystems Inc. Device 220a
+02:00.1 Audio device: NVIDIA Corporation TU106 High Definition Audio Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
         Kernel driver in use: vfio-pci
         Kernel modules: snd_hda_intel
+02:00.2 USB controller: NVIDIA Corporation TU106 USB 3.1 Host Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+        Kernel driver in use: xhci_hcd
+02:00.3 Serial bus controller: NVIDIA Corporation TU106 USB Type-C UCSI Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+        Kernel driver in use: vfio-pci
+        Kernel modules: i2c_nvidia_gpu
 ```
+
+- Not loaded as a module, `xhci_hcd` will be managed by libvirt.
 
 ### 3.1 Add passthrough GPU devices to Windows VM
 
