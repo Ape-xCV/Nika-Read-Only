@@ -398,14 +398,7 @@ cd client/build
 ./looking-glass-client
 ```
 
-### 5. Install Hyper-V (on Windows VM)
-
-- Open a Command Prompt as Administrator:
-```shell
-DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
-```
-
-### 6. Nika Read Only (on Linux PC)
+### 5. Nika Read Only (on Linux PC)
 
 - Install:
 ```shell
@@ -417,6 +410,25 @@ chmod +x nika
 ```shell
 cd path/to/extracted/repository
 sudo ./nika
+```
+
+### 6. Hyper-V alternative
+
+- Edit XML for Intel (on Linux PC):
+```shell
+<feature policy="disable" name="hypervisor"/>
+<feature policy="require" name="vmx"/>
+```
+
+- Edit XML for AMD (on Linux PC):
+```shell
+<feature policy="disable" name="hypervisor"/>
+<feature policy="require" name="svm"/>
+```
+
+- Open a Command Prompt as Administrator (on Windows VM):
+```shell
+DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 ```
 
 ### 7. memflow-kvm (will trigger "The client failed an anti-cheat backend check.")
