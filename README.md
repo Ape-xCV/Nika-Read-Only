@@ -315,9 +315,9 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
-- Inspect IOMMU enabled with: `sudo dmesg | grep -i DMAR`
+- Inspect IOMMU enabled with:
 ```shell
-[    0.029744] DMAR: IOMMU enabled
+if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOMMU enabled."; fi
 ```
 
 - Inspect kernel driver in use with: `lspci -k -s 02:00`
