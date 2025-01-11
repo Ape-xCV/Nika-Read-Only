@@ -24,7 +24,7 @@
 * [x] Spectators list
 * [x] Humanized aimbot
 * [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
-* [x] Increase/decrease **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
+* [x] Weaken **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [ ] Disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 - **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
@@ -72,6 +72,7 @@ sudo dracut --force
     sudo pacman -S qemu-desktop
     sudo pacman -S virt-manager
   </details>
+
 
   <details>
     <summary>Install on <b>Fedora Linux (Fedora KDE)</b>:</summary>
@@ -127,6 +128,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 ### 2.1 Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
 
 - Replace `<domain type="kvm">` and [Apply]:
   <details>
@@ -272,7 +274,6 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 - Where do you want to install Windows?
   - Load driver >> OK >> `E:\amd64\w10\viostor.inf`
 
-
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
   * [x] VirtIO Disk 1 >> [Apply]
 
@@ -349,24 +350,26 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
   - 02:00.2 NVIDIA Corporation TU106 USB 3.1 Host Controller >> **[Finish]**
   - 02:00.3 NVIDIA Corporation TU106 USB Type-C UCSI Controller >> **[Finish]**
 
-
 - Install GPU drivers on Windows VM.
 
 ### 4. Looking Glass B6 (on Windows VM)
 
 - If your `Windows10.iso` is updated to poop level:
   - Search >> Reputation-based protection >> Check apps and files >> Off
+
 - https://looking-glass.io/downloads >> Windows Host Binary
   - At least one GPU display port needs to be populated, shop online for HDMI Dummy Plug if needed.
   - Windows Host Binary will not start without it.
 
 ### 4.1 Looking Glass B6 (on Linux PC)
 
+
   <details>
     <summary>Install <u>dependencies</u> on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
 
     sudo pacman -S cmake
   </details>
+
 
   <details>
     <summary>Install <u>dependencies</u> on <b>Fedora Linux (Fedora KDE)</b>:</summary>
