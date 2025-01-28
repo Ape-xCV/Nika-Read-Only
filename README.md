@@ -17,7 +17,7 @@
 
 ## Features
 
-* [x] Press F8 to dump **r5apex** and scan for offsets
+* [x] Stable CR3 shuffle
 * [x] Overlay based ESP for players and items
 * [x] Press 5 / 6 / 7 / 8 / 9 / 0 to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
@@ -31,6 +31,7 @@
 - **Unbind LMB (Left Mouse Button) in-game from fire, so that the cheat will fire for you instead** (AIMBOT_ACTIVATED_BY_MOUSE default YES)
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [ ] Hold CAPS_LOCK to **superglide**
+* [x] Press F8 to dump **r5apex** and scan for offsets
 * [x] Terminate cheat with F9
 
 ### 1. Environment set up in Linux
@@ -431,7 +432,7 @@ sudo ./nika
 DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 ```
 
-### 7. memflow-kvm (will trigger "The client failed an anti-cheat backend check.")
+### 7. memflow-kvm (for CR3 shuffle)
 
 - Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
 https://github.com/memflow/memflow-kvm/releases
