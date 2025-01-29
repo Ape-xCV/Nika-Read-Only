@@ -17,7 +17,7 @@
 
 ## Features
 
-* [x] Stable CR3 shuffle
+* [x] Stable CR3 shuffle for [Windows 10 20H1](https://archive.org/details/win-10-2004-english-x-64_202010)
 * [x] Overlay based ESP for players and items
 * [x] Press 5 / 6 / 7 / 8 / 9 / 0 to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
