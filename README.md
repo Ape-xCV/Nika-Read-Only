@@ -390,10 +390,10 @@ cmake ..
 make
 ```
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
-
 - For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
 
 - Start your Windows VM and connect to it using Looking Glass B6:
 ```shell
