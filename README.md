@@ -365,6 +365,10 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 ### 4.1 Looking Glass B6 (on Linux PC)
 
 
+- For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
+- Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+
   <details>
     <summary>Install <u>dependencies</u> on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
 
@@ -389,6 +393,9 @@ cd build
 cmake ..
 make
 ```
+
+- For KDE desktop environment, open System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
+    - Also check in System Settings >> Display & Monitor >> Scale: 100%
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
 
