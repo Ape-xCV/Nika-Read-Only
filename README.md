@@ -63,22 +63,22 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 - Update initramfs:
 ```shell
-sudo dracut --force
+<Fedora> sudo dracut --force
+<Debian> sudo update-initramfs -c -k $(uname -r)
 ```
 
 
   <details>
-    <summary>Install on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
-
-    sudo pacman -S qemu-desktop
-    sudo pacman -S virt-manager
-  </details>
-
-
-  <details>
-    <summary>Install on <b>Fedora Linux (Fedora KDE)</b>:</summary>
+    <summary>Install on <b>Fedora Linux (Fedora 41 KDE)</b>:</summary>
 
     sudo dnf install @virtualization
+  </details>
+
+  
+  <details>
+    <summary>Install on <b>Debian Linux (Debian 12 KDE)</b>:</summary>
+
+    sudo apt install virt-manager
   </details>
 
 ### 1.1. Configure libvirt
