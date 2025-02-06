@@ -313,8 +313,8 @@ GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:
 
 - Update GRUB and restart Linux PC:
 ```shell
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 - Inspect IOMMU enabled with:
@@ -366,16 +366,16 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 
   <details>
-    <summary>Install <u>dependencies</u> on <b>Arch Linux (EndeavourOS KDE)</b>:</summary>
+    <summary>Install <u>dependencies</u> on <b>Fedora Linux</b>:</summary>
 
-    sudo pacman -S cmake
+    sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
   </details>
 
 
   <details>
-    <summary>Install <u>dependencies</u> on <b>Fedora Linux (Fedora KDE)</b>:</summary>
+    <summary>Install <u>dependencies</u> on <b>Debian Linux</b>:</summary>
 
-    sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
+    sudo apt install cmake libfontconfig-dev libspice-protocol-dev nettle-dev libwayland-dev libxkbcommon-dev libx11-dev libxi-dev libxss-dev libxinerama-dev libxcursor-dev libxpresent-dev libegl-dev libpipewire-0.3-dev libpulse-dev libsamplerate0-dev binutils-dev libgles-dev
   </details>
 
 - https://looking-glass.io/downloads >> Source
