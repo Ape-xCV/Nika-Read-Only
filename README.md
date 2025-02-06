@@ -366,14 +366,14 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 
   <details>
-    <summary>Install <u>dependencies</u> on <b>Fedora Linux</b>:</summary>
+    <summary>Install dependencies on <b>Fedora Linux</b>:</summary>
 
     sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
   </details>
 
 
   <details>
-    <summary>Install <u>dependencies</u> on <b>Debian Linux</b>:</summary>
+    <summary>Install dependencies on <b>Debian Linux</b>:</summary>
 
     sudo apt install cmake libfontconfig-dev libspice-protocol-dev nettle-dev libwayland-dev libxkbcommon-dev libx11-dev libxi-dev libxss-dev libxinerama-dev libxcursor-dev libxpresent-dev libegl-dev libpipewire-0.3-dev libpulse-dev libsamplerate0-dev binutils-dev libgles-dev
   </details>
@@ -437,14 +437,28 @@ DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 
 ### 7. memflow-kvm (for CR3 shuffle)
 
+
+  <details>
+    <summary>Install <b>dkms</b> on <b>Fedora Linux</b>:</summary>
+
+    sudo dnf install kernel-devel-$(uname -r)
+    sudo dnf install kernel-devel-matched-$(uname -r)
+    sudo dnf install dkms
+  </details>
+
+
+  <details>
+    <summary>Install <b>dkms</b> on <b>Debian Linux</b>:</summary>
+
+    sudo apt install linux-headers-amd64=6.1.123-1
+    sudo apt install dkms
+  </details>
+
 - Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
 https://github.com/memflow/memflow-kvm/releases
 
 - Install:
 ```shell
-sudo dnf install kernel-devel-$(uname -r)
-sudo dnf install kernel-devel-matched-$(uname -r)
-sudo dnf install dkms
 sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```
 
