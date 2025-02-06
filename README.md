@@ -413,7 +413,7 @@ chmod +x nika
 - Run:
 ```shell
 cd path/to/extracted/repository
-sudo ./nika
+sudo -E ./nika
 ```
 
 ### 6. Hyper-V alternative
@@ -466,5 +466,5 @@ sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```shell
 sudo modprobe memflow
 cd path/to/extracted/repository
-sudo ./nika
+sudo -E ./nika
 ```
