@@ -4,3 +4,10 @@ below=true
 belowrule=3
 title=Looking Glass (client)
 titlematch=1
+
+[Window settings for ImGui GLFW3]
+Description=Window settings for ImGui GLFW3
+fullscreen=true
+fullscreenrule=3
+title=ImGui GLFW3
+titlematch=1
