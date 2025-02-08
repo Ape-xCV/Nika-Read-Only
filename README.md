@@ -69,7 +69,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 
   <details>
-    <summary>Install on <b>Fedora Linux (Fedora 41 KDE)</b>:</summary>
+    <summary>Install on <b>Fedora Linux (Fedora Spins 41 KDE)</b>:</summary>
 
     sudo dnf install @virtualization
   </details>
