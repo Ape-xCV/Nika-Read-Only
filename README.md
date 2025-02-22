@@ -133,7 +133,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 - Replace `<domain type="kvm">` and [Apply]:
   <details>
-    <summary>Spoiler</summary>
+    <summary>Spoiler <b>(do NOT use this example, instead modify it with your own SMBIOS data; sudo demidecode)</b></summary>
 
   ```shell
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
