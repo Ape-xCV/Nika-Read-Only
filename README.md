@@ -97,6 +97,7 @@ unix_sock_rw_perms = "0770"
 
 - Join **libvirt group** and enable **libvirt daemon**:
 ```shell
+test $UID = 0 && exit
 sudo usermod -aG libvirt $USER
 sudo systemctl enable libvirtd.service
 ```
