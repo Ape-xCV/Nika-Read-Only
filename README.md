@@ -354,7 +354,7 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 - Install GPU drivers on Windows VM.
 
-### 4. Looking Glass B6 (on Windows VM)
+### 4. Looking Glass B7 (on Windows VM)
 
 - If your `Windows10.iso` is updated to poop level:
   - Search >> Reputation-based protection >> Check apps and files >> Off
@@ -363,7 +363,7 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
   - At least one GPU display port needs to be populated, shop online for HDMI Dummy Plug if needed.
   - Windows Host Binary will not start without it.
 
-### 4.1 Looking Glass B6 (on Linux PC)
+### 4.1 Looking Glass B7 (on Linux PC)
 
 
   <details>
@@ -381,7 +381,7 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 - https://looking-glass.io/downloads >> Source
 
-- Build Looking Glass B6:
+- Build Looking Glass B7:
 ```shell
 cd path/to/extracted/repository
 cd client
@@ -396,7 +396,7 @@ make
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
 
-- Start your Windows VM and connect to it using Looking Glass B6:
+- Start your Windows VM and connect to it using Looking Glass B7:
 ```shell
 cd path/to/extracted/repository
 cd client/build
