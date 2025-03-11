@@ -124,7 +124,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> Apply
   - Boot Options >> Boot device order: **Enable** boot menu >> Apply
   - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... `virtio-win.iso` >> [Finish]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: VirtIO >> Create a disk image for the virtual machine: 140 GiB >> Advanced options >> Serial: A0B1C2D3E4F56789 >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: VirtIO >> Create a disk image for the virtual machine: 140 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
 ### 2.1 Configure VM
