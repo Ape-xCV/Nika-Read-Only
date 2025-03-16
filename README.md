@@ -436,7 +436,7 @@ sudo -E ./nika
 DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 ```
 
-### 7. memflow-kvm (for CR3 shuffle)
+### 7. memflow-kvm (unrequired faster VMREAD, can lead to anti-cheat/game corruption)
 
 
   <details>
