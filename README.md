@@ -417,7 +417,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Hyper-V alternative
+### 6. Disable hypervisor
 
 - Edit XML for Intel (on Linux PC):
 ```shell
@@ -429,11 +429,6 @@ sudo -E ./nika
 ```shell
 <feature policy="disable" name="hypervisor"/>
 <feature policy="require" name="svm"/>
-```
-
-- Open a Command Prompt as Administrator (on Windows VM):
-```shell
-DISM /Online /Enable-Feature /FeatureName:Microsoft-Hyper-V /All
 ```
 
 ### 7. memflow-kvm (unrequired faster VMREAD, can lead to anti-cheat/game corruption)
