@@ -32,7 +32,7 @@
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [ ] Hold CAPS_LOCK to **superglide**
 * [x] Press F8 to dump **r5apex** and scan for offsets
-* [x] Terminate cheat with F9
+* [x] Press F9 twice to terminate cheat
 
 ### 1. Environment set up in Linux
 
@@ -417,7 +417,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Disable hypervisor
+### 6. Disable hypervisor (mandatory)
 
 - Edit XML for Intel (on Linux PC):
 ```shell
