@@ -450,7 +450,7 @@ sudo -E ./nika
   - Expand **Manifest** and `Replace Resource` on first item. Use `Manifest1.manifest` from **Desktop**.
   - Save and exit.
 - Copy `looking-glass-host_obfuscated.exe` to `C:\Program Files\dummy\dummy.exe` and uninstall Looking Glass B7 on Windows VM.
-- Shut down Windows VM from Virtual Machine Manager.
+- `Shut Down` your Windows VM from Virtual Machine Manager.
 
 ### 7. memflow-kvm (unrequired faster VMREAD, can lead to anti-cheat/game corruption)
 
