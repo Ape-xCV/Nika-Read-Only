@@ -437,15 +437,15 @@ sudo -E ./nika
 - Copy `C:\Program Files\dummy\dummy.exe` and `Paste shortcut` in **shell:startup**.
 - Reboot your Windows VM and confirm that **dummy** application runs on **startup**.
 - Install `Resource Hacker` from: [`Resource Hacker website`](https://www.angusj.com/resourcehacker/).
-- Open `C:\Program Files\dummy\dummy.exe` with Resource Hacker.
+- Open `C:\Program Files\dummy\dummy.exe` with `Resource Hacker`.
   - Expand **Icon** and `Save Resource to a RES file` on first item. Save to **Desktop**.
   - Expand **Version Info** and `Save Resource to a RES file` on first item. Save to **Desktop**.
   - Expand **Manifest** and `Save *.manifest resource` on first item. Save to **Desktop**.
-- Open `looking-glass-host.exe` with Resource Hacker.
+- Open `looking-glass-host.exe` with `Resource Hacker`.
   - Expand **Icon** and `Replace Icon` on first item. Use `Icon1.res` from **Desktop**.
   - `Save As` to **Desktop** and exit.
 - Protect `looking-glass-host.exe` using commercial obfuscation software. Output to **Desktop**.
-- Open `looking-glass-host_obfuscated.exe` with Resource Hacker.
+- Open `looking-glass-host_obfuscated.exe` with `Resource Hacker`.
   - Expand **Version Info** and; Actions >> Add from a Resource file >> `VersionInfo1.res` >> (*) Overwrite [x] Check All >> [Import]
   - Expand **Manifest** and `Replace Resource` on first item. Use `Manifest1.manifest` from **Desktop**.
   - Save and exit.
