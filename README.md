@@ -431,7 +431,7 @@ sudo -E ./nika
 <feature policy="require" name="svm"/>
 ```
 
-### 6.1 Obfuscate looking-glass-host.exe (mandatory)
+### 6.1 Protect looking-glass-host.exe (mandatory)
 
 - Install a **dummy** application.
 - Copy `C:\Program Files\dummy\dummy.exe` and `Paste shortcut` in **shell:startup**.
