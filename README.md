@@ -452,7 +452,7 @@ sudo -E ./nika
 - Copy `looking-glass-host_obfuscated.exe` to `C:\Program Files\dummy\dummy.exe` and uninstall Looking Glass B7 on Windows VM.
 - `Shut Down` your Windows VM from Virtual Machine Manager.
 
-### 7. memflow-kvm (unrequired faster VMREAD, can lead to anti-cheat/game corruption)
+### 7. memflow-kvm (faster VMREAD)
 
 
   <details>
