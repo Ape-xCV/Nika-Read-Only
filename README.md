@@ -271,6 +271,19 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
   ```
   </details>
 
+
+- Replace `<audio id="1" type="spice"/>` and [Apply]:
+  <details>
+    <summary>Spoiler <b>(for pipewire sound, not required)</b></summary>
+
+  ```shell
+  <audio id="1" type="pipewire" runtimeDir="/run/user/1000">
+    <input name="qemuinput"/>
+    <output name="qemuoutput"/>
+  </audio>
+  ```
+  </details>
+
 ### 2.2 Install Windows
 
 - Where do you want to install Windows?
