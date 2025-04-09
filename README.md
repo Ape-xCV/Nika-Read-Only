@@ -367,6 +367,90 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 - Install GPU drivers on Windows VM.
 
+### 4. Configure evdev passthrough
+
+- Find your **mouse** and **keyboard** with:
+```shell
+ls -l /dev/input/by-id/
+
+usb-COMPANY_USB_Device-event-if02 -> ../event7
+usb-COMPANY_USB_Device-event-kbd -> ../event4
+usb-COMPANY_USB_Device-if01-event-mouse -> ../event5
+usb-COMPANY_USB_Device-if01-mouse -> ../mouse0
+usb-COMPANY_USB_Device-if02-event-kbd -> ../event6
+usb-SONiX_USB_DEVICE-event-if01 -> ../event9
+usb-SONiX_USB_DEVICE-event-kbd -> ../event8
+```
+
+- By symlink `../mouse0` you find that `usb-COMPANY_USB_Device` is your **mouse**.
+- You are looking for `event-mouse` and `event-kbd`:
+  - `usb-COMPANY_USB_Device-if01-event-mouse -> ../event5` is your **mouse**.
+  - `usb-SONiX_USB_DEVICE-event-kbd -> ../event8` is your **keyboard**.
+
+- Edit `/etc/libvirt/qemu.conf` and uncomment:
+```shell
+cgroup_device_acl = [
+        "/dev/null", "/dev/full", "/dev/zero",
+        "/dev/random", "/dev/urandom",
+        "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+        "/dev/rtc", "/dev/hpet",
+        "/dev/input/by-id/usb-COMPANY_USB_Device-if01-event-mouse",
+        "/dev/input/by-id/usb-SONiX_USB_DEVICE-event-kbd",
+        "/dev/input/event5",
+        "/dev/input/event8",
+        "/dev/userfaultfd"
+]
+```
+
+- Include `cgroup_device_acl` as above, replacing `event-kbd`, `event-mouse`, and the path to each symlink `/dev/input/eventX`.
+
+- Restart libvirtd:
+```shell
+sudo systemctl restart libvirtd
+```
+
+### 4.1 Configure VM
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace `</domain>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+      <qemu:arg value="-object"/>
+      <qemu:arg value="input-linux,id=kbd1,evdev=/dev/input/by-id/usb-SONiX_USB_DEVICE-event-kbd,grab_all=on,repeat=on"/>
+      <qemu:arg value="-object"/>
+      <qemu:arg value="input-linux,id=mouse1,evdev=/dev/input/by-id/usb-COMPANY_USB_Device-if01-event-mouse"/>
+    </qemu:commandline>
+  </domain>
+  ```
+  </details>
+
+- Join **input group**:
+```shell
+test $UID = 0 && exit
+sudo usermod -aG input $USER
+```
+
+
+  <details>
+    <summary>Manually stop `SELinux` every reboot on <b>Fedora Linux</b>:</summary>
+
+    sudo setenforce 0
+  </details>
+
+  
+  <details>
+    <summary>Permanently disable `AppArmor` on <b>Debian Linux</b>:</summary>
+
+    sudo systemctl stop apparmor
+    sudo systemctl disable apparmor
+  </details>
+
+- Restart Linux PC.
+
 ### 4. Looking Glass B7 (on Windows VM)
 
 - If your `Windows10.iso` is updated to poop level:
