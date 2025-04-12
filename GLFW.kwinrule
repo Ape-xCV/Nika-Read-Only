@@ -1,3 +1,12 @@
+[Window settings for gst-launch-1.0]
+Description=Window settings for gst-launch-1.0
+below=true
+belowrule=3
+fullscreen=true
+fullscreenrule=3
+title=gst-launch-1.0
+titlematch=1
+
 [Window settings for Looking Glass (client)]
 Description=Window settings for Looking Glass (client)
 below=true
