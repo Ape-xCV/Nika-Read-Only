@@ -451,6 +451,34 @@ sudo usermod -aG input $USER
 
 - Restart Linux PC.
 
+### 5. Usage
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
+
+- For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
+  - Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+- You will be using video output from passthrough GPU instead of QXL virtual GPU.
+
+| Method                       | Latency   | ESP          | Cons                            |
+| ---------------------------- | --------- | ------------ | ------------------------------- |
+| Cable                        | 0 ms      | Glow         | Overlay on 2nd monitor          |
+| Capture card                 | 30-300 ms | Overlay+Glow | Investment for faster device    |
+| Looking Glass B7 client+host | 30 ms     | Overlay+Glow | Detected, match performance ban |
+
+### 5.1 Cable
+
+- Plug monitor into passthrough GPU.
+
+### 5.2 Capture card
+
+- Plug capture card into passthrough GPU.
+
+- Open capture card raw feed with:
+```shell
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
+```
+
 ### 4. Looking Glass B7 (on Windows VM)
 
 - If your `Windows10.iso` is updated to poop level:
