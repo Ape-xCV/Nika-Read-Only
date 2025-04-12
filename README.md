@@ -122,9 +122,8 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
 
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> Apply
-  - Boot Options >> Boot device order: **Enable** boot menu >> Apply
   - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... `virtio-win.iso` >> [Finish]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: VirtIO >> Create a disk image for the virtual machine: 140 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: VirtIO >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
 ### 2.1 Configure VM
@@ -460,11 +459,11 @@ sudo usermod -aG input $USER
 
 - You will be using video output from passthrough GPU instead of QXL virtual GPU.
 
-| Method                       | Latency   | ESP          | Cons                            |
-| ---------------------------- | --------- | ------------ | ------------------------------- |
-| Cable                        | 0 ms      | Glow         | Overlay on 2nd monitor          |
-| Capture card                 | 30-300 ms | Overlay+Glow | Investment for faster device    |
-| Looking Glass B7 client+host | 30 ms     | Overlay+Glow | Detected, match performance ban |
+| Method                       | Latency   | ESP          | Cons                         |
+| ---------------------------- | --------- | ------------ | ---------------------------- |
+| Cable                        | 0 ms      | Glow         | Overlay on 2nd monitor       |
+| Capture card                 | 30-300 ms | Overlay+Glow | Investment for faster device |
+| Steam Remote Play            | 10 ms     | Overlay+Glow | Encoded video                |
 
 ### 5.1 Cable
 
@@ -478,6 +477,27 @@ sudo usermod -aG input $USER
 ```shell
 gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
 ```
+
+### 5.3 Steam Remote Play
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC xx:xx:xx >> Network source: Bridge device... >> Device name: br0 >> [Apply]
+
+- Manually configure `br0` every reboot:
+```shell
+sudo ip link add name br0 type bridge
+sudo ip addr add 10.0.0.1/24 dev br0
+sudo ip link set dev br0 up
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables --table nat --append POSTROUTING --out-interface wlp10s0f3u1 -j MASQUERADE
+sudo iptables --insert FORWARD --in-interface br0 -j ACCEPT
+```
+
+- Windows VM static configuration (TCP/IPv4):
+  - IP address: 10.0.0.100
+  - Subnet mask: 255.255.255.0
+  - Default gateway: 10.0.0.1
+  - Preferred DNS server: 8.8.8.8
+  - Alternate DNS server: 9.9.9.9
 
 ### 4. Looking Glass B7 (on Windows VM)
 
