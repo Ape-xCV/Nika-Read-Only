@@ -1,3 +1,10 @@
+[Window settings for ImGui GLFW3]
+Description=Window settings for ImGui GLFW3
+fullscreen=true
+fullscreenrule=3
+title=ImGui GLFW3
+titlematch=1
+
 [Window settings for gst-launch-1.0]
 Description=Window settings for gst-launch-1.0
 below=true
@@ -7,16 +14,17 @@ fullscreenrule=3
 title=gst-launch-1.0
 titlematch=1
 
-[Window settings for Looking Glass (client)]
-Description=Window settings for Looking Glass (client)
+[Window settings for Steam]
+Description=Window settings for Steam
 below=true
 belowrule=3
-title=Looking Glass (client)
-titlematch=1
+wmclass=steamwebhelper steam
+wmclasscomplete=true
+wmclassmatch=1
 
-[Window settings for ImGui GLFW3]
-Description=Window settings for ImGui GLFW3
-fullscreen=true
-fullscreenrule=3
-title=ImGui GLFW3
-titlematch=1
+[Window settings for streaming_client]
+Description=Window settings for streaming_client
+below=true
+belowrule=3
+wmclass=streaming_client
+wmclassmatch=1
