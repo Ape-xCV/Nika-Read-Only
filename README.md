@@ -482,6 +482,15 @@ gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=108
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> NIC xx:xx:xx >> Network source: Bridge device... >> Device name: br0 >> [Apply]
 
+- Find your active network interface with:
+```shell
+ip -br addr show
+
+lo               UNKNOWN        127.0.0.1/8
+eno1             DOWN           
+wlp10s0f3u1      UP             172.16.0.100/24
+```
+
 - Manually configure `br0` every reboot:
 ```shell
 sudo ip link add name br0 type bridge
