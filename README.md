@@ -257,20 +257,6 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
   </details>
 
 
-- Replace `</devices>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <shmem name="looking-glass">
-      <model type="ivshmem-plain"/>
-      <size unit="M">32</size>
-    </shmem>
-  </devices>
-  ```
-  </details>
-
-
 - Replace `<audio id="1" type="spice"/>` and [Apply]:
   <details>
     <summary>Spoiler <b>(for pipewire sound, not required)</b></summary>
