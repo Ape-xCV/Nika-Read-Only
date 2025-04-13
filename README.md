@@ -366,7 +366,7 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 - Install GPU drivers on Windows VM.
 
-### 4. Configure evdev passthrough
+### 4. Configure evdev passthrough (on Linux PC)
 
 - Find your **mouse** and **keyboard** with:
 ```shell
@@ -499,56 +499,7 @@ sudo iptables --insert FORWARD --in-interface br0 -j ACCEPT
   - Preferred DNS server: 8.8.8.8
   - Alternate DNS server: 9.9.9.9
 
-### 4. Looking Glass B7 (on Windows VM)
-
-- If your `Windows10.iso` is updated to poop level:
-  - Search >> Reputation-based protection >> Check apps and files >> Off
-
-- https://looking-glass.io/downloads >> Windows Host Binary
-  - At least one GPU display port needs to be populated, shop online for HDMI Dummy Plug if needed.
-  - Windows Host Binary will not start without it.
-
-### 4.1 Looking Glass B7 (on Linux PC)
-
-
-  <details>
-    <summary>Install dependencies on <b>Fedora Linux</b>:</summary>
-
-    sudo dnf install cmake g++ fontconfig-devel spice-protocol nettle-devel wayland-devel libxkbcommon-x11-devel libXi-devel libXScrnSaver-devel libXinerama-devel libXcursor-devel libXpresent-devel libglvnd-devel pipewire-devel pulseaudio-libs-devel libsamplerate-devel binutils-devel libXrandr-devel
-  </details>
-
-
-  <details>
-    <summary>Install dependencies on <b>Debian Linux</b>:</summary>
-
-    sudo apt install cmake libfontconfig-dev libspice-protocol-dev nettle-dev libwayland-dev libxkbcommon-dev libx11-dev libxi-dev libxss-dev libxinerama-dev libxcursor-dev libxpresent-dev libegl-dev libpipewire-0.3-dev libpulse-dev libsamplerate0-dev binutils-dev libgles-dev
-  </details>
-
-- https://looking-glass.io/downloads >> Source
-
-- Build Looking Glass B7:
-```shell
-cd path/to/extracted/repository
-cd client
-mkdir build
-cd build
-cmake ..
-make
-```
-
-- For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
-  - Also check; System Settings >> Display & Monitor >> Scale: 100%
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
-
-- Start your Windows VM and connect to it using Looking Glass B7:
-```shell
-cd path/to/extracted/repository
-cd client/build
-./looking-glass-client
-```
-
-### 5. Nika Read Only (on Linux PC)
+### 6. Nika Read Only (on Linux PC)
 
 - Install:
 ```shell
@@ -562,7 +513,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Disable hypervisor (mandatory)
+### 7. Disable hypervisor (mandatory)
 
 - Edit XML for Intel (on Linux PC):
 ```shell
@@ -576,28 +527,7 @@ sudo -E ./nika
 <feature policy="require" name="svm"/>
 ```
 
-### 6.1 Protect looking-glass-host.exe (mandatory)
-
-- Install a **dummy** application.
-- Copy `C:\Program Files\dummy\dummy.exe` and `Paste shortcut` in **shell:startup**.
-- Reboot your Windows VM and confirm that **dummy** application runs on **startup**.
-- Install `Resource Hacker` from: [`Resource Hacker website`](https://www.angusj.com/resourcehacker/).
-- Open `C:\Program Files\dummy\dummy.exe` with `Resource Hacker`.
-  - Expand **Icon** and `Save Resource to a RES file` on first item. Save to **Desktop**.
-  - Expand **Version Info** and `Save Resource to a RES file` on first item. Save to **Desktop**.
-  - Expand **Manifest** and `Save *.manifest resource` on first item. Save to **Desktop**.
-- Open `looking-glass-host.exe` with `Resource Hacker`.
-  - Expand **Icon** and `Replace Icon` on first item. Use `Icon1.res` from **Desktop**.
-  - `Save As` to **Desktop** and exit.
-- Protect `looking-glass-host.exe` using commercial obfuscation software. Output to **Desktop**.
-- Open `looking-glass-host_obfuscated.exe` with `Resource Hacker`.
-  - Expand **Version Info** and; Actions >> Add from a Resource file >> `VersionInfo1.res` >> (*) Overwrite [x] Check All >> [Import]
-  - Expand **Manifest** and `Replace Resource` on first item. Use `Manifest1.manifest` from **Desktop**.
-  - Save and exit.
-- Copy `looking-glass-host_obfuscated.exe` to `C:\Program Files\dummy\dummy.exe` and uninstall Looking Glass B7 on Windows VM.
-- `Shut Down` your Windows VM from Virtual Machine Manager.
-
-### 7. memflow-kvm (faster VMREAD)
+### 8. memflow-kvm (faster VMREAD)
 
 
   <details>
