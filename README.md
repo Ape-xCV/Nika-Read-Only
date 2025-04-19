@@ -438,10 +438,10 @@ sudo usermod -aG input $USER
 
 ### 5. Usage
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
-
 - For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
 
 - You will be using video output from passthrough GPU instead of QXL virtual GPU.
 
