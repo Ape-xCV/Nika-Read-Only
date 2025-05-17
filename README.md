@@ -125,8 +125,28 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> Apply
   - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... `virtio-win.iso` >> [Finish]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: VirtIO >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SCSI >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
+
+⚠️ **You will now have `Controller SCSI 0` incorrectly set to `lsilogic`.** ⚠️
+
+- Controller SCSI 0 >> Model: VirtIO SCSI >> Apply
+
+- SCSI Disk 1 >> XML
+
+
+- Replace `</disk>` and [Apply]:
+  <details>
+    <summary>Spoiler <b>(do NOT use this example, modify it instead)</b></summary>
+
+  ```shell
+    <serial>B4NN3D53R14L</serial>
+    <vendor>KINGSPEC</vendor>
+    <product>SCSI256G</product>
+    <address type="drive" controller="0" bus="0" target="0" unit="0"/>
+  </disk>
+  ```
+  </details>
 
 ### 2.1 Configure VM
 
@@ -223,7 +243,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
     <feature policy="require" name="hypervisor"/>
     <feature policy="disable" name="vmx"/>
     <feature policy="disable" name="svm"/>
-    <feature policy="disable" name="aes"/>
+    <feature policy="require" name="aes"/>
     <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="ibpb"/>
     <feature policy="require" name="invtsc"/>
@@ -274,10 +294,10 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 ### 2.2 Install Windows
 
 - Where do you want to install Windows?
-  - Load driver >> OK >> `E:\amd64\w10\viostor.inf`
+  - Load driver >> OK >> `E:\amd64\w10\vioscsi.inf`
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
-  * [x] VirtIO Disk 1 >> [Apply]
+  * [x] SCSI Disk 1 >> [Apply]
 
 ### 3. VFIO GPU passthrough (on Linux PC)
 
@@ -401,17 +421,16 @@ sudo systemctl restart libvirtd
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
 
-- Replace `</domain>` and [Apply]:
+- Replace `</qemu:commandline>` and [Apply]:
   <details>
     <summary>Spoiler</summary>
 
   ```shell
-      <qemu:arg value="-object"/>
-      <qemu:arg value="input-linux,id=kbd1,evdev=/dev/input/by-id/usb-SONiX_USB_DEVICE-event-kbd,grab_all=on,repeat=on"/>
-      <qemu:arg value="-object"/>
-      <qemu:arg value="input-linux,id=mouse1,evdev=/dev/input/by-id/usb-COMPANY_USB_Device-if01-event-mouse"/>
-    </qemu:commandline>
-  </domain>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="input-linux,id=kbd1,evdev=/dev/input/by-id/usb-SONiX_USB_DEVICE-event-kbd,grab_all=on,repeat=on"/>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="input-linux,id=mouse1,evdev=/dev/input/by-id/usb-COMPANY_USB_Device-if01-event-mouse"/>
+  </qemu:commandline>
   ```
   </details>
 
