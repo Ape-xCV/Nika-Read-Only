@@ -130,7 +130,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 ⚠️ **You will now have `Controller SCSI 0` incorrectly set to `lsilogic`.** ⚠️
 
-- Controller SCSI 0 >> Model: VirtIO SCSI >> Apply
+- Controller SCSI 0 >> Model: VirtIO SCSI >> [Apply]
 
 - SCSI Disk 1 >> XML
 
