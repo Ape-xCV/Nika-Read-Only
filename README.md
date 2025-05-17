@@ -123,7 +123,7 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
 
-  - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> Apply
+  - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
   - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... `virtio-win.iso` >> [Finish]
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SCSI >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
