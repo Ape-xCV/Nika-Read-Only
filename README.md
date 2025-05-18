@@ -114,9 +114,6 @@ sudo virsh net-start default
 
 - **Enable XML editing** in Virtual Machine Manager >> Edit >> Preferences >> General
 
-- Download "Stable virtio-win ISO" from:
-https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
-
 ### 2. New VM set up in QEMU/KVM
 
 - Virtual Machine Manager >> File >> New Virtual Machine
@@ -124,29 +121,8 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
 
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
-  - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... `virtio-win.iso` >> [Finish]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SCSI >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
-
-⚠️ **You will now have `Controller SCSI 0` incorrectly set to `lsilogic`.** ⚠️
-
-- Controller SCSI 0 >> Model: VirtIO SCSI >> [Apply]
-
-- SCSI Disk 1 >> XML
-
-
-- Replace `</disk>` and [Apply]:
-  <details>
-    <summary>Spoiler <b>(do NOT use this example, modify it instead)</b></summary>
-
-  ```shell
-    <serial>B4NN3D53R14L</serial>
-    <vendor>KINGSPEC</vendor>
-    <product>SCSI256G</product>
-    <address type="drive" controller="0" bus="0" target="0" unit="0"/>
-  </disk>
-  ```
-  </details>
 
 ### 2.1 Configure VM
 
@@ -293,11 +269,8 @@ https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
 
 ### 2.2 Install Windows
 
-- Where do you want to install Windows?
-  - Load driver >> OK >> `E:\amd64\w10\vioscsi.inf`
-
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
-  * [x] SCSI Disk 1 >> [Apply]
+  * [x] SATA Disk 1 >> [Apply]
 
 ### 3. VFIO GPU passthrough (on Linux PC)
 
