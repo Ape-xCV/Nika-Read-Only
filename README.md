@@ -124,6 +124,18 @@ sudo virsh net-start default
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
+
+
+- Replace `<driver name="qemu" type="raw"/>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <driver name="qemu" type="raw" cache="none" io="native" discard="ignore" detect_zeroes="off"/>
+  ```
+  </details>
+
 ### 2.1 Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
