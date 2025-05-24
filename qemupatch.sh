@@ -8,8 +8,70 @@ else
   echo -e "$(pwd)/\e[1mqemubackup\e[0m found."
 fi
 
-rm -fr qemu
-cp -r qemubackup qemu
+#rm -fr qemu
+rm qemu/block/vhdx.c
+rm qemu/block/vvfat.c
+rm qemu/chardev/msmouse.c
+rm qemu/chardev/wctablet.c
+rm qemu/contrib/vhost-user-gpu/vhost-user-gpu.c
+rm qemu/hw/acpi/aml-build.c
+rm qemu/hw/audio/hda-codec.c
+rm qemu/hw/char/escc.c
+rm qemu/hw/char/serial-pci.c
+rm qemu/hw/core/qdev.c
+rm qemu/hw/display/edid-generate.c
+rm qemu/hw/i2c/smbus_ich9.c
+rm qemu/hw/i386/fw_cfg.c
+rm qemu/hw/i386/multiboot.c
+rm qemu/hw/i386/pc.c
+#rm qemu/hw/i386/pc_piix.c
+rm qemu/hw/i386/pc_q35.c
+rm qemu/hw/ide/atapi.c
+rm qemu/hw/ide/core.c
+rm qemu/hw/ide/ich.c
+rm qemu/hw/input/adb-kbd.c
+rm qemu/hw/input/adb-mouse.c
+#rm qemu/hw/input/ads7846.c
+rm qemu/hw/input/hid.c
+rm qemu/hw/input/ps2.c
+#rm qemu/hw/input/tsc2005.c
+#rm qemu/hw/input/tsc210x.c
+rm qemu/hw/input/virtio-input-hid.c
+rm qemu/hw/isa/lpc_ich9.c
+rm qemu/hw/misc/pvpanic-isa.c
+rm qemu/hw/nvme/ctrl.c
+rm qemu/hw/nvram/fw_cfg-acpi.c
+rm qemu/hw/nvram/fw_cfg.c
+rm qemu/hw/pci-host/gpex.c
+rm qemu/hw/scsi/mptconfig.c
+rm qemu/hw/scsi/scsi-bus.c
+rm qemu/hw/scsi/scsi-disk.c
+rm qemu/hw/scsi/spapr_vscsi.c
+#rm qemu/hw/smbios/smbios.c
+rm qemu/hw/ufs/lu.c
+rm qemu/hw/usb/dev-audio.c
+rm qemu/hw/usb/dev-hid.c
+rm qemu/hw/usb/dev-hub.c
+rm qemu/hw/usb/dev-mtp.c
+rm qemu/hw/usb/dev-network.c
+rm qemu/hw/usb/dev-serial.c
+rm qemu/hw/usb/dev-smartcard-reader.c
+rm qemu/hw/usb/dev-storage.c
+rm qemu/hw/usb/dev-uas.c
+rm qemu/hw/usb/dev-wacom.c
+#rm qemu/hw/usb/hcd-uhci.c
+#rm qemu/hw/usb/hcd-xhci-pci.c
+rm qemu/hw/usb/u2f-emulated.c
+rm qemu/hw/usb/u2f-passthru.c
+rm qemu/hw/usb/u2f.c
+rm qemu/hw/vfio/ap.c
+rm qemu/include/hw/acpi/aml-build.h
+rm qemu/include/hw/pci/pci.h
+rm qemu/include/standard-headers/linux/qemu_fw_cfg.h
+rm qemu/pc-bios/optionrom/optionrom.h
+rm qemu/target/i386/cpu.c
+rm qemu/target/i386/kvm/kvm.c
+cp -r qemubackup/. qemu/.
 
 ide_cd_models=(
   "HL-DT-ST BD-RE BH16NS40"   "HL-DT-ST BD-RE WH16NS60"
@@ -654,12 +716,12 @@ number=$(get_random_number 10)
 echo "\"QEMU\",                              -> \"$prefix$suffix\","
 echo "\"U2F USB key\"                        -> \"$prefix$suffix U2F USB key\""
 echo "\"0\"                                  -> \"$number\""
-echo "_desc   = \"QEMU U2F USB key\"         -> desc = \"$prefix$suffix U2F USB key\""
+echo "_desc   = \"QEMU U2F USB key\"         -> _desc   = \"$prefix$suffix U2F USB key\""
 echo "desc           = \"QEMU U2F key\"      -> desc           = \"$prefix$suffix U2F USB key\""
 sed -i "$file_u2f" -Ee "s/\"QEMU\",/\"$prefix$suffix\",/"
 sed -i "$file_u2f" -Ee "s/\"U2F USB key\"/\"$prefix$suffix U2F USB key\"/"
 sed -i "$file_u2f" -Ee "s/\"0\"/\"$number\"/"
-sed -i "$file_u2f" -Ee "s/_desc   = \"QEMU U2F USB key\"/desc = \"$prefix$suffix U2F USB key\"/"
+sed -i "$file_u2f" -Ee "s/_desc   = \"QEMU U2F USB key\"/_desc   = \"$prefix$suffix U2F USB key\"/"
 sed -i "$file_u2f" -Ee "s/desc           = \"QEMU U2F key\"/desc           = \"$prefix$suffix U2F USB key\"/"
 
 echo "  $file_ap"
@@ -726,8 +788,16 @@ echo "  $file_kvm"
 echo "KVMKVMKVM\0\0\0                      -> ${cpu_vendor:1}"
 sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
 
+read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo ""
+else
+  echo ""
+  exit 0
+fi
+
 mkdir qemu/build
 cd qemu/build
-../configure
+../configure --target-list=x86_64-softmmu
 
 echo -e "\nqemu is ready for build with: cd qemu/build && make"
