@@ -234,8 +234,8 @@ echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
 echo "  $file_hdacodec"
-echo "0x1af4                               -> 0x8086"
-sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
+echo "0x1af4                               -> 0x10ec"
+sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10ec/"
 
 echo "  $file_escc"
 echo "QEMU Sun Mouse                       -> Sun Mouse"
