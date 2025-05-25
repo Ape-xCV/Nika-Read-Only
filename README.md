@@ -528,7 +528,27 @@ sudo -E ./nika
 <feature policy="require" name="svm"/>
 ```
 
-### 8. memflow-kvm (faster VMREAD)
+### 8. Spoof qemu-system-x86_64 (mandatory)
+
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+- Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
+- You can edit `default_models` with real data.
+- Copy `qemu-system-x86_64` to `/usr/local/bin/qemu-system-x86_64` upon successful build.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace `<devices>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <devices>
+    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+  ```
+  </details>
+
+### 9. memflow-kvm (faster VMREAD)
 
 
   <details>
