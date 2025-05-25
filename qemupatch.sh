@@ -1,5 +1,34 @@
 #!/usr/bin/env bash
 
+default_models=(
+  "CT250MX500SSD1"                "KINGSTON SA400S37240G"
+  "Crucial BX500 1TB 3D NAND SSD" "Crucial MX500 1TB 3D NAND SSD"
+  "Kingston A400 SSD 1TB"         "Kingston HyperX Savage SSD 1TB"
+  "Samsung SSD 970 EVO 1TB"       "Samsung SSD 860 QVO 1TB"
+  "Samsung SSD 850 PRO 1TB"       "Samsung SSD 840 EVO 1TB"
+  "SanDisk SSD PLUS 1TB"          "SanDisk Ultra 3D SSD 1TB"
+  "Seagate BarraCuda 120 SSD 1TB" "Seagate IronWolf 110 SSD 1TB"
+)
+
+ide_cd_models=(
+  "HL-DT-ST BD-RE BH16NS40"   "HL-DT-ST BD-RE WH16NS60"
+  "HL-DT-ST DVDRAM GH22NS50"  "HL-DT-ST DVDRAM GH24NSC0"
+  "Pioneer BDR-209DBK"        "Pioneer BDR-212DBK"
+  "Pioneer DVR-221LBK"        "Pioneer DVR-S21WBK"
+  "Samsung SE-208GB"          "Samsung SE-506BB"
+  "Samsung SH-224FB"          "Samsung SH-B123L"
+  "Sony BWU-500S"             "Sony DRU-870S"
+  "Sony NEC Optiarc AD-5280S" "Sony NEC Optiarc AD-7261S"
+  "Lite-On iHAS124-14"        "Lite-On iHAS324-17"
+  "Lite-On eBAU108"           "Lite-On eTAU108"
+)
+
+ide_cfata_models=(
+  "PNY Elite-X microSD"             "PNY Premier-X microSD"
+  "Samsung EVO Plus microSDXC"      "Samsung PRO Plus microSDXC"
+  "SanDisk Extreme microSDXC UHS-I" "SanDisk Ultra microSDXC UHS-I"
+)
+
 if [[ ! -d qemubackup ]]; then
   echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, clone started..."
   git clone -b stable-9.2 https://github.com/qemu/qemu.git
@@ -72,35 +101,6 @@ rm qemu/pc-bios/optionrom/optionrom.h
 rm qemu/target/i386/cpu.c
 rm qemu/target/i386/kvm/kvm.c
 cp -r qemubackup/. qemu/.
-
-ide_cd_models=(
-  "HL-DT-ST BD-RE BH16NS40"   "HL-DT-ST BD-RE WH16NS60"
-  "HL-DT-ST DVDRAM GH22NS50"  "HL-DT-ST DVDRAM GH24NSC0"
-  "Pioneer BDR-209DBK"        "Pioneer BDR-212DBK"
-  "Pioneer DVR-221LBK"        "Pioneer DVR-S21WBK"
-  "Samsung SE-208GB"          "Samsung SE-506BB"
-  "Samsung SH-224FB"          "Samsung SH-B123L"
-  "Sony BWU-500S"             "Sony DRU-870S"
-  "Sony NEC Optiarc AD-5280S" "Sony NEC Optiarc AD-7261S"
-  "Lite-On iHAS124-14"        "Lite-On iHAS324-17"
-  "Lite-On eBAU108"           "Lite-On eTAU108"
-)
-
-ide_cfata_models=(
-  "PNY Elite-X microSD"             "PNY Premier-X microSD"
-  "Samsung EVO Plus microSDXC"      "Samsung PRO Plus microSDXC"
-  "SanDisk Extreme microSDXC UHS-I" "SanDisk Ultra microSDXC UHS-I"
-)
-
-default_models=(
-  "CT250MX500SSD1" "KINGSTON SA400S37240G"
-  "Crucial BX500 1TB 3D NAND SSD" "Crucial MX500 1TB 3D NAND SSD"
-  "Kingston A400 SSD 1TB"         "Kingston HyperX Savage SSD 1TB"
-  "Samsung SSD 970 EVO 1TB"       "Samsung SSD 860 QVO 1TB"
-  "Samsung SSD 850 PRO 1TB"       "Samsung SSD 840 EVO 1TB"
-  "SanDisk SSD PLUS 1TB"          "SanDisk Ultra 3D SSD 1TB"
-  "Seagate BarraCuda 120 SSD 1TB" "Seagate IronWolf 110 SSD 1TB"
-)
 
 get_random_element() {
   local array=("$@")
