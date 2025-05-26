@@ -132,7 +132,7 @@ sudo virsh net-start default
     <summary>Spoiler</summary>
 
   ```shell
-  <driver name="qemu" type="raw" cache="none" io="native" discard="ignore" detect_zeroes="off"/>
+  <driver name="qemu" type="raw" cache="none" discard="ignore"/>
   ```
   </details>
 
