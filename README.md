@@ -1,6 +1,7 @@
 # Nika Read Only
 
 - Apex Legends external cheat for Linux.
+
 - As of Season 23, for QEMU/KVM (formerly for Proton).
 
 ```shell
@@ -119,7 +120,6 @@ sudo virsh net-start default
 - Virtual Machine Manager >> File >> New Virtual Machine
 
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
-
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
@@ -375,6 +375,7 @@ usb-SONiX_USB_DEVICE-event-kbd -> ../event8
 ```
 
 - By symlink `../mouse0` you find that `usb-COMPANY_USB_Device` is your **mouse**.
+
 - You are looking for `event-mouse` and `event-kbd`:
   - `usb-COMPANY_USB_Device-if01-event-mouse -> ../event5` is your **mouse**.
   - `usb-SONiX_USB_DEVICE-event-kbd -> ../event8` is your **keyboard**.
@@ -531,8 +532,9 @@ sudo -E ./nika
 ### 8. Spoof qemu-system-x86_64 (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+
 - Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
-- You can edit `default_models` with real data.
+  - You can edit `default_models` with real data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
