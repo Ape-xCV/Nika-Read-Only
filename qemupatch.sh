@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [ "$EUID" != 0 ]; then
+    faillock --reset
+    sudo "$0" "$@"
+    exit $?
+fi
+
+QEMU_DEST="/usr/local/bin/qemu-system-x86_64"
+
 default_models=(
   "CT250MX500SSD1"                "KINGSTON SA400S37240G"
   "Crucial BX500 1TB 3D NAND SSD" "Crucial MX500 1TB 3D NAND SSD"
@@ -75,7 +83,7 @@ rm qemu/hw/scsi/mptconfig.c
 rm qemu/hw/scsi/scsi-bus.c
 rm qemu/hw/scsi/scsi-disk.c
 rm qemu/hw/scsi/spapr_vscsi.c
-#rm qemu/hw/smbios/smbios.c
+rm qemu/hw/smbios/smbios.c
 rm qemu/hw/ufs/lu.c
 rm qemu/hw/usb/dev-audio.c
 rm qemu/hw/usb/dev-hid.c
@@ -134,8 +142,8 @@ get_new_string() {
 
 file_vhdx="$(pwd)/qemu/block/vhdx.c"
 file_vvfat="$(pwd)/qemu/block/vvfat.c"
-file_vvfat="$(pwd)/qemu/chardev/msmouse.c"
-file_vvfat="$(pwd)/qemu/chardev/wctablet.c"
+file_msmouse="$(pwd)/qemu/chardev/msmouse.c"
+file_wctablet="$(pwd)/qemu/chardev/wctablet.c"
 file_vhostusergpu="$(pwd)/qemu/contrib/vhost-user-gpu/vhost-user-gpu.c"
 file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
@@ -164,13 +172,13 @@ file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
 file_pvpanicisa="$(pwd)/qemu/hw/misc/pvpanic-isa.c"
 file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
-file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
+#__file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
 file_gpex="$(pwd)/qemu/hw/pci-host/gpex.c"
 file_mptconfig="$(pwd)/qemu/hw/scsi/mptconfig.c"
 file_scsibus="$(pwd)/qemu/hw/scsi/scsi-bus.c"
 file_scsidisk="$(pwd)/qemu/hw/scsi/scsi-disk.c"
 file_spaprvscsi="$(pwd)/qemu/hw/scsi/spapr_vscsi.c"
-#file_smbios="$(pwd)/qemu/hw/smbios/smbios.c"
+file_smbios="$(pwd)/qemu/hw/smbios/smbios.c"
 file_lu="$(pwd)/qemu/hw/ufs/lu.c"
 file_devaudio="$(pwd)/qemu/hw/usb/dev-audio.c"
 file_devhid="$(pwd)/qemu/hw/usb/dev-hid.c"
@@ -190,8 +198,8 @@ file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
 file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
-header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
-header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
+#__header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
+#__header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 
@@ -505,7 +513,43 @@ sed -i "$file_spaprvscsi" -Ee "s/\"QEMU    \"/\"${new_string}    \"/"
 sed -i "$file_spaprvscsi" -Ee "s/\"qemu\"/\"$nocaps\"/"
 sed -i "$file_spaprvscsi" -Ee "s/\"qemu\"/\"$nocaps\"/"
 
-#echo "  $file_smbios"
+echo "  $file_smbios"
+echo "characteristics = cpu_to_le64(0x08)  -> characteristics = cpu_to_le64(0)"
+echo "extension_bytes[1] = 0x14            -> extension_bytes[1] = 0x0F"
+echo "extension_bytes[1] |= 0x08           -> extension_bytes[1] |= 0"
+echo "processor_family = 0xfe              -> processor_family = 0xC6"
+echo "voltage = 0                          -> voltage = 0x8B"
+echo "external_clock = cpu_to_le16(0)      -> external_clock = cpu_to_le16(100)"
+echo "1_cache_handle = cpu_to_le16(0xFFFF) -> 1_cache_handle = cpu_to_le16(0x0039)"
+echo "2_cache_handle = cpu_to_le16(0xFFFF) -> 2_cache_handle = cpu_to_le16(0x003A)"
+echo "3_cache_handle = cpu_to_le16(0xFFFF) -> 3_cache_handle = cpu_to_le16(0x003B)"
+echo "characteristics = cpu_to_le16(0x02)  -> characteristics = cpu_to_le16(0x04)"
+echo "location = 0x01                      -> location = 0x03"
+echo "error_correction = 0x06              -> error_correction = 0x03"
+echo "total_width = cpu_to_le16(0xFFFF)    -> total_width = cpu_to_le16(64)"
+echo "data_width = cpu_to_le16(0xFFFF)     -> data_width = cpu_to_le16(64)"
+echo "memory_type = 0x07                   -> memory_type = 0x1A"
+echo "minimum_voltage = cpu_to_le16(0)     -> minimum_voltage = cpu_to_le16(1200)"
+echo "maximum_voltage = cpu_to_le16(0)     -> maximum_voltage = cpu_to_le16(1350)"
+echo "configured_voltage = cpu_to_le16(0)  -> configured_voltage = cpu_to_le16(1200)"
+#sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le64\(0x08\)/characteristics = cpu_to_le64\(0\)/"
+#sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] = 0x14/extension_bytes\[1\] = 0x0F/"
+#sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] \|= 0x08/extension_bytes\[1\] \|= 0/"
+#sed -i "$file_smbios" -Ee "s/processor_family = 0xfe/processor_family = 0xC6/"
+#sed -i "$file_smbios" -Ee "s/voltage = 0/voltage = 0x8B/"
+#sed -i "$file_smbios" -Ee "s/external_clock = cpu_to_le16\(0\)/external_clock = cpu_to_le16\(100\)/"
+#sed -i "$file_smbios" -Ee "s/1_cache_handle = cpu_to_le16\(0xFFFF\)/1_cache_handle = cpu_to_le16\(0x0039\)/"
+#sed -i "$file_smbios" -Ee "s/2_cache_handle = cpu_to_le16\(0xFFFF\)/2_cache_handle = cpu_to_le16\(0x003A\)/"
+#sed -i "$file_smbios" -Ee "s/3_cache_handle = cpu_to_le16\(0xFFFF\)/3_cache_handle = cpu_to_le16\(0x003B\)/"
+#sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le16\(0x02\)/characteristics = cpu_to_le16\(0x04\)/"
+#sed -i "$file_smbios" -Ee "s/location = 0x01/location = 0x03/"
+#sed -i "$file_smbios" -Ee "s/error_correction = 0x06/error_correction = 0x03/"
+#sed -i "$file_smbios" -Ee "s/total_width = cpu_to_le16\(0xFFFF\)/total_width = cpu_to_le16\(64\)/"
+#sed -i "$file_smbios" -Ee "s/data_width = cpu_to_le16\(0xFFFF\)/data_width = cpu_to_le16\(64\)/"
+#sed -i "$file_smbios" -Ee "s/memory_type = 0x07/memory_type = 0x1A/"
+#sed -i "$file_smbios" -Ee "s/minimum_voltage = cpu_to_le16\(0\)/minimum_voltage = cpu_to_le16\(1200\)/"
+#sed -i "$file_smbios" -Ee "s/maximum_voltage = cpu_to_le16\(0\)/maximum_voltage = cpu_to_le16\(1350\)/"
+#sed -i "$file_smbios" -Ee "s/configured_voltage = cpu_to_le16\(0\)/configured_voltage = cpu_to_le16\(1200\)/"
 
 echo "  $file_lu"
 get_new_string 4 1
@@ -800,3 +844,7 @@ cd qemu/build
 ../configure --target-list=x86_64-softmmu
 
 echo -e "\nqemu is ready for build with: cd qemu/build && make"
+make
+
+echo "$QEMU_DEST"
+cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
