@@ -29,15 +29,14 @@ ide_cfata_models=(
   "SanDisk Extreme microSDXC UHS-I" "SanDisk Ultra microSDXC UHS-I"
 )
 
+mkdir -p qemu
 if [[ ! -d qemubackup ]]; then
   echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, clone started..."
-  git clone -b stable-9.2 https://github.com/qemu/qemu.git
-  cp -r qemu qemubackup
+  git clone --single-branch --branch stable-9.2 https://github.com/qemu/qemu.git qemubackup
 else
   echo -e "$(pwd)/\e[1mqemubackup\e[0m found."
 fi
 
-#rm -fr qemu
 rm qemu/block/vhdx.c
 rm qemu/block/vvfat.c
 rm qemu/chardev/msmouse.c
@@ -100,7 +99,7 @@ rm qemu/include/standard-headers/linux/qemu_fw_cfg.h
 rm qemu/pc-bios/optionrom/optionrom.h
 rm qemu/target/i386/cpu.c
 rm qemu/target/i386/kvm/kvm.c
-cp -r qemubackup/. qemu/.
+cp -fr qemubackup/. qemu/.
 
 get_random_element() {
   local array=("$@")
@@ -457,9 +456,9 @@ signature=$(get_random_word 16)
 echo "  $file_nvram_fwcfg"
 echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
 sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
-#_get_new_string 4 1
-#_echo "\"QEMU\"                               -> \"$new_string\""
-#_sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
+get_new_string 4 1
+echo "\"QEMU\"                               -> \"$new_string\""
+sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
 echo "  $file_gpex"
 get_new_string 4 1
