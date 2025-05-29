@@ -200,68 +200,54 @@ sudo virsh net-start default
   <features>
     <acpi/>
     <apic/>
-    <hyperv mode="passthrough">
-      <relaxed state="on"/>
-      <vapic state="on"/>
-      <spinlocks state="on" retries="8191"/>
-      <vpindex state="on"/>
-      <synic state="on"/>
-      <stimer state="on">
-        <direct state="on"/>
-      </stimer>
-      <reset state="on"/>
-      <vendor_id state="on" value="GenuineIntel"/>
-      <frequencies state="on"/>
+    <hyperv mode="custom">
+      <relaxed state="off"/>
+      <vapic state="off"/>
+      <spinlocks state="off"/>
+      <vpindex state="off"/>
+      <runtime state="off"/>
+      <synic state="off"/>
+      <stimer state="off"/>
+      <reset state="off"/>
+      <vendor_id state="off"/>
+      <frequencies state="off"/>
       <reenlightenment state="off"/>
-      <tlbflush state="on"/>
-      <ipi state="on"/>
+      <tlbflush state="off"/>
+      <ipi state="off"/>
       <evmcs state="off"/>
-      <avic state="on"/>
+      <avic state="off"/>
     </hyperv>
     <kvm>
       <hidden state="on"/>
     </kvm>
+    <pmu state="off"/>
     <vmport state="off"/>
     <smm state="on"/>
     <ioapic driver="kvm"/>
+    <msrs unknown="fault"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" dies="1" cores="4" threads="1"/>
+    <topology sockets="1" dies="1" clusters="1" cores="4" threads="1"/>
     <cache mode="passthrough"/>
-    <feature policy="require" name="hypervisor"/>
-    <feature policy="disable" name="vmx"/>
-    <feature policy="disable" name="svm"/>
-    <feature policy="require" name="aes"/>
+    <feature policy="disable" name="hypervisor"/>
+    <feature policy="require" name="svm"/>
+    <feature policy="require" name="vmx"/>
+    <feature policy="disable" name="aes"/>
     <feature policy="disable" name="x2apic"/>
-    <feature policy="require" name="ibpb"/>
     <feature policy="require" name="invtsc"/>
-    <feature policy="require" name="pdpe1gb"/>
-    <feature policy="require" name="ssbd"/>
-    <feature policy="require" name="amd-ssbd"/>
-    <feature policy="require" name="stibp"/>
-    <feature policy="require" name="amd-stibp"/>
-
-    <feature policy="require" name="tsc-deadline"/>
-    <feature policy="require" name="tsc_adjust"/>
-    <feature policy="require" name="arch-capabilities"/>
-    <feature policy="require" name="rdctl-no"/>
-    <feature policy="require" name="skip-l1dfl-vmentry"/>
-    <feature policy="require" name="mds-no"/>
-    <feature policy="require" name="pschange-mc-no"/>
-
-    <feature policy="require" name="cmp_legacy"/>
-    <feature policy="require" name="xsaves"/>
-    <feature policy="require" name="perfctr_core"/>
-    <feature policy="require" name="clzero"/>
-    <feature policy="require" name="xsaveerptr"/>
+    <feature policy="disable" name="amd-ssbd"/>
+    <feature policy="disable" name="ssbd"/>
+    <feature policy="disable" name="virt-ssbd"/>
+    <feature policy="disable" name="rdpid"/>
+    <feature policy="disable" name="rdtscp"/>
   </cpu>
-  <clock offset="timezone" timezone="Europe/London">
-    <timer name="rtc" present="no" tickpolicy="catchup"/>
-    <timer name="pit" tickpolicy="discard"/>
-    <timer name="hpet" present="no"/>
+  <clock offset="localtime">
+    <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
+    <timer name="hpet" present="yes"/>
+    <timer name="rtc" present="no"/>
+    <timer name="pit" present="no"/>
     <timer name="kvmclock" present="no"/>
-    <timer name="hypervclock" present="yes"/>
-    <timer name="tsc" present="yes" mode="native"/>
+    <timer name="hypervclock" present="no"/>
   </clock>
   ```
   </details>
