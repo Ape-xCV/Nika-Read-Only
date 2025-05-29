@@ -37,78 +37,6 @@ ide_cfata_models=(
   "SanDisk Extreme microSDXC UHS-I" "SanDisk Ultra microSDXC UHS-I"
 )
 
-mkdir -p qemu
-if [[ ! -d qemubackup ]]; then
-  echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, clone started..."
-  git clone --single-branch --branch stable-9.2 https://github.com/qemu/qemu.git qemubackup
-else
-  echo -e "$(pwd)/\e[1mqemubackup\e[0m found."
-fi
-
-rm qemu/block/vhdx.c
-rm qemu/block/vvfat.c
-rm qemu/chardev/msmouse.c
-rm qemu/chardev/wctablet.c
-rm qemu/contrib/vhost-user-gpu/vhost-user-gpu.c
-rm qemu/hw/acpi/aml-build.c
-rm qemu/hw/audio/hda-codec.c
-rm qemu/hw/char/escc.c
-rm qemu/hw/char/serial-pci.c
-rm qemu/hw/core/qdev.c
-rm qemu/hw/display/edid-generate.c
-rm qemu/hw/i2c/smbus_ich9.c
-rm qemu/hw/i386/fw_cfg.c
-rm qemu/hw/i386/multiboot.c
-rm qemu/hw/i386/pc.c
-#rm qemu/hw/i386/pc_piix.c
-rm qemu/hw/i386/pc_q35.c
-rm qemu/hw/ide/atapi.c
-rm qemu/hw/ide/core.c
-rm qemu/hw/ide/ich.c
-rm qemu/hw/input/adb-kbd.c
-rm qemu/hw/input/adb-mouse.c
-#rm qemu/hw/input/ads7846.c
-rm qemu/hw/input/hid.c
-rm qemu/hw/input/ps2.c
-#rm qemu/hw/input/tsc2005.c
-#rm qemu/hw/input/tsc210x.c
-rm qemu/hw/input/virtio-input-hid.c
-rm qemu/hw/isa/lpc_ich9.c
-rm qemu/hw/misc/pvpanic-isa.c
-rm qemu/hw/nvme/ctrl.c
-rm qemu/hw/nvram/fw_cfg-acpi.c
-rm qemu/hw/nvram/fw_cfg.c
-rm qemu/hw/pci-host/gpex.c
-rm qemu/hw/scsi/mptconfig.c
-rm qemu/hw/scsi/scsi-bus.c
-rm qemu/hw/scsi/scsi-disk.c
-rm qemu/hw/scsi/spapr_vscsi.c
-rm qemu/hw/smbios/smbios.c
-rm qemu/hw/ufs/lu.c
-rm qemu/hw/usb/dev-audio.c
-rm qemu/hw/usb/dev-hid.c
-rm qemu/hw/usb/dev-hub.c
-rm qemu/hw/usb/dev-mtp.c
-rm qemu/hw/usb/dev-network.c
-rm qemu/hw/usb/dev-serial.c
-rm qemu/hw/usb/dev-smartcard-reader.c
-rm qemu/hw/usb/dev-storage.c
-rm qemu/hw/usb/dev-uas.c
-rm qemu/hw/usb/dev-wacom.c
-#rm qemu/hw/usb/hcd-uhci.c
-#rm qemu/hw/usb/hcd-xhci-pci.c
-rm qemu/hw/usb/u2f-emulated.c
-rm qemu/hw/usb/u2f-passthru.c
-rm qemu/hw/usb/u2f.c
-rm qemu/hw/vfio/ap.c
-rm qemu/include/hw/acpi/aml-build.h
-rm qemu/include/hw/pci/pci.h
-rm qemu/include/standard-headers/linux/qemu_fw_cfg.h
-rm qemu/pc-bios/optionrom/optionrom.h
-rm qemu/target/i386/cpu.c
-rm qemu/target/i386/kvm/kvm.c
-cp -fr qemubackup/. qemu/.
-
 get_random_element() {
   local array=("$@")
   echo "${array[RANDOM % ${#array[@]}]}"
@@ -119,9 +47,9 @@ new_ide_cfata_model=$(get_random_element "${ide_cfata_models[@]}")
 new_default_model=$(get_random_element "${default_models[@]}")
 
 get_random_string() { head /dev/urandom | tr -dc 'A-Z'    | head -c "$1"; }
-get_random_number() { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
 get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
-get_random_word()   { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
+get_random_dec()    { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
+get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 
 get_new_string() {
   local length=$1
@@ -139,6 +67,12 @@ get_new_string() {
   #echo $new_string
 }
 
+if [[ ! -d qemubackup ]]; then
+  echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, clone started..."
+  git clone --single-branch --branch stable-9.2 https://github.com/qemu/qemu.git qemubackup
+else
+  echo -e "$(pwd)/\e[1mqemubackup\e[0m found."
+fi
 
 file_vhdx="$(pwd)/qemu/block/vhdx.c"
 file_vvfat="$(pwd)/qemu/block/vvfat.c"
@@ -172,7 +106,7 @@ file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
 file_pvpanicisa="$(pwd)/qemu/hw/misc/pvpanic-isa.c"
 file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
-#__file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
+file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
 file_gpex="$(pwd)/qemu/hw/pci-host/gpex.c"
 file_mptconfig="$(pwd)/qemu/hw/scsi/mptconfig.c"
 file_scsibus="$(pwd)/qemu/hw/scsi/scsi-bus.c"
@@ -198,11 +132,75 @@ file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
 file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
-#__header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
-#__header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
+header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
+header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 
+if [[ -f "$file_vhdx" ]]; then rm "$file_vhdx"; fi
+if [[ -f "$file_vvfat" ]]; then rm "$file_vvfat"; fi
+if [[ -f "$file_msmouse" ]]; then rm "$file_msmouse"; fi
+if [[ -f "$file_wctablet" ]]; then rm "$file_wctablet"; fi
+if [[ -f "$file_vhostusergpu" ]]; then rm "$file_vhostusergpu"; fi
+if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
+if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
+if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
+#if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
+if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
+if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
+if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
+if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
+if [[ -f "$file_multiboot" ]]; then rm "$file_multiboot"; fi
+if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
+#if [[ -f "$file_pcpiix" ]]; then rm "$file_pcpiix"; fi
+if [[ -f "$file_pcq35" ]]; then rm "$file_pcq35"; fi
+if [[ -f "$file_atapi" ]]; then rm "$file_atapi"; fi
+if [[ -f "$file_core" ]]; then rm "$file_core"; fi
+if [[ -f "$file_ich" ]]; then rm "$file_ich"; fi
+if [[ -f "$file_adbkbd" ]]; then rm "$file_adbkbd"; fi
+if [[ -f "$file_adbmouse" ]]; then rm "$file_adbmouse"; fi
+#if [[ -f "$file_ads7846" ]]; then rm "$file_ads7846"; fi
+if [[ -f "$file_hid" ]]; then rm "$file_hid"; fi
+if [[ -f "$file_ps2" ]]; then rm "$file_ps2"; fi
+#if [[ -f "$file_tsc2005" ]]; then rm "$file_tsc2005"; fi
+#if [[ -f "$file_tsc210x" ]]; then rm "$file_tsc210x"; fi
+if [[ -f "$file_virtioinputhid" ]]; then rm "$file_virtioinputhid"; fi
+if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
+if [[ -f "$file_pvpanicisa" ]]; then rm "$file_pvpanicisa"; fi
+if [[ -f "$file_ctrl" ]]; then rm "$file_ctrl"; fi
+if [[ -f "$file_fwcfgacpi" ]]; then rm "$file_fwcfgacpi"; fi
+if [[ -f "$file_nvram_fwcfg" ]]; then rm "$file_nvram_fwcfg"; fi
+if [[ -f "$file_gpex" ]]; then rm "$file_gpex"; fi
+if [[ -f "$file_mptconfig" ]]; then rm "$file_mptconfig"; fi
+if [[ -f "$file_scsibus" ]]; then rm "$file_scsibus"; fi
+if [[ -f "$file_scsidisk" ]]; then rm "$file_scsidisk"; fi
+if [[ -f "$file_spaprvscsi" ]]; then rm "$file_spaprvscsi"; fi
+if [[ -f "$file_smbios" ]]; then rm "$file_smbios"; fi
+if [[ -f "$file_lu" ]]; then rm "$file_lu"; fi
+if [[ -f "$file_devaudio" ]]; then rm "$file_devaudio"; fi
+if [[ -f "$file_devhid" ]]; then rm "$file_devhid"; fi
+if [[ -f "$file_devhub" ]]; then rm "$file_devhub"; fi
+if [[ -f "$file_devmtp" ]]; then rm "$file_devmtp"; fi
+if [[ -f "$file_devnetwork" ]]; then rm "$file_devnetwork"; fi
+if [[ -f "$file_devserial" ]]; then rm "$file_devserial"; fi
+if [[ -f "$file_devsmartcardreader" ]]; then rm "$file_devsmartcardreader"; fi
+if [[ -f "$file_devstorage" ]]; then rm "$file_devstorage"; fi
+if [[ -f "$file_devuas" ]]; then rm "$file_devuas"; fi
+if [[ -f "$file_devwacom" ]]; then rm "$file_devwacom"; fi
+#if [[ -f "$file_hcduhci" ]]; then rm "$file_hcduhci"; fi
+#if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
+if [[ -f "$file_u2femulated" ]]; then rm "$file_u2femulated"; fi
+if [[ -f "$file_u2fpassthru" ]]; then rm "$file_u2fpassthru"; fi
+if [[ -f "$file_u2f" ]]; then rm "$file_u2f"; fi
+if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
+if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
+if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
+if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
+if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
+if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
+if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
+mkdir -p qemu
+cp -fr qemubackup/. qemu/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -256,7 +254,7 @@ sed -i "$file_qdev" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $file_edidgenerate"
 get_new_string $(shuf -i 5-7 -n 1) 3
-word=$(get_random_word 4)
+word=$(get_random_hex 4)
 week=$(shuf -i 1-52 -n 1)
 year=$(shuf -i 25-35 -n 1)
 echo "RHT                                  -> $prefix$suffix"
@@ -460,13 +458,14 @@ sed -i "$file_fwcfgacpi" -Ee "s/\"FWCF\"/\"${new_string}\"/"
 echo "QEMU0002                             -> ${new_string}0002"
 sed -i "$file_fwcfgacpi" -Ee "s/QEMU0002/${new_string}0002/"
 
-signature=$(get_random_word 16)
+#signature=$(get_random_hex 16)
+signature="0x41204D204920"
 echo "  $file_nvram_fwcfg"
-echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
-sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
-get_new_string 4 1
-echo "\"QEMU\"                               -> \"$new_string\""
-sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
+echo "0x51454d5520434647ULL                -> $signature"
+sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/$signature/"
+#get_new_string 4 1
+#echo "\"QEMU\"                               -> \"$new_string\""
+#sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
 echo "  $file_gpex"
 get_new_string 4 1
@@ -475,7 +474,7 @@ sed -i "$file_gpex" -Ee "s/QEMU generic PCIe host bridge/$new_string generic PCI
 
 echo "  $file_mptconfig"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 16)
+number=$(get_random_dec 16)
 echo "QEMU MPT Fusion                      -> $prefix$suffix MPT Fusion"
 echo "QEMU MPT Fusion                      -> $prefix$suffix MPT Fusion"
 echo "\"QEMU\"                               -> \"$prefix$suffix\""
@@ -532,24 +531,24 @@ echo "memory_type = 0x07                   -> memory_type = 0x1A"
 echo "minimum_voltage = cpu_to_le16(0)     -> minimum_voltage = cpu_to_le16(1200)"
 echo "maximum_voltage = cpu_to_le16(0)     -> maximum_voltage = cpu_to_le16(1350)"
 echo "configured_voltage = cpu_to_le16(0)  -> configured_voltage = cpu_to_le16(1200)"
-#sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le64\(0x08\)/characteristics = cpu_to_le64\(0\)/"
-#sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] = 0x14/extension_bytes\[1\] = 0x0F/"
-#sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] \|= 0x08/extension_bytes\[1\] \|= 0/"
-#sed -i "$file_smbios" -Ee "s/processor_family = 0xfe/processor_family = 0xC6/"
-#sed -i "$file_smbios" -Ee "s/voltage = 0/voltage = 0x8B/"
-#sed -i "$file_smbios" -Ee "s/external_clock = cpu_to_le16\(0\)/external_clock = cpu_to_le16\(100\)/"
-#sed -i "$file_smbios" -Ee "s/1_cache_handle = cpu_to_le16\(0xFFFF\)/1_cache_handle = cpu_to_le16\(0x0039\)/"
-#sed -i "$file_smbios" -Ee "s/2_cache_handle = cpu_to_le16\(0xFFFF\)/2_cache_handle = cpu_to_le16\(0x003A\)/"
-#sed -i "$file_smbios" -Ee "s/3_cache_handle = cpu_to_le16\(0xFFFF\)/3_cache_handle = cpu_to_le16\(0x003B\)/"
-#sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le16\(0x02\)/characteristics = cpu_to_le16\(0x04\)/"
-#sed -i "$file_smbios" -Ee "s/location = 0x01/location = 0x03/"
-#sed -i "$file_smbios" -Ee "s/error_correction = 0x06/error_correction = 0x03/"
-#sed -i "$file_smbios" -Ee "s/total_width = cpu_to_le16\(0xFFFF\)/total_width = cpu_to_le16\(64\)/"
-#sed -i "$file_smbios" -Ee "s/data_width = cpu_to_le16\(0xFFFF\)/data_width = cpu_to_le16\(64\)/"
-#sed -i "$file_smbios" -Ee "s/memory_type = 0x07/memory_type = 0x1A/"
-#sed -i "$file_smbios" -Ee "s/minimum_voltage = cpu_to_le16\(0\)/minimum_voltage = cpu_to_le16\(1200\)/"
-#sed -i "$file_smbios" -Ee "s/maximum_voltage = cpu_to_le16\(0\)/maximum_voltage = cpu_to_le16\(1350\)/"
-#sed -i "$file_smbios" -Ee "s/configured_voltage = cpu_to_le16\(0\)/configured_voltage = cpu_to_le16\(1200\)/"
+sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le64\(0x08\)/characteristics = cpu_to_le64\(0\)/"
+sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] = 0x14/extension_bytes\[1\] = 0x0F/"
+sed -i "$file_smbios" -Ee "s/extension_bytes\[1\] \|= 0x08/extension_bytes\[1\] \|= 0/"
+sed -i "$file_smbios" -Ee "s/processor_family = 0xfe/processor_family = 0xC6/"
+sed -i "$file_smbios" -Ee "s/voltage = 0/voltage = 0x8B/"
+sed -i "$file_smbios" -Ee "s/external_clock = cpu_to_le16\(0\)/external_clock = cpu_to_le16\(100\)/"
+sed -i "$file_smbios" -Ee "s/1_cache_handle = cpu_to_le16\(0xFFFF\)/1_cache_handle = cpu_to_le16\(0x0039\)/"
+sed -i "$file_smbios" -Ee "s/2_cache_handle = cpu_to_le16\(0xFFFF\)/2_cache_handle = cpu_to_le16\(0x003A\)/"
+sed -i "$file_smbios" -Ee "s/3_cache_handle = cpu_to_le16\(0xFFFF\)/3_cache_handle = cpu_to_le16\(0x003B\)/"
+sed -i "$file_smbios" -Ee "s/characteristics = cpu_to_le16\(0x02\)/characteristics = cpu_to_le16\(0x04\)/"
+sed -i "$file_smbios" -Ee "s/location = 0x01/location = 0x03/"
+sed -i "$file_smbios" -Ee "s/error_correction = 0x06/error_correction = 0x03/"
+sed -i "$file_smbios" -Ee "s/total_width = cpu_to_le16\(0xFFFF\)/total_width = cpu_to_le16\(64\)/"
+sed -i "$file_smbios" -Ee "s/data_width = cpu_to_le16\(0xFFFF\)/data_width = cpu_to_le16\(64\)/"
+sed -i "$file_smbios" -Ee "s/memory_type = 0x07/memory_type = 0x1A/"
+sed -i "$file_smbios" -Ee "s/minimum_voltage = cpu_to_le16\(0\)/minimum_voltage = cpu_to_le16\(1200\)/"
+sed -i "$file_smbios" -Ee "s/maximum_voltage = cpu_to_le16\(0\)/maximum_voltage = cpu_to_le16\(1350\)/"
+sed -i "$file_smbios" -Ee "s/configured_voltage = cpu_to_le16\(0\)/configured_voltage = cpu_to_le16\(1200\)/"
 
 echo "  $file_lu"
 get_new_string 4 1
@@ -560,14 +559,28 @@ sed -i "$file_lu" -Ee "s/\"QEMU UFS\"/\"$new_string UFS\"/"
 
 echo "  $file_devaudio"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\",                              -> \"$prefix$suffix\","
-echo "\"QEMU USB Audio\",                    -> \"$prefix$suffix USB Audio\","
+echo "\"QEMU USB Audio\"                     -> \"$prefix$suffix USB Audio\""
 echo "\"1\"                                  -> \"$number\""
+echo "\"Audio Configuration\"                -> \"USB Audio Config\""
+echo "\"Audio Device\"                       -> \"USB Audio Control\""
+echo "\"Audio Output Pipe\"                  -> \"USB Audio Input Terminal\""
+echo "\"Audio Output Volume Control\"        -> \"USB Audio Feature Unit\""
+echo "\"Audio Output Terminal\"              -> \"USB Audio Output Terminal\""
+echo "\"Audio Output - Disabled\"            -> \"USB Audio Null Stream\""
+echo "\"Audio Output - 48 kHz Stereo\"       -> \"USB Audio Real Stream\""
 echo "QEMU USB Audio Interface             -> $prefix$suffix USB Audio"
 sed -i "$file_devaudio" -Ee "s/\"QEMU\",/\"$prefix$suffix\",/"
-sed -i "$file_devaudio" -Ee "s/\"QEMU USB Audio\",/\"$prefix$suffix USB Audio\",/"
+sed -i "$file_devaudio" -Ee "s/\"QEMU USB Audio\"/\"$prefix$suffix USB Audio\"/"
 sed -i "$file_devaudio" -Ee "s/\"1\"/\"$number\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Configuration\"/\"USB Audio Config\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Device\"/\"USB Audio Control\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Output Pipe\"/\"USB Audio Input Terminal\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Output Volume Control\"/\"USB Audio Feature Unit\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Output Terminal\"/\"USB Audio Output Terminal\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Output - Disabled\"/\"USB Audio Null Stream\"/"
+sed -i "$file_devaudio" -Ee "s/\"Audio Output - 48 kHz Stereo\"/\"USB Audio Real Stream\"/"
 sed -i "$file_devaudio" -Ee "s/QEMU USB Audio Interface/$prefix$suffix USB Audio/"
 
 echo "  $file_devhid"
@@ -580,13 +593,13 @@ sed -i "$file_devhid" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
 sed -i "$file_devhid" -Ee "s/_MOUSE]    = \"QEMU USB Mouse\"/_MOUSE]    = \"$prefix$suffix USB Mouse\"/"
 sed -i "$file_devhid" -Ee "s/_TABLET]   = \"QEMU USB Tablet\"/_TABLET]   = \"$prefix$suffix USB Tablet\"/"
 sed -i "$file_devhid" -Ee "s/_KEYBOARD] = \"QEMU USB Keyboard\"/_KEYBOARD] = \"$prefix$suffix USB Keyboard\"/"
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"89126\"                              -> \"$number\""
 sed -i "$file_devhid" -Ee "s/\"89126\"/\"$number\"/"
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"28754\"                              -> \"$number\""
 sed -i "$file_devhid" -Ee "s/\"28754\"/\"$number\"/"
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"68284\"                              -> \"$number\""
 sed -i "$file_devhid" -Ee "s/\"68284\"/\"$number\"/"
 echo "_desc   = \"QEMU USB Tablet\"          -> _desc   = \"$prefix$suffix USB Tablet\""
@@ -625,7 +638,7 @@ fi
 
 echo "  $file_devhub"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\"                               -> \"$prefix$suffix\""
 echo "_PRODUCT]      = \"QEMU USB Hub\"      -> _PRODUCT]      = \"$prefix$suffix USB Hub\""
 echo "\"314159\"                             -> \"$number\""
@@ -637,7 +650,7 @@ sed -i "$file_devhub" -Ee "s/_desc   = \"QEMU USB Hub\"/_desc   = \"$prefix$suff
 
 echo "  $file_devmtp"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "MTP_MANUFACTURER  \"QEMU\"             -> MTP_MANUFACTURER  \"$prefix$suffix\""
 echo "QEMU filesharing                     -> $prefix$suffix USB MTP"
 echo "\"34617\"                              -> \"$number\""
@@ -649,8 +662,8 @@ sed -i "$file_devmtp" -Ee "s/_desc   = \"QEMU USB MTP\"/_desc   = \"$prefix$suff
 
 echo "  $file_devnetwork"
 get_new_string 4 1
-word=$(get_random_word 12)
-number=$(get_random_number 10)
+word=$(get_random_hex 12)
+number=$(get_random_dec 10)
 echo "\"QEMU\"                               -> \"$new_string\""
 echo "RNDIS/QEMU USB Network Device        -> $new_string RNDIS USB Network Adapter"
 echo "\"400102030405\"                       -> \"$word\""
@@ -678,23 +691,23 @@ sed -i "$file_devnetwork" -Ee "s/QEMU USB Network Interface/$new_string RNDIS US
 
 echo "  $file_devserial"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\"                               -> \"$prefix$suffix\""
-echo "QEMU USB SERIAL                      -> $prefix$suffix USB Serial"
-echo "QEMU USB BAUM BRAILLE                -> $prefix$suffix USB Braille"
+echo "_SERIAL]  = \"QEMU USB SERIAL\"        -> $prefix$suffix USB Serial"
+echo "_BRAILLE]  = \"QEMU USB BAUM BRAILLE\" -> $prefix$suffix USB Braille"
 echo "\"1\"                                  -> \"$number\""
 echo "_desc   = \"QEMU USB Serial\"          -> _desc   = \"$prefix$suffix USB Serial\""
 echo "_desc   = \"QEMU USB Braille\"         -> _desc   = \"$prefix$suffix USB Braille\""
 sed -i "$file_devserial" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
-sed -i "$file_devserial" -Ee "s/QEMU USB SERIAL/$prefix$suffix USB Serial/"
-sed -i "$file_devserial" -Ee "s/QEMU USB BAUM BRAILLE/$prefix$suffix USB Braille/"
+sed -i "$file_devserial" -Ee "s/_SERIAL\]  = \"QEMU USB SERIAL\"/_SERIAL\]  = \"$prefix$suffix USB Serial\"/"
+sed -i "$file_devserial" -Ee "s/_BRAILLE\] = \"QEMU USB BAUM BRAILLE\"/_BRAILLE\] = \"$prefix$suffix USB Braille\"/"
 sed -i "$file_devserial" -Ee "s/\"1\"/\"$number\"/"
 sed -i "$file_devserial" -Ee "s/_desc   = \"QEMU USB Serial\"/_desc   = \"$prefix$suffix USB Serial\"/"
 sed -i "$file_devserial" -Ee "s/_desc   = \"QEMU USB Braille\"/_desc   = \"$prefix$suffix USB Braille\"/"
 
 echo "  $file_devsmartcardreader"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "_MANUFACTURER]  = \"QEMU\"             -> _MANUFACTURER]  = \"$prefix$suffix\""
 echo "_PRODUCT]       = \"QEMU USB CCID\"    -> _PRODUCT]       = \"$prefix$suffix CCID\""
 echo "_SERIALNUMBER]  = \"1\"                -> _SERIALNUMBER]  = \"$number\""
@@ -718,7 +731,7 @@ sed -i "$file_devstorage" -Ee "s/_desc   = \"QEMU USB MSD\"/_desc   = \"$new_str
 
 echo "  $file_devuas"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\",                              -> \"$prefix$suffix\","
 echo "USB Attached SCSI HBA                -> $prefix$suffix USB Attached SCSI HBA"
 echo "\"27842\"                              -> \"$number\""
@@ -727,7 +740,7 @@ sed -i "$file_devuas" -Ee "s/USB Attached SCSI HBA/$prefix$suffix USB Attached S
 sed -i "$file_devuas" -Ee "s/\"27842\"/\"$number\"/"
 
 echo "  $file_devwacom"
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\"                               -> \"Wacom\""
 echo "Wacom PenPartner                     -> Wacom PenPartner Tablet"
 echo "\"1\"                                  -> \"$number\""
@@ -755,7 +768,7 @@ sed -i "$file_u2fpassthru" -Ee "s/desc = \"QEMU U2F passthrough key\"/desc = \"$
 
 echo "  $file_u2f"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_number 10)
+number=$(get_random_dec 10)
 echo "\"QEMU\",                              -> \"$prefix$suffix\","
 echo "\"U2F USB key\"                        -> \"$prefix$suffix U2F USB key\""
 echo "\"0\"                                  -> \"$number\""
@@ -768,7 +781,7 @@ sed -i "$file_u2f" -Ee "s/_desc   = \"QEMU U2F USB key\"/_desc   = \"$prefix$suf
 sed -i "$file_u2f" -Ee "s/desc           = \"QEMU U2F key\"/desc           = \"$prefix$suffix U2F USB key\"/"
 
 echo "  $file_ap"
-echo "hotpluggable = true             -> hotpluggable = false"
+echo "hotpluggable = true                  -> hotpluggable = false"
 sed -i "$file_ap" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $header_amlbuild"
@@ -790,13 +803,13 @@ sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/
 echo "  $header_qemufwcfg"
 get_new_string 4 1
 echo "QEMU0002                             -> ${new_string}0002"
-echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
+echo "0x51454d5520434647ULL                -> $signature"
 sed -i "$header_qemufwcfg" -Ee "s/QEMU0002/${new_string}0002/"
-sed -i "$header_qemufwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
+sed -i "$header_qemufwcfg" -Ee "s/0x51454d5520434647ULL/$signature/"
 
 echo "  $header_optionrom"
-echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
-sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
+echo "0x51454d5520434647ULL                -> $signature"
+sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/$signature/"
 
 echo "  $file_cpu"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
@@ -828,6 +841,12 @@ else
 fi
 
 echo "  $file_kvm"
+echo "\"Microsoft VS\"                       -> 0"
+sed -i "$file_kvm" -Ee "s/\"Microsoft VS\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
+echo "\"VS#1\0\0\0\0\0\0\0\0\"               -> 0"
+sed -i "$file_kvm" -Ee "s/\"VS#1\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
+echo "\"XenVMMXenVMM\"                       -> 0"
+sed -i "$file_kvm" -Ee "s/\"XenVMMXenVMM\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
 echo "KVMKVMKVM\0\0\0                      -> ${cpu_vendor:1}"
 sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
 
@@ -839,11 +858,9 @@ else
   exit 0
 fi
 
-mkdir qemu/build
+mkdir -p qemu/build
 cd qemu/build
 ../configure --target-list=x86_64-softmmu
-
-echo -e "\nqemu is ready for build with: cd qemu/build && make"
 make
 
 echo "$QEMU_DEST"
