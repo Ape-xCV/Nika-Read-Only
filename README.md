@@ -265,6 +265,16 @@ sudo virsh net-start default
   </details>
 
 
+- Replace from `memballoon model="virtio">` to `</memballoon>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <memballoon model="none"/>
+  ```
+  </details>
+
+
 - Replace `<audio id="1" type="spice"/>` and [Apply]:
   <details>
     <summary>Spoiler <b>(for pipewire sound, not required)</b></summary>
