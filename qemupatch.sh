@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-if [ "$EUID" != 0 ]; then
-    faillock --reset
-    sudo "$0" "$@"
-    exit $?
-fi
+#if [ "$EUID" != 0 ]; then
+#    faillock --reset
+#    sudo "$0" "$@"
+#    exit $?
+#fi
 
 QEMU_DEST="/usr/local/bin/qemu-system-x86_64"
 
@@ -80,12 +80,14 @@ file_msmouse="$(pwd)/qemu/chardev/msmouse.c"
 file_wctablet="$(pwd)/qemu/chardev/wctablet.c"
 file_vhostusergpu="$(pwd)/qemu/contrib/vhost-user-gpu/vhost-user-gpu.c"
 file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
+file_acpi_core="$(pwd)/qemu/hw/acpi/core.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_qdev="$(pwd)/qemu/hw/core/qdev.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
 file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
+file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
 file_multiboot="$(pwd)/qemu/hw/i386/multiboot.c"
 file_pc="$(pwd)/qemu/hw/i386/pc.c"
@@ -143,12 +145,14 @@ if [[ -f "$file_msmouse" ]]; then rm "$file_msmouse"; fi
 if [[ -f "$file_wctablet" ]]; then rm "$file_wctablet"; fi
 if [[ -f "$file_vhostusergpu" ]]; then rm "$file_vhostusergpu"; fi
 if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
+if [[ -f "$file_acpi_core" ]]; then rm "$file_acpi_core"; fi
 if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
 if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
+if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
 if [[ -f "$file_multiboot" ]]; then rm "$file_multiboot"; fi
 if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
@@ -226,9 +230,11 @@ sed -i "$file_vhostusergpu" -Ee "s/QEMU vhost-user-gpu/Intel(R) HD Graphics/"
 
 echo "  $file_amlbuild"
 get_new_string 6 2
+oem_id="$new_string"
 echo "desc->oem_id                         -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/desc->oem_id/\"$new_string\"/"
 get_new_string 8 3
+table_id="$new_string"
 echo "desc->oem_table_id                   -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/desc->oem_table_id/\"$new_string\"/"
 get_new_string 4 1
@@ -237,6 +243,16 @@ sed -i "$file_amlbuild" -Ee "s/ACPI_BUILD_APPNAME8/\"$new_string\"/"
 get_new_string 4 1
 echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
+
+echo "  $file_acpi_core"
+get_new_string 4 1
+echo "\"QEMU\0\0\0\0\1\0\"                   -> \"$new_string\0\0\0\0\1\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"$new_string\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/"
+echo "\"QEMUQEQEMUQEMU\1\0\0\0\"             -> \"${oem_id}${table_id}\0\0\0\0\1\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"${oem_id}${table_id}\\\\1\\\\0\\\\0\\\\0\"/"
+get_new_string 4 1
+echo "\"QEMU\1\0\0\0\"                       -> \"$new_string\1\0\0\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"$new_string\\\\1\\\\0\\\\0\\\\0\"/"
 
 echo "  $file_hdacodec"
 echo "0x1af4                               -> 0x10ec"
@@ -289,6 +305,24 @@ else
 #  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6/0x51a3/"
   sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/Intel SMBUS Bridge/"
 fi
+
+echo "  $file_acpibuild"
+sed -i "$file_acpibuild" -e '/Helpful/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
+sed -i "$file_acpibuild" -e '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
+echo "    acpi_add_table(table_offsets, tables_blob);"
+echo "    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
+echo "        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
+echo "    acpi_table_begin(&table, tables_blob);"
+echo "    build_append_int_noprefix(tables_blob,0x00000000,4);"
+echo "    acpi_table_end(tables->linker, &table);"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    /* RSDT is pointed to by RSDP */"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_add_table(table_offsets, tables_blob);"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_begin(&table, tables_blob);"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    build_append_int_noprefix(tables_blob,0x00000000,4);"
+sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_end(tables->linker, &table);"
 
 echo "  $file_i386_fwcfg"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -459,7 +493,7 @@ echo "QEMU0002                             -> ${new_string}0002"
 sed -i "$file_fwcfgacpi" -Ee "s/QEMU0002/${new_string}0002/"
 
 #signature=$(get_random_hex 16)
-signature="0x41204D204920"
+signature="0x41204D2049202020ULL"
 echo "  $file_nvram_fwcfg"
 echo "0x51454d5520434647ULL                -> $signature"
 sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/$signature/"
@@ -864,4 +898,4 @@ cd qemu/build
 make
 
 echo "$QEMU_DEST"
-cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
+sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
