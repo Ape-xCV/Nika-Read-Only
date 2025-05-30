@@ -265,7 +265,7 @@ sudo virsh net-start default
   </details>
 
 
-- Replace from `memballoon model="virtio">` to `</memballoon>` and [Apply]:
+- Replace from `<memballoon model="virtio">` to `</memballoon>` and [Apply]:
   <details>
     <summary>Spoiler</summary>
 
