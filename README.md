@@ -124,6 +124,18 @@ sudo virsh net-start default
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 200 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
+
+
+- Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <mac address="xx:xx:xx:xx:xx:xx"/>
+  ```
+  </details>
+
 - Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
 
 
