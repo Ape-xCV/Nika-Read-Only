@@ -552,6 +552,10 @@ sudo -E ./nika
     <summary>Spoiler</summary>
 
   ```shell
+  <pm>
+    <suspend-to-mem enabled="yes"/>
+    <suspend-to-disk enabled="yes"/>
+  </pm>
   <devices>
     <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
   ```
