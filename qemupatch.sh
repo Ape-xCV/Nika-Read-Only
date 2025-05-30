@@ -6,7 +6,7 @@
 #    exit $?
 #fi
 
-QEMU_DEST="/usr/local/bin/qemu-system-x86_64"
+QEMU_DEST="/usr/local/bin"
 
 default_models=(
   "CT250MX500SSD1"                "KINGSTON SA400S37240G"
@@ -138,6 +138,7 @@ header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
+file_battery="$(pwd)/qemu/build/battery.dsl"
 
 if [[ -f "$file_vhdx" ]]; then rm "$file_vhdx"; fi
 if [[ -f "$file_vvfat" ]]; then rm "$file_vvfat"; fi
@@ -203,8 +204,10 @@ if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
-mkdir -p qemu
+if [[ -f "$file_battery" ]]; then rm "$file_battery"; fi
+mkdir -p qemu/build
 cp -fr qemubackup/. qemu/.
+cp -f battery.dsl qemu/build/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -245,14 +248,12 @@ echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
 echo "  $file_acpi_core"
-get_new_string 4 1
-echo "\"QEMU\0\0\0\0\1\0\"                   -> \"$new_string\0\0\0\0\1\0\""
-sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"$new_string\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/"
+echo "\"QEMU\0\0\0\0\1\0\"                   -> \"SSDT\0\0\0\0\1\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"SSDT\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/"
 echo "\"QEMUQEQEMUQEMU\1\0\0\0\"             -> \"${oem_id}${table_id}\0\0\0\0\1\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"${oem_id}${table_id}\\\\1\\\\0\\\\0\\\\0\"/"
-get_new_string 4 1
-echo "\"QEMU\1\0\0\0\"                       -> \"$new_string\1\0\0\0\""
-sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"$new_string\\\\1\\\\0\\\\0\\\\0\"/"
+echo "\"QEMU\1\0\0\0\"                       -> \"INTL\1\0\0\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"INTL\\\\1\\\\0\\\\0\\\\0\"/"
 
 echo "  $file_hdacodec"
 echo "0x1af4                               -> 0x10ec"
@@ -884,6 +885,12 @@ sed -i "$file_kvm" -Ee "s/\"XenVMMXenVMM\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0
 echo "KVMKVMKVM\0\0\0                      -> ${cpu_vendor:1}"
 sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
 
+echo "  $file_battery"
+echo "BOCHS                                -> $oem_id"
+echo "BXPCSSDT                             -> $table_id"
+sed -i "$file_battery" -Ee "s/BOCHS/$oem_id/"
+sed -i "$file_battery" -Ee "s/BXPCSSDT/$table_id/"
+
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo ""
@@ -892,10 +899,12 @@ else
   exit 0
 fi
 
-mkdir -p qemu/build
 cd qemu/build
 ../configure --target-list=x86_64-softmmu
 make
+iasl "$file_battery"
 
-echo "$QEMU_DEST"
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
+sudo cp -f "$(pwd)/battery.aml" "$QEMU_DEST"
+echo "$QEMU_DEST/qemu-system-x86_64"
+echo "$QEMU_DEST/battery.aml"
