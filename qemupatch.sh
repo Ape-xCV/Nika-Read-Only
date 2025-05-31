@@ -2,7 +2,7 @@
 
 if [ "$EUID" != 0 ]; then
     faillock --reset
-    sudo "$0" "$@"
+    sudo -E "$0" "$@"
     exit $?
 fi
 
@@ -138,7 +138,7 @@ header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
-file_battery="$(pwd)/qemu/build/battery.dsl"
+file_battery="$(pwd)/qemu/battery.dsl"
 
 if [[ -f "$file_vhdx" ]]; then rm "$file_vhdx"; fi
 if [[ -f "$file_vvfat" ]]; then rm "$file_vvfat"; fi
@@ -205,9 +205,9 @@ if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
 if [[ -f "$file_battery" ]]; then rm "$file_battery"; fi
-mkdir -p qemu/build
+mkdir -p qemu
 cp -fr qemubackup/. qemu/.
-cp -f battery.dsl qemu/build/.
+cp -f battery.dsl qemu/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -899,8 +899,14 @@ else
   exit 0
 fi
 
-cd qemu/build
-../configure --target-list=x86_64-softmmu
+cd qemu
+./configure --target-list=x86_64-softmmu \
+  --enable-libusb \
+  --enable-usb-redir \
+  --enable-spice \
+  --enable-spice-protocol \
+  --disable-werror
+cd build
 make
 iasl "$file_battery"
 
@@ -908,3 +914,7 @@ sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
 sudo cp -f "$(pwd)/battery.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
 echo "$QEMU_DEST/battery.aml"
+
+sudo mkdir -p /usr/local/share/qemu
+sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
+sudo cp -f "../pc-bios/efi-e1000e.rom" "/usr/local/share/qemu/efi-e1000e.rom"
