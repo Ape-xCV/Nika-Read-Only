@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#if [ "$EUID" != 0 ]; then
-#    faillock --reset
-#    sudo "$0" "$@"
-#    exit $?
-#fi
+if [ "$EUID" != 0 ]; then
+    faillock --reset
+    sudo "$0" "$@"
+    exit $?
+fi
 
 QEMU_DEST="/usr/local/bin"
 
@@ -232,17 +232,13 @@ echo "QEMU vhost-user-gpu                  -> Intel(R) HD Graphics"
 sed -i "$file_vhostusergpu" -Ee "s/QEMU vhost-user-gpu/Intel(R) HD Graphics/"
 
 echo "  $file_amlbuild"
-get_new_string 6 2
-oem_id="$new_string"
-echo "desc->oem_id                         -> \"$new_string\""
-sed -i "$file_amlbuild" -Ee "s/desc->oem_id/\"$new_string\"/"
-get_new_string 8 3
-table_id="$new_string"
-echo "desc->oem_table_id                   -> \"$new_string\""
-sed -i "$file_amlbuild" -Ee "s/desc->oem_table_id/\"$new_string\"/"
-get_new_string 4 1
-echo "ACPI_BUILD_APPNAME8                  -> \"$new_string\""
-sed -i "$file_amlbuild" -Ee "s/ACPI_BUILD_APPNAME8/\"$new_string\"/"
+chassis_type=$(sudo dmidecode --string chassis-type)
+if [[ "$chassis_type" == "Desktop" ]]; then
+  pm_type="1"
+else
+  pm_type="2"
+fi
+sed -i "$file_amlbuild" -e 's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
 get_new_string 4 1
 echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -820,10 +816,14 @@ echo "hotpluggable = true                  -> hotpluggable = false"
 sed -i "$file_ap" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $header_amlbuild"
-echo "APPNAME6 \"BOCHS \"                    -> APPNAME6 \"INTEL \""
-echo "APPNAME8 \"BXPC    \"                  -> APPNAME8 \"PC8086  \""
-sed -i "$header_amlbuild" -Ee "s/APPNAME6 \"BOCHS \"/APPNAME6 \"INTEL \"/"
-sed -i "$header_amlbuild" -Ee "s/APPNAME8 \"BXPC    \"/APPNAME8 \"PC8086  \"/"
+get_new_string 6 2
+app_name_6="$new_string"
+get_new_string 8 3
+app_name_8="$new_string"
+echo "APPNAME6 \"BOCHS \"                    -> APPNAME6 \"$app_name_6\""
+echo "APPNAME8 \"BXPC    \"                  -> APPNAME8 \"$app_name_8\""
+sed -i "$header_amlbuild" -Ee "s/APPNAME6 \"BOCHS \"/APPNAME6 \"$app_name_6\"/"
+sed -i "$header_amlbuild" -Ee "s/APPNAME8 \"BXPC    \"/APPNAME8 \"$app_name_8\"/"
 
 echo "  $header_pci"
 echo "QUMRANET    0x1af4                   -> QUMRANET    0x8086"
@@ -886,10 +886,10 @@ echo "KVMKVMKVM\0\0\0                      -> ${cpu_vendor:1}"
 sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
 
 echo "  $file_battery"
-echo "BOCHS                                -> $oem_id"
-echo "BXPCSSDT                             -> $table_id"
-sed -i "$file_battery" -Ee "s/BOCHS/$oem_id/"
-sed -i "$file_battery" -Ee "s/BXPCSSDT/$table_id/"
+echo "BOCHS                                -> $app_name_6"
+echo "BXPCSSDT                             -> $app_name_8"
+sed -i "$file_battery" -Ee "s/BOCHS/$app_name_6/"
+sed -i "$file_battery" -Ee "s/BXPCSSDT/$app_name_8/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
