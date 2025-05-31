@@ -541,6 +541,17 @@ sudo -E ./nika
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install git cmake g++
+  sudo dnf acpica-tools glib2-devel libfdt-devel ninja-build pixman-devel zlib-ng-devel
+  sudo dnf spice-protocol libusb1-devel usbredir-devel
+  ```
+  </details>
+
 - Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
   - You can edit `default_models` with real data.
 
