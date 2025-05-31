@@ -194,19 +194,19 @@ sudo virsh net-start default
 
 - Replace from `<memory unit="KiB">4194304</memory>` to `<vcpu placement="static">2</vcpu>` and [Apply]:
   <details>
-    <summary>Spoiler</summary>
+    <summary>Spoiler <b>(use a commercial module size like 12, 16, or 24 GiB; vcpu example for a 24 threads host CPU)</b></summary>
 
   ```shell
-  <memory unit="KiB">12582912</memory>
-  <currentMemory unit="KiB">12582912</currentMemory>
-  <vcpu placement="static">4</vcpu>
+  <memory unit="GiB">12</memory>
+  <currentMemory unit="GiB">12</currentMemory>
+  <vcpu placement="static">24</vcpu>
   ```
   </details>
 
 
 - Replace from `<features>` to `</clock>` and [Apply]:
   <details>
-    <summary>Spoiler</summary>
+    <summary>Spoiler <b>(example for a 12 cores, 24 threads host CPU; any mismatch will be detected)</b></summary>
 
   ```shell
   <features>
@@ -239,7 +239,7 @@ sudo virsh net-start default
     <msrs unknown="fault"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" dies="1" clusters="1" cores="4" threads="1"/>
+    <topology sockets="1" cores="12" threads="2"/>
     <cache mode="passthrough"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
