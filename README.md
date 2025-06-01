@@ -460,7 +460,7 @@ sudo usermod -aG input $USER
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video VGA >> Model: None >> [Apply]
 
-- You will be using video output from passthrough GPU instead of QXL virtual GPU.
+- You will be using video output from passthrough GPU instead of VGA virtual GPU.
 
 | Method                       | Latency   | ESP          | Cons                         |
 | ---------------------------- | --------- | ------------ | ---------------------------- |
@@ -566,7 +566,7 @@ sudo -E ./nika
   ```shell
   <pm>
     <suspend-to-mem enabled="yes"/>
-    <suspend-to-disk enabled="yes"/>
+    <suspend-to-disk enabled="no"/>
   </pm>
   <devices>
     <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
