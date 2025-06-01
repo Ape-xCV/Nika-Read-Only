@@ -547,9 +547,7 @@ sudo -E ./nika
 
   ```shell
   sudo dnf builddep qemu
-  sudo dnf install git cmake g++
-  sudo dnf acpica-tools glib2-devel libfdt-devel ninja-build pixman-devel zlib-ng-devel
-  sudo dnf libusb1-devel usbredir-devel
+  sudo dnf install acpica-tools
   ```
   </details>
 
