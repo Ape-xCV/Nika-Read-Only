@@ -126,6 +126,8 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
+
 
 - Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
   <details>
@@ -456,7 +458,7 @@ sudo usermod -aG input $USER
 - For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: None >> [Apply]
+- Virtual Machine Manager >> [Open] >> View >> Details >> Video VGA >> Model: None >> [Apply]
 
 - You will be using video output from passthrough GPU instead of QXL virtual GPU.
 
