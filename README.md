@@ -525,21 +525,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 7. Disable hypervisor (mandatory)
-
-- Edit XML for Intel (on Linux PC):
-```shell
-<feature policy="disable" name="hypervisor"/>
-<feature policy="require" name="vmx"/>
-```
-
-- Edit XML for AMD (on Linux PC):
-```shell
-<feature policy="disable" name="hypervisor"/>
-<feature policy="require" name="svm"/>
-```
-
-### 8. Spoof qemu-system-x86_64 (mandatory)
+### 7. Spoof qemu-system-x86_64 (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
@@ -573,7 +559,7 @@ sudo -E ./nika
   ```
   </details>
 
-### 9. memflow-kvm (faster VMREAD)
+### 8. memflow-kvm (faster VMREAD)
 
 
   <details>
