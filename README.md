@@ -71,7 +71,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 
   <details>
-    <summary>Install on <b>Fedora Linux (Fedora Spins 41 KDE)</b>:</summary>
+    <summary>Install on <b>Fedora Linux (Fedora 42 KDE)</b>:</summary>
 
     sudo dnf install @virtualization
   </details>
@@ -124,9 +124,9 @@ sudo virsh net-start default
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 120, 160, or 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
-
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
 
 
 - Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
