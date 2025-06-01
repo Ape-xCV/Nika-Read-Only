@@ -899,13 +899,13 @@ else
   exit 0
 fi
 
+  #--enable-libusb \
+  #--enable-usb-redir \
+  #--enable-spice \
+  #--enable-spice-protocol \
+  #--disable-werror
 cd qemu
-./configure --target-list=x86_64-softmmu \
-  --enable-libusb \
-  --enable-usb-redir \
-  --enable-spice \
-  --enable-spice-protocol \
-  --disable-werror
+./configure --target-list=x86_64-softmmu
 cd build
 make
 iasl "$file_battery"
@@ -916,5 +916,7 @@ echo "$QEMU_DEST/qemu-system-x86_64"
 echo "$QEMU_DEST/battery.aml"
 
 sudo mkdir -p /usr/local/share/qemu
+sudo cp -f "../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
 sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
 sudo cp -f "../pc-bios/efi-e1000e.rom" "/usr/local/share/qemu/efi-e1000e.rom"
+#sudo cp -fr "../pc-bios/." "/usr/local/share/qemu/."
