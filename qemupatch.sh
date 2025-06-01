@@ -899,11 +899,6 @@ else
   exit 0
 fi
 
-  #--enable-libusb \
-  #--enable-usb-redir \
-  #--enable-spice \
-  #--enable-spice-protocol \
-  #--disable-werror
 cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
