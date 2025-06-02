@@ -244,10 +244,14 @@ echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
 echo "  $file_acpi_core"
-echo "\"QEMU\0\0\0\0\1\0\"                   -> \"SSDT\0\0\0\0\1\0\""
-sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"SSDT\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/"
-echo "\"QEMUQEQEMUQEMU\1\0\0\0\"             -> \"${oem_id}${table_id}\0\0\0\0\1\0\""
-sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"${oem_id}${table_id}\\\\1\\\\0\\\\0\\\\0\"/"
+get_new_string 6 2
+app_name_6="$new_string"
+get_new_string 8 3
+app_name_8="$new_string"
+echo "\"QEMU\0\0\0\0\1\0\"                   -> \"SSDT\0\0\0\0\2\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"SSDT\\\\0\\\\0\\\\0\\\\0\\\\2\\\\0\"/"
+echo "\"QEMUQEQEMUQEMU\1\0\0\0\"             -> \"${app_name_6}${app_name_8}\1\0\0\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"${app_name_6}${app_name_8}\\\\1\\\\0\\\\0\\\\0\"/"
 echo "\"QEMU\1\0\0\0\"                       -> \"INTL\1\0\0\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"INTL\\\\1\\\\0\\\\0\\\\0\"/"
 
@@ -816,10 +820,6 @@ echo "hotpluggable = true                  -> hotpluggable = false"
 sed -i "$file_ap" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $header_amlbuild"
-get_new_string 6 2
-app_name_6="$new_string"
-get_new_string 8 3
-app_name_8="$new_string"
 echo "APPNAME6 \"BOCHS \"                    -> APPNAME6 \"$app_name_6\""
 echo "APPNAME8 \"BXPC    \"                  -> APPNAME8 \"$app_name_8\""
 sed -i "$header_amlbuild" -Ee "s/APPNAME6 \"BOCHS \"/APPNAME6 \"$app_name_6\"/"
