@@ -165,7 +165,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=0,vendor=ASUS,version=X.23,date=06/14/2024,release=12.34"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=1,manufacturer=ASUS,product=ASUS Zenbook 14X UX1337,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=1,manufacturer=ASUS,product=ASUS Zenbook 14X UM5401,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=2,manufacturer=ASUS,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
       <qemu:arg value="-smbios"/>
@@ -173,7 +173,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=17,manufacturer=Samsung,loc_pfx=BANK,speed=4800,serial=E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,manufacturer=Intel(R) Corporation,version=13th Gen Intel(R) Core(TM) i9-13900H @ 2.60GHz,max-speed=5400,current-speed=2600"/>
+      <qemu:arg value="type=4,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 9 6900HX with Radeon Graphics,max-speed=4900,current-speed=3300"/>
     </qemu:commandline>
   ```
   </details>
