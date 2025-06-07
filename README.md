@@ -569,6 +569,10 @@ sudo -E ./nika
     <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt3.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt4.aml"/>
   </qemu:commandline>
   ```
   </details>
