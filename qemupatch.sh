@@ -312,11 +312,6 @@ else
 fi
 
 echo "  $file_acpibuild"
-get_new_string 2 1
-echo "S%.02X                               -> ${new_string}%.02X"
-#_sed -i "$file_acpibuild" -Ee "s/S%.02X/${new_string}%.02X/"
-#_sed -i "$file_acpibuild" -e  '/\/\* start to compose PCI device descriptor \*\//{n;d;}'
-#_sed -i "$file_acpibuild" -Ee "/\/\* start to compose PCI device descriptor \*\//a\        dev = aml_device(\"S${new_string}%.02X\", devfn);"
 echo "\"VMBUS\"                              -> \"VMBus\""
 sed -i "$file_acpibuild" -Ee "s/\"VMBUS\"/\"VMBus\"/"
 echo "GPE0 resources                       -> Windows 2009,Windows 2012,Windows 2013,Windows 2015"
@@ -385,8 +380,7 @@ echo "QEMU MICRODRIVE                      -> $new_ide_cfata_model"
 echo "QEMU HARDDISK                        -> $new_default_model"
 sed -i "$file_core" -Ee "s/QEMU DVD-ROM/$new_ide_cd_model/"
 sed -i "$file_core" -Ee "s/QEMU MICRODRIVE/$new_ide_cfata_model/"
-sed -i "$file_core" -Ee "s/QEMU HARDDISK/KINGSTON SA400S37240G/"
-#_sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
+sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
 
 echo "  $file_ich"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
