@@ -559,6 +559,20 @@ sudo -E ./nika
   ```
   </details>
 
+
+- Replace `</qemu:commandline>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+  </qemu:commandline>
+  ```
+  </details>
+
 ### 8. memflow-kvm (faster VMREAD)
 
 
