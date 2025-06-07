@@ -2,16 +2,16 @@
  * Intel ACPI Component Architecture
  * AML/ASL+ Disassembler version 20240322 (64-bit version)
  * Copyright (c) 2000 - 2023 Intel Corporation
- * 
+ *
  * Disassembling to symbolic ASL+ operators
  *
- * Disassembly of ssdt2.dat
+ * Disassembly of ssdt1.aml
  *
  * Original Table Header:
  *     Signature        "SSDT"
  *     Length           0x0000010A (266)
  *     Revision         0x02
- *     Checksum         0x5F
+ *     Checksum         0x6B
  *     OEM ID           "ALASKA"
  *     OEM Table ID     "A M I "
  *     OEM Revision     0x00000002 (2)
@@ -39,7 +39,7 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000002)
             }
         If (_OSI ("Darwin"))
         {
-            Return ((Ones != Match (Local0, MEQ, Arg0, MTR, Zero, Zero)))
+            Return ((Ones != Match (Local0, MEQ, Arg0, MTR, 0x00, 0x00)))
         }
         Else
         {
