@@ -139,6 +139,8 @@ header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 file_battery="$(pwd)/qemu/battery.dsl"
+file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
+file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
 if [[ -f "$file_vhdx" ]]; then rm "$file_vhdx"; fi
 if [[ -f "$file_vvfat" ]]; then rm "$file_vvfat"; fi
@@ -205,9 +207,11 @@ if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
 if [[ -f "$file_battery" ]]; then rm "$file_battery"; fi
+if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
+if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu/.
-cp -f battery.dsl qemu/.
+cp -f *.dsl qemu/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -238,7 +242,7 @@ if [[ "$chassis_type" == "Desktop" ]]; then
 else
   pm_type="2"
 fi
-sed -i "$file_amlbuild" -e 's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
+sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
 get_new_string 4 1
 echo "\"QEMU\"                               -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -296,20 +300,29 @@ cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL                  -> PCI_VENDOR_ID_AMD"
   echo "PCI_DEVICE_ID_INTEL_ICH9_6           -> 0x790b" #FCH SMBus Controller
-  echo "ICH9 SMBUS Bridge                    -> AMD SMBUS Bridge"
+  echo "ICH9 SMBUS Bridge                    -> AMD SMBus Bridge"
 #  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
 #  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6/0x790b/"
-  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/AMD SMBUS Bridge/"
+  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/AMD SMBus Bridge/"
 else
   echo "PCI_DEVICE_ID_INTEL_ICH9_6           -> 0x51a3" #Alder Lake PCH-P SMBus Host Controller
-  echo "ICH9 SMBUS Bridge                    -> Intel SMBUS Bridge"
+  echo "ICH9 SMBUS Bridge                    -> Intel SMBus Bridge"
 #  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6/0x51a3/"
-  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/Intel SMBUS Bridge/"
+  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/Intel SMBus Bridge/"
 fi
 
 echo "  $file_acpibuild"
-sed -i "$file_acpibuild" -e '/Helpful/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
-sed -i "$file_acpibuild" -e '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
+get_new_string 2 1
+echo "S%.02X                               -> ${new_string}%.02X"
+#_sed -i "$file_acpibuild" -Ee "s/S%.02X/${new_string}%.02X/"
+#_sed -i "$file_acpibuild" -e  '/\/\* start to compose PCI device descriptor \*\//{n;d;}'
+#_sed -i "$file_acpibuild" -Ee "/\/\* start to compose PCI device descriptor \*\//a\        dev = aml_device(\"S${new_string}%.02X\", devfn);"
+echo "\"VMBUS\"                              -> \"VMBus\""
+sed -i "$file_acpibuild" -Ee "s/\"VMBUS\"/\"VMBus\"/"
+echo "GPE0 resources                       -> Windows 2009,Windows 2012,Windows 2013,Windows 2015"
+sed -i "$file_acpibuild" -Ee "s/GPE0 resources/Windows 2009,Windows 2012,Windows 2013,Windows 2015/"
+sed -i "$file_acpibuild" -e  '/Helpful/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
+sed -i "$file_acpibuild" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
 echo "    acpi_add_table(table_offsets, tables_blob);"
 echo "    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
 echo "        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
@@ -372,7 +385,8 @@ echo "QEMU MICRODRIVE                      -> $new_ide_cfata_model"
 echo "QEMU HARDDISK                        -> $new_default_model"
 sed -i "$file_core" -Ee "s/QEMU DVD-ROM/$new_ide_cd_model/"
 sed -i "$file_core" -Ee "s/QEMU MICRODRIVE/$new_ide_cfata_model/"
-sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
+sed -i "$file_core" -Ee "s/QEMU HARDDISK/KINGSTON SA400S37240G/"
+#_sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
 
 echo "  $file_ich"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
@@ -903,12 +917,18 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make
-iasl "$file_battery"
+#iasl "$file_battery"
+iasl "$file_ssdt1"
+iasl "$file_ssdt2"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-sudo cp -f "$(pwd)/battery.aml" "$QEMU_DEST"
+#sudo cp -f "$(pwd)/../battery.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-echo "$QEMU_DEST/battery.aml"
+#echo "$QEMU_DEST/battery.aml"
+echo "$QEMU_DEST/ssdt1.aml"
+echo "$QEMU_DEST/ssdt2.aml"
 
 sudo mkdir -p /usr/local/share/qemu
 sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
