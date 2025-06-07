@@ -484,9 +484,9 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
 #  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0x790e/"
 else
   echo "ICH9 LPC bridge                      -> Intel LPC bridge"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8           -> 0xa30e" #Cannon Lake LPC Controller
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8           -> 0xa2c5" #200 Series PCH LPC Controller (Z270)
   sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/Intel LPC bridge/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0xa30e/"
+#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0xa2c5/"
 fi
 
 echo "  $file_pvpanicisa"
