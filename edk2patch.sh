@@ -2,7 +2,7 @@
 
 if [ "$EUID" != 0 ]; then
     faillock --reset
-    sudo "$0" "$@"
+    sudo -E "$0" "$@"
     exit $?
 fi
 
@@ -19,34 +19,32 @@ get_random_element() {
 }
 
 get_random_string() { head /dev/urandom | tr -dc 'A-Z'    | head -c "$1"; }
-get_random_number() { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
 get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
-get_random_word()   { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
+get_random_dec()    { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
+get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 
-mkdir -p edk2
+get_new_string() {
+  local length=$1
+  local random_string=""
+  #local new_string=""
+  local vowel_count=0
+  while [ $vowel_count -ne $2 ]
+  do
+    random_string="$(get_random_string 100)"
+    new_string=$(echo $random_string | sed -E 's/(.)\1+/\1/g' | head -c $length)
+    vowel_count=$(echo $new_string | grep -io '[aeiou]' | wc -l)
+  done
+  prefix=$(echo $new_string | head -c 1)
+  suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
+  #echo $new_string
+}
+
 if [[ ! -d edk2backup ]]; then
   echo -e "$(pwd)/\e[1medk2backup\e[0m does not exist, clone started..."
   git clone --recursive --single-branch --branch  edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
 else
   echo -e "$(pwd)/\e[1medk2backup\e[0m found."
 fi
-
-rm edk2/MdeModulePkg/MdeModulePkg.dec
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Facp.aslc
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Madt.aslc
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Platform.h
-rm edk2/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc
-rm edk2/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c
-rm edk2/OvmfPkg/Bhyve/BhyveX64.dsc
-rm edk2/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
-#rm edk2/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-#rm edk2/OvmfPkg/QemuVideoDxe/Driver.c
-rm edk2/ShellPkg/ShellPkg.dec
-cp -fr edk2backup/. edk2/.
-
 
 file_MdeModulePkg="$(pwd)/edk2/MdeModulePkg/MdeModulePkg.dec"
 file_Dsdt="$(pwd)/edk2/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl"
@@ -60,9 +58,33 @@ file_VbeShim="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c"
 file_BhyveX64="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveX64.dsc"
 file_SmbiosPlatformDxe="$(pwd)/edk2/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
 #file_Q35MchIch9="$(pwd)/edk2/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
-#file_Driver="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/Driver.c"
+file_QemuFwCfgCacheInit="$(pwd)/edk2/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgCacheInit.c"
+file_FwBlockService="$(pwd)/edk2/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FwBlockService.c"
+file_QemuFlash="$(pwd)/edk2/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/QemuFlash.c"
+file_ComponentName="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/ComponentName.c"
+file_Driver="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/Driver.c"
 file_ShellPkg="$(pwd)/edk2/ShellPkg/ShellPkg.dec"
 
+if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
+if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
+if [[ -f "$file_Facp" ]]; then rm "$file_Facp"; fi
+if [[ -f "$file_Hpet" ]]; then rm "$file_Hpet"; fi
+if [[ -f "$file_Madt" ]]; then rm "$file_Madt"; fi
+if [[ -f "$file_Mcfg" ]]; then rm "$file_Mcfg"; fi
+if [[ -f "$file_Platform" ]]; then rm "$file_Platform"; fi
+if [[ -f "$file_Spcr" ]]; then rm "$file_Spcr"; fi
+if [[ -f "$file_VbeShim" ]]; then rm "$file_VbeShim"; fi
+if [[ -f "$file_BhyveX64" ]]; then rm "$file_BhyveX64"; fi
+if [[ -f "$file_SmbiosPlatformDxe" ]]; then rm "$file_SmbiosPlatformDxe"; fi
+#if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
+if [[ -f "$file_QemuFwCfgCacheInit" ]]; then rm "$file_QemuFwCfgCacheInit"; fi
+if [[ -f "$file_FwBlockService" ]]; then rm "$file_FwBlockService"; fi
+if [[ -f "$file_QemuFlash" ]]; then rm "$file_QemuFlash"; fi
+if [[ -f "$file_ComponentName" ]]; then rm "$file_ComponentName"; fi
+if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
+if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
+mkdir -p edk2
+cp -fr edk2backup/. edk2/.
 
 echo "  $file_MdeModulePkg"
 echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
@@ -105,10 +127,17 @@ echo "'B','V','S','P','C','R',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Spcr" -Ee "s/'B','V','S','P','C','R',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_VbeShim"
-echo "\"FBSD\"                               -> \"UEFI\""
-echo "\"FBSD\"                               -> \"UEFI\""
-sed -i "$file_VbeShim" -Ee "s/\"FBSD\"/\"UEFI\"/"
-sed -i "$file_VbeShim" -Ee "s/\"FBSD\"/\"UEFI\"/"
+get_new_string 4 1
+echo "\"VESA\"                               -> \"$new_string\""
+sed -i "$file_VbeShim" -Ee "s/\"VESA\"/\"$new_string\"/"
+get_new_string 4 1
+echo "\"FBSD\"                               -> \"$new_string\""
+sed -i "$file_VbeShim" -e  '/OemNameAddress/{n;d;}'
+sed -i "$file_VbeShim" -Ee "/OemNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
+get_new_string 4 1
+echo "\"FBSD\"                               -> \"$new_string\""
+sed -i "$file_VbeShim" -e  '/VendorNameAddress/{n;d;}'
+sed -i "$file_VbeShim" -Ee "/VendorNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
 
 echo "  $file_BhyveX64"
 echo "\"BHYVE\"                              -> \"ALASKA\""
@@ -128,14 +157,41 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/\"02\/06\/2015\\\\0\"/\"${day}\/${month}
 
 #echo "  $file_Q35MchIch9"
 #if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-#  echo "0x29C0                               -> 0x1480"
+#  echo "0x29C0                               -> 0x1480" #K8 [Athlon64/Opteron] DRAM Controller
 #  sed -i "$file_Q35MchIch9" -Ee "s/0x29C0/0x1480/"
 #else
-#  echo "0x29C0                               -> 0x4641"
+#  echo "0x29C0                               -> 0x2530" #82850 850 (Tehama) Chipset Host Bridge (MCH)
 #  sed -i "$file_Q35MchIch9" -Ee "s/0x29C0/0x4641/"
 #fi
 
-#echo "  $file_Driver"
+echo "  $file_QemuFwCfgCacheInit"
+get_new_string 4 1
+echo "QEMU FW CFG                          -> $new_string FW CFG"
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$new_string FW CFG/"
+
+echo "  $file_FwBlockService"
+#get_new_string 4 1
+echo "QEMU flash                           -> $new_string Flash"
+echo "QEMU Flash                           -> $new_string Flash"
+sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$new_string Flash/"
+sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$new_string Flash/"
+
+echo "  $file_QemuFlash"
+#get_new_string 4 1
+echo "\"QEMU                                -> \"$new_string"
+sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
+echo "\"QemuFlashDetected                   -> \"FlashDetected"
+sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"FlashDetected/"
+
+echo "  $file_ComponentName"
+#get_new_string 4 1
+echo "L\"QEMU                               -> L\"$new_string"
+sed -i "$file_ComponentName" -Ee "s/L\"QEMU/L\"$new_string/"
+
+echo "  $file_Driver"
+#get_new_string 4 1
+echo "L\"QEMU                               -> L\"$new_string"
+sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
 #IFS=':'
 #cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 #cpu_vendor="${cpu_vendor[1]}"
