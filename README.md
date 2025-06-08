@@ -577,6 +577,38 @@ sudo -E ./nika
   ```
   </details>
 
+### 7.1 Spoof OVMF (optional)
+
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install gcc-c++ nasm
+  ```
+  </details>
+
+- Run `edk2atch.sh` to clone, patch, and build OVMF with generated data.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <os>
+    <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+    <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.fd</loader>
+    <nvram format="raw">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.fd</nvram>
+    <bootmenu enable="yes"/>
+  </os>
+  ```
+  </details>
+
 ### 8. memflow-kvm (faster VMREAD)
 
 
