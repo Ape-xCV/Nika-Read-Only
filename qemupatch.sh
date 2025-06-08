@@ -138,7 +138,6 @@ header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
-file_battery="$(pwd)/qemu/battery.dsl"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 file_ssdt3="$(pwd)/qemu/ssdt3.dsl"
@@ -208,7 +207,6 @@ if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
-if [[ -f "$file_battery" ]]; then rm "$file_battery"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 if [[ -f "$file_ssdt3" ]]; then rm "$file_ssdt3"; fi
@@ -240,7 +238,8 @@ echo "QEMU vhost-user-gpu                  -> Intel(R) HD Graphics"
 sed -i "$file_vhostusergpu" -Ee "s/QEMU vhost-user-gpu/Intel(R) HD Graphics/"
 
 echo "  $file_amlbuild"
-chassis_type=$(sudo dmidecode --string chassis-type)
+#chassis_type=$(sudo dmidecode --string chassis-type)
+chassis_type="Desktop"
 if [[ "$chassis_type" == "Desktop" ]]; then
   pm_type="1"
 else
@@ -506,10 +505,10 @@ echo "QEMU0002                             -> ${new_string}0002"
 sed -i "$file_fwcfgacpi" -Ee "s/QEMU0002/${new_string}0002/"
 
 #signature=$(get_random_hex 16)
-signature="0x41204D2049202020ULL"
+signature="41204D2049202020"
 echo "  $file_nvram_fwcfg"
-echo "0x51454d5520434647ULL                -> $signature"
-sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/$signature/"
+echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
+sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 #get_new_string 4 1
 #echo "\"QEMU\"                               -> \"$new_string\""
 #sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -897,12 +896,6 @@ sed -i "$file_kvm" -Ee "s/\"XenVMMXenVMM\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0
 echo "KVMKVMKVM\0\0\0                      -> ${cpu_vendor:1}"
 sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
 
-echo "  $file_battery"
-echo "BOCHS                                -> $app_name_6"
-echo "BXPCSSDT                             -> $app_name_8"
-sed -i "$file_battery" -Ee "s/BOCHS/$app_name_6/"
-sed -i "$file_battery" -Ee "s/BXPCSSDT/$app_name_8/"
-
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo ""
@@ -915,20 +908,17 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make
-#iasl "$file_battery"
 iasl "$file_ssdt1"
 iasl "$file_ssdt2"
 iasl "$file_ssdt3"
 iasl "$file_ssdt4"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-#sudo cp -f "$(pwd)/../battery.aml" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt3.aml" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt4.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-#echo "$QEMU_DEST/battery.aml"
 echo "$QEMU_DEST/ssdt1.aml"
 echo "$QEMU_DEST/ssdt2.aml"
 echo "$QEMU_DEST/ssdt3.aml"
