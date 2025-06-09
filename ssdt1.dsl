@@ -1,24 +1,8 @@
 /*
- * Intel ACPI Component Architecture
- * AML/ASL+ Disassembler version 20240322 (64-bit version)
- * Copyright (c) 2000 - 2023 Intel Corporation
- *
- * Disassembling to symbolic ASL+ operators
- *
- * Disassembly of ssdt1.aml
- *
- * Original Table Header:
- *     Signature        "SSDT"
- *     Length           0x0000010A (266)
- *     Revision         0x02
- *     Checksum         0x6B
- *     OEM ID           "ALASKA"
- *     OEM Table ID     "A M I "
- *     OEM Revision     0x00000002 (2)
- *     Compiler ID      "INTL"
- *     Compiler Version 0x20240322 (539231010)
+ * Override for host defined _OSI to handle "Darwin"...
+ * All _OSI calls in DSDT are routed to XOSI...
  */
-DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000002)
+DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
 {
     Method (XOSI, 1, NotSerialized)
     {

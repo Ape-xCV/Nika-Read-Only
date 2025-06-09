@@ -213,7 +213,8 @@ if [[ -f "$file_ssdt3" ]]; then rm "$file_ssdt3"; fi
 if [[ -f "$file_ssdt4" ]]; then rm "$file_ssdt4"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu/.
-cp -f *.dsl qemu/.
+#cp -f *.dsl qemu/.
+cp -f *.aml qemu/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -849,13 +850,13 @@ sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/
 echo "  $header_qemufwcfg"
 get_new_string 4 1
 echo "QEMU0002                             -> ${new_string}0002"
-echo "0x51454d5520434647ULL                -> $signature"
+echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
 sed -i "$header_qemufwcfg" -Ee "s/QEMU0002/${new_string}0002/"
-sed -i "$header_qemufwcfg" -Ee "s/0x51454d5520434647ULL/$signature/"
+sed -i "$header_qemufwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $header_optionrom"
-echo "0x51454d5520434647ULL                -> $signature"
-sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/$signature/"
+echo "0x51454d5520434647ULL                -> 0x${signature}ULL"
+sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $file_cpu"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
@@ -908,10 +909,10 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make
-iasl "$file_ssdt1"
-iasl "$file_ssdt2"
-iasl "$file_ssdt3"
-iasl "$file_ssdt4"
+#iasl "$file_ssdt1"
+#iasl "$file_ssdt2"
+#iasl "$file_ssdt3"
+#iasl "$file_ssdt4"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
