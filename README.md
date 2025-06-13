@@ -577,7 +577,7 @@ sudo -E ./nika
   ```
   </details>
 
-### 7.1 Spoof OVMF (optional)
+### 7.1 Spoof OVMF (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
