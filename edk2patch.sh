@@ -6,8 +6,9 @@ if [ "$EUID" != 0 ]; then
     exit $?
 fi
 
-CODE_DEST="/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.fd"
-VARS_DEST="/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.fd"
+EDK2_DEST="/usr/share/edk2/ovmf"
+CODE_DEST="${EDK2_DEST}/OVMF_CODE_4M.patched.fd"
+VARS_DEST="${EDK2_DEST}/OVMF_VARS_4M.patched.fd"
 
 numbers=(
   "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"
@@ -254,7 +255,8 @@ build \
   --define TPM1_ENABLE=TRUE \
   --define TPM2_ENABLE=TRUE
 
+sudo mkdir -p "$EDK2_DEST"
+sudo cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
+sudo cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VARS_DEST"
 echo "$CODE_DEST"
 echo "$VARS_DEST"
-cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
-cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VARS_DEST"
