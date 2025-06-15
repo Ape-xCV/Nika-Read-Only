@@ -289,6 +289,10 @@ sudo virsh net-start default
   ```
   </details>
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> Channel (spice) >> [Remove]
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
+
 ### 2.2 Install Windows
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
