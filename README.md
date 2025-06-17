@@ -590,7 +590,7 @@ sudo -E ./nika
     <summary>Build on <b>Fedora Linux</b>:</summary>
 
   ```shell
-  sudo dnf install gcc-c++ nasm
+  sudo dnf install nasm
   ```
   </details>
 
