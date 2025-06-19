@@ -234,7 +234,7 @@ sudo virsh net-start default
     <kvm>
       <hidden state="on"/>
     </kvm>
-    <pmu state="off"/>
+    <pmu state="on"/>
     <vmport state="off"/>
     <smm state="on"/>
     <ioapic driver="kvm"/>
@@ -248,6 +248,7 @@ sudo virsh net-start default
     <feature policy="require" name="vmx"/>
     <feature policy="disable" name="aes"/>
     <feature policy="disable" name="x2apic"/>
+    <feature policy="require" name="topoext"/>
     <feature policy="require" name="invtsc"/>
     <feature policy="disable" name="amd-ssbd"/>
     <feature policy="disable" name="ssbd"/>
