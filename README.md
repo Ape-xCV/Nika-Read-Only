@@ -25,7 +25,7 @@
 * [x] Spectators list
 * [x] Humanized aimbot
 * [x] Inside FOV circle, hold RMB (Right Mouse Button) to aimbot **skynade** (even behind cover)
-* [x] Hold SHIFT to **lock on target** and **triggerbot** auto fire
+* [x] Hold SHIFT to **lock on target** or **show item names**
 * [x] Toggle **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
