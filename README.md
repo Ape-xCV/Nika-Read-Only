@@ -47,13 +47,13 @@
 - Nested Virtualization for Intel:
 ```shell
 sudo su
-echo "options kvm_intel nested=1" >> /etc/modprobe.d/kvm.conf
+echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
 sudo su
-echo "options kvm_amd nested=1" >> /etc/modprobe.d/kvm.conf
+echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
 ```
 
 - Preload `vfio-pci` module so it can bind to PCI IDs:
