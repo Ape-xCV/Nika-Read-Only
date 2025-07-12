@@ -564,24 +564,6 @@ sudo -E ./nika
   ```
   </details>
 
-
-- Replace `</qemu:commandline>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt3.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt4.aml"/>
-  </qemu:commandline>
-  ```
-  </details>
-
 ### 7.1 Spoof OVMF (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
