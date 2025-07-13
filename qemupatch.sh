@@ -139,9 +139,6 @@ header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
-file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
-file_ssdt3="$(pwd)/qemu/ssdt3.dsl"
-file_ssdt4="$(pwd)/qemu/ssdt4.dsl"
 
 if [[ -f "$file_vhdx" ]]; then rm "$file_vhdx"; fi
 if [[ -f "$file_vvfat" ]]; then rm "$file_vvfat"; fi
@@ -208,9 +205,6 @@ if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
-if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
-if [[ -f "$file_ssdt3" ]]; then rm "$file_ssdt3"; fi
-if [[ -f "$file_ssdt4" ]]; then rm "$file_ssdt4"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu/.
 #cp -f *.dsl qemu/.
@@ -999,20 +993,11 @@ cd qemu
 cd build
 make
 #iasl "$file_ssdt1"
-#iasl "$file_ssdt2"
-#iasl "$file_ssdt3"
-#iasl "$file_ssdt4"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt3.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt4.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
 echo "$QEMU_DEST/ssdt1.aml"
-echo "$QEMU_DEST/ssdt2.aml"
-echo "$QEMU_DEST/ssdt3.aml"
-echo "$QEMU_DEST/ssdt4.aml"
 
 sudo mkdir -p /usr/local/share/qemu
 sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
