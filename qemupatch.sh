@@ -703,7 +703,7 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->cooling_unit_group = 0;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->oem_defined = 0;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_speed = ${rpm};                // in RPM"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(27, description, type28.description);"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(27, description, type27.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_28_table(void)"
