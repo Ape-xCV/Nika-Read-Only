@@ -733,7 +733,7 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
 echo "    SMBIOS_SET_DEFAULT(type17.manufacturer, manufacturer);"
-echo "    v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    SMBIOS_SET_DEFAULT(type27.description, \"FAN0\");"
 echo "    SMBIOS_SET_DEFAULT(type28.description, \"TPROBE0\");"
 echo "    SMBIOS_SET_DEFAULT(type29.description, \"VPROBE0\");"
