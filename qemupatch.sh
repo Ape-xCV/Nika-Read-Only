@@ -679,7 +679,7 @@ echo "#define T29_BASE 0x1D00"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "#define T32_BASE 0x2000"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T27_BASE 0x1B00"
-sed -i "$file_smbios" -Ee "/\#define T32_BASE 0x2000/i#define T28_BASE 0x1C00"
+sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T28_BASE 0x1C00"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T29_BASE 0x1D00\\n"
 rpm=$(shuf -i 1450-1850 -n 1)
 temperature=$(shuf -i 350-550 -n 1)
