@@ -1,9 +1,7 @@
-/*
- * Override for host defined _OSI to handle "Darwin"...
- * All _OSI calls in DSDT are routed to XOSI...
- */
 DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
 {
+    // override for host defined _OSI to handle "Darwin"
+    // all _OSI calls in DSDT are routed to XOSI
     Method (XOSI, 1, NotSerialized)
     {
         Local0 = Package (0x0C)
@@ -23,7 +21,7 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
             }
         If (_OSI ("Darwin"))
         {
-            Return ((Ones != Match (Local0, MEQ, Arg0, MTR, 0x00, 0x00)))
+            Return ((Ones != Match (Local0, MEQ, Arg0, MTR, 0, 0)))
         }
         Else
         {

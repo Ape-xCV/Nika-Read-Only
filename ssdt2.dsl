@@ -1,4 +1,4 @@
-DefinitionBlock ("", "SSDT", 2, "MCRSFT", "MSACPI", 0x00000001)
+DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
 {
     External (_SB_.PCI0, DeviceObj)
     External (_PR_.CPU0, ProcessorObj)
@@ -18,7 +18,7 @@ DefinitionBlock ("", "SSDT", 2, "MCRSFT", "MSACPI", 0x00000001)
             Field (EC0, ByteAcc, Lock, Preserve)
             {
                 MODE,   1, 
-                FAN,    1,
+                FAN0,   1,
                 TMP,    16, 
                 AC0,    16, 
                 PSV,    16, 
@@ -33,28 +33,31 @@ DefinitionBlock ("", "SSDT", 2, "MCRSFT", "MSACPI", 0x00000001)
                 Notify (\_SB.PCI0.EC0.TZ0, 0x80) // Thermal Status Change
             }
 
-            PowerResource (PWF0, 0x00, 0x0000)
+            PowerResource (PWR0, 0x00, 0x0000)
             {
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
+                    //Return (\_SB.PCI0.EC0.FAN0)
                     Return (0x0F)
                 }
 
                 Method (_ON, 0, NotSerialized)
                 {
+                    //Store (0x01, \_SB.PCI0.EC0.FAN0)
                 }
 
                 Method (_OFF, 0, NotSerialized)
                 {
+                    //Store (0x00, \_SB.PCI0.EC0.FAN0)
                 }
             }
 
-            Device (FAN0)
+            Device (FN0)
             {
                 Name (_HID, EisaId ("PNP0C0B") /* Fan (Thermal Solution) */)  // _HID: Hardware ID
-                Name (_PR0, Package (0x01)  // _PR0: Power Resources for FAN0
+                Name (_PR0, Package (0x01)  // _PR0: Power Resources for FN0
                 {
-                    PWF0  // .
+                    PWR0  // .
                 })
             }
 
@@ -62,21 +65,24 @@ DefinitionBlock ("", "SSDT", 2, "MCRSFT", "MSACPI", 0x00000001)
             {
                 Method (_TMP, 0, NotSerialized)  // _TMP: Temperature
                 {
-                    Return (0x1770)
+                    //Return (\_SB.PCI0.EC0.TMP)
+                    Return (0x1670)
                 }
 
                 Method (_AC0, 0, NotSerialized)  // _ACx: Active Cooling, x=0-9
                 {
-                    Return (0x1770)
+                    //Return (\_SB.PCI0.EC0.AC0)
+                    Return (0x1670)
                 }
 
                 Name (_AL0, Package (0x01)  // _ALx: Active List, x=0-9
                 {
-                    \_SB.PCI0.EC0.FAN0  // .
+                    \_SB.PCI0.EC0.FN0  // .
                 })
                 Method (_PSV, 0, NotSerialized)  // _PSV: Passive Temperature
                 {
-                    Return (0x1670)
+                    //Return (\_SB.PCI0.EC0.PSV)
+                    Return (0x1780)
                 }
 
                 Name (_PSL, Package (0x01)  // _PSL: Passive List
@@ -85,16 +91,19 @@ DefinitionBlock ("", "SSDT", 2, "MCRSFT", "MSACPI", 0x00000001)
                 })
                 Method (_HOT, 0, NotSerialized)  // _HOT: Hot Temperature
                 {
-                    Return (0x1780)
+                    //Return (\_SB.PCI0.EC0.HOT)
+                    Return (0x1890)
                 }
 
                 Method (_CRT, 0, NotSerialized)  // _CRT: Critical Temperature
                 {
-                    Return (0x1780)
+                    //Return (\_SB.PCI0.EC0.CRT)
+                    Return (0x1890)
                 }
 
                 Method (_SCP, 1, NotSerialized)  // _SCP: Set Cooling Policy
                 {
+                    Store (Arg0, \_SB.PCI0.EC0.MODE)
                 }
 
                 Name (_TC1, 0x04)  // _TC1: Thermal Constant 1
