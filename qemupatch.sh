@@ -254,8 +254,8 @@ get_new_string 8 3
 app_name_8="$new_string"
 echo "\"QEMU\0\0\0\0\1\0\"                              -> \"SSDT\0\0\0\0\2\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\0\\\\0\\\\0\\\\0\\\\1\\\\0\"/\"SSDT\\\\0\\\\0\\\\0\\\\0\\\\2\\\\0\"/"
-echo "\"QEMUQEQEMUQEMU\1\0\0\0\"                        -> \"${app_name_6}${app_name_8}\1\0\0\0\""
-sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"${app_name_6}${app_name_8}\\\\1\\\\0\\\\0\\\\0\"/"
+echo "\"QEMUQEQEMUQEMU\1\0\0\0\"                        -> \"$app_name_6$app_name_8\1\0\0\0\""
+sed -i "$file_acpi_core" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"$app_name_6$app_name_8\\\\1\\\\0\\\\0\\\\0\"/"
 echo "\"QEMU\1\0\0\0\"                                  -> \"INTL\1\0\0\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"INTL\\\\1\\\\0\\\\0\\\\0\"/"
 
@@ -316,8 +316,8 @@ c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
 c3=$(shuf -i 4-6 -n 1)$(get_random_hex 2)
 echo ".rev = 3,                                       -> .rev = 4,"
 sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
-sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00${c2}/"
-sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0${c3}/"
+sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
+sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 echo "\"VMBUS\"                                         -> \"VMBus\""
 sed -i "$file_acpibuild" -Ee "s/\"VMBUS\"/\"VMBus\"/"
 echo "    if (i440fx) {"
@@ -435,9 +435,10 @@ sed -i "$file_i386_fwcfg" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
 #echo "#ifdef CONFIG_ACPI                              -> #if defined (CONFIG_ACPI) && false"
 #sed -i "$file_i386_fwcfg" -Ee "s/#ifdef CONFIG_ACPI/#if defined (CONFIG_ACPI) \&\& false/"
 get_new_string 4 1
-echo "\"FWCF\"                                          -> \"${new_string}\""
-sed -i "$file_i386_fwcfg" -Ee "s/\"FWCF\"/\"${new_string}\"/"
-echo "\"QEMU0002\"                                        -> \"UEFI0002\""
+fwcf=$new_string
+echo "\"FWCF\"                                          -> \"$fwcf\""
+sed -i "$file_i386_fwcfg" -Ee "s/\"FWCF\"/\"$fwcf\"/"
+echo "\"QEMU0002\"                                      -> \"UEFI0002\""
 sed -i "$file_i386_fwcfg" -Ee "s/\"QEMU0002\"/\"UEFI0002\"/"
 
 echo "  $file_multiboot"
@@ -598,10 +599,9 @@ echo "QEMU NVMe Ctrl                                  -> $new_string NVMe Ctrl"
 sed -i "$file_ctrl" -Ee "s/QEMU NVMe Ctrl/$new_string NVMe Ctrl/"
 
 echo "  $file_fwcfgacpi"
-get_new_string 4 1
-echo "\"FWCF\"                                          -> \"${new_string}\""
-sed -i "$file_fwcfgacpi" -Ee "s/\"FWCF\"/\"${new_string}\"/"
-echo "\"QEMU0002\"                                        -> \"UEFI0002\""
+echo "\"FWCF\"                                          -> \"$fwcf\""
+sed -i "$file_fwcfgacpi" -Ee "s/\"FWCF\"/\"$fwcf\"/"
+echo "\"QEMU0002\"                                      -> \"UEFI0002\""
 sed -i "$file_fwcfgacpi" -Ee "s/\"QEMU0002\"/\"UEFI0002\"/"
 
 #signature=$(get_random_hex 16)
@@ -632,10 +632,10 @@ sed -i "$file_mptconfig" -Ee "s/0000111122223333/$number/"
 
 echo "  $file_scsibus"
 get_new_string 4 1
-echo "\"QEMU    \"                                      -> \"${new_string}    \""
-echo "\"QEMU TARGET     \"                              -> \"${new_string} TARGET     \""
-sed -i "$file_scsibus" -Ee "s/\"QEMU    \"/\"${new_string}    \"/"
-sed -i "$file_scsibus" -Ee "s/\"QEMU TARGET     \"/\"${new_string} TARGET     \"/"
+echo "\"QEMU    \"                                      -> \"$new_string    \""
+echo "\"QEMU TARGET     \"                              -> \"$new_string TARGET     \""
+sed -i "$file_scsibus" -Ee "s/\"QEMU    \"/\"$new_string    \"/"
+sed -i "$file_scsibus" -Ee "s/\"QEMU TARGET     \"/\"$new_string TARGET     \"/"
 
 echo "  $file_scsidisk"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -649,12 +649,12 @@ sed -i "$file_scsidisk" -Ee "s/\"QEMU CD-ROM\"/\"$new_string CD-ROM\"/"
 echo "  $file_spaprvscsi"
 get_new_string 4 1
 nocaps=$(echo $new_string | tr '[A-Z]' '[a-z]')
-echo "\"QEMU EMPTY      \"                              -> \"${new_string} EMPTY      \""
-echo "\"QEMU    \"                                      -> \"${new_string}    \""
+echo "\"QEMU EMPTY      \"                              -> \"$new_string EMPTY      \""
+echo "\"QEMU    \"                                      -> \"$new_string    \""
 echo "\"qemu\"                                          -> \"$nocaps\""
 echo "\"qemu\"                                          -> \"$nocaps\""
-sed -i "$file_spaprvscsi" -Ee "s/\"QEMU EMPTY      \"/\"${new_string} EMPTY      \"/"
-sed -i "$file_spaprvscsi" -Ee "s/\"QEMU    \"/\"${new_string}    \"/"
+sed -i "$file_spaprvscsi" -Ee "s/\"QEMU EMPTY      \"/\"$new_string EMPTY      \"/"
+sed -i "$file_spaprvscsi" -Ee "s/\"QEMU    \"/\"$new_string    \"/"
 sed -i "$file_spaprvscsi" -Ee "s/\"qemu\"/\"$nocaps\"/"
 sed -i "$file_spaprvscsi" -Ee "s/\"qemu\"/\"$nocaps\"/"
 
@@ -787,7 +787,7 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->resolution = 10;                  // in 1/10 mV"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->tolerance = 0x8000;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->accuracy = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = ${voltage};             // in millivolts"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = $voltage;             // in millivolts"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(26, description, type26.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
@@ -798,7 +798,7 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->device_type_and_status = 0b01100011; // OK (011) Fan (00011)"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->cooling_unit_group = 0;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->oem_defined = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_speed = ${rpm};                // in RPM"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_speed = $rpm;                // in RPM"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(27, description, type27.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
@@ -811,7 +811,7 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->resolution = 100;                 // in 1/1000 °C"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->tolerance = 0x8000;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->accuracy = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = ${temperature};              // in 1/10 °C"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = $temperature;              // in 1/10 °C"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(28, description, type28.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
@@ -1265,7 +1265,6 @@ sed -i "$header_pci" -Ee "s/QEMU            0x1100/QEMU            0x8086/"
 sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
 
 echo "  $header_qemufwcfg"
-get_new_string 4 1
 echo "QEMU0002                                        -> UEFI0002"
 echo "0x51454d5520434647ULL                           -> 0x${signature}ULL"
 sed -i "$header_qemufwcfg" -Ee "s/QEMU0002/UEFI0002/"
