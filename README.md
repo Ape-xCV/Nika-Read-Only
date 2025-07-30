@@ -28,9 +28,7 @@
 * [x] Hold SHIFT to **lock on target** or **show item names**
 * [x] Toggle **aimbot** strength with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
-* [x] Disable/enable **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
-- **Bind X in-game to fire, triggerbot will use that key** (default AIMBOT_FIRING_KEY)
-- **Unbind LMB (Left Mouse Button) in-game from fire, so that the cheat will fire for you instead** (AIMBOT_ACTIVATED_BY_MOUSE default YES)
+* [x] Toggle **triggerbot** auto fire with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head` text in the upper left corner of the screen
 * [ ] Hold CAPS_LOCK to **superglide**
 * [x] Press F8 to dump **r5apex** and scan for offsets
