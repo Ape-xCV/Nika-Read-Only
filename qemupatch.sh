@@ -410,7 +410,8 @@ sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        /*"
 sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        sb_scope = aml_scope(\"_SB\");"
 #echo "GPE0 resources                       -> Windows 2009,Windows 2012,Windows 2013,Windows 2015"
 #sed -i "$file_acpibuild" -Ee "s/GPE0 resources/Windows 2009,Windows 2012,Windows 2013,Windows 2015/"
-sed -i "$file_acpibuild" -e  '/Helpful/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
+sed -i "$file_acpibuild" -e  '/create fw_cfg node/{n;N;N;N;N;d;}'
+sed -i "$file_acpibuild" -e  '/Helpful to speedup Windows guests/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
 echo "    acpi_add_table(table_offsets, tables_blob);"
 echo "    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
@@ -431,11 +432,13 @@ echo "  $file_i386_fwcfg"
 get_new_string $(shuf -i 5-7 -n 1) 3
 echo "\"QEMU\"                                          -> \"$prefix$suffix\""
 sed -i "$file_i386_fwcfg" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
+#echo "#ifdef CONFIG_ACPI                              -> #if defined (CONFIG_ACPI) && false"
+#sed -i "$file_i386_fwcfg" -Ee "s/#ifdef CONFIG_ACPI/#if defined (CONFIG_ACPI) \&\& false/"
 get_new_string 4 1
 echo "\"FWCF\"                                          -> \"${new_string}\""
 sed -i "$file_i386_fwcfg" -Ee "s/\"FWCF\"/\"${new_string}\"/"
-echo "QEMU0002                                        -> ${new_string}0002"
-sed -i "$file_i386_fwcfg" -Ee "s/QEMU0002/${new_string}0002/"
+echo "\"QEMU0002\"                                        -> \"UEFI0002\""
+sed -i "$file_i386_fwcfg" -Ee "s/\"QEMU0002\"/\"UEFI0002\"/"
 
 echo "  $file_multiboot"
 echo "\"qemu\"                                          -> \"Windows Boot Manager\""
@@ -598,8 +601,8 @@ echo "  $file_fwcfgacpi"
 get_new_string 4 1
 echo "\"FWCF\"                                          -> \"${new_string}\""
 sed -i "$file_fwcfgacpi" -Ee "s/\"FWCF\"/\"${new_string}\"/"
-echo "QEMU0002                                        -> ${new_string}0002"
-sed -i "$file_fwcfgacpi" -Ee "s/QEMU0002/${new_string}0002/"
+echo "\"QEMU0002\"                                        -> \"UEFI0002\""
+sed -i "$file_fwcfgacpi" -Ee "s/\"QEMU0002\"/\"UEFI0002\"/"
 
 #signature=$(get_random_hex 16)
 signature="41204D2049202020"
@@ -1263,9 +1266,9 @@ sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/
 
 echo "  $header_qemufwcfg"
 get_new_string 4 1
-echo "QEMU0002                                        -> ${new_string}0002"
+echo "QEMU0002                                        -> UEFI0002"
 echo "0x51454d5520434647ULL                           -> 0x${signature}ULL"
-sed -i "$header_qemufwcfg" -Ee "s/QEMU0002/${new_string}0002/"
+sed -i "$header_qemufwcfg" -Ee "s/QEMU0002/UEFI0002/"
 sed -i "$header_qemufwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $header_optionrom"
