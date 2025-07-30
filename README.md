@@ -121,7 +121,7 @@ sudo virsh net-start default
 
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 120, 160, or 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
@@ -202,7 +202,7 @@ sudo virsh net-start default
 
 - Replace from `<memory unit="KiB">4194304</memory>` to `<vcpu placement="static">2</vcpu>` and [Apply]:
   <details>
-    <summary>Spoiler <b>(use a commercial module size like 12, 16, or 24 GiB; vcpu example for a 24 threads host CPU)</b></summary>
+    <summary>Spoiler <b>(use a commercial module size like 12, 24, or 48 GiB; vcpu example for a 24 threads host CPU)</b></summary>
 
   ```shell
   <memory unit="GiB">12</memory>
