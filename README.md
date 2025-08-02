@@ -296,10 +296,6 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Tablet >> [Remove]
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Channel (spice) >> [Remove]
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
-
 ### 2.2 Install Windows
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
@@ -468,6 +464,10 @@ sudo usermod -aG input $USER
 
 - For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Channel (spice) >> [Remove]
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video VGA >> Model: None >> [Apply]
 
