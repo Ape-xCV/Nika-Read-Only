@@ -111,7 +111,9 @@ sudo virsh net-autostart default
 sudo virsh net-start default
 ```
 
-- **Enable XML editing** in Virtual Machine Manager >> Edit >> Preferences >> General
+- Virtual Machine Manager >> Edit >> Preferences >> General >> [x] Enable XML editing >> [Close]
+
+- Virtual Machine Manager >> Edit >> Preferences >> New VM >> Storage format: Raw >> [Close]
 
 ### 2. New VM set up in QEMU/KVM
 
