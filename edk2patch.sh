@@ -135,7 +135,7 @@ get_new_string 4 1
 echo "\"FBSD\"                               -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/OemNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/OemNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
-get_new_string 4 1
+#get_new_string 4 1
 echo "\"FBSD\"                               -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/VendorNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/VendorNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"

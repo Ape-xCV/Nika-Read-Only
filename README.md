@@ -247,10 +247,10 @@ sudo virsh net-start default
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" cores="12" threads="2"/>
     <cache mode="passthrough"/>
+    <feature policy="disable" name="aes"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="vmx"/>
-    <feature policy="disable" name="aes"/>
     <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="invtsc"/>
