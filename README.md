@@ -523,6 +523,16 @@ sudo -E ./nika
   ```
   </details>
 
+
+  <details>
+    <summary>Build on <b>Debian Linux</b>:</summary>
+
+  ```shell
+  sudo apt build-dep qemu
+  sudo apt install acpica-tools
+  ```
+  </details>
+
 - Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
   - You can edit `default_models` with real data.
 
@@ -567,6 +577,15 @@ sudo -E ./nika
 
   ```shell
   sudo dnf install nasm
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo apt install nasm
   ```
   </details>
 
