@@ -582,7 +582,7 @@ sudo -E ./nika
 
 
   <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
+    <summary>Build on <b>Debian Linux</b>:</summary>
 
   ```shell
   sudo apt install nasm
