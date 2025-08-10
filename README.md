@@ -77,7 +77,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
   
   <details>
-    <summary>Install on <b>Debian Linux (Debian 12 KDE)</b>:</summary>
+    <summary>Install on <b>Debian Linux (Debian 13 KDE)</b>:</summary>
 
     sudo apt update
     sudo apt install virt-manager
