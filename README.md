@@ -71,6 +71,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
   <details>
     <summary>Install on <b>Fedora Linux (Fedora 42 KDE)</b>:</summary>
 
+    sudo dnf update
     sudo dnf install @virtualization
   </details>
 
@@ -78,7 +79,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
   <details>
     <summary>Install on <b>Debian Linux (Debian 12 KDE)</b>:</summary>
 
-    sudo apt-get update
+    sudo apt update
     sudo apt install virt-manager
   </details>
 
