@@ -422,6 +422,8 @@ cgroup_device_acl = [
 sudo systemctl restart libvirtd
 ```
 
+- Toggle input with LEFT_CTRL + RIGHT_CTRL when needed.
+
 ### 4.1 Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
