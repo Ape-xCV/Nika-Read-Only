@@ -85,6 +85,8 @@ file_qdev="$(pwd)/qemu/hw/core/qdev.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
 file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
+file_piix="$(pwd)/qemu/hw/isa/piix.c"
+file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
 file_multiboot="$(pwd)/qemu/hw/i386/multiboot.c"
 file_pc="$(pwd)/qemu/hw/i386/pc.c"
@@ -101,7 +103,6 @@ file_ps2="$(pwd)/qemu/hw/input/ps2.c"
 #file_tsc2005="$(pwd)/qemu/hw/input/tsc2005.c"
 #file_tsc210x="$(pwd)/qemu/hw/input/tsc210x.c"
 file_virtioinputhid="$(pwd)/qemu/hw/input/virtio-input-hid.c"
-file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
 file_pvpanicisa="$(pwd)/qemu/hw/misc/pvpanic-isa.c"
 file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
@@ -153,6 +154,8 @@ if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
 if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
+if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
+if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
 if [[ -f "$file_multiboot" ]]; then rm "$file_multiboot"; fi
 if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
@@ -169,7 +172,6 @@ if [[ -f "$file_ps2" ]]; then rm "$file_ps2"; fi
 #if [[ -f "$file_tsc2005" ]]; then rm "$file_tsc2005"; fi
 #if [[ -f "$file_tsc210x" ]]; then rm "$file_tsc210x"; fi
 if [[ -f "$file_virtioinputhid" ]]; then rm "$file_virtioinputhid"; fi
-if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
 if [[ -f "$file_pvpanicisa" ]]; then rm "$file_pvpanicisa"; fi
 if [[ -f "$file_ctrl" ]]; then rm "$file_ctrl"; fi
 if [[ -f "$file_fwcfgacpi" ]]; then rm "$file_fwcfgacpi"; fi
@@ -318,8 +320,16 @@ echo ".rev = 3,                                       -> .rev = 4,"
 sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
-echo "\"VMBUS\"                                         -> \"VMBus\""
-sed -i "$file_acpibuild" -Ee "s/\"VMBUS\"/\"VMBus\"/"
+path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
+echo "S%.02X                                          -> $path%.02X"
+sed -i "$file_acpibuild" -Ee "s/S%.02X/$path%.02X/"
+get_new_string 2 1
+echo "\"VMBS\"                                          -> \"${new_string}BS\""
+echo "\"VMBus\"                                         -> \"${new_string}BUS\""
+echo "\"VMBUS\"                                         -> \"${new_string}BUS\""
+sed -i "$file_acpibuild" -Ee "s/\"VMBS\"/\"${new_string}BS\"/"
+sed -i "$file_acpibuild" -Ee "s/\"VMBus\"/\"${new_string}BUS\"/"
+sed -i "$file_acpibuild" -Ee "s/\"VMBUS\"/\"${new_string}BUS\"/"
 echo "    if (i440fx) {"
 echo "        sb_scope = aml_scope(\"_SB\");"
 echo "    v v v v v v v"
@@ -427,6 +437,27 @@ sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\        .o
 sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_begin(&table, tables_blob);"
 sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    build_append_int_noprefix(tables_blob,0x00000000,4);"
 sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_end(tables->linker, &table);"
+
+echo "  $file_piix"
+echo ".S08.                                           -> .${path}08."
+sed -i "$file_piix" -Ee "s/.S08./.${path}08./"
+
+echo "  $file_lpcich9"
+echo ".SF8.                                           -> .${path}F8."
+sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "ICH9 LPC bridge                                 -> AMD LPC bridge"
+  echo "PCI_VENDOR_ID_INTEL                             -> PCI_VENDOR_ID_AMD"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0x790e" #FCH LPC Bridge
+  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/AMD LPC bridge/"
+#  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
+#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0x790e/"
+else
+  echo "ICH9 LPC bridge                                 -> Intel LPC bridge"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0xa2c5" #200 Series PCH LPC Controller (Z270)
+  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/Intel LPC bridge/"
+#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0xa2c5/"
+fi
 
 echo "  $file_i386_fwcfg"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -572,21 +603,6 @@ else
   sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
   sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
   sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-fi
-
-echo "  $file_lpcich9"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "ICH9 LPC bridge                                 -> AMD LPC bridge"
-  echo "PCI_VENDOR_ID_INTEL                             -> PCI_VENDOR_ID_AMD"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0x790e" #FCH LPC Bridge
-  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/AMD LPC bridge/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0x790e/"
-else
-  echo "ICH9 LPC bridge                                 -> Intel LPC bridge"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0xa2c5" #200 Series PCH LPC Controller (Z270)
-  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/Intel LPC bridge/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0xa2c5/"
 fi
 
 echo "  $file_pvpanicisa"
