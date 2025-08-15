@@ -34,6 +34,10 @@
 * [x] Press F8 to dump **r5apex** and scan for offsets
 * [x] Press F9 twice to terminate cheat
 
+### 0. Disclaimer
+
+- This guide is for PCs that you can actually plug your monitor into iGPU (internal GPU in CPU), leaving your dGPU exclusively for the VM.
+
 ### 1. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
