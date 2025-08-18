@@ -620,7 +620,7 @@ sudo -E ./nika
   ```
   </details>
 
-### 8. memflow-kvm (faster VMREAD)
+### 8. memflow-kvm (not required, ignore this)
 
 
   <details>
@@ -635,7 +635,7 @@ sudo -E ./nika
   <details>
     <summary>Install <b>dkms</b> on <b>Debian Linux</b>:</summary>
 
-    sudo apt install linux-headers-amd64=6.1.123-1
+    sudo apt install linux-headers-amd64=6.12.38-1
     sudo apt install dkms
   </details>
 
