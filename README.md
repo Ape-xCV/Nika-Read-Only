@@ -493,6 +493,13 @@ sudo usermod -aG input $USER
 
 ### 5.2 Capture card
 
+
+  <details>
+    <summary>Install `gstreamer1.0-tools` on <b>Debian Linux</b>:</summary>
+
+    sudo apt install gstreamer1.0-tools
+  </details>
+
 - Plug capture card into passthrough GPU.
 
 - Open capture card raw feed with:
