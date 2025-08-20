@@ -9,10 +9,10 @@ fi
 QEMU_DEST="/usr/local/bin"
 
 default_models=(
-  "Acer SSD SA100 240GB"   "CT240BX500SSD1"
-  "EMTCE X150 240GB"       "KINGSTON SA400S37240G"
-  "MSI S270 240GB"         "Patriot Burst Elite 240GB"
-  "SanDisk SSD PLUS 240GB"
+  "Acer SSD SA100 240GB"      "CT240BX500SSD1"
+  "EMTCE X150 240GB"          "KINGSTON SA400S37240G"
+  "Lexar SSD NQ100 240GB"     "MSI S270 240GB"
+  "Patriot Burst Elite 240GB" "SanDisk SSD PLUS 240GB"
 )
 
 ide_cd_models=(
