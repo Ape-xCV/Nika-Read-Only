@@ -42,8 +42,8 @@ get_new_string() {
 
 if [[ ! -d edk2backup ]]; then
   echo -e "$(pwd)/\e[1medk2backup\e[0m does not exist, clone started..."
-#  git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
-  git clone --recursive --single-branch https://github.com/tianocore/edk2.git edk2backup
+#  git clone --recursive --single-branch --branch edk2-stable202508 https://github.com/tianocore/edk2.git edk2backup
+  git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
 else
   echo -e "$(pwd)/\e[1medk2backup\e[0m found."
 fi
