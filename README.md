@@ -531,7 +531,6 @@ sudo -E ./nika
 
   ```shell
   sudo dnf builddep qemu
-  sudo dnf install acpica-tools
   ```
   </details>
 
@@ -541,7 +540,6 @@ sudo -E ./nika
 
   ```shell
   sudo apt build-dep qemu
-  sudo apt install acpica-tools
   ```
   </details>
 
@@ -588,6 +586,7 @@ sudo -E ./nika
     <summary>Build on <b>Fedora Linux</b>:</summary>
 
   ```shell
+  sudo dnf install acpica-tools
   sudo dnf install nasm
   ```
   </details>
@@ -597,6 +596,7 @@ sudo -E ./nika
     <summary>Build on <b>Debian Linux</b>:</summary>
 
   ```shell
+  sudo apt install acpica-tools
   sudo apt install nasm
   ```
   </details>
