@@ -42,7 +42,8 @@ get_new_string() {
 
 if [[ ! -d edk2backup ]]; then
   echo -e "$(pwd)/\e[1medk2backup\e[0m does not exist, clone started..."
-  git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
+#  git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
+  git clone --recursive --single-branch https://github.com/tianocore/edk2.git edk2backup
 else
   echo -e "$(pwd)/\e[1medk2backup\e[0m found."
 fi
@@ -193,32 +194,33 @@ echo "  $file_Driver"
 #get_new_string 4 1
 echo "L\"QEMU                               -> L\"$new_string"
 sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
-#IFS=':'
-#cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-#cpu_vendor="${cpu_vendor[1]}"
-#if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-#  echo "0x1234                               -> 0x1022"
-#  echo "0x1234                               -> 0x1022"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
+unix=$(printf '%x' $(date +%s) | head -c 4)
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "0x1234                               -> 0x1022"
+  echo "0x1111                               -> 0x$unix"
 #  echo "0x1b36                               -> 0x1022"
 #  echo "0x1af4                               -> 0x1022"
 #  echo "0x15ad                               -> 0x1022"
 #  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
-#  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
+#  sed -i "$file_Driver" -Ee "s/0x1111/0x$unix/"
 #  sed -i "$file_Driver" -Ee "s/0x1b36/0x1022/"
 #  sed -i "$file_Driver" -Ee "s/0x1af4/0x1022/"
 #  sed -i "$file_Driver" -Ee "s/0x15ad/0x1022/"
-#else
-#  echo "0x1234                               -> 0x8086"
-#  echo "0x1234                               -> 0x8086"
+else
+  echo "0x1234                               -> 0x8086"
+  echo "0x1111                               -> 0x$unix"
 #  echo "0x1b36                               -> 0x8086"
 #  echo "0x1af4                               -> 0x8086"
 #  echo "0x15ad                               -> 0x8086"
 #  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
-#  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
+#  sed -i "$file_Driver" -Ee "s/0x1111/0x$unix/"
 #  sed -i "$file_Driver" -Ee "s/0x1b36/0x8086/"
 #  sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
 #  sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
-#fi
+fi
 
 echo "  $file_ShellPkg"
 echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
