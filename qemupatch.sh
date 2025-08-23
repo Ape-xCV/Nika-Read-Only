@@ -51,7 +51,6 @@ get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 get_new_string() {
   local length=$1
   local random_string=""
-  #local new_string=""
   local vowel_count=0
   while [ $vowel_count -ne $2 ]
   do
@@ -61,7 +60,6 @@ get_new_string() {
   done
   prefix=$(echo $new_string | head -c 1)
   suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
-  #echo $new_string
 }
 
 if [[ ! -d qemubackup ]]; then
@@ -1273,6 +1271,18 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\//i} QEMU_PACKED;\\n"
 
 echo "  $header_pci"
+unix=$(printf '%x' $(date +%s) | head -c 4)
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "QEMU               0x1234                       -> QEMU               0x1022"
+  echo "VGA           0x1111                            -> VGA           0x$unix"
+#  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
+#  sed -i "$header_pci" -Ee "s/VGA           0x1111/VGA           0x$unix/"
+else
+  echo "QEMU               0x1234                       -> QEMU               0x8086"
+  echo "VGA           0x1111                            -> VGA           0x$unix"
+#  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
+#  sed -i "$header_pci" -Ee "s/VGA           0x1111/VGA           0x$unix/"
+fi
 echo "QUMRANET    0x1af4                              -> QUMRANET    0x8086"
 echo "QUMRANET 0x1af4                                 -> QUMRANET 0x8086"
 echo "QEMU            0x1100                          -> QEMU            0x8086"
