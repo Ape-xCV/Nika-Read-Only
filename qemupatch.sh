@@ -131,6 +131,7 @@ file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
+header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
 header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
@@ -200,6 +201,7 @@ if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
+if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
 if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
@@ -1271,26 +1273,38 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\//i} QEMU_PACKED;\\n"
 
 echo "  $header_pci"
-unix=$(printf '%x' $(date +%s) | head -c 4)
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "QEMU               0x1234                       -> QEMU               0x1022"
-  echo "VGA           0x1111                            -> VGA           0x$unix"
+#  echo "QEMU               0x1234                       -> QEMU               0x1022"
+  echo "VMWARE             0x15ad                       -> VMWARE             0x1022"
+  echo "QUMRANET    0x1af4                              -> QUMRANET    0x1022"
+  echo "QUMRANET 0x1af4                                 -> QUMRANET 0x1022"
+  echo "REDHAT             0x1b36                       -> REDHAT             0x1022"
 #  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
-#  sed -i "$header_pci" -Ee "s/VGA           0x1111/VGA           0x$unix/"
+  sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
+  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
+  sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
+  sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
 else
-  echo "QEMU               0x1234                       -> QEMU               0x8086"
-  echo "VGA           0x1111                            -> VGA           0x$unix"
+#  echo "QEMU               0x1234                       -> QEMU               0x8086"
+  echo "VMWARE             0x15ad                       -> VMWARE             0x8086"
+  echo "QUMRANET    0x1af4                              -> QUMRANET    0x8086"
+  echo "QUMRANET 0x1af4                                 -> QUMRANET 0x8086"
+  echo "REDHAT             0x1b36                       -> REDHAT             0x8086"
 #  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
-#  sed -i "$header_pci" -Ee "s/VGA           0x1111/VGA           0x$unix/"
+  sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
+  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
+  sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
+  sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
 fi
-echo "QUMRANET    0x1af4                              -> QUMRANET    0x8086"
-echo "QUMRANET 0x1af4                                 -> QUMRANET 0x8086"
-echo "QEMU            0x1100                          -> QEMU            0x8086"
-echo "REDHAT             0x1b36                       -> REDHAT             0x8086"
-sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
-sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
-sed -i "$header_pci" -Ee "s/QEMU            0x1100/QEMU            0x8086/"
-sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
+
+echo "  $header_pciids"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "VMWARE             0x15ad                       -> VMWARE             0x1022"
+  sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
+else
+  echo "VMWARE             0x15ad                       -> VMWARE             0x8086"
+  sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
+fi
 
 echo "  $header_qemufwcfg"
 echo "QEMU0002                                        -> UEFI0002"
