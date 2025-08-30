@@ -182,8 +182,8 @@ echo "  $file_QemuFlash"
 #get_new_string 4 1
 echo "\"QEMU                                -> \"$new_string"
 sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
-echo "\"QemuFlashDetected                   -> \"FlashDetected"
-sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"FlashDetected/"
+echo "\"QemuFlashDetected                   -> \"${prefix}${suffix}FlashDetected"
+sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${prefix}${suffix}FlashDetected/"
 
 echo "  $file_ComponentName"
 #get_new_string 4 1
