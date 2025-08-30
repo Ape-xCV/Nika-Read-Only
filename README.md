@@ -548,6 +548,7 @@ sudo -E ./nika
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
+
 - Replace from `<pm>` to `</emulator>` and [Apply]:
   <details>
     <summary>Spoiler</summary>
