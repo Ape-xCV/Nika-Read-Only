@@ -17,11 +17,12 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
             OperationRegion (EC0, EmbeddedControl, 0, 0xFF)
             Field (EC0, ByteAcc, Lock, Preserve)
             {
-                MODE,   1, 
+                MODE,   1,
                 FAN0,   1,
-                TMP,    16, 
-                AC0,    16, 
-                PSV,    16, 
+                ,       6,
+                TMP,    16,
+                AC0,    16,
+                PSV,    16,
                 HOT,    16,
                 CRT,    16  // .
             }
