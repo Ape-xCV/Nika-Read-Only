@@ -58,7 +58,8 @@ file_Platform="$(pwd)/edk2/OvmfPkg/Bhyve/AcpiTables/Platform.h"
 file_Spcr="$(pwd)/edk2/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc"
 file_VbeShim="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c"
 file_BhyveX64="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveX64.dsc"
-file_SmbiosPlatformDxe="$(pwd)/edk2/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
+file_BhyveSmbiosPlatformDxe="$(pwd)/edk2/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
+file_SmbiosPlatformDxe="$(pwd)/edk2/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
 #file_Q35MchIch9="$(pwd)/edk2/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
 file_QemuFwCfgCacheInit="$(pwd)/edk2/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgCacheInit.c"
 file_FwBlockService="$(pwd)/edk2/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FwBlockService.c"
@@ -77,6 +78,7 @@ if [[ -f "$file_Platform" ]]; then rm "$file_Platform"; fi
 if [[ -f "$file_Spcr" ]]; then rm "$file_Spcr"; fi
 if [[ -f "$file_VbeShim" ]]; then rm "$file_VbeShim"; fi
 if [[ -f "$file_BhyveX64" ]]; then rm "$file_BhyveX64"; fi
+if [[ -f "$file_BhyveSmbiosPlatformDxe" ]]; then rm "$file_BhyveSmbiosPlatformDxe"; fi
 if [[ -f "$file_SmbiosPlatformDxe" ]]; then rm "$file_SmbiosPlatformDxe"; fi
 #if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
 if [[ -f "$file_QemuFwCfgCacheInit" ]]; then rm "$file_QemuFwCfgCacheInit"; fi
@@ -87,6 +89,7 @@ if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
+cp -fr /sys/firmware/acpi/bgrt/image edk2/MdeModulePkg/Logo/Logo.bmp
 
 echo "  $file_MdeModulePkg"
 echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
@@ -145,17 +148,50 @@ echo "  $file_BhyveX64"
 echo "\"BHYVE\"                              -> \"ALASKA\""
 sed -i "$file_BhyveX64" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 
-echo "  $file_SmbiosPlatformDxe"
-version="$(shuf -i 1-9 -n 1).$(shuf -i 10-99 -n 1)"
+echo "  $file_BhyveSmbiosPlatformDxe"
+version_major="$(shuf -i 1-9 -n 1)"
+version_minor="$(shuf -i 11-99 -n 1)"
 day="$(get_random_element "${numbers[@]}")"
 month="$(get_random_element "${numbers[@]}")"
 year="$(shuf -i 2015-2025 -n 1)"
-echo "\"EFI Development Kit II / OVMF\\0\"    -> \"American Megatrends Inc.\\0\""
-echo "\"0.0.0\\0\"                            -> \"$version\\0\""
-echo "\"02/06/2015\\0\"                       -> \"${day}/${month}/${year}\\0\""
-sed -i "$file_SmbiosPlatformDxe" -Ee "s/\"EFI Development Kit II \/ OVMF\\\\0\"/\"American Megatrends Inc.\\\\0\"/"
-sed -i "$file_SmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version\\\\0\"/"
-sed -i "$file_SmbiosPlatformDxe" -Ee "s/\"02\/06\/2015\\\\0\"/\"${day}\/${month}\/${year}\\\\0\"/"
+echo "\"EFI Development Kit II / OVMF\\0\"                           -> \"American Megatrends Inc.\\0\""
+echo "\"0.0.0\\0\"                                                   -> \"$version_major.$version_minor\\0\""
+echo "\"02/06/2015\\0\"                                              -> \"$day/$month/$year\\0\""
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"EFI Development Kit II \/ OVMF\\\\0\"/\"American Megatrends Inc.\\\\0\"/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version_major.$version_minor\\\\0\"/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"02\/06\/2015\\\\0\"/\"$day\/$month\/$year\\\\0\"/"
+echo "0xE800, // UINT16                    BiosSegment            -> 0xE000, // UINT16                    BiosSegment"
+echo "0,      // UINT8                     BiosSize               -> 0xFF,   // UINT8                     BiosSize"
+echo "0,   // BiosReserved                                        -> 0x03, // BiosReserved"
+echo "0x1C // SystemReserved                                      -> 0x0D // SystemReserved"
+echo "0,     // UINT8                     SystemBiosMajorRelease  -> $version_major,     // UINT8                     SystemBiosMajorRelease"
+echo "0,     // UINT8                     SystemBiosMinorRelease  -> $version_minor,    // UINT8                     SystemBiosMinorRelease"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0xE800, \/\/ UINT16                    BiosSegment/0xE000, \/\/ UINT16                    BiosSegment/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,      \/\/ UINT8                     BiosSize/0xFF,   \/\/ UINT8                     BiosSize/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,   \/\/ BiosReserved/0x03, \/\/ BiosReserved/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0x1C \/\/ SystemReserved/0x0D \/\/ SystemReserved/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMajorRelease/$version_major,     \/\/ UINT8                     SystemBiosMajorRelease/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMinorRelease/$version_minor,    \/\/ UINT8                     SystemBiosMinorRelease/"
+
+echo "  $file_SmbiosPlatformDxe"
+echo "0xE800, // UINT16                    BiosSegment            -> 0xE000, // UINT16                    BiosSegment"
+echo "0,      // UINT8                     BiosSize               -> 0xFF,   // UINT8                     BiosSize"
+echo "0,   // BiosReserved                                        -> 0x03, // BiosReserved"
+echo "0x1C // SystemReserved                                      -> 0x0D // SystemReserved"
+echo "0,     // UINT8                     SystemBiosMajorRelease  -> $version_major,     // UINT8                     SystemBiosMajorRelease"
+echo "0,     // UINT8                     SystemBiosMinorRelease  -> $version_minor,    // UINT8                     SystemBiosMinorRelease"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0xE800, \/\/ UINT16                    BiosSegment/0xE000, \/\/ UINT16                    BiosSegment/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,      \/\/ UINT8                     BiosSize/0xFF,   \/\/ UINT8                     BiosSize/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,   \/\/ BiosReserved/0x03, \/\/ BiosReserved/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0x1C \/\/ SystemReserved/0x0D \/\/ SystemReserved/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMajorRelease/$version_major,     \/\/ UINT8                     SystemBiosMajorRelease/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMinorRelease/$version_minor,    \/\/ UINT8                     SystemBiosMinorRelease/"
+echo "VendStr = L\"unknown\";                                       -> VendStr = L\"American Megatrends Inc.\";"
+echo "VersStr = L\"unknown\";                                       -> VersStr = L\"$version_major.$version_minor\";"
+echo "DateStr = L\"02/02/2022\";                                    -> DateStr = L\"$day/$month/$year\";"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/VendStr = L\"unknown\";/VendStr = L\"American Megatrends Inc.\";/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_major.$version_minor\";/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/DateStr = L\"02\/02\/2022\";/DateStr = L\"$day\/$month\/$year\";/"
 
 #echo "  $file_Q35MchIch9"
 #if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
