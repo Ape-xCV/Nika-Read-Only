@@ -25,19 +25,16 @@ get_random_dec()    { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
 get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 
 get_new_string() {
-  local length=$1
   local random_string=""
-  #local new_string=""
   local vowel_count=0
   while [ $vowel_count -ne $2 ]
   do
     random_string="$(get_random_string 100)"
-    new_string=$(echo $random_string | sed -E 's/(.)\1+/\1/g' | head -c $length)
+    new_string=$(echo $random_string | sed -E 's/(.)\1+/\1/g' | head -c $1)
     vowel_count=$(echo $new_string | grep -io '[aeiou]' | wc -l)
   done
   prefix=$(echo $new_string | head -c 1)
   suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
-  #echo $new_string
 }
 
 if [[ ! -d edk2backup ]]; then

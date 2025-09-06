@@ -49,17 +49,25 @@ get_random_dec()    { head /dev/urandom | tr -dc '0-9'    | head -c "$1"; }
 get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 
 get_new_string() {
-  local length=$1
   local random_string=""
   local vowel_count=0
   while [ $vowel_count -ne $2 ]
   do
     random_string="$(get_random_string 100)"
-    new_string=$(echo $random_string | sed -E 's/(.)\1+/\1/g' | head -c $length)
+    new_string=$(echo $random_string | sed -E 's/(.)\1+/\1/g' | head -c $1)
     vowel_count=$(echo $new_string | grep -io '[aeiou]' | wc -l)
   done
   prefix=$(echo $new_string | head -c 1)
   suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
+}
+
+get_type_4_data() {
+  local data=$(sudo hexdump -v -e '/1 "%02X"' "/sys/firmware/dmi/entries/4-0/raw")
+  t4_processor_family="${data:12:2}"
+  t4_voltage="${data:34:2}"
+  t4_external_clock="${data:38:2}${data:36:2}"
+  t4_processor_upgrade="${data:50:2}"
+  t4_processor_characteristics="${data:78:2}${data:76:2}"
 }
 
 if [[ ! -d qemubackup ]]; then
@@ -725,8 +733,17 @@ sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T20_BASE 0x1400"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T26_BASE 0x1A00"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T27_BASE 0x1B00"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T28_BASE 0x1C00"
-echo "t->voltage = 0;                                 -> t->voltage = 0x89;"
-sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x89;/"
+get_type_4_data
+echo "t->processor_family = 0xfe;                       -> t->processor_family = 0x$t4_processor_family;"
+echo "t->voltage = 0;                                   -> t->voltage = 0x$t4_voltage;"
+echo "t->external_clock = cpu_to_le16(0);               -> t->external_clock = cpu_to_le16(0x$t4_external_clock);"
+echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x$t4_processor_upgrade;"
+echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
+sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x$t4_processor_family;/"
+sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x$t4_voltage;/"
+sed -i "$file_smbios" -Ee "s/t->external_clock = cpu_to_le16\(0\);/t->external_clock = cpu_to_le16(0x$t4_external_clock);/"
+sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
+sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
 echo "l1_cache_handle = cpu_to_le16(0xFFFF)           -> l1_cache_handle = cpu_to_le16(T7_BASE + 0b000)"
 echo "l2_cache_handle = cpu_to_le16(0xFFFF)           -> l2_cache_handle = cpu_to_le16(T7_BASE + 0b001)"
 echo "l3_cache_handle = cpu_to_le16(0xFFFF)           -> l3_cache_handle = cpu_to_le16(T7_BASE + 0b010)"
