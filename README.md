@@ -566,7 +566,7 @@ sudo -E ./nika
 
 - Replace `</qemu:commandline>` and [Apply]:
   <details>
-    <summary>Spoiler</summary>
+    <summary>Spoiler <b>(not required, ignore this)</b></summary>
 
   ```shell
     <qemu:arg value="-acpitable"/>
