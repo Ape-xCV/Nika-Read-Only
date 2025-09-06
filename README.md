@@ -175,7 +175,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=3,manufacturer=ASUS,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 9 6900HX with Radeon Graphics,max-speed=4900,current-speed=3300"/>
+      <qemu:arg value="type=4,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 9 6900HX with Radeon Graphics"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=8,internal_reference=J1A1,external_reference=Keyboard,connector_type=0x0F,port_type=0x0D"/>
       <qemu:arg value="-smbios"/>
