@@ -233,7 +233,7 @@ sudo virsh net-start default
       <synic state="off"/>
       <stimer state="off"/>
       <reset state="off"/>
-      <vendor_id state="off"/>
+      <vendor_id state="on" value="AuthenticAMD"/>
       <frequencies state="off"/>
       <reenlightenment state="off"/>
       <tlbflush state="off"/>
