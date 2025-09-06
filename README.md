@@ -601,7 +601,7 @@ sudo -E ./nika
   ```
   </details>
 
-- Run `edk2atch.sh` to clone, patch, and build `OVMF` with generated data.
+- Run `edk2patch.sh` to clone, patch, and build `OVMF` with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
