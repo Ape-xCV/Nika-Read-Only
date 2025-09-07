@@ -87,6 +87,7 @@ file_vhostusergpu="$(pwd)/qemu/contrib/vhost-user-gpu/vhost-user-gpu.c"
 file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
 file_acpi_core="$(pwd)/qemu/hw/acpi/core.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
+file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_qdev="$(pwd)/qemu/hw/core/qdev.c"
@@ -157,6 +158,7 @@ if [[ -f "$file_vhostusergpu" ]]; then rm "$file_vhostusergpu"; fi
 if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
 if [[ -f "$file_acpi_core" ]]; then rm "$file_acpi_core"; fi
 if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
+if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
@@ -275,6 +277,14 @@ echo "  $file_hdacodec"
 echo "0x1af4                                          -> 0x10ec"
 sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10ec/"
 
+echo "  $file_intelhda"
+echo "0x2668                                          -> 0x51c8"
+echo "0x293e                                          -> 0x51c8"
+echo "k->revision = 3;                                -> k->revision = 1;"
+sed -i "$file_intelhda" -Ee "s/0x2668/0x51c8/"
+sed -i "$file_intelhda" -Ee "s/0x293e/0x51c8/"
+sed -i "$file_intelhda" -Ee "s/k->revision = 3;/k->revision = 1;/"
+
 echo "  $file_escc"
 echo "QEMU Sun Mouse                                  -> Sun Mouse"
 sed -i "$file_escc" -Ee "s/QEMU Sun Mouse/Sun Mouse/"
@@ -287,7 +297,7 @@ sed -i "$file_qdev" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $file_edidgenerate"
 get_new_string $(shuf -i 5-7 -n 1) 3
-word=$(get_random_hex 4)
+#word=$(get_random_hex 4)
 week=$(shuf -i 1-52 -n 1)
 year=$(shuf -i 25-35 -n 1)
 echo "RHT                                             -> $prefix$suffix"
@@ -301,7 +311,8 @@ sed -i "$file_edidgenerate" -Ee "s/RHT/$prefix$suffix/"
 sed -i "$file_edidgenerate" -Ee "s/QEMU Monitor/$prefix$suffix Monitor/"
 #sed -i "$file_edidgenerate" -Ee "s/prefx = 1280/prefx = 1920/"
 #sed -i "$file_edidgenerate" -Ee "s/prefy = 800/prefy = 1080/"
-sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
+sed -i "$file_edidgenerate" -Ee "s/0x1234/0x10ad/"
+#sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[16\] = 42/edid\[16\] = $week/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 
