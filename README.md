@@ -218,7 +218,7 @@ sudo virsh net-start default
 
 - Replace from `<features>` to `</clock>` and [Apply]:
   <details>
-    <summary>Spoiler <b>(example for a 12 cores, 24 threads host CPU; any mismatch will be detected)</b></summary>
+    <summary>Spoiler (example for <b>AMD</b> 12 cores 24 threads host CPU)</summary>
 
   ```shell
   <features>
@@ -256,9 +256,70 @@ sudo virsh net-start default
     <feature policy="disable" name="aes"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
-    <feature policy="require" name="vmx"/>
+    <feature policy="disable" name="vmx"/>
     <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="topoext"/>
+    <feature policy="require" name="invtsc"/>
+    <feature policy="disable" name="amd-ssbd"/>
+    <feature policy="disable" name="ssbd"/>
+    <feature policy="disable" name="virt-ssbd"/>
+    <feature policy="disable" name="rdpid"/>
+    <feature policy="disable" name="rdtscp"/>
+  </cpu>
+  <clock offset="localtime">
+    <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
+    <timer name="hpet" present="yes"/>
+    <timer name="rtc" present="no"/>
+    <timer name="pit" present="no"/>
+    <timer name="kvmclock" present="no"/>
+    <timer name="hypervclock" present="no"/>
+  </clock>
+  ```
+  </details>
+
+
+  <details>
+    <summary>Spoiler (example for <b>Intel</b> 4 cores 4 threads host CPU)</summary>
+
+  ```shell
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv mode="custom">
+      <relaxed state="off"/>
+      <vapic state="off"/>
+      <spinlocks state="off"/>
+      <vpindex state="off"/>
+      <runtime state="off"/>
+      <synic state="off"/>
+      <stimer state="off"/>
+      <reset state="off"/>
+      <vendor_id state="on" value="GenuineIntel"/>
+      <frequencies state="off"/>
+      <reenlightenment state="off"/>
+      <tlbflush state="off"/>
+      <ipi state="off"/>
+      <evmcs state="off"/>
+      <avic state="off"/>
+    </hyperv>
+    <kvm>
+      <hidden state="on"/>
+    </kvm>
+    <pmu state="on"/>
+    <vmport state="off"/>
+    <smm state="on"/>
+    <ioapic driver="kvm"/>
+    <msrs unknown="fault"/>
+  </features>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" cores="4" threads="1"/>
+    <cache mode="passthrough"/>
+    <feature policy="require" name="aes"/>
+    <feature policy="disable" name="hypervisor"/>
+    <feature policy="disable" name="svm"/>
+    <feature policy="require" name="vmx"/>
+    <feature policy="disable" name="x2apic"/>
+    <feature policy="disable" name="topoext"/>
     <feature policy="require" name="invtsc"/>
     <feature policy="disable" name="amd-ssbd"/>
     <feature policy="disable" name="ssbd"/>
