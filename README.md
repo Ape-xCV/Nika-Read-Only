@@ -206,11 +206,11 @@ sudo virsh net-start default
 
 - Replace from `<memory unit="KiB">4194304</memory>` to `<vcpu placement="static">2</vcpu>` and [Apply]:
   <details>
-    <summary>Spoiler <b>(use a commercial module size like 12, 24, or 48 GiB; vcpu example for a 24 threads host CPU)</b></summary>
+    <summary>Spoiler <b>(use a commercial memory size like 8, 16, or 24 GiB; vcpu example for a 24 threads host CPU)</b></summary>
 
   ```shell
-  <memory unit="GiB">12</memory>
-  <currentMemory unit="GiB">12</currentMemory>
+  <memory unit="GiB">24</memory>
+  <currentMemory unit="GiB">24</currentMemory>
   <vcpu placement="static">24</vcpu>
   ```
   </details>
