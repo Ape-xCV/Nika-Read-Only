@@ -87,12 +87,12 @@ file_vhostusergpu="$(pwd)/qemu/contrib/vhost-user-gpu/vhost-user-gpu.c"
 file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
 file_acpi_core="$(pwd)/qemu/hw/acpi/core.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
-file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
+##file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_qdev="$(pwd)/qemu/hw/core/qdev.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
-file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
+##file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
 file_piix="$(pwd)/qemu/hw/isa/piix.c"
 file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
@@ -103,7 +103,7 @@ file_pc="$(pwd)/qemu/hw/i386/pc.c"
 file_pcq35="$(pwd)/qemu/hw/i386/pc_q35.c"
 file_atapi="$(pwd)/qemu/hw/ide/atapi.c"
 file_core="$(pwd)/qemu/hw/ide/core.c"
-file_ich="$(pwd)/qemu/hw/ide/ich.c"
+##file_ich="$(pwd)/qemu/hw/ide/ich.c"
 file_adbkbd="$(pwd)/qemu/hw/input/adb-kbd.c"
 file_adbmouse="$(pwd)/qemu/hw/input/adb-mouse.c"
 #file_ads7846="$(pwd)/qemu/hw/input/ads7846.c"
@@ -158,12 +158,12 @@ if [[ -f "$file_vhostusergpu" ]]; then rm "$file_vhostusergpu"; fi
 if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
 if [[ -f "$file_acpi_core" ]]; then rm "$file_acpi_core"; fi
 if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
-if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
+##if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
-if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
+##if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
 if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
 if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
@@ -174,7 +174,7 @@ if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
 if [[ -f "$file_pcq35" ]]; then rm "$file_pcq35"; fi
 if [[ -f "$file_atapi" ]]; then rm "$file_atapi"; fi
 if [[ -f "$file_core" ]]; then rm "$file_core"; fi
-if [[ -f "$file_ich" ]]; then rm "$file_ich"; fi
+##if [[ -f "$file_ich" ]]; then rm "$file_ich"; fi
 if [[ -f "$file_adbkbd" ]]; then rm "$file_adbkbd"; fi
 if [[ -f "$file_adbmouse" ]]; then rm "$file_adbmouse"; fi
 #if [[ -f "$file_ads7846" ]]; then rm "$file_ads7846"; fi
@@ -277,13 +277,7 @@ echo "  $file_hdacodec"
 echo "0x1af4                                          -> 0x10ec"
 sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10ec/"
 
-echo "  $file_intelhda"
-echo "0x2668                                          -> 0x51c8"
-echo "0x293e                                          -> 0x51c8"
-echo "k->revision = 3;                                -> k->revision = 1;"
-sed -i "$file_intelhda" -Ee "s/0x2668/0x51c8/"
-sed -i "$file_intelhda" -Ee "s/0x293e/0x51c8/"
-sed -i "$file_intelhda" -Ee "s/k->revision = 3;/k->revision = 1;/"
+##echo "  $file_intelhda"
 
 echo "  $file_escc"
 echo "QEMU Sun Mouse                                  -> Sun Mouse"
@@ -297,7 +291,7 @@ sed -i "$file_qdev" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $file_edidgenerate"
 get_new_string $(shuf -i 5-7 -n 1) 3
-#word=$(get_random_hex 4)
+word=$(get_random_hex 4)
 week=$(shuf -i 1-52 -n 1)
 year=$(shuf -i 25-35 -n 1)
 echo "RHT                                             -> $prefix$suffix"
@@ -311,28 +305,11 @@ sed -i "$file_edidgenerate" -Ee "s/RHT/$prefix$suffix/"
 sed -i "$file_edidgenerate" -Ee "s/QEMU Monitor/$prefix$suffix Monitor/"
 #sed -i "$file_edidgenerate" -Ee "s/prefx = 1280/prefx = 1920/"
 #sed -i "$file_edidgenerate" -Ee "s/prefy = 800/prefy = 1080/"
-sed -i "$file_edidgenerate" -Ee "s/0x1234/0x10ad/"
-#sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
+sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[16\] = 42/edid\[16\] = $week/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 
-echo "  $file_smbusich9"
-IFS=':'
-cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-cpu_vendor="${cpu_vendor[1]}"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL                             -> PCI_VENDOR_ID_AMD"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_6                      -> 0x790b" #FCH SMBus Controller
-  echo "ICH9 SMBUS Bridge                               -> AMD SMBus Bridge"
-#  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
-#  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6/0x790b/"
-  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/AMD SMBus Bridge/"
-else
-  echo "PCI_DEVICE_ID_INTEL_ICH9_6                      -> 0x51a3" #Alder Lake PCH-P SMBus Host Controller
-  echo "ICH9 SMBUS Bridge                               -> Intel SMBus Bridge"
-#  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6/0x51a3/"
-  sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/Intel SMBus Bridge/"
-fi
+##echo "  $file_smbusich9"
 
 echo "  $file_acpibuild"
 c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
@@ -466,19 +443,6 @@ sed -i "$file_piix" -Ee "s/.S08./.${path}08./"
 echo "  $file_lpcich9"
 echo ".SF8.                                           -> .${path}F8."
 sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "ICH9 LPC bridge                                 -> AMD LPC bridge"
-  echo "PCI_VENDOR_ID_INTEL                             -> PCI_VENDOR_ID_AMD"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0x790e" #FCH LPC Bridge
-  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/AMD LPC bridge/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0x790e/"
-else
-  echo "ICH9 LPC bridge                                 -> Intel LPC bridge"
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8                      -> 0xa2c5" #200 Series PCH LPC Controller (Z270)
-  sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/Intel LPC bridge/"
-#  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8/0xa2c5/"
-fi
 
 echo "  $file_i386_fwcfg"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -508,6 +472,9 @@ sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
 #echo "  $file_pcpiix"
 
 echo "  $file_pcq35"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
 cpu_family=( $(cat /proc/cpuinfo | grep 'cpu family' | uniq) )
 cpu_family="${cpu_family[1]}"
 cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
@@ -518,10 +485,10 @@ sed -i "$file_pcq35" -Ee "s/\"pc_q35\"/\"${cpu_family:1}\"/"
 sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_name:1}/"
 echo "    m->alias = \"q35\";"
 echo "    v v v v v v v v v v v v v v v v v v v v"
-echo "    m->smbios_memory_device_size = 12 * GiB;"
-sed -i "$file_pcq35" -Ee "/    m->alias = \"q35\";/a\    m->smbios_memory_device_size = 12 * GiB;"
-echo "smbios_memory_device_size = 16                  -> smbios_memory_device_size = 12"
-sed -i "$file_pcq35" -Ee "s/smbios_memory_device_size = 16/smbios_memory_device_size = 12/"
+echo "    m->smbios_memory_device_size = 8 * GiB;"
+sed -i "$file_pcq35" -Ee "/    m->alias = \"q35\";/a\    m->smbios_memory_device_size = 8 * GiB;"
+echo "smbios_memory_device_size = 16                  -> smbios_memory_device_size = 8"
+sed -i "$file_pcq35" -Ee "s/smbios_memory_device_size = 16/smbios_memory_device_size = 8/"
 
 echo "  $file_atapi"
 get_new_string 4 1
@@ -538,16 +505,7 @@ sed -i "$file_core" -Ee "s/QEMU DVD-ROM/$new_ide_cd_model/"
 sed -i "$file_core" -Ee "s/QEMU MICRODRIVE/$new_ide_cfata_model/"
 sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
 
-echo "  $file_ich"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL                             -> PCI_VENDOR_ID_AMD"
-  echo "PCI_DEVICE_ID_INTEL_82801IR                     -> 0x43c8" #400 Series Chipset SATA Controller
-#  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL/PCI_VENDOR_ID_AMD/"
-#  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR/0x43c8/"
-else
-  echo "PCI_DEVICE_ID_INTEL_82801IR                     -> 0x02d3" #Comet Lake SATA AHCI Controller
-#  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR/0x02d3/"
-fi
+##echo "  $file_ich"
 
 echo "  $file_adbkbd"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -598,33 +556,8 @@ sed -i "$file_virtioinputhid" -Ee "s/QEMU Virtio Keyboard/$prefix$suffix Keyboar
 sed -i "$file_virtioinputhid" -Ee "s/QEMU Virtio Mouse/$prefix$suffix Mouse/"
 sed -i "$file_virtioinputhid" -Ee "s/QEMU Virtio Tablet/$prefix$suffix Tablet/"
 sed -i "$file_virtioinputhid" -Ee "s/QEMU Virtio MultiTouch/$prefix$suffix MultiTouch/"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x1022/"
-else
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x8086/"
-fi
+echo "0x0627                                          -> 0x045e"
+sed -i "$file_virtioinputhid" -Ee "s/0x0627/0x045e/"
 
 echo "  $file_pvpanicisa"
 echo "QEMU0001                                        -> UEFI0001"
@@ -657,11 +590,11 @@ sed -i "$file_gpex" -Ee "s/QEMU generic PCIe host bridge/$new_string generic PCI
 
 echo "  $file_mptconfig"
 get_new_string $(shuf -i 5-7 -n 1) 3
-number=$(get_random_dec 16)
+serial=$(get_random_serial 16)
 echo "QEMU MPT Fusion                                 -> $prefix$suffix MPT Fusion"
 echo "QEMU MPT Fusion                                 -> $prefix$suffix MPT Fusion"
 echo "\"QEMU\"                                          -> \"$prefix$suffix\""
-echo "0000111122223333                                -> $number"
+echo "0000111122223333                                -> $serial"
 sed -i "$file_mptconfig" -Ee "s/QEMU MPT Fusion/$prefix$suffix MPT Fusion/"
 sed -i "$file_mptconfig" -Ee "s/QEMU MPT Fusion/$prefix$suffix MPT Fusion/"
 sed -i "$file_mptconfig" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
@@ -895,13 +828,17 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
 echo "    SMBIOS_SET_DEFAULT(type4.version, version);"
-echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
 sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type4.version, version\);/a\    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
 sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type4.version, version\);/a\    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
 sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type4.version, version\);/a\    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");"
+echo "    SMBIOS_SET_DEFAULT(type17.bank, \"BANK\");"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    SMBIOS_SET_DEFAULT(type17.manufacturer, manufacturer);"
+sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.manufacturer, manufacturer\);/i\    SMBIOS_SET_DEFAULT(type17.bank, \"BANK\");"
 echo "    SMBIOS_SET_DEFAULT(type17.manufacturer, manufacturer);"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    SMBIOS_SET_DEFAULT(type26.description, \"VPROBE0\");"
@@ -960,14 +897,13 @@ echo "bios_characteristics_extension_bytes[1] = 0x14  -> bios_characteristics_ex
 echo "feature_flags = 0x01                            -> feature_flags = 0x09"
 echo "location = 0x01; /* Other */                    -> location = 0x03; /* Motherboard */"
 echo "error_correction = 0x06                         -> error_correction = 0x03"
+echo "    char loc_str[128];"
+echo "    v v v v v v v v v v"
+echo "    char bank_str[128];"
+sed -i "$file_smbios" -Ee "/    char loc_str\[128\];/a\    char bank_str[128];"
 echo "total_width = cpu_to_le16(0xFFFF);              -> total_width = cpu_to_le16(64); /* 64-bit no ECC */"
 echo "data_width = cpu_to_le16(0xFFFF);               -> data_width = cpu_to_le16(64); /* 64-bit no ECC */"
-echo "memory_type = 0x07; /* RAM */                   -> memory_type = 0x1A; /* DDR4 */"
-echo "type_detail = cpu_to_le16(0x02); /* Other */    -> type_detail = cpu_to_le16(0x80); /* Synchronous */"
-echo "attributes = 0; /* Unknown */                   -> attributes = 0x01; /* Single rank */"
-echo "minimum_voltage = cpu_to_le16(0); /* Unknown */ -> minimum_voltage = cpu_to_le16(1200);"
-echo "maximum_voltage = cpu_to_le16(0); /* Unknown */ -> maximum_voltage = cpu_to_le16(1350);"
-echo "configured_voltage = cpu_to_le16(0);            -> configured_voltage = cpu_to_le16(1200);"
+echo "type17.loc_pfx, instance);                      -> type17.loc_pfx, instance % 2);"
 sed -i "$file_smbios" -Ee "s/bios_starting_address_segment = cpu_to_le16\(0xE800\)/bios_starting_address_segment = cpu_to_le16(0xE000)/"
 sed -i "$file_smbios" -Ee "s/t->bios_rom_size = 0/t->bios_rom_size = 0xFF/"
 sed -i "$file_smbios" -Ee "s/bios_characteristics = cpu_to_le64\(0x08\)/bios_characteristics = cpu_to_le64(0x001A00004BF99880)/"
@@ -978,7 +914,20 @@ sed -i "$file_smbios" -Ee "s/location = 0x01; \/\* Other \*\//location = 0x03; \
 sed -i "$file_smbios" -Ee "s/error_correction = 0x06/error_correction = 0x03/"
 sed -i "$file_smbios" -Ee "s/total_width = cpu_to_le16\(0xFFFF\); \/\* Unknown \*\//total_width = cpu_to_le16\(64\); \/* 64-bit no ECC *\//"
 sed -i "$file_smbios" -Ee "s/data_width = cpu_to_le16\(0xFFFF\); \/\* Unknown \*\//data_width = cpu_to_le16\(64\); \/* 64-bit no ECC *\//"
-sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x22; \/* DDR5 *\//"
+sed -i "$file_smbios" -Ee "s/type17.loc_pfx, instance\);/type17.loc_pfx, instance % 2);/"
+echo "    SMBIOS_TABLE_SET_STR(17, device_locator_str, loc_str);"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
+sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, device_locator_str, loc_str\);/a\    snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
+echo "bank_locator_str, type17.bank);                 -> bank_locator_str, bank_str);"
+sed -i "$file_smbios" -Ee "s/bank_locator_str, type17.bank\);/bank_locator_str, bank_str);/"
+echo "memory_type = 0x07; /* RAM */                   -> memory_type = 0x18; /* DDR3 */"
+echo "type_detail = cpu_to_le16(0x02); /* Other */    -> type_detail = cpu_to_le16(0x80); /* Synchronous */"
+echo "attributes = 0; /* Unknown */                   -> attributes = 0x01; /* Single rank */"
+echo "minimum_voltage = cpu_to_le16(0); /* Unknown */ -> minimum_voltage = cpu_to_le16(1200);"
+echo "maximum_voltage = cpu_to_le16(0); /* Unknown */ -> maximum_voltage = cpu_to_le16(1350);"
+echo "configured_voltage = cpu_to_le16(0);            -> configured_voltage = cpu_to_le16(1200);"
+sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x18; \/* DDR3 *\//"
 sed -i "$file_smbios" -Ee "s/type_detail = cpu_to_le16\(0x02\); \/\* Other \*\//type_detail = cpu_to_le16\(0x80\); \/* Synchronous *\//"
 sed -i "$file_smbios" -Ee "s/attributes = 0; \/\* Unknown \*\//attributes = 0x01; \/* Single rank *\//"
 sed -i "$file_smbios" -Ee "s/minimum_voltage = cpu_to_le16\(0\); \/\* Unknown \*\//minimum_voltage = cpu_to_le16\(1200\);/"
@@ -997,9 +946,10 @@ sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\ 
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->size = cpu_to_le16(0); /* Not installed */"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->form_factor = 0x02; /* Unknown */"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->device_set = 0; /* Not in a set */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        snprintf(loc_str, sizeof(loc_str), \"%s %d\", type17.loc_pfx, instance);"
+sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        snprintf(loc_str, sizeof(loc_str), \"%s %d\", type17.loc_pfx, instance % 2);"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_TABLE_SET_STR(17, device_locator_str, loc_str);"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_TABLE_SET_STR(17, bank_locator_str, type17.bank);"
+sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
+sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_TABLE_SET_STR(17, bank_locator_str, bank_str);"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->memory_type = 0x02; /* Unknown */"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->type_detail = cpu_to_le16(0x04); /* Unknown */"
 sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->speed = cpu_to_le16(0); /* Unknown */"
@@ -1077,33 +1027,8 @@ echo "_desc   = \"QEMU USB Keyboard\"                   -> _desc   = \"$prefix$s
 sed -i "$file_devhid" -Ee "s/_desc   = \"QEMU USB Tablet\"/_desc   = \"$prefix$suffix USB Tablet\"/"
 sed -i "$file_devhid" -Ee "s/_desc   = \"QEMU USB Mouse\"/_desc   = \"$prefix$suffix USB Mouse\"/"
 sed -i "$file_devhid" -Ee "s/_desc   = \"QEMU USB Keyboard\"/_desc   = \"$prefix$suffix USB Keyboard\"/"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  echo "0x0627                                          -> 0x1022"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x1022/"
-else
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  echo "0x0627                                          -> 0x8086"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-  sed -i "$file_devhid" -Ee "s/0x0627/0x8086/"
-fi
+echo "0x0627                                          -> 0x045e"
+sed -i "$file_devhid" -Ee "s/0x0627/0x045e/"
 
 echo "  $file_devhub"
 get_new_string $(shuf -i 5-7 -n 1) 3
