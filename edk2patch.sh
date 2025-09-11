@@ -86,7 +86,6 @@ if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
-cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
 cp -fr /sys/firmware/acpi/bgrt/image edk2/MdeModulePkg/Logo/Logo.bmp
 
 echo "  $file_MdeModulePkg"
@@ -153,10 +152,10 @@ day="$(get_random_element "${numbers[@]}")"
 month="$(get_random_element "${numbers[@]}")"
 year="$(shuf -i 2015-2025 -n 1)"
 echo "\"EFI Development Kit II / OVMF\\0\"                           -> \"American Megatrends Inc.\\0\""
-echo "\"0.0.0\\0\"                                                   -> \"$version_major.$version_minor\\0\""
+echo "\"0.0.0\\0\"                                                   -> \"$version_major$version_minor\\0\""
 echo "\"02/06/2015\\0\"                                              -> \"$day/$month/$year\\0\""
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"EFI Development Kit II \/ OVMF\\\\0\"/\"American Megatrends Inc.\\\\0\"/"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version_major.$version_minor\\\\0\"/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version_major$version_minor\\\\0\"/"
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"02\/06\/2015\\\\0\"/\"$day\/$month\/$year\\\\0\"/"
 echo "0xE800, // UINT16                    BiosSegment            -> 0xE000, // UINT16                    BiosSegment"
 echo "0,      // UINT8                     BiosSize               -> 0xFF,   // UINT8                     BiosSize"
@@ -185,10 +184,10 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/0x1C \/\/ SystemReserved/0x0D \/\/ Syste
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMajorRelease/$version_major,     \/\/ UINT8                     SystemBiosMajorRelease/"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMinorRelease/$version_minor,    \/\/ UINT8                     SystemBiosMinorRelease/"
 echo "VendStr = L\"unknown\";                                       -> VendStr = L\"American Megatrends Inc.\";"
-echo "VersStr = L\"unknown\";                                       -> VersStr = L\"$version_major.$version_minor\";"
+echo "VersStr = L\"unknown\";                                       -> VersStr = L\"$version_major$version_minor\";"
 echo "DateStr = L\"02/02/2022\";                                    -> DateStr = L\"$day/$month/$year\";"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/VendStr = L\"unknown\";/VendStr = L\"American Megatrends Inc.\";/"
-sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_major.$version_minor\";/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_major$version_minor\";/"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/DateStr = L\"02\/02\/2022\";/DateStr = L\"$day\/$month\/$year\";/"
 
 #echo "  $file_Q35MchIch9"
