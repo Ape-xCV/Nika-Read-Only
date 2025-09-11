@@ -86,6 +86,7 @@ if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
+cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
 cp -fr /sys/firmware/acpi/bgrt/image edk2/MdeModulePkg/Logo/Logo.bmp
 
 echo "  $file_MdeModulePkg"
