@@ -677,6 +677,7 @@ sudo -E ./nika
     <summary>Build on <b>Fedora Linux</b>:</summary>
 
   ```shell
+  sudo dnf install g++
   sudo dnf install acpica-tools
   sudo dnf install nasm
   ```
@@ -687,6 +688,7 @@ sudo -E ./nika
     <summary>Build on <b>Debian Linux</b>:</summary>
 
   ```shell
+  sudo apt install g++
   sudo apt install acpica-tools
   sudo apt install nasm
   ```
