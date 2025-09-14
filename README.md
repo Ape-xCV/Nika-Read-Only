@@ -183,7 +183,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=9,slot_designation=J6C1,slot_type=0xAA,slot_data_bus_width=0x0D,current_usage=0x04,slot_length=0x04,slot_id=0x01,slot_characteristics1=0x04,slot_characteristics2=0x03"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=17,manufacturer=Samsung,part=M425R1GB4BB0-CQK,speed=4800,serial=E4F50000"/>
+      <qemu:arg value="type=17,manufacturer=Samsung,part=M425R1GB4BB0-CQK,speed=4800,serial=C2D3E4F5"/>
     </qemu:commandline>
   ```
   </details>
