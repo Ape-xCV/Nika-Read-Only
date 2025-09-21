@@ -713,7 +713,7 @@ sudo -E ./nika
   ```
   </details>
 
-### 7.2 Spoof GPU (for NVIDIA driver from 51x to 56x)
+### 7.2 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] >> [Apply]
