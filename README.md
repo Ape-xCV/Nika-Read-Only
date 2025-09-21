@@ -123,7 +123,7 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> File >> New Virtual Machine
 
-- Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> Customize configuration before install
+- Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
@@ -712,6 +712,15 @@ sudo -E ./nika
   </os>
   ```
   </details>
+
+### 7.2 Spoof GPU (for NVIDIA driver from 51x to 56x)
+
+- Disable ROM BAR for each PCI Host Device:
+  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] >> [Apply]
+
+- Check old UUID with `nvidia-smi -L`.
+- Run the cheat BEFORE the game at least once.
+- Check new UUID with `nvidia-smi -L`.
 
 ### 8. memflow-kvm (not required, ignore this)
 
