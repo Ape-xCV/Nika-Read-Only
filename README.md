@@ -183,7 +183,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=9,slot_designation=J6C1,slot_type=0xAA,slot_data_bus_width=0x0D,current_usage=0x04,slot_length=0x04,slot_id=0x01,slot_characteristics1=0x04,slot_characteristics2=0x03"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200serial=C2D3E4F5"/>
+      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=C2D3E4F5"/>
     </qemu:commandline>
   ```
   </details>
@@ -635,7 +635,6 @@ sudo -E ./nika
   </details>
 
 - Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
-  - You can edit `default_models` with real data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
