@@ -175,7 +175,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=4,sock_pfx=XPTO,manufacturer=Intel(R) Corporation,version=11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz,processor-id=0xBFEBFBFF000806C1"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=C2D3E4F5"/>
+      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=D3E4F5"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=8,internal_reference=J1A1,external_reference=Keyboard,connector_type=0x0F,port_type=0x0D"/>
       <qemu:arg value="-smbios"/>
