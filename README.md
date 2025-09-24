@@ -186,6 +186,8 @@ sudo virsh net-start default
   ```
   </details>
 
+  - VM created by QEMU is Intel, do not use AMD data.
+
 
 - Replace `</metadata>` and [Apply]:
   <details>
