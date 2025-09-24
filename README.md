@@ -167,15 +167,15 @@ sudo virsh net-start default
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
     <qemu:commandline>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=0,vendor=ASUS,version=X.23,date=06/14/2024,release=12.34"/>
+      <qemu:arg value="type=0,vendor=AMI,version=F.25,date=06/14/2024,release=12.34"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=1,manufacturer=ASUS,product=ASUS Zenbook 14X UM5401,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=1,manufacturer=HP,product=HP Laptop 14s-dq2xxx,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=2,manufacturer=ASUS,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
+      <qemu:arg value="type=2,manufacturer=HP,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=3,manufacturer=ASUS,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=3,manufacturer=HP,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,sock_pfx=XPTO,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 9 6900HX with Radeon Graphics"/>
+      <qemu:arg value="type=4,sock_pfx=XPTO,manufacturer=Intel(R) Corporation,version=11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz,processor-id=0xBFEBFBFF000806C1"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=8,internal_reference=J1A1,external_reference=Keyboard,connector_type=0x0F,port_type=0x0D"/>
       <qemu:arg value="-smbios"/>
@@ -183,7 +183,7 @@ sudo virsh net-start default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=9,slot_designation=J6C1,slot_type=0xAA,slot_data_bus_width=0x0D,current_usage=0x04,slot_length=0x04,slot_id=0x01,slot_characteristics1=0x04,slot_characteristics2=0x03"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=17,manufacturer=Samsung,part=M425R1GB4BB0-CQK,speed=4800,serial=C2D3E4F5"/>
+      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200serial=C2D3E4F5"/>
     </qemu:commandline>
   ```
   </details>
