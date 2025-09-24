@@ -167,8 +167,6 @@ sudo virsh net-start default
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
     <qemu:commandline>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=0,vendor=AMI,version=F.25,date=06/14/2024,release=12.34"/>
-      <qemu:arg value="-smbios"/>
       <qemu:arg value="type=1,manufacturer=HP,product=HP Laptop 14s-dq2xxx,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=2,manufacturer=HP,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
