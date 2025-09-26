@@ -46,10 +46,22 @@
   - Enable "IOMMU"
   - Disable "Above 4G Decoding"
 
+- Nested Virtualization for Intel:
+```shell
+sudo su
+echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
+```
+
+- Nested Virtualization for AMD:
+```shell
+sudo su
+echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
+```
+
 - Preload `vfio-pci` module so it can bind to PCI IDs:
 ```shell
 sudo su
-echo "softdep nvidia pre: vfio-pci" >  /etc/modprobe.d/kvm.conf
+echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 ```
 

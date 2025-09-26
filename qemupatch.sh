@@ -90,7 +90,6 @@ file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
 #file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
-file_qdev="$(pwd)/qemu/hw/core/qdev.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
 #file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
@@ -161,7 +160,6 @@ if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
 #if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
-if [[ -f "$file_qdev" ]]; then rm "$file_qdev"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
 #if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
@@ -284,10 +282,6 @@ echo "QEMU Sun Mouse                                  -> Sun Mouse"
 sed -i "$file_escc" -Ee "s/QEMU Sun Mouse/Sun Mouse/"
 
 #echo "  $file_serialpci"
-
-echo "  $file_qdev"
-echo "hotpluggable = true                             -> hotpluggable = false"
-sed -i "$file_qdev" -Ee "s/hotpluggable = true/hotpluggable = false/"
 
 echo "  $file_edidgenerate"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -906,7 +900,7 @@ sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    smbios_bui
 sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    smbios_build_type_28_table();"
 echo "bios_starting_address_segment = cpu_to_le16(0xE800) -> bios_starting_address_segment = cpu_to_le16(0xE000)"
 echo "bios_rom_size = 0                               -> bios_rom_size = 0xFF"
-echo "bios_characteristics = cpu_to_le64(0x08)        -> bios_characteristics = cpu_to_le64(0x001A00004BF99880)"
+echo "bios_characteristics = cpu_to_le64(0x08)        -> bios_characteristics = cpu_to_le64(0x0040001330099880)"
 echo "bios_characteristics_extension_bytes[0] = 0     -> bios_characteristics_extension_bytes[0] = 0x03"
 echo "bios_characteristics_extension_bytes[1] = 0x14  -> bios_characteristics_extension_bytes[1] = 0x0D"
 echo "feature_flags = 0x01                            -> feature_flags = 0x09"
@@ -923,7 +917,7 @@ echo "data_width = cpu_to_le16(0xFFFF);               -> data_width = cpu_to_le1
 echo "type17.loc_pfx, instance);                      -> type17.loc_pfx, instance % 2);"
 sed -i "$file_smbios" -Ee "s/bios_starting_address_segment = cpu_to_le16\(0xE800\)/bios_starting_address_segment = cpu_to_le16(0xE000)/"
 sed -i "$file_smbios" -Ee "s/t->bios_rom_size = 0/t->bios_rom_size = 0xFF/"
-sed -i "$file_smbios" -Ee "s/bios_characteristics = cpu_to_le64\(0x08\)/bios_characteristics = cpu_to_le64(0x001A00004BF99880)/"
+sed -i "$file_smbios" -Ee "s/bios_characteristics = cpu_to_le64\(0x08\)/bios_characteristics = cpu_to_le64(0x0040001330099880)/"
 sed -i "$file_smbios" -Ee "s/bios_characteristics_extension_bytes\[0\] = 0/bios_characteristics_extension_bytes[0] = 0x03/"
 sed -i "$file_smbios" -Ee "s/bios_characteristics_extension_bytes\[1\] = 0x14/bios_characteristics_extension_bytes[1] = 0x0D/"
 sed -i "$file_smbios" -Ee "s/feature_flags = 0x01/feature_flags = 0x09/"
@@ -1292,7 +1286,7 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\//i} QEMU_PACKED;\\n"
 
 echo "  $header_pci"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
 #  echo "QEMU               0x1234                       -> QEMU               0x1022"
   echo "VMWARE             0x15ad                       -> VMWARE             0x1022"
   echo "QUMRANET    0x1af4                              -> QUMRANET    0x1022"
@@ -1317,7 +1311,7 @@ else
 fi
 
 echo "  $header_pciids"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   echo "VMWARE             0x15ad                       -> VMWARE             0x1022"
   sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
 else
@@ -1336,7 +1330,7 @@ echo "0x51454d5520434647ULL                           -> 0x${signature}ULL"
 sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $file_cpu"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   echo "\"QEMU Virtual CPU version \"                     -> \"AMD CPU version \""
   echo "\"Common KVM processor\"                          -> \"Common AMD processor\""
   echo "\"Common 32-bit KVM processor\"                   -> \"Common 32-bit AMD processor\""
@@ -1363,8 +1357,8 @@ echo "\"VS#1\0\0\0\0\0\0\0\0\"                          -> 0"
 sed -i "$file_kvm" -Ee "s/\"VS#1\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
 echo "\"XenVMMXenVMM\"                                  -> 0"
 sed -i "$file_kvm" -Ee "s/\"XenVMMXenVMM\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
-echo "KVMKVMKVM\0\0\0                                 -> ${cpu_vendor:1}"
-sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/${cpu_vendor:1}/"
+echo "KVMKVMKVM\0\0\0                                 -> GenuineIntel"
+sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/GenuineIntel/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
