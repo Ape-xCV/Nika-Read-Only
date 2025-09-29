@@ -39,6 +39,11 @@ cpu_models=(
   "Intel(R) Core(TM) i7 CPU       K 875  @ 2.93GHz"
   "Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz"
   "Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz"
+  "Intel(R) Core(TM) i7 CPU       S 870  @ 2.67GHz"
+  "Intel(R) Core(TM) i7 CPU       S 860  @ 2.53GHz"
+  "Intel(R) Core(TM) i5 CPU         760  @ 2.80GHz"
+  "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz"
+  "Intel(R) Core(TM) i5 CPU       S 750  @ 2.40GHz"
 )
 
 cpu_families=(
@@ -46,6 +51,11 @@ cpu_families=(
   "C6" #Intel® Core™ i7 processor
   "C6" #Intel® Core™ i7 processor
   "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
 )
 
 cpu_sockets=(
@@ -53,9 +63,19 @@ cpu_sockets=(
   "1D" #LGA 1156
   "1D" #LGA 1156
   "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
 )
 
 cpu_steppings=(
+  "5"
+  "5"
+  "5"
+  "5"
+  "5"
   "5"
   "5"
   "5"
