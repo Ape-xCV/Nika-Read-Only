@@ -34,6 +34,34 @@ ide_cfata_models=(
   "SanDisk Extreme microSDXC UHS-I" "SanDisk Ultra microSDXC UHS-I"
 )
 
+cpu_models=(
+  "Intel(R) Core(TM) i7 CPU         880  @ 3.07GHz"
+  "Intel(R) Core(TM) i7 CPU       K 875  @ 2.93GHz"
+  "Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz"
+  "Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz"
+)
+
+cpu_families=(
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+)
+
+cpu_sockets=(
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+  "1D" #LGA 1156
+)
+
+cpu_steppings=(
+  "5"
+  "5"
+  "5"
+  "5"
+)
+
 get_random_element() {
   local array=("$@")
   echo "${array[RANDOM % ${#array[@]}]}"
@@ -464,6 +492,7 @@ sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
 #echo "  $file_pcpiix"
 
 echo "  $file_pcq35"
+index=$(shuf -i 1-${#cpu_models[@]} -n 1)
 IFS=':'
 cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 cpu_vendor="${cpu_vendor[1]}"
@@ -472,9 +501,11 @@ cpu_family="${cpu_family[1]}"
 cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
 cpu_name="${cpu_name[1]}"
 #echo "\"pc_q35\"                                        -> \"${cpu_family:1}\""
-echo "Standard PC (Q35 + ICH9, 2009)                  -> ${cpu_name:1}"
+echo "Standard PC (Q35 + ICH9, 2009)                  -> ${cpu_models[$index-1]}"
+echo "m->default_nic = \"e1000e\";                      -> m->default_nic = \"rtl8139\";"
 #sed -i "$file_pcq35" -Ee "s/\"pc_q35\"/\"${cpu_family:1}\"/"
-sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_name:1}/"
+sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_models[$index-1]}/"
+sed -i "$file_pcq35" -Ee "s/m->default_nic = \"e1000e\";/m->default_nic = \"rtl8139\";/"
 echo "    m->alias = \"q35\";"
 echo "    v v v v v v v v v v v v v v v v v v v v"
 echo "    m->smbios_memory_device_size = 8 * GiB;"
@@ -680,22 +711,22 @@ sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str,
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
 voltage=$(shuf -i 1350-1550 -n 1)
 get_type_4_data
-echo "t->processor_family = 0xfe;                       -> t->processor_family = 0x$t4_processor_family;"
+echo "t->processor_family = 0xfe;                       -> t->processor_family = 0x${cpu_families[$index-1]};"
 echo "t->voltage = 0;                                   -> t->voltage = $((128 + voltage/100));"
 #echo "t->voltage = 0;                                   -> t->voltage = 0x$t4_voltage;"
 echo "t->external_clock = cpu_to_le16(0);               -> t->external_clock = cpu_to_le16(0x$t4_external_clock);"
 echo "t->max_speed = cpu_to_le16(type4.max_speed);      -> t->max_speed = cpu_to_le16(0x$t4_max_speed);"
 echo "current_speed = cpu_to_le16(type4.current_speed)  -> current_speed = cpu_to_le16(0x$t4_current_speed)"
-echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x15;"
+echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x${cpu_sockets[$index-1]};"
 #echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x$t4_processor_upgrade;"
 echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
-sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x$t4_processor_family;/"
+sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x${cpu_families[$index-1]};/"
 sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = $((128 + voltage/100));/"
 #sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x$t4_voltage;/"
 sed -i "$file_smbios" -Ee "s/t->external_clock = cpu_to_le16\(0\);/t->external_clock = cpu_to_le16(0x$t4_external_clock);/"
 sed -i "$file_smbios" -Ee "s/t->max_speed = cpu_to_le16\(type4.max_speed\);/t->max_speed = cpu_to_le16(0x$t4_max_speed);/"
 sed -i "$file_smbios" -Ee "s/current_speed = cpu_to_le16\(type4.current_speed\)/current_speed = cpu_to_le16(0x$t4_current_speed)/"
-sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x15;/"
+sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x${cpu_sockets[$index-1]};/"
 #sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
 sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
 echo "l1_cache_handle = cpu_to_le16(0xFFFF)           -> l1_cache_handle = cpu_to_le16(T7_BASE + 1)"
@@ -830,6 +861,10 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(28, description, type28.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
+echo "type4.manufacturer, manufacturer);              -> type4.manufacturer, \"Intel(R) Corporation\");"
+echo "type4.version, version);                        -> type4.version, \"${cpu_models[$index-1]}\");"
+sed -i "$file_smbios" -Ee "s/type4.manufacturer, manufacturer\);/type4.manufacturer, \"Intel(R) Corporation\");/"
+sed -i "$file_smbios" -Ee "s/type4.version, version\);/type4.version, \"${cpu_models[$index-1]}\");/"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
@@ -1349,6 +1384,13 @@ else
   sed -i "$file_cpu" -Ee "s/\"Common 32-bit KVM processor\"/\"Common 32-bit Intel processor\"/"
   sed -i "$file_cpu" -Ee "s/\"QEMU TCG CPU version \"/\"Intel CPU version \"/"
 fi
+echo "        .name = \"Nehalem\","
+echo ".model = 26,                                    -> .model = 30,"
+echo ".stepping = 3,                                  -> .stepping = ${cpu_steppings[$index-1]},"
+echo "Intel Core i7 9xx (Nehalem Class Core i7)       -> ${cpu_models[$index-1]}"
+sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n; s/.model = 26,/.model = 30,/ }"
+sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n;n; s/.stepping = 3,/.stepping = ${cpu_steppings[$index-1]},/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Class Core i7\)/${cpu_models[$index-1]}/"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                  -> 0"
@@ -1385,5 +1427,6 @@ echo "$QEMU_DEST/ssdt2.aml"
 sudo mkdir -p /usr/local/share/qemu
 sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
 sudo cp -f "../pc-bios/efi-e1000e.rom" "/usr/local/share/qemu/efi-e1000e.rom"
+sudo cp -f "../pc-bios/efi-rtl8139.rom" "/usr/local/share/qemu/efi-rtl8139.rom"
 sudo cp -f "../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
 #sudo cp -fr "../pc-bios/." "/usr/local/share/qemu/."
