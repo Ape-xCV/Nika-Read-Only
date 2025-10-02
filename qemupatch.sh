@@ -58,6 +58,23 @@ cpu_models=(
   "Intel(R) Core(TM) i5-2400 CPU @ 3.10GHz"
   "Intel(R) Core(TM) i5-2405S CPU @ 2.50GHz"
   "Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz" #22
+
+  "Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz" #23
+  "Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz"
+  "Intel(R) Core(TM) i7-4790S CPU @ 3.20GHz"
+  "Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz"
+  "Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz"
+  "Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz"
+  "Intel(R) Core(TM) i7-4770S CPU @ 3.10GHz"
+  "Intel(R) Core(TM) i7-4770T CPU @ 2.50GHz"
+  "Intel(R) Core(TM) i5-4690K CPU @ 3.50GHz"
+  "Intel(R) Core(TM) i5-4690 CPU @ 3.50GHz"
+  "Intel(R) Core(TM) i5-4690S CPU @ 3.20GHz"
+  "Intel(R) Core(TM) i5-4690T CPU @ 2.50GHz"
+  "Intel(R) Core(TM) i5-4670K CPU @ 3.40GHz"
+  "Intel(R) Core(TM) i5-4670 CPU @ 3.40GHz"
+  "Intel(R) Core(TM) i5-4670S CPU @ 3.10GHz"
+  "Intel(R) Core(TM) i5-4670T CPU @ 2.30GHz" #38
 )
 
 cpu_families=(
@@ -76,6 +93,23 @@ cpu_families=(
   "C6" #Intel® Core™ i7 processor
   "C6" #Intel® Core™ i7 processor
   "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
@@ -110,6 +144,23 @@ cpu_sockets=(
   "24" #LGA 1155
   "24" #LGA 1155
   "24" #LGA 1155
+
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
+  "2D" #LGA 1150
 )
 
 cpu_steppings=(
@@ -136,6 +187,23 @@ cpu_steppings=(
   "7"
   "7"
   "7"
+
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
+  "3"
 )
 
 get_random_element() {
@@ -1506,6 +1574,7 @@ sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n;n; s/.stepping =
 sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Class Core i7\)/${cpu_models[$nehalem-1]}/"
 sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/a\        .t4_upgrade = 0x${cpu_sockets[$nehalem-1]},"
 sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/a\        .t4_family = 0x${cpu_families[$nehalem-1]},"
+sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Core i7, IBRS update\)/${cpu_models[$nehalem-1]}/"
 sandybridge=$(shuf -i 10-22 -n 1)
 echo "        .name = \"SandyBridge\","
 echo ".stepping = 1,                                  -> .stepping = ${cpu_steppings[$sandybridge-1]},"
@@ -1514,6 +1583,21 @@ sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/{ n;n;n;n;n; s/.steppi
 sed -i "$file_cpu" -Ee "s/Intel Xeon E312xx \(Sandy Bridge\)/${cpu_models[$sandybridge-1]}/"
 sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/a\        .t4_upgrade = 0x${cpu_sockets[$sandybridge-1]},"
 sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/a\        .t4_family = 0x${cpu_families[$sandybridge-1]},"
+sed -i "$file_cpu" -Ee "s/Intel Xeon E312xx \(Sandy Bridge, IBRS update\)/${cpu_models[$sandybridge-1]}/"
+haswell=$(shuf -i 23-38 -n 1)
+echo "        .name = \"Haswell\","
+echo ".stepping = 4,                                  -> .stepping = ${cpu_steppings[$haswell-1]},"
+echo "Intel Core Processor (Haswell)                  -> ${cpu_models[$haswell-1]}"
+sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/{ n;n;n;n;n; s/.stepping = 4,/.stepping = ${cpu_steppings[$haswell-1]},/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell\)/${cpu_models[$haswell-1]}/"
+sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/a\        .t4_upgrade = 0x${cpu_sockets[$haswell-1]},"
+sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/a\        .t4_family = 0x${cpu_families[$haswell-1]},"
+sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-noTSX\",/{ n;n;n;n; s/\"stepping\", \"1\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, no TSX\)/${cpu_models[$haswell-1]}/"
+sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-IBRS\",/{ n;n;n;n;n;n;n;n;n; s/\"stepping\", \"4\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, IBRS\)/${cpu_models[$haswell-1]}/"
+sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-noTSX-IBRS\",/{ n;n;n;n;n; s/\"stepping\", \"1\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, no TSX, IBRS\)/${cpu_models[$haswell-1]}/"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                  -> 0"
