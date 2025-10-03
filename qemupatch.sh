@@ -35,7 +35,7 @@ ide_cfata_models=(
 )
 
 cpu_models=(
-  "Intel(R) Core(TM) i7 CPU         880  @ 3.07GHz" #1
+  "Intel(R) Core(TM) i7 CPU         880  @ 3.07GHz"
   "Intel(R) Core(TM) i7 CPU       K 875  @ 2.93GHz"
   "Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz"
   "Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz"
@@ -43,38 +43,7 @@ cpu_models=(
   "Intel(R) Core(TM) i7 CPU       S 860  @ 2.53GHz"
   "Intel(R) Core(TM) i5 CPU         760  @ 2.80GHz"
   "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz"
-  "Intel(R) Core(TM) i5 CPU       S 750  @ 2.40GHz" #9
-
-  "Intel(R) Core(TM) i7-2700K CPU @ 3.50GHz" #10
-  "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i7-2600S CPU @ 2.80GHz"
-  "Intel(R) Core(TM) i5-2550K CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz"
-  "Intel(R) Core(TM) i5-2500 CPU @ 3.30GHz"
-  "Intel(R) Core(TM) i5-2500S CPU @ 2.70GHz"
-  "Intel(R) Core(TM) i5-2500T CPU @ 2.30GHz"
-  "Intel(R) Core(TM) i5-2450P CPU @ 3.20GHz"
-  "Intel(R) Core(TM) i5-2400 CPU @ 3.10GHz"
-  "Intel(R) Core(TM) i5-2405S CPU @ 2.50GHz"
-  "Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz" #22
-
-  "Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz" #23
-  "Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz"
-  "Intel(R) Core(TM) i7-4790S CPU @ 3.20GHz"
-  "Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz"
-  "Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz"
-  "Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i7-4770S CPU @ 3.10GHz"
-  "Intel(R) Core(TM) i7-4770T CPU @ 2.50GHz"
-  "Intel(R) Core(TM) i5-4690K CPU @ 3.50GHz"
-  "Intel(R) Core(TM) i5-4690 CPU @ 3.50GHz"
-  "Intel(R) Core(TM) i5-4690S CPU @ 3.20GHz"
-  "Intel(R) Core(TM) i5-4690T CPU @ 2.50GHz"
-  "Intel(R) Core(TM) i5-4670K CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i5-4670 CPU @ 3.40GHz"
-  "Intel(R) Core(TM) i5-4670S CPU @ 3.10GHz"
-  "Intel(R) Core(TM) i5-4670T CPU @ 2.30GHz" #38
+  "Intel(R) Core(TM) i5 CPU       S 750  @ 2.40GHz"
 )
 
 cpu_families=(
@@ -84,37 +53,6 @@ cpu_families=(
   "C6" #Intel® Core™ i7 processor
   "C6" #Intel® Core™ i7 processor
   "C6" #Intel® Core™ i7 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "C6" #Intel® Core™ i7 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
-  "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
@@ -130,37 +68,6 @@ cpu_sockets=(
   "1D" #LGA 1156
   "1D" #LGA 1156
   "1D" #LGA 1156
-
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-  "24" #LGA 1155
-
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
-  "2D" #LGA 1150
 )
 
 cpu_steppings=(
@@ -173,37 +80,6 @@ cpu_steppings=(
   "5"
   "5"
   "5"
-
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-  "7"
-
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
-  "3"
 )
 
 get_random_element() {
@@ -636,15 +512,19 @@ sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
 #echo "  $file_pcpiix"
 
 echo "  $file_pcq35"
-#index=$(shuf -i 1-${#cpu_models[@]} -n 1)
+index=$(shuf -i 1-${#cpu_models[@]} -n 1)
 IFS=':'
 cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 cpu_vendor="${cpu_vendor[1]}"
+cpu_family=( $(cat /proc/cpuinfo | grep 'cpu family' | uniq) )
+cpu_family="${cpu_family[1]}"
 cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
 cpu_name="${cpu_name[1]}"
-#echo "Standard PC (Q35 + ICH9, 2009)                  -> ${cpu_models[$index-1]}"
+#echo "\"pc_q35\"                                        -> \"${cpu_family:1}\""
+echo "Standard PC (Q35 + ICH9, 2009)                  -> ${cpu_models[$index-1]}"
 echo "m->default_nic = \"e1000e\";                      -> m->default_nic = \"rtl8139\";"
-#sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_models[$index-1]}/"
+#sed -i "$file_pcq35" -Ee "s/\"pc_q35\"/\"${cpu_family:1}\"/"
+sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_models[$index-1]}/"
 sed -i "$file_pcq35" -Ee "s/m->default_nic = \"e1000e\";/m->default_nic = \"rtl8139\";/"
 echo "    m->alias = \"q35\";"
 echo "    v v v v v v v v v v v v v v v v v v v v"
@@ -838,12 +718,6 @@ sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T20_BASE 0x1400"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T26_BASE 0x1A00"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T27_BASE 0x1B00"
 sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T28_BASE 0x1C00"
-echo "uint8_t g_type4_family;"
-echo "uint8_t g_type4_upgrade;"
-echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "static void smbios_build_type_4_table(MachineState *ms, unsigned instance,"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_4_table\(MachineState \*ms, unsigned instance,/iuint8_t g_type4_family;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_4_table\(MachineState \*ms, unsigned instance,/iuint8_t g_type4_upgrade;"
 echo "    if (instance > 0)"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 echo "    else"
@@ -857,30 +731,24 @@ sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str,
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
 voltage=$(shuf -i 1350-1550 -n 1)
 get_type_4_data
-echo "    t->processor_family = 0xfe; /* use Processor Family 2 field */"
-echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "    if (g_type4_family > 0) t->processor_family = g_type4_family;"
-sed -i "$file_smbios" -Ee "/    t->processor_family = 0xfe; \/\* use Processor Family 2 field \*\//a\    if (g_type4_family > 0) t->processor_family = g_type4_family;"
-echo "t->processor_family = 0xfe;                       -> t->processor_family = 0x$t4_processor_family;"
-#echo "t->voltage = 0;                                   -> t->voltage = 0x$t4_voltage;"
+echo "t->processor_family = 0xfe;                       -> t->processor_family = 0x${cpu_families[$index-1]};"
 echo "t->voltage = 0;                                   -> t->voltage = $((128 + voltage/100));"
+#echo "t->voltage = 0;                                   -> t->voltage = 0x$t4_voltage;"
 echo "t->external_clock = cpu_to_le16(0);               -> t->external_clock = cpu_to_le16(0x$t4_external_clock);"
 echo "t->max_speed = cpu_to_le16(type4.max_speed);      -> t->max_speed = cpu_to_le16(0x$t4_max_speed);"
 echo "current_speed = cpu_to_le16(type4.current_speed)  -> current_speed = cpu_to_le16(0x$t4_current_speed)"
-sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x$t4_processor_family;/"
-#sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x$t4_voltage;/"
+echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x${cpu_sockets[$index-1]};"
+#echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x$t4_processor_upgrade;"
+echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
+sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x${cpu_families[$index-1]};/"
 sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = $((128 + voltage/100));/"
+#sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x$t4_voltage;/"
 sed -i "$file_smbios" -Ee "s/t->external_clock = cpu_to_le16\(0\);/t->external_clock = cpu_to_le16(0x$t4_external_clock);/"
 sed -i "$file_smbios" -Ee "s/t->max_speed = cpu_to_le16\(type4.max_speed\);/t->max_speed = cpu_to_le16(0x$t4_max_speed);/"
 sed -i "$file_smbios" -Ee "s/current_speed = cpu_to_le16\(type4.current_speed\)/current_speed = cpu_to_le16(0x$t4_current_speed)/"
-echo "    t->processor_upgrade = 0x01; /* Other */"
-echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "    if (g_type4_upgrade > 0) t->processor_upgrade = g_type4_upgrade;"
-sed -i "$file_smbios" -Ee "/    t->processor_upgrade = 0x01; \/\* Other \*\//a\    if (g_type4_upgrade > 0) t->processor_upgrade = g_type4_upgrade;"
-echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x$t4_processor_upgrade;"
-#echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
-sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
-#sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
+sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x${cpu_sockets[$index-1]};/"
+#sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
+sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
 echo "l1_cache_handle = cpu_to_le16(0xFFFF)           -> l1_cache_handle = cpu_to_le16(T7_BASE + 1)"
 echo "l2_cache_handle = cpu_to_le16(0xFFFF)           -> l2_cache_handle = cpu_to_le16(T7_BASE + 2)"
 echo "l3_cache_handle = cpu_to_le16(0xFFFF)           -> l3_cache_handle = cpu_to_le16(T7_BASE + 3)"
@@ -1013,14 +881,10 @@ sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\   
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(28, description, type28.description);"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
-echo "char *g_type4_version;"
-echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "void smbios_set_defaults(const char *manufacturer, const char *product,"
-sed -i "$file_smbios" -Ee "/void smbios_set_defaults\(const char \*manufacturer, const char \*product,/ichar *g_type4_version;"
 echo "type4.manufacturer, manufacturer);              -> type4.manufacturer, \"Intel(R) Corporation\");"
-echo "type4.version, version);                        -> type4.version, g_type4_version);"
+echo "type4.version, version);                        -> type4.version, \"${cpu_models[$index-1]}\");"
 sed -i "$file_smbios" -Ee "s/type4.manufacturer, manufacturer\);/type4.manufacturer, \"Intel(R) Corporation\");/"
-sed -i "$file_smbios" -Ee "s/type4.version, version\);/type4.version, g_type4_version);/"
+sed -i "$file_smbios" -Ee "s/type4.version, version\);/type4.version, \"${cpu_models[$index-1]}\");/"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
@@ -1521,32 +1385,6 @@ echo "0x51454d5520434647ULL                           -> 0x${signature}ULL"
 sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $file_cpu"
-echo "typedef struct X86CPUDefinition {"
-echo "    v v v v v v v v v"
-echo "    uint8_t t4_family;"
-echo "    uint8_t t4_upgrade;"
-sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/{ n;d; }"
-sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    uint8_t t4_upgrade;"
-sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    uint8_t t4_family;"
-sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    const char *name;"
-echo "extern uint8_t g_type4_family;"
-echo "extern uint8_t g_type4_upgrade;"
-echo "extern char *g_type4_version;"
-echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "static void x86_cpu_load_model(X86CPU *cpu, X86CPUModel *model)"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern uint8_t g_type4_family;"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern uint8_t g_type4_upgrade;"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern char *g_type4_version;"
-echo "    g_type4_family = def->t4_family;"
-echo "    g_type4_upgrade = def->t4_upgrade;"
-echo "    g_type4_version = malloc(strlen(def->model_id) + 1);"
-echo "    strcpy(g_type4_version, def->model_id);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "    object_property_set_str(OBJECT(cpu), \"model-id\", def->model_id,"
-sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_family = def->t4_family;"
-sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_upgrade = def->t4_upgrade;"
-sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_version = malloc(strlen(def->model_id) + 1);"
-sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    strcpy(g_type4_version, def->model_id);"
 if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   echo "\"QEMU Virtual CPU version \"                     -> \"AMD CPU version \""
   echo "\"Common KVM processor\"                          -> \"Common AMD processor\""
@@ -1566,40 +1404,13 @@ else
   sed -i "$file_cpu" -Ee "s/\"Common 32-bit KVM processor\"/\"Common 32-bit Intel processor\"/"
   sed -i "$file_cpu" -Ee "s/\"QEMU TCG CPU version \"/\"Intel CPU version \"/"
 fi
-nehalem=$(shuf -i 1-9 -n 1)
 echo "        .name = \"Nehalem\","
 echo ".model = 26,                                    -> .model = 30,"
-echo ".stepping = 3,                                  -> .stepping = ${cpu_steppings[$nehalem-1]},"
-echo "Intel Core i7 9xx (Nehalem Class Core i7)       -> ${cpu_models[$nehalem-1]}"
+echo ".stepping = 3,                                  -> .stepping = ${cpu_steppings[$index-1]},"
+echo "Intel Core i7 9xx (Nehalem Class Core i7)       -> ${cpu_models[$index-1]}"
 sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n; s/.model = 26,/.model = 30,/ }"
-sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n;n; s/.stepping = 3,/.stepping = ${cpu_steppings[$nehalem-1]},/ }"
-sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Class Core i7\)/${cpu_models[$nehalem-1]}/"
-sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/a\        .t4_upgrade = 0x${cpu_sockets[$nehalem-1]},"
-sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/a\        .t4_family = 0x${cpu_families[$nehalem-1]},"
-sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Core i7, IBRS update\)/${cpu_models[$nehalem-1]}/"
-sandybridge=$(shuf -i 10-22 -n 1)
-echo "        .name = \"SandyBridge\","
-echo ".stepping = 1,                                  -> .stepping = ${cpu_steppings[$sandybridge-1]},"
-echo "Intel Xeon E312xx (Sandy Bridge)                -> ${cpu_models[$sandybridge-1]}"
-sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/{ n;n;n;n;n; s/.stepping = 1,/.stepping = ${cpu_steppings[$sandybridge-1]},/ }"
-sed -i "$file_cpu" -Ee "s/Intel Xeon E312xx \(Sandy Bridge\)/${cpu_models[$sandybridge-1]}/"
-sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/a\        .t4_upgrade = 0x${cpu_sockets[$sandybridge-1]},"
-sed -i "$file_cpu" -Ee "/        .name = \"SandyBridge\",/a\        .t4_family = 0x${cpu_families[$sandybridge-1]},"
-sed -i "$file_cpu" -Ee "s/Intel Xeon E312xx \(Sandy Bridge, IBRS update\)/${cpu_models[$sandybridge-1]}/"
-haswell=$(shuf -i 23-38 -n 1)
-echo "        .name = \"Haswell\","
-echo ".stepping = 4,                                  -> .stepping = ${cpu_steppings[$haswell-1]},"
-echo "Intel Core Processor (Haswell)                  -> ${cpu_models[$haswell-1]}"
-sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/{ n;n;n;n;n; s/.stepping = 4,/.stepping = ${cpu_steppings[$haswell-1]},/ }"
-sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell\)/${cpu_models[$haswell-1]}/"
-sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/a\        .t4_upgrade = 0x${cpu_sockets[$haswell-1]},"
-sed -i "$file_cpu" -Ee "/        .name = \"Haswell\",/a\        .t4_family = 0x${cpu_families[$haswell-1]},"
-sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-noTSX\",/{ n;n;n;n; s/\"stepping\", \"1\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
-sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, no TSX\)/${cpu_models[$haswell-1]}/"
-sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-IBRS\",/{ n;n;n;n;n;n;n;n;n; s/\"stepping\", \"4\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
-sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, IBRS\)/${cpu_models[$haswell-1]}/"
-sed -i "$file_cpu" -Ee "/                .alias = \"Haswell-noTSX-IBRS\",/{ n;n;n;n;n; s/\"stepping\", \"1\"/\"stepping\", \"${cpu_steppings[$haswell-1]}\"/ }"
-sed -i "$file_cpu" -Ee "s/Intel Core Processor \(Haswell, no TSX, IBRS\)/${cpu_models[$haswell-1]}/"
+sed -i "$file_cpu" -Ee "/        .name = \"Nehalem\",/{ n;n;n;n;n; s/.stepping = 3,/.stepping = ${cpu_steppings[$index-1]},/ }"
+sed -i "$file_cpu" -Ee "s/Intel Core i7 9xx \(Nehalem Class Core i7\)/${cpu_models[$index-1]}/"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                  -> 0"
