@@ -549,7 +549,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 7. Spoof qemu-system-x86_64 (mandatory)
+### 7. Spoof QEMU (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
@@ -571,7 +571,7 @@ sudo -E ./nika
   ```
   </details>
 
-- Run `qemupatch.sh` to clone, patch, and build `qemu-system-x86_64` with generated data.
+- Run `qemupatch.sh` to clone, patch, and build `QEMU` with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
@@ -649,7 +649,21 @@ sudo -E ./nika
   ```
   </details>
 
-### 7.2 Spoof GPU (tested from 51x to 57x)
+### 7.2 Spoof CPU (AMD host mandatory)
+
+- This step and below requires Windows with passthrough GPU drivers installed.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> CPUs >> Model:
+
+  - Choose one from: `Nehalem`, `Westmere`, `SandyBridge`, `IvyBridge`.
+    - CPU model for each architecture was randomly set at `qemupatch.sh` runtime.
+
+  - Set cores and threads to match guest CPU.
+    - If guest CPU has 8 threads, use 4 cores 2 threads.
+
+- Reverting to `host-passthrough` will clear most XML settings from `<features>` to `</clock>` previously set for CPU.
+
+### 7.3 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] >> [Apply]
