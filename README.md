@@ -661,6 +661,8 @@ sudo -E ./nika
   - Set cores and threads to match guest CPU.
     - If guest CPU has 8 threads, use 4 cores 2 threads.
 
+  - Finally [Apply].
+
 - Reverting to `host-passthrough` will clear most XML settings from `<features>` to `</clock>` previously set for CPU.
 
 ### 7.3 Spoof GPU (tested from 51x to 57x)
