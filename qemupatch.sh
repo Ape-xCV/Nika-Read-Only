@@ -75,6 +75,13 @@ cpu_models=(
   "Intel(R) Core(TM) i5-4670 CPU @ 3.40GHz"
   "Intel(R) Core(TM) i5-4670S CPU @ 3.10GHz"
   "Intel(R) Core(TM) i5-4670T CPU @ 2.30GHz" #38
+
+  "Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz" #39
+  "Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz"
+  "Intel(R) Core(TM) i7-8700T CPU @ 2.40GHz"
+  "Intel(R) Core(TM) i5-8600K CPU @ 3.60GHz"
+  "Intel(R) Core(TM) i5-8600 CPU @ 3.10GHz"
+  "Intel(R) Core(TM) i5-8600T CPU @ 2.30GHz" #44
 )
 
 cpu_families=(
@@ -115,6 +122,13 @@ cpu_families=(
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+  "CD" #Intel® Core™ i5 processor
+
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
+  "C6" #Intel® Core™ i7 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
@@ -161,6 +175,13 @@ cpu_sockets=(
   "2D" #LGA 1150
   "2D" #LGA 1150
   "2D" #LGA 1150
+
+  "32" #LGA 1151
+  "32" #LGA 1151
+  "32" #LGA 1151
+  "32" #LGA 1151
+  "32" #LGA 1151
+  "32" #LGA 1151
 )
 
 cpu_steppings=(
@@ -204,6 +225,13 @@ cpu_steppings=(
   "3"
   "3"
   "3"
+
+  "10"
+  "10"
+  "10"
+  "10"
+  "10"
+  "10"
 )
 
 get_random_element() {
@@ -848,7 +876,7 @@ echo "    if (instance > 0)"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 echo "    else"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_TABLE_SET_STR(4, socket_designation_str, sock_str);"
 sed -i "$file_smbios" -e  '/type4.sock_pfx, instance);/{d;}'
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    if (instance > 0)"
@@ -1049,14 +1077,14 @@ echo "    smbios_build_type_7_table(0 ,0b000, 0x03, 0x0080, 0x00000080); // L1 I
 echo "    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB"
 echo "    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB"
 echo "    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    smbios_build_type_8_table();"
 sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB"
 sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB"
 sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB"
 sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
 echo "               mc->smbios_memory_device_size;"
-echo "    v v v v v v v"
+echo "    v v v v v v v v v v v v"
 echo "    slot_cnt = 4;"
 echo "    if (slot_cnt < dimm_cnt)"
 echo "        slot_cnt = dimm_cnt;"
@@ -1124,21 +1152,21 @@ echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v 
 echo "    snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, device_locator_str, loc_str\);/a\    snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
 echo "bank_locator_str, type17.bank);                   -> bank_locator_str, bank_str);"
-sed -i "$file_smbios" -Ee "s/bank_locator_str, type17.bank\);/bank_locator_str, bank_str);/"
 echo "memory_type = 0x07; /* RAM */                     -> memory_type = 0x18; /* DDR3 */"
 echo "type_detail = cpu_to_le16(0x02); /* Other */      -> type_detail = cpu_to_le16(0x80); /* Synchronous */"
+sed -i "$file_smbios" -Ee "s/bank_locator_str, type17.bank\);/bank_locator_str, bank_str);/"
+sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x18; \/* DDR3 *\//"
+sed -i "$file_smbios" -Ee "s/type_detail = cpu_to_le16\(0x02\); \/\* Other \*\//type_detail = cpu_to_le16\(0x80\); \/* Synchronous *\//"
 echo "    SMBIOS_TABLE_SET_STR(17, manufacturer_str, type17.manufacturer);"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, manufacturer_str, type17.manufacturer\);/a\    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
 echo "serial_number_str, type17.serial);                -> serial_number_str, serial_str);"
-sed -i "$file_smbios" -Ee "s/serial_number_str, type17.serial\);/serial_number_str, serial_str);/"
 echo "attributes = 0; /* Unknown */                     -> attributes = 0x01; /* Single rank */"
 echo "minimum_voltage = cpu_to_le16(0); /* Unknown */   -> minimum_voltage = cpu_to_le16(1200);"
 echo "maximum_voltage = cpu_to_le16(0); /* Unknown */   -> maximum_voltage = cpu_to_le16(1350);"
 echo "configured_voltage = cpu_to_le16(0);              -> configured_voltage = cpu_to_le16(1200);"
-sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x18; \/* DDR3 *\//"
-sed -i "$file_smbios" -Ee "s/type_detail = cpu_to_le16\(0x02\); \/\* Other \*\//type_detail = cpu_to_le16\(0x80\); \/* Synchronous *\//"
+sed -i "$file_smbios" -Ee "s/serial_number_str, type17.serial\);/serial_number_str, serial_str);/"
 sed -i "$file_smbios" -Ee "s/attributes = 0; \/\* Unknown \*\//attributes = 0x01; \/* Single rank *\//"
 sed -i "$file_smbios" -Ee "s/minimum_voltage = cpu_to_le16\(0\); \/\* Unknown \*\//minimum_voltage = cpu_to_le16\(1200\);/"
 sed -i "$file_smbios" -Ee "s/maximum_voltage = cpu_to_le16\(0\); \/\* Unknown \*\//maximum_voltage = cpu_to_le16\(1350\);/"
@@ -1524,7 +1552,7 @@ sed -i "$header_optionrom" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 
 echo "  $file_cpu"
 echo "typedef struct X86CPUDefinition {"
-echo "    v v v v v v v v v"
+echo "    v v v v v v v v v v"
 echo "    uint8_t t4_family;"
 echo "    uint8_t t4_upgrade;"
 sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/{ n;d; }"
@@ -1599,6 +1627,17 @@ sed -i "$file_cpu" -Ee "s/Westmere E56xx\/L56xx\/X56xx \(Nehalem-C\)/${cpu_model
 sed -i "$file_cpu" -Ee "/        .name = \"Westmere\",/a\        .t4_upgrade = 0x${cpu_sockets[$haswell-1]},"
 sed -i "$file_cpu" -Ee "/        .name = \"Westmere\",/a\        .t4_family = 0x${cpu_families[$haswell-1]},"
 sed -i "$file_cpu" -Ee "s/Westmere E56xx\/L56xx\/X56xx \(IBRS update\)/${cpu_models[$haswell-1]}/"
+cofeelake=$(shuf -i 39-44 -n 1)
+echo "        .name = \"IvyBridge\","
+echo ".model = 58,                                      -> .model = 158,"
+echo ".stepping = 9,                                    -> .stepping = ${cpu_steppings[$cofeelake-1]},"
+echo "Intel Xeon E3-12xx v2 (Ivy Bridge)                -> ${cpu_models[$cofeelake-1]}"
+sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n; s/.model = 58,/.model = 158,/ }"
+sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n;n; s/.stepping = 9,/.stepping = ${cpu_steppings[$cofeelake-1]},/ }"
+sed -i "$file_cpu" -Ee "s/Intel Xeon E3-12xx v2 \(Ivy Bridge\)/${cpu_models[$cofeelake-1]}/"
+sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/a\        .t4_upgrade = 0x${cpu_sockets[$cofeelake-1]},"
+sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/a\        .t4_family = 0x${cpu_families[$cofeelake-1]},"
+sed -i "$file_cpu" -Ee "s/Intel Xeon E3-12xx v2 \(Ivy Bridge, IBRS\)/${cpu_models[$cofeelake-1]}/"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                    -> 0"
