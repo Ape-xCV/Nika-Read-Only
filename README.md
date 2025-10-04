@@ -115,7 +115,7 @@ sudo virsh net-autostart default
 sudo virsh net-start default
 ```
 
-- Virtual Machine Manager >> Edit >> Preferences >> General >> [x] Enable XML editing >> [Close]
+- Virtual Machine Manager >> Edit >> Preferences >> General >> _check_ [x] Enable XML editing >> [Close]
 
 - Virtual Machine Manager >> Edit >> Preferences >> New VM >> Storage format: Raw >> [Close]
 
@@ -123,7 +123,7 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> File >> New Virtual Machine
 
-- Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> **Disable** storage for this virtual machine >> [x] Customize configuration before install >> [Finish]
+- Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
@@ -653,7 +653,7 @@ sudo -E ./nika
 
 - This step and below requires Windows with passthrough GPU drivers installed.
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> CPUs >> Model:
+- Virtual Machine Manager >> [Open] >> View >> Details >> CPUs >> _uncheck_ [ ] Copy host CPU configuration >> Model:
 
   - Choose one from: `Nehalem`, `Westmere`, `SandyBridge`, `IvyBridge`.
     - CPU model for each architecture was randomly set at `qemupatch.sh` runtime.
@@ -668,7 +668,7 @@ sudo -E ./nika
 ### 7.3 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
-  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] >> [Apply]
+  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
 
 - Check old UUID with `nvidia-smi -L`.
 - Run the cheat BEFORE the game at least once.
