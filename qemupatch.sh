@@ -420,8 +420,8 @@ if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu/.
-#cp -f *.dsl qemu/.
-cp -f *.aml qemu/.
+cp -f *.dsl qemu/.
+#cp -f *.aml qemu/.
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -893,14 +893,14 @@ echo "t->processor_family = 0xfe;                       -> t->processor_family =
 #echo "t->voltage = 0;                                   -> t->voltage = 0x$t4_voltage;"
 echo "t->voltage = 0;                                   -> t->voltage = $((128 + voltage/100));"
 echo "t->external_clock = cpu_to_le16(0);               -> t->external_clock = cpu_to_le16(0x$t4_external_clock);"
-echo "t->max_speed = cpu_to_le16(type4.max_speed);      -> t->max_speed = cpu_to_le16(0x$t4_max_speed);"
-echo "current_speed = cpu_to_le16(type4.current_speed)  -> current_speed = cpu_to_le16(0x$t4_current_speed)"
+echo "t->max_speed = cpu_to_le16(type4.max_speed);      -> t->max_speed = cpu_to_le16(0x$t4_max_speed); /* $((0x$t4_max_speed)) MHz */"
+echo "current_speed = cpu_to_le16(type4.current_speed); -> current_speed = cpu_to_le16(0x$( printf '%04X' $((0x$t4_current_speed*2/3)) )); /* $((0x$t4_current_speed*2/3)) MHz */"
 sed -i "$file_smbios" -Ee "s/t->processor_family = 0xfe;/t->processor_family = 0x$t4_processor_family;/"
 #sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = 0x$t4_voltage;/"
 sed -i "$file_smbios" -Ee "s/t->voltage = 0;/t->voltage = $((128 + voltage/100));/"
 sed -i "$file_smbios" -Ee "s/t->external_clock = cpu_to_le16\(0\);/t->external_clock = cpu_to_le16(0x$t4_external_clock);/"
-sed -i "$file_smbios" -Ee "s/t->max_speed = cpu_to_le16\(type4.max_speed\);/t->max_speed = cpu_to_le16(0x$t4_max_speed);/"
-sed -i "$file_smbios" -Ee "s/current_speed = cpu_to_le16\(type4.current_speed\)/current_speed = cpu_to_le16(0x$t4_current_speed)/"
+sed -i "$file_smbios" -Ee "s/t->max_speed = cpu_to_le16\(type4.max_speed\);/t->max_speed = cpu_to_le16(0x$t4_max_speed); \/\* $((0x$t4_max_speed)) MHz \*\//"
+sed -i "$file_smbios" -Ee "s/current_speed = cpu_to_le16\(type4.current_speed\);/current_speed = cpu_to_le16(0x$( printf '%04X' $((0x$t4_current_speed*2/3)) )); \/\* $((0x$t4_current_speed*2/3)) MHz \*\//"
 echo "    t->processor_upgrade = 0x01; /* Other */"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    if (g_type4_upgrade > 0) t->processor_upgrade = g_type4_upgrade;"
@@ -1661,15 +1661,15 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make
-#iasl "$file_ssdt1"
+iasl "$file_ssdt1"
 #iasl "$file_ssdt2"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
+#sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
 echo "$QEMU_DEST/ssdt1.aml"
-echo "$QEMU_DEST/ssdt2.aml"
+#echo "$QEMU_DEST/ssdt2.aml"
 
 sudo mkdir -p /usr/local/share/qemu
 sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
