@@ -571,7 +571,7 @@ sudo -E ./nika
   ```
   </details>
 
-- Run `qemupatch.sh` to clone, patch, and build `QEMU` with generated data.
+- Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
@@ -630,7 +630,7 @@ sudo -E ./nika
   ```
   </details>
 
-- Run `edk2patch.sh` to clone, patch, and build `OVMF` with generated data.
+- Run `edk2patch.sh` to clone, patch, and build OVMF with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
@@ -665,7 +665,33 @@ sudo -E ./nika
 
 - Reverting to `host-passthrough` will clear most XML settings from `<features>` to `</clock>` previously set for CPU.
 
-### 7.3 Spoof GPU (tested from 51x to 57x)
+### 7.3 Spoof CPUID (AMD host mandatory)
+
+- This step and below requires Windows with passthrough GPU drivers installed.
+
+- Run `kernelpatch.sh` to clone, patch, and build Linux with CPUID + RDTSC patch.
+
+- Removing `rhgb quiet` from `/etc/default/grub` will automatically display GRUB menu at boot:
+```shell
+Fedora Linux (6.14.11_tkg_eevdf+) 42 (KDE Plasma Desktop Edition)
+Fedora Linux (6.14.0-63.fc42.x86_64) 42 (KDE Plasma Desktop Edition)
+Windows Boot Manager (on /dev/sdb1)
+```
+
+- You should start VM as soon as possible.
+
+- 300 seconds after selecting `6.14.11_tkg_eevdf+` your guest CPU manufacturer will change:
+```shell
+C:\>wmic cpu get manufacturer
+Manufacturer
+AuthenticAMD
+
+C:\>wmic cpu get manufacturer
+Manufacturer
+GenuineIntel
+```
+
+### 7.4 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
