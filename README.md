@@ -505,36 +505,6 @@ sudo usermod -aG input $USER
 gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
 ```
 
-### 5.3 Steam Remote Play (if you can't connect)
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC xx:xx:xx >> Network source: Bridge device... >> Device name: br0 >> [Apply]
-
-- Find your active network interface with:
-```shell
-ip -br addr show
-
-lo               UNKNOWN        127.0.0.1/8
-eno1             DOWN           
-wlp10s0f3u1      UP             172.16.0.100/24
-```
-
-- Manually configure `br0` every reboot:
-```shell
-sudo ip link add name br0 type bridge
-sudo ip addr add 10.0.0.1/24 dev br0
-sudo ip link set dev br0 up
-sudo sysctl -w net.ipv4.ip_forward=1
-sudo iptables --table nat --append POSTROUTING --out-interface wlp10s0f3u1 -j MASQUERADE
-sudo iptables --insert FORWARD --in-interface br0 -j ACCEPT
-```
-
-- Windows VM static configuration (TCP/IPv4):
-  - IP address: 10.0.0.100
-  - Subnet mask: 255.255.255.0
-  - Default gateway: 10.0.0.1
-  - Preferred DNS server: 8.8.8.8
-  - Alternate DNS server: 9.9.9.9
-
 ### 6. Nika Read Only (on Linux PC)
 
 - Install:
