@@ -14,11 +14,12 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
                 IO (Decode16, 0x0066, 0x0066, 0x00, 0x01)
             })
             Name (_GPE, 0)  // _GPE: General Purpose Events
-            OperationRegion (EC0, EmbeddedControl, 0, 0xFF)
+            OperationRegion (EC0, EmbeddedControl, 0x0000, 0x0B)
             Field (EC0, ByteAcc, Lock, Preserve)
             {
-                MODE,   8,
-                FAN0,   8,
+                MODE,   1,
+                FAN0,   1,
+                ,       6,
                 TMP,    16,
                 AC0,    16,
                 PSV,    16,
@@ -38,17 +39,17 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
                     //Return (\_SB.PCI0.EC0.FAN0)
-                    Return (0x0F)
+                    Return (One)
                 }
 
                 Method (_ON, 0, NotSerialized)
                 {
-                    //Store (0x01, \_SB.PCI0.EC0.FAN0)
+                    //Store (One, \_SB.PCI0.EC0.FAN0)
                 }
 
                 Method (_OFF, 0, NotSerialized)
                 {
-                    //Store (0x00, \_SB.PCI0.EC0.FAN0)
+                    //Store (Zero, \_SB.PCI0.EC0.FAN0)
                 }
             }
 
