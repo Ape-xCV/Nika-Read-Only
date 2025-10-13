@@ -63,6 +63,7 @@ file_QemuFlash="$(pwd)/edk2/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/QemuFlash.c"
 file_ComponentName="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/ComponentName.c"
 file_Driver="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/Driver.c"
 file_ShellPkg="$(pwd)/edk2/ShellPkg/ShellPkg.dec"
+file_QemuBootOrderLib="$(pwd)/edk2/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
@@ -82,6 +83,7 @@ if [[ -f "$file_QemuFlash" ]]; then rm "$file_QemuFlash"; fi
 if [[ -f "$file_ComponentName" ]]; then rm "$file_ComponentName"; fi
 if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
+if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
 cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
@@ -311,6 +313,10 @@ fi
 echo "  $file_ShellPkg"
 echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
   sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
+
+echo "  $file_QemuBootOrderLib"
+echo "\"VMMBootOrder%04x\"                             -> \"BootOrder%04x\""
+  sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"BootOrder%04x\"/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
