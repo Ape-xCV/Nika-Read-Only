@@ -6,9 +6,12 @@ if [ "$EUID" != 0 ]; then
     exit $?
 fi
 
+SCRIPT_DIR="$(pwd)"
 EDK2_DEST="/usr/share/edk2/ovmf"
-CODE_DEST="${EDK2_DEST}/OVMF_CODE_4M.patched.fd"
-VARS_DEST="${EDK2_DEST}/OVMF_VARS_4M.patched.fd"
+CODE_FILE="OVMF_CODE_4M.patched.qcow2"
+VARS_FILE="OVMF_VARS_4M.empty.qcow2"
+CODE_DEST="${EDK2_DEST}/${CODE_FILE}"
+VARS_DEST="${EDK2_DEST}/${VARS_FILE}"
 
 numbers=(
   "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"
@@ -39,8 +42,8 @@ get_new_string() {
 
 if [[ ! -d edk2backup ]]; then
   echo -e "$(pwd)/\e[1medk2backup\e[0m does not exist, clone started..."
-#  git clone --recursive --single-branch --branch edk2-stable202508 https://github.com/tianocore/edk2.git edk2backup
   git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
+#  git clone --recursive --single-branch --branch edk2-stable202508 https://github.com/tianocore/edk2.git edk2backup
 else
   echo -e "$(pwd)/\e[1medk2backup\e[0m found."
 fi
@@ -90,60 +93,60 @@ cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
 cp -fr /sys/firmware/acpi/bgrt/image edk2/MdeModulePkg/Logo/Logo.bmp
 
 echo "  $file_MdeModulePkg"
-echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
-echo "\"INTEL \"                             -> \"ALASKA\""
-echo "0x20202020324B4445                   -> 0x20202049204D2041" #"    2KDE","   I M A"
+echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
+echo "\"INTEL \"                                          -> \"ALASKA\""
+echo "0x20202020324B4445                                -> 0x20202049204D2041" #"    2KDE","   I M A"
 sed -i "$file_MdeModulePkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
 sed -i "$file_MdeModulePkg" -Ee "s/\"INTEL \"/\"ALASKA\"/"
 sed -i "$file_MdeModulePkg" -Ee "s/0x20202020324B4445/0x20202049204D2041/"
 
 echo "  $file_Dsdt"
-echo "\"BHYVE\"                              -> \"ALASKA\""
-echo "\"BVDSDT\"                             -> \"A M I   \""
+echo "\"BHYVE\"                                           -> \"ALASKA\""
+echo "\"BVDSDT\"                                          -> \"A M I   \""
 sed -i "$file_Dsdt" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 sed -i "$file_Dsdt" -Ee "s/\"BVDSDT\"/\"A M I   \"/"
 
 echo "  $file_Facp"
-echo "'B','V','F','A','C','P',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
+echo "'B','V','F','A','C','P',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Facp" -Ee "s/'B','V','F','A','C','P',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_Hpet"
-echo "'B','V','H','P','E','T',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
+echo "'B','V','H','P','E','T',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Hpet" -Ee "s/'B','V','H','P','E','T',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_Madt"
-echo "'B','V','M','A','D','T',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
+echo "'B','V','M','A','D','T',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Madt" -Ee "s/'B','V','M','A','D','T',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_Mcfg"
-echo "'B','V','M','C','F','G',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
+echo "'B','V','M','C','F','G',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Mcfg" -Ee "s/'B','V','M','C','F','G',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_Platform"
-echo "'B','H','Y','V','E',' '              -> 'A','L','A','S','K','A'"
-echo "'B','H','Y','V'                      -> 'A','M','I',' '"
+echo "'B','H','Y','V','E',' '                           -> 'A','L','A','S','K','A'"
+echo "'B','H','Y','V'                                   -> 'A','M','I',' '"
 sed -i "$file_Platform" -Ee "s/'B','H','Y','V','E',' '/'A','L','A','S','K','A'/"
 sed -i "$file_Platform" -Ee "s/'B','H','Y','V'/'A','M','I',' '/"
 
 echo "  $file_Spcr"
-echo "'B','V','S','P','C','R',' ',' '      -> 'A',' ','M',' ','I',' ',' ',' '"
+echo "'B','V','S','P','C','R',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Spcr" -Ee "s/'B','V','S','P','C','R',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
 echo "  $file_VbeShim"
 get_new_string 4 1
-echo "\"VESA\"                               -> \"$new_string\""
+echo "\"VESA\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -Ee "s/\"VESA\"/\"$new_string\"/"
 get_new_string 4 1
-echo "\"FBSD\"                               -> \"$new_string\""
+echo "\"FBSD\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/OemNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/OemNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
 #get_new_string 4 1
-echo "\"FBSD\"                               -> \"$new_string\""
+echo "\"FBSD\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/VendorNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/VendorNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
 
 echo "  $file_BhyveX64"
-echo "\"BHYVE\"                              -> \"ALASKA\""
+echo "\"BHYVE\"                                           -> \"ALASKA\""
 sed -i "$file_BhyveX64" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 
 echo "  $file_BhyveSmbiosPlatformDxe"
@@ -261,62 +264,62 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/DateStr = L\"02\/02\/2022\";/DateStr = L
 
 echo "  $file_QemuFwCfgCacheInit"
 get_new_string 4 1
-echo "QEMU FW CFG                          -> $new_string FW CFG"
+echo "QEMU FW CFG                                       -> $new_string FW CFG"
 sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$new_string FW CFG/"
 
 echo "  $file_FwBlockService"
 #get_new_string 4 1
-echo "QEMU flash                           -> $new_string Flash"
-echo "QEMU Flash                           -> $new_string Flash"
+echo "QEMU flash                                        -> $new_string Flash"
+echo "QEMU Flash                                        -> $new_string Flash"
 sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$new_string Flash/"
 sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$new_string Flash/"
 
 echo "  $file_QemuFlash"
 #get_new_string 4 1
-echo "\"QEMU                                -> \"$new_string"
+echo "\"QEMU                                             -> \"$new_string"
 sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
-echo "\"QemuFlashDetected                   -> \"${prefix}${suffix}FlashDetected"
+echo "\"QemuFlashDetected                                -> \"${prefix}${suffix}FlashDetected"
 sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${prefix}${suffix}FlashDetected/"
 
 echo "  $file_ComponentName"
 #get_new_string 4 1
-echo "L\"QEMU                               -> L\"$new_string"
+echo "L\"QEMU                                            -> L\"$new_string"
 sed -i "$file_ComponentName" -Ee "s/L\"QEMU/L\"$new_string/"
 
 echo "  $file_Driver"
 #get_new_string 4 1
-echo "L\"QEMU                               -> L\"$new_string"
+echo "L\"QEMU                                            -> L\"$new_string"
 sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
 IFS=':'
 cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
-#  echo "0x1234                               -> 0x1022"
-  echo "0x1b36                               -> 0x1022"
-  echo "0x1af4                               -> 0x1022"
-  echo "0x15ad                               -> 0x1022"
-#  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
+#echo "0x1234                                              -> 0x1022"
+  echo "0x1b36                                            -> 0x1022"
+  echo "0x1af4                                            -> 0x1022"
+  echo "0x15ad                                            -> 0x1022"
+#sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x1b36/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x1af4/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x1022/"
 else
-#  echo "0x1234                               -> 0x8086"
-  echo "0x1b36                               -> 0x8086"
-  echo "0x1af4                               -> 0x8086"
-  echo "0x15ad                               -> 0x8086"
-#  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
+#echo "0x1234                                              -> 0x8086"
+  echo "0x1b36                                            -> 0x8086"
+  echo "0x1af4                                            -> 0x8086"
+  echo "0x15ad                                            -> 0x8086"
+#sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x1b36/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
 fi
 
 echo "  $file_ShellPkg"
-echo "\"EDK II\"                             -> \"American Megatrends Inc.\""
-  sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
+echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
+sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
 
 echo "  $file_QemuBootOrderLib"
-echo "\"VMMBootOrder%04x\"                             -> \"BootOrder%04x\""
-  sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"BootOrder%04x\"/"
+echo "\"VMMBootOrder%04x\"                                -> \"BootOrder%04x\""
+sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"BootOrder%04x\"/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -331,26 +334,79 @@ export WORKSPACE="$(pwd)"
 export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
 export CONF_PATH="${WORKSPACE}/Conf"
 
-echo "Building BaseTools (EDK II build tools)..."
-make -C BaseTools; source edksetup.sh
+build_firmware() {
+  echo "Building BaseTools (EDK II build tools)..."
+  make -C BaseTools; source edksetup.sh
+  echo "Compiling OVMF with Secure Boot and TPM support..."
+  build \
+    -a X64 \
+    -p OvmfPkg/OvmfPkgX64.dsc \
+    -b RELEASE \
+    -t GCC5 \
+    -n 0 \
+    -s \
+    -q \
+    --define SECURE_BOOT_ENABLE=TRUE \
+    --define TPM_CONFIG_ENABLE=TRUE \
+    --define TPM_ENABLE=TRUE \
+    --define TPM1_ENABLE=TRUE \
+    --define TPM2_ENABLE=TRUE
+}
 
-echo "Compiling OVMF firmware with Secure Boot and TPM support..."
-build \
-  -a X64 \
-  -p OvmfPkg/OvmfPkgX64.dsc \
-  -b RELEASE \
-  -t GCC5 \
-  -n 0 \
-  -s \
-  -q \
-  --define SECURE_BOOT_ENABLE=TRUE \
-  --define TPM_CONFIG_ENABLE=TRUE \
-  --define TPM_ENABLE=TRUE \
-  --define TPM1_ENABLE=TRUE \
-  --define TPM2_ENABLE=TRUE
+if [[ -f "${VARS_DEST}" ]]; then
+  echo -e "${EDK2_DEST}/\e[1m${VARS_FILE}\e[0m found."
+  read -p $'Rebuild? [y/\e[1mN\e[0m]> ' -n 1 -r
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo ""
+    build_firmware
+  else
+    echo ""
+  fi
+else
+  build_firmware
+fi
 
 sudo mkdir -p "$EDK2_DEST"
-sudo cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
-sudo cp -f "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VARS_DEST"
+qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd $CODE_DEST
+qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd $VARS_DEST
 echo "$CODE_DEST"
 echo "$VARS_DEST"
+
+
+readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
+readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
+
+cd "$SCRIPT_DIR"
+WORK_DIR="$(pwd)/work"
+mkdir -p "$WORK_DIR"
+cp -f "redhat.json" "$WORK_DIR/redhat.json"
+cd "$WORK_DIR"
+
+declare -A CERTS=(
+  ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
+  ["ms_kek_mscorp_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+  ["ms_kek_mscorp_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+  ["ms_db_mscorp_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+  ["ms_db_windows_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+  ["ms_db_mscorp_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+  ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
+  ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+  ["dbxupdate_x64.bin"]="https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
+)
+
+for file in "${!CERTS[@]}"; do
+  wget -q -O "$file" "${CERTS[$file]}"
+done
+
+#  --secure-boot \
+virt-fw-vars --input "/usr/share/edk2/ovmf/OVMF_VARS_4M.empty.qcow2" --output "/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2" \
+  --set-pk "$UUID" ms_pk_oem.der \
+  --add-kek "$UUID" ms_kek_mscorp_2011.der \
+  --add-kek "$UUID" ms_kek_mscorp_2023.der \
+  --add-db "$UUID" ms_db_mscorp_2011.der \
+  --add-db "$UUID" ms_db_windows_2011.der \
+  --add-db "$UUID" ms_db_mscorp_2023.der \
+  --add-db "$UUID" ms_db_windows_2023.der \
+  --add-db "$UUID" ms_db_optionrom_2023.der \
+  --set-dbx dbxupdate_x64.bin \
+  --set-json redhat.json
