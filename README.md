@@ -585,6 +585,7 @@ sudo -E ./nika
   ```shell
   sudo dnf install g++
   sudo dnf install nasm
+  sudo dnf install python3-virt-firmware
   ```
   </details>
 
@@ -595,6 +596,7 @@ sudo -E ./nika
   ```shell
   sudo apt install g++
   sudo apt install nasm
+  sudo apt install python3-virt-firmware
   ```
   </details>
 
