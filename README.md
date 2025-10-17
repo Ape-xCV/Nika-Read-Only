@@ -300,6 +300,8 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Tablet >> [Remove]
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> Serial 1 >> [Remove]
+
 - Virtual Machine Manager >> [Open] >> View >> Details >> Channel (spice) >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
