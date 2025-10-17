@@ -10,8 +10,10 @@ SCRIPT_DIR="$(pwd)"
 EDK2_DEST="/usr/share/edk2/ovmf"
 CODE_FILE="OVMF_CODE_4M.patched.qcow2"
 VARS_FILE="OVMF_VARS_4M.empty.qcow2"
+VARS_FILE_2="OVMF_VARS_4M.patched.qcow2"
 CODE_DEST="${EDK2_DEST}/${CODE_FILE}"
 VARS_DEST="${EDK2_DEST}/${VARS_FILE}"
+VARS_DEST_2="${EDK2_DEST}/${VARS_FILE_2}"
 
 numbers=(
   "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"
@@ -318,8 +320,9 @@ echo "\"EDK II\"                                          -> \"American Megatren
 sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
 
 echo "  $file_QemuBootOrderLib"
-echo "\"VMMBootOrder%04x\"                                -> \"BootOrder%04x\""
-sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"BootOrder%04x\"/"
+get_new_string $(shuf -i 5-7 -n 1) 3
+echo "\"VMMBootOrder%04x\"                                -> \"${prefix}${suffix}%04x\""
+sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"${prefix}${suffix}%04x\"/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -353,7 +356,7 @@ build_firmware() {
     --define TPM2_ENABLE=TRUE
 }
 
-if [[ -f "${VARS_DEST}" ]]; then
+if [[ -f "$VARS_DEST" ]]; then
   echo -e "${EDK2_DEST}/\e[1m${VARS_FILE}\e[0m found."
   read -p $'Rebuild? [y/\e[1mN\e[0m]> ' -n 1 -r
   if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -371,6 +374,16 @@ qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd $COD
 qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd $VARS_DEST
 echo "$CODE_DEST"
 echo "$VARS_DEST"
+
+read -p $'Clear EFI variables? [Y/\e[1mn\e[0m]> ' -n 1 -r
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+  echo ""
+else
+  echo ""
+  cp -f "$VARS_DEST" "$VARS_DEST_2"
+  echo "$VARS_DEST_2"
+  exit 0
+fi
 
 
 readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
@@ -399,7 +412,7 @@ for file in "${!CERTS[@]}"; do
 done
 
 #  --secure-boot \
-virt-fw-vars --input "/usr/share/edk2/ovmf/OVMF_VARS_4M.empty.qcow2" --output "/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2" \
+virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --set-pk "$UUID" ms_pk_oem.der \
   --add-kek "$UUID" ms_kek_mscorp_2011.der \
   --add-kek "$UUID" ms_kek_mscorp_2023.der \
