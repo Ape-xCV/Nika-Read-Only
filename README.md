@@ -252,6 +252,7 @@ sudo virsh net-start default
   </features>
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" cores="4" threads="2"/>
+    <feature policy="disable" name="aes"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="vmx"/>
