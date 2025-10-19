@@ -484,21 +484,22 @@ sed -i "$file_escc" -Ee "s/QEMU Sun Mouse/Sun Mouse/"
 #echo "  $file_serialpci"
 
 echo "  $file_edidgenerate"
+get_new_string 3 1
+echo "RHT                                               -> $new_string"
+sed -i "$file_edidgenerate" -Ee "s/RHT/$new_string/"
 get_new_string $(shuf -i 5-7 -n 1) 3
 word=$(get_random_hex 4)
 week=$(shuf -i 1-52 -n 1)
-year=$(shuf -i 25-35 -n 1)
-echo "RHT                                               -> $prefix$suffix"
-echo "QEMU Monitor                                      -> $prefix$suffix Monitor"
-echo "prefx = 1280                                      -> prefx = 1024"
-echo "prefy = 800                                       -> prefy = 768"
+year=$(shuf -i 15-35 -n 1)
+echo "QEMU Monitor                                      -> $prefix$suffix"
+#echo "prefx = 1280                                      -> prefx = 1024"
+#echo "prefy = 800                                       -> prefy = 768"
 echo "0x1234                                            -> 0x$word"
 echo "edid[16] = 42                                     -> edid[16] = $week"
 echo "edid[17] = 2014 - 1990                            -> edid[17] = $year"
-sed -i "$file_edidgenerate" -Ee "s/RHT/$prefix$suffix/"
-sed -i "$file_edidgenerate" -Ee "s/QEMU Monitor/$prefix$suffix Monitor/"
-sed -i "$file_edidgenerate" -Ee "s/prefx = 1280/prefx = 1024/"
-sed -i "$file_edidgenerate" -Ee "s/prefy = 800/prefy = 768/"
+sed -i "$file_edidgenerate" -Ee "s/QEMU Monitor/$prefix$suffix/"
+#sed -i "$file_edidgenerate" -Ee "s/prefx = 1280/prefx = 1024/"
+#sed -i "$file_edidgenerate" -Ee "s/prefy = 800/prefy = 768/"
 sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[16\] = 42/edid\[16\] = $week/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
