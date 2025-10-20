@@ -375,7 +375,7 @@ qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd $VAR
 echo "$CODE_DEST"
 echo "$VARS_DEST"
 
-read -p $'Clear EFI variables? [Y/\e[1mn\e[0m]> ' -n 1 -r
+read -p $'Clear EFI variables? [\e[1mY\e[0m/n]> ' -n 1 -r
 if [[ $REPLY =~ ^[Nn]$ ]]; then
   echo ""
 else
@@ -392,7 +392,7 @@ readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
 cd "$SCRIPT_DIR"
 WORK_DIR="$(pwd)/work"
 mkdir -p "$WORK_DIR"
-cp -f "redhat.json" "$WORK_DIR/redhat.json"
+cp -f "default.json" "$WORK_DIR/default.json"
 cd "$WORK_DIR"
 
 declare -A CERTS=(
@@ -411,8 +411,8 @@ for file in "${!CERTS[@]}"; do
   wget -q -O "$file" "${CERTS[$file]}"
 done
 
-#  --secure-boot \
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
+  --secure-boot \
   --set-pk "$UUID" ms_pk_oem.der \
   --add-kek "$UUID" ms_kek_mscorp_2011.der \
   --add-kek "$UUID" ms_kek_mscorp_2023.der \
@@ -422,4 +422,4 @@ virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --add-db "$UUID" ms_db_windows_2023.der \
   --add-db "$UUID" ms_db_optionrom_2023.der \
   --set-dbx dbxupdate_x64.bin \
-  --set-json redhat.json
+  --set-json default.json
