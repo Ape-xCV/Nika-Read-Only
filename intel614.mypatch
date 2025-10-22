@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/cpuid.c	2025-03-24 14:02:41.000000000 +0000
-+++ b/arch/x86/kvm/cpuid.c	2025-10-03 16:41:16.301899189 +0100
++++ b/arch/x86/kvm/cpuid.c	2025-10-19 12:36:18.918837832 +0100
 @@ -2030,6 +2030,8 @@
  }
  EXPORT_SYMBOL_GPL(kvm_cpuid);
@@ -9,17 +9,18 @@
  int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
  {
  	u32 eax, ebx, ecx, edx;
-@@ -2039,7 +2041,22 @@
+@@ -2038,8 +2040,23 @@
+ 		return 1;
  
  	eax = kvm_rax_read(vcpu);
++	u32 function = eax;
  	ecx = kvm_rcx_read(vcpu);
--	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
-+	if (eax == 0) {
+ 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++	if (function == 0) {
 +		if (!spoof_cpuid) {
 +			if (rdtsc() > 725760000000)  // Intel® Core™ processors >300 seconds
 +				spoof_cpuid = true;
 +		}
-+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 +		if (spoof_cpuid) {
 +//			ebx = 0x68747541;  // 'htuA'
 +//			ecx = 0x444D4163;  // 'DMAc'
@@ -29,7 +30,6 @@
 +			edx = 0x49656E69;  // 'Ieni'
 +		}
 +	}
-+	else kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
  	kvm_rax_write(vcpu, eax);
  	kvm_rbx_write(vcpu, ebx);
  	kvm_rcx_write(vcpu, ecx);
