@@ -386,15 +386,56 @@ else
 fi
 
 
-readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
-readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-
 cd "$SCRIPT_DIR"
 WORK_DIR="$(pwd)/work"
 mkdir -p "$WORK_DIR"
-cp -f "default.json" "$WORK_DIR/default.json"
 cd "$WORK_DIR"
 
+DEFAULTS_JSON="defaults.json"
+EFIVARS_DIR="/sys/firmware/efi/efivars"
+VARS_LIST=("dbDefault" "KEKDefault" "PKDefault")
+declare -A GUIDS_LIST=(
+  ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+)
+
+{
+  printf '%s\n' '{'
+  printf '%s\n' '    "version": 2,'
+  printf '%s\n' '    "variables": ['
+  sep=""
+  if [[ -d "$EFIVARS_DIR" ]]; then
+    for var in "${VARS_LIST[@]}"; do
+      guid="${GUIDS_LIST[$var]}"
+      filepath="$EFIVARS_DIR/${var}-${guid}"
+      if [[ -f "$filepath" ]]; then
+        raw_data=$(sudo hexdump -v -e '1/1 "%.2x"' "$filepath" 2>/dev/null) || raw_data=""
+        if [[ ${#raw_data} -ge 8 ]]; then
+          attr_hex="${raw_data:6:2}${raw_data:4:2}${raw_data:2:2}${raw_data:0:2}"
+          if [[ "$attr_hex" =~ ^[0-9a-fA-F]+$ ]]; then
+            attr=$((16#$attr_hex))
+          else
+            attr=0
+          fi
+          data_hex="${raw_data:8}"
+          printf '%s\n' "        $sep{"
+          printf '            "name": "%s",\n' "$var"
+          printf '            "guid": "%s",\n' "$guid"
+          printf '            "attr": %d,\n' "$attr"
+          printf '            "data": "%s"\n' "$data_hex"
+          printf '%s\n' '        }'
+          sep=","
+        fi
+      fi
+    done
+  fi
+  printf '%s\n' '    ]'
+  printf '%s\n' '}'
+} > "$DEFAULTS_JSON"
+
+UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
+URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
 declare -A CERTS=(
   ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
   ["ms_kek_mscorp_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
@@ -422,4 +463,4 @@ virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --add-db "$UUID" ms_db_windows_2023.der \
   --add-db "$UUID" ms_db_optionrom_2023.der \
   --set-dbx dbxupdate_x64.bin \
-  --set-json default.json
+  --set-json $DEFAULTS_JSON
