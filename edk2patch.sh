@@ -463,4 +463,4 @@ virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --add-db "$UUID" ms_db_windows_2023.der \
   --add-db "$UUID" ms_db_optionrom_2023.der \
   --set-dbx dbxupdate_x64.bin \
-  --set-json $DEFAULTS_JSON
+  --set-json "$DEFAULTS_JSON"
