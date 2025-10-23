@@ -262,7 +262,7 @@ get_new_string() {
 }
 
 get_type_4_data() {
-  local data=$(sudo hexdump -v -e '/1 "%02X"' "/sys/firmware/dmi/entries/4-0/raw")
+  local data=$(sudo hexdump -v -e '"%02X"' "/sys/firmware/dmi/entries/4-0/raw")
   t4_processor_family="${data:12:2}"
   t4_voltage="${data:34:2}"
   t4_external_clock="${data:38:2}${data:36:2}"
