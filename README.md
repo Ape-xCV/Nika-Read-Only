@@ -130,17 +130,9 @@ sudo virsh net-start default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
-
-
-- Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <mac address="xx:xx:xx:xx:xx:xx"/>
-  ```
-  </details>
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
+  - Network topology for a virtual NIC is undeniably obvious.
+  - Add a removable NIC instead, they are extremely affordable.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
 
