@@ -393,9 +393,10 @@ cd "$WORK_DIR"
 
 DEFAULTS_JSON="defaults.json"
 EFIVARS_DIR="/sys/firmware/efi/efivars"
-VARS_LIST=("dbDefault" "KEKDefault" "PKDefault")
+VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
 declare -A GUIDS_LIST=(
   ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
 )
