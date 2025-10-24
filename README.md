@@ -131,8 +131,8 @@ sudo virsh net-start default
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
-  - Network topology for a virtual NIC is undeniably obvious.
-  - Add a removable NIC instead, they are extremely affordable.
+  - Network topology for a virtual NIC is typically obvious.
+  - Add a removable NIC instead.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
 
@@ -633,6 +633,15 @@ sudo -E ./nika
 ### 7.3 Spoof CPUID (AMD host mandatory)
 
 - This step and below requires Windows with passthrough GPU drivers installed.
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install util-linux-script
+  ```
+  </details>
 
 - Run `kernelpatch.sh` to clone, patch, and build Linux with CPUID + RDTSC patch.
 
