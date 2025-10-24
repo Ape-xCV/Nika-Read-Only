@@ -452,15 +452,15 @@ for file in "${!CERTS[@]}"; do
   wget -q -O "$file" "${CERTS[$file]}"
 done
 
+#  --secure-boot \
+#  --set-pk "$UUID" ms_pk_oem.der \
+#  --add-kek "$UUID" ms_kek_mscorp_2011.der \
+#  --add-kek "$UUID" ms_kek_mscorp_2023.der \
+#  --add-db "$UUID" ms_db_mscorp_2011.der \
+#  --add-db "$UUID" ms_db_windows_2011.der \
+#  --add-db "$UUID" ms_db_mscorp_2023.der \
+#  --add-db "$UUID" ms_db_windows_2023.der \
+#  --add-db "$UUID" ms_db_optionrom_2023.der \
+#  --set-dbx dbxupdate_x64.bin \
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
-  --secure-boot \
-  --set-pk "$UUID" ms_pk_oem.der \
-  --add-kek "$UUID" ms_kek_mscorp_2011.der \
-  --add-kek "$UUID" ms_kek_mscorp_2023.der \
-  --add-db "$UUID" ms_db_mscorp_2011.der \
-  --add-db "$UUID" ms_db_windows_2011.der \
-  --add-db "$UUID" ms_db_mscorp_2023.der \
-  --add-db "$UUID" ms_db_windows_2023.der \
-  --add-db "$UUID" ms_db_optionrom_2023.der \
-  --set-dbx dbxupdate_x64.bin \
   --set-json "$DEFAULTS_JSON"
