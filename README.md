@@ -38,6 +38,8 @@
 
 - This guide is for PCs that you can actually plug your monitor into iGPU (internal GPU in CPU), leaving your dGPU exclusively for the VM.
 
+- A single GPU guide is available at: [ThisIsFair/Nika-Read-Only-SGPU](https://github.com/ThisIsFair/Nika-Read-Only-SGPU)
+
 ### 1. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
