@@ -102,7 +102,7 @@
  {
  	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2025-10-27 23:15:54.564624835 +0000
++++ b/arch/x86/kvm/svm/svm.c	2025-10-29 19:05:38.588441927 +0000
 @@ -1290,6 +1290,7 @@
  	svm_set_intercept(svm, INTERCEPT_XSETBV);
  	svm_set_intercept(svm, INTERCEPT_RDPRU);
@@ -170,10 +170,10 @@
 +
 +	u64 total_exit_time = (rdtsc_read - vcpu->last_exit_start) + vcpu->total_exit_time;
 +	u64 data_diff = (rdtsc_read - total_exit_time) - data;
-+	if (rdtsc_last != 0 && diff_last > diff_prev)
-+		data += data_diff / 10;
-+	else
++	if (rdtsc_last != 0 && diff_last < diff_prev)
 +		data = rdtsc_read - total_exit_time;
++	else
++		data += data_diff / 10;
 +
 +	vcpu->arch.regs[VCPU_REGS_RAX] = data & -1u;
 +	vcpu->arch.regs[VCPU_REGS_RDX] = (data >> 32) & -1u;
