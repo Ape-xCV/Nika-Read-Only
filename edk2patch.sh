@@ -437,7 +437,7 @@ declare -A GUIDS_LIST=(
 } > "$DEFAULTS_JSON"
 
 UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main"
+URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
 declare -A CERTS=(
   # PK (Platform Key)
   ["ms_pk_oem.der"]="$URL/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
