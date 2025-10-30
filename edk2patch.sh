@@ -393,12 +393,13 @@ cd "$WORK_DIR"
 
 DEFAULTS_JSON="defaults.json"
 EFIVARS_DIR="/sys/firmware/efi/efivars"
-VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
+VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault" "MemoryOverwriteRequestControlLock")
 declare -A GUIDS_LIST=(
   ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  ["MemoryOverwriteRequestControlLock"]="bb983ccf-151d-40e1-a07b-4a17be168292"
 )
 
 {
@@ -436,17 +437,24 @@ declare -A GUIDS_LIST=(
 } > "$DEFAULTS_JSON"
 
 UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
+URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main"
 declare -A CERTS=(
-  ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
-  ["ms_kek_mscorp_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
-  ["ms_kek_mscorp_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
-  ["ms_db_mscorp_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-  ["ms_db_windows_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
-  ["ms_db_mscorp_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
-  ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
-  ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
-  ["dbxupdate_x64.bin"]="https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
+  # PK (Platform Key)
+  ["ms_pk_oem.der"]="$URL/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
+
+  # KEK (Key Exchange Key)
+  ["ms_kek_2011.der"]="$URL/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+  ["ms_kek_2023.der"]="$URL/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+
+  # DB (Signature Database)
+  ["ms_db_uef_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+  ["ms_db_pro_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+  ["ms_db_optionrom_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+  ["ms_db_uefi_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+  ["ms_db_windows_2023.der"]="$URL/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
+
+  # DBX (Forbidden Signatures Database)
+  ["dbxupdate.bin"]="$URL/PostSignedObjects/DBX/amd64/DBXUpdate.bin"
 )
 
 for file in "${!CERTS[@]}"; do
