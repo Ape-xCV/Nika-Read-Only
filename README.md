@@ -649,7 +649,7 @@ sudo -E ./nika
 
 - Removing `rhgb quiet` from `/etc/default/grub` will automatically display GRUB menu at boot:
 ```shell
-Fedora Linux (6.14.11_tkg_eevdf+) 42 (KDE Plasma Desktop Edition)
+Fedora Linux (6.16.12_tkg_eevdf+) 42 (KDE Plasma Desktop Edition)
 Fedora Linux (6.14.0-63.fc42.x86_64) 42 (KDE Plasma Desktop Edition)
 Windows Boot Manager (on /dev/sdb1)
 ```
