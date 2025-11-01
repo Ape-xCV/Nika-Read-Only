@@ -1,0 +1,262 @@
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2025-10-28 14:05:52.459721756 +0000
+@@ -2046,6 +2046,8 @@
+ }
+ EXPORT_SYMBOL_GPL(kvm_cpuid);
+ 
++bool spoof_cpuid = false;
++
+ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
+ {
+ 	u32 eax, ebx, ecx, edx;
+@@ -2054,8 +2056,23 @@
+ 		return 1;
+ 
+ 	eax = kvm_rax_read(vcpu);
++	u32 function = eax;
+ 	ecx = kvm_rcx_read(vcpu);
+ 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++	if (function == 0) {
++		if (!spoof_cpuid) {
++			if (rdtsc() > 725760000000)  // Intel® Core™ processors >300 seconds
++				spoof_cpuid = true;
++		}
++		if (spoof_cpuid) {
++//			ebx = 0x68747541;  // 'htuA'
++//			ecx = 0x444D4163;  // 'DMAc'
++//			edx = 0x69746E65;  // 'itne'
++			ebx = 0x756E6547;  // 'uneG'
++			ecx = 0x6C65746E;  // 'letn'
++			edx = 0x49656E69;  // 'Ieni'
++		}
++	}
+ 	kvm_rax_write(vcpu, eax);
+ 	kvm_rbx_write(vcpu, ebx);
+ 	kvm_rcx_write(vcpu, ecx);
+--- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/x86.c	2025-10-30 23:09:48.988408499 +0000
+@@ -4278,17 +4278,19 @@
+ 		 * return L1's TSC value to ensure backwards-compatible
+ 		 * behavior for migration.
+ 		 */
+-		u64 offset, ratio;
++//		u64 offset, ratio;  // NIKA removed
+ 
+-		if (msr_info->host_initiated) {
+-			offset = vcpu->arch.l1_tsc_offset;
+-			ratio = vcpu->arch.l1_tsc_scaling_ratio;
+-		} else {
+-			offset = vcpu->arch.tsc_offset;
+-			ratio = vcpu->arch.tsc_scaling_ratio;
+-		}
+-
+-		msr_info->data = kvm_scale_tsc(rdtsc(), ratio) + offset;
++//		if (msr_info->host_initiated) {  // NIKA removed
++//			offset = vcpu->arch.l1_tsc_offset;  // NIKA removed
++//			ratio = vcpu->arch.l1_tsc_scaling_ratio;  // NIKA removed
++//		} else {  // NIKA removed
++//			offset = vcpu->arch.tsc_offset;  // NIKA removed
++//			ratio = vcpu->arch.tsc_scaling_ratio;  // NIKA removed
++//		}  // NIKA removed
++
++//		msr_info->data = kvm_scale_tsc(rdtsc(), ratio) + offset;  // NIKA removed
++		msr_info->data = vcpu->last_exit_start - vcpu->total_exit_time;  // NIKA added
++		vcpu->renew_exit_time = true;  // NIKA added
+ 		break;
+ 	}
+ 	case MSR_IA32_CR_PAT:
+@@ -10782,7 +10784,8 @@
+  * exiting to the userspace.  Otherwise, the value will be returned to the
+  * userspace.
+  */
+-static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
++//static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA removed
++static int vcpu_enter_guest_real(struct kvm_vcpu *vcpu)  // NIKA added
+ {
+ 	int r;
+ 	bool req_int_win =
+@@ -11219,6 +11222,21 @@
+ 	return r;
+ }
+ 
++static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->last_exit_start = rdtsc();
++	int result = vcpu_enter_guest_real(vcpu);
++
++	if (vcpu->renew_exit_time)
++	{
++		u64 rdtsc_diff = rdtsc() - vcpu->last_exit_start;
++		vcpu->total_exit_time += rdtsc_diff;
++		vcpu->renew_exit_time = false;
++	}
++
++	return result;
++}  // NIKA end
++
+ static bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
+ {
+ 	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+--- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2025-11-01 19:32:31.927497534 +0000
+@@ -4456,10 +4456,12 @@
+ 	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
+ 	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
+ 	 */
+-	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
+-			  CPU_BASED_USE_IO_BITMAPS |
++//	exec_control &= ~(CPU_BASED_RDTSC_EXITING |  // NIKA removed
++//			  CPU_BASED_USE_IO_BITMAPS |  // NIKA removed
++	exec_control &= ~(CPU_BASED_USE_IO_BITMAPS |  // NIKA added
+ 			  CPU_BASED_MONITOR_TRAP_FLAG |
+ 			  CPU_BASED_PAUSE_EXITING);
++	exec_control |= CPU_BASED_RDTSC_EXITING;  // NIKA added
+ 
+ 	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
+ 	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
+@@ -6083,6 +6085,67 @@
+ 	return 1;
+ }
+ 
++static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->renew_exit_time = true;
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
++
++static int handle_invd(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->renew_exit_time = true;
++	return kvm_emulate_invd(vcpu);
++}  // NIKA end
++
++static int handle_wbinvd(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->renew_exit_time = true;
++	return kvm_emulate_wbinvd(vcpu);
++}  // NIKA end
++
++static int handle_xsetbv(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->renew_exit_time = true;
++	return kvm_emulate_xsetbv(vcpu);
++}  // NIKA end
++
++static int handle_rdtsc(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	u64 data = vcpu->last_exit_start - vcpu->total_exit_time;
++	vcpu->renew_exit_time = true;
++
++	vcpu->arch.regs[VCPU_REGS_RAX] = data & -1u;
++	vcpu->arch.regs[VCPU_REGS_RDX] = (data >> 32) & -1u;
++	return kvm_skip_emulated_instruction(vcpu);
++}  // NIKA end
++
++static int handle_rdtscp(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	static u64 rdtsc_last;
++	static u64 rdtsc_prev;
++	static u64 rdtsc_read;
++	rdtsc_last = rdtsc_prev;
++	rdtsc_prev = rdtsc_read;
++	rdtsc_read = rdtsc();
++	u64 diff_last = rdtsc_prev - rdtsc_last;
++	u64 diff_prev = rdtsc_read - rdtsc_prev;
++
++//	static u64 data;
++//	u64 data_diff = (vcpu->last_exit_start - vcpu->total_exit_time) - data;
++//	if (diff_last < diff_prev)
++//		data = vcpu->last_exit_start - vcpu->total_exit_time;
++//	else
++//		data += data_diff / 10;
++	u64 data = vcpu->last_exit_start - vcpu->total_exit_time;
++	if (diff_last >= diff_prev)
++		vcpu->renew_exit_time = true;
++
++	vcpu->arch.regs[VCPU_REGS_RAX] = data & -1u;
++	vcpu->arch.regs[VCPU_REGS_RDX] = (data >> 32) & -1u;
++	vcpu->arch.regs[VCPU_REGS_RCX] = vmcs_read16(VIRTUAL_PROCESSOR_ID);
++	return kvm_skip_emulated_instruction(vcpu);
++}  // NIKA end
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6096,12 +6159,14 @@
+ 	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+ 	[EXIT_REASON_CR_ACCESS]               = handle_cr,
+ 	[EXIT_REASON_DR_ACCESS]               = handle_dr,
+-	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,
++//	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,  // NIKA removed
++	[EXIT_REASON_CPUID]                   = handle_cpuid,  // NIKA added
+ 	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
+ 	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
+ 	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
+ 	[EXIT_REASON_HLT]                     = kvm_emulate_halt,
+-	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
++//	[EXIT_REASON_INVD]		      = kvm_emulate_invd,  // NIKA removed
++	[EXIT_REASON_INVD]		      = handle_invd,  // NIKA added
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+ 	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
+@@ -6118,8 +6183,10 @@
+ 	[EXIT_REASON_APIC_ACCESS]             = handle_apic_access,
+ 	[EXIT_REASON_APIC_WRITE]              = handle_apic_write,
+ 	[EXIT_REASON_EOI_INDUCED]             = handle_apic_eoi_induced,
+-	[EXIT_REASON_WBINVD]                  = kvm_emulate_wbinvd,
+-	[EXIT_REASON_XSETBV]                  = kvm_emulate_xsetbv,
++//	[EXIT_REASON_WBINVD]                  = kvm_emulate_wbinvd,  // NIKA removed
++	[EXIT_REASON_WBINVD]                  = handle_wbinvd,  // NIKA added
++//	[EXIT_REASON_XSETBV]                  = kvm_emulate_xsetbv,  // NIKA removed
++	[EXIT_REASON_XSETBV]                  = handle_xsetbv,  // NIKA added
+ 	[EXIT_REASON_TASK_SWITCH]             = handle_task_switch,
+ 	[EXIT_REASON_MCE_DURING_VMENTRY]      = handle_machine_check,
+ 	[EXIT_REASON_GDTR_IDTR]		      = handle_desc,
+@@ -6141,6 +6208,8 @@
+ 	[EXIT_REASON_ENCLS]		      = handle_encls,
+ 	[EXIT_REASON_BUS_LOCK]                = handle_bus_lock_vmexit,
+ 	[EXIT_REASON_NOTIFY]		      = handle_notify,
++	[EXIT_REASON_RDTSC]		      = handle_rdtsc,  // NIVA added
++	[EXIT_REASON_RDTSCP]		      = handle_rdtscp,  // NIVA added
+ };
+ 
+ static const int kvm_vmx_max_exit_handlers =
+--- a/arch/x86/kvm/vmx/vmx.h	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.h	2025-10-30 23:35:48.354033597 +0000
+@@ -532,7 +532,9 @@
+ 	 CPU_BASED_MONITOR_EXITING |					\
+ 	 CPU_BASED_INVLPG_EXITING |					\
+ 	 CPU_BASED_RDPMC_EXITING |					\
+-	 CPU_BASED_INTR_WINDOW_EXITING)
++	 CPU_BASED_INTR_WINDOW_EXITING |				\
++	 CPU_BASED_RDTSC_EXITING)  // NIKA added
++//	 CPU_BASED_INTR_WINDOW_EXITING)  // NIKA removed
+ 
+ #ifdef CONFIG_X86_64
+ 	#define KVM_REQUIRED_VMX_CPU_BASED_VM_EXEC_CONTROL		\
+@@ -544,9 +546,10 @@
+ 		__KVM_REQUIRED_VMX_CPU_BASED_VM_EXEC_CONTROL
+ #endif
+ 
++//	(CPU_BASED_RDTSC_EXITING |					/  // NIKA removed
++//	 CPU_BASED_TPR_SHADOW |						/  // NIKA removed
+ #define KVM_OPTIONAL_VMX_CPU_BASED_VM_EXEC_CONTROL			\
+-	(CPU_BASED_RDTSC_EXITING |					\
+-	 CPU_BASED_TPR_SHADOW |						\
++	(CPU_BASED_TPR_SHADOW |						\
+ 	 CPU_BASED_USE_IO_BITMAPS |					\
+ 	 CPU_BASED_MONITOR_TRAP_FLAG |					\
+ 	 CPU_BASED_USE_MSR_BITMAPS |					\
+--- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
++++ b/include/linux/kvm_host.h	2025-10-30 23:01:47.119879666 +0000
+@@ -349,6 +349,10 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	u64 last_exit_start;  // NIKA added
++	u64 total_exit_time;  // NIKA added
++	bool renew_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;
