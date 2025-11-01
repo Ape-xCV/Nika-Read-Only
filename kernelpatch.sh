@@ -10,7 +10,7 @@ TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 TKG_DIR="linux-tkg"
 TKG_CFG="${TKG_DIR}/customization.cfg"
 KERNEL_MAJOR="6"
-KERNEL_MINOR="14"
+KERNEL_MINOR="16"
 KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-latest"
 
 if [[ ! -d ${TKG_DIR} ]]; then
@@ -22,7 +22,7 @@ fi
 
 declare -A config_values=(
   [_distro]=""
-  [_version]="6.14-latest"
+  [_version]="6.16-latest"
   [_menunconfig]="false"
   [_diffconfig]="false"
   [_cpusched]="eevdf"
@@ -53,9 +53,9 @@ IFS=':'
 cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  cp -f "amd614.mypatch" "${TKG_DIR}/linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches/."
+  cp -f "amd616.mypatch" "${TKG_DIR}/linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches/."
 else
-  cp -f "intel614.mypatch" "${TKG_DIR}/linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches/."
+  cp -f "intel616.mypatch" "${TKG_DIR}/linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches/."
 fi
 
 if [[ -d ${TKG_DIR}/RPMS ]]; then
