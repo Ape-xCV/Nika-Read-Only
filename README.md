@@ -140,15 +140,22 @@ sudo systemctl enable libvirtd.service
 
 - Restart Linux PC.
 
-- Start default virtual network:
-```shell
-sudo virsh net-autostart default
-sudo virsh net-start default
-```
-
 - Virtual Machine Manager >> Edit >> Preferences >> General >> _check_ [x] Enable XML editing >> [Close]
 
 - Virtual Machine Manager >> Edit >> Preferences >> New VM >> Storage format: Raw >> [Close]
+
+- Install macchanger:
+```shell
+<Fedora> sudo dnf install macchanger
+<Debian> sudo apt install macchanger
+```
+
+- Manually start `default virtual network` every reboot:
+```shell
+sudo virsh net-autostart default --disable
+sudo virsh net-start default
+sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
+```
 
 ### 2. New VM set up in QEMU/KVM
 
@@ -159,11 +166,21 @@ sudo virsh net-start default
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
+- [Add Hardware] >> TPM >> Type: Emulated >> Model: CRB >> Version: 2.0 >> [Finish]
+
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
-  - Network topology for a virtual NIC is typically obvious.
-  - Add a removable NIC instead.
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
+
+
+- Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <mac address="xx:xx:xx:xx:xx:xx"/>
+  ```
+  </details>
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
 
