@@ -1,6 +1,7 @@
 # Nika Read Only
 
-- Apex Legends external cheat for Linux.
+- Say `No!` to officially endorsed cheating.
+  - Say `No!` to controller aim assist.
 
 - As of Season 23, for QEMU/KVM (formerly for Proton).
 
