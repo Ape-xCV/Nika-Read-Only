@@ -548,6 +548,43 @@ sudo usermod -aG input $USER
 gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
 ```
 
+### 5.3 Steam Remote Play
+
+- Take note of **guest local IP**:
+```shell
+C:\>ipconfig
+
+Windows IP Configuration
+
+
+Ethernet adapter Ethernet:
+
+   Connection-specific DNS Suffix  . :
+   IPv4 Address. . . . . . . . . . . : 192.168.122.221
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.122.1
+
+C:\>
+```
+
+
+  <details>
+    <summary>Install `Steam` on <b>Fedora Linux</b>:</summary>
+
+    sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install steam
+  </details>
+
+- Start `Steam` on host with:
+```shell
+steam -console
+```
+
+- Steam >> Console >> `connect_remote 192.168.122.221:27036` >> [KEY_ENTER]
+  - You need to manually specify **guest local IP** for direct connection.
+
+- Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
+
 ### 6. Nika Read Only (on Linux PC)
 
 - Install:
@@ -662,58 +699,7 @@ sudo -E ./nika
   ```
   </details>
 
-### 7.2 Spoof CPU (AMD host mandatory)
-
-- This step and below requires Windows with passthrough GPU drivers installed.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> CPUs >> _uncheck_ [ ] Copy host CPU configuration >> Model:
-
-  - Choose one from: `Nehalem`, `Westmere`, `SandyBridge`, `IvyBridge`.
-    - CPU model for each architecture was randomly set at `qemupatch.sh` runtime.
-
-  - Set cores and threads to match guest CPU.
-    - If guest CPU has 8 threads, use 4 cores 2 threads.
-
-  - Finally [Apply].
-
-- Reverting to `host-passthrough` will clear most XML settings from `<features>` to `</clock>` previously set for CPU.
-
-### 7.3 Spoof CPUID (AMD host mandatory)
-
-- This step and below requires Windows with passthrough GPU drivers installed.
-
-
-  <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
-
-  ```shell
-  sudo dnf install util-linux-script
-  ```
-  </details>
-
-- Run `kernelpatch.sh` to clone, patch, and build Linux with CPUID + RDTSC patch.
-
-- Removing `rhgb quiet` from `/etc/default/grub` will automatically display GRUB menu at boot:
-```shell
-Fedora Linux (6.16.12_tkg_eevdf+) 42 (KDE Plasma Desktop Edition)
-Fedora Linux (6.14.0-63.fc42.x86_64) 42 (KDE Plasma Desktop Edition)
-Windows Boot Manager (on /dev/sdb1)
-```
-
-- You should start VM as soon as possible.
-
-- 300 seconds after selecting `6.14.11_tkg_eevdf+` your guest CPU manufacturer will change:
-```shell
-C:\>wmic cpu get manufacturer
-Manufacturer
-AuthenticAMD
-
-C:\>wmic cpu get manufacturer
-Manufacturer
-GenuineIntel
-```
-
-### 7.4 Spoof GPU (tested from 51x to 57x)
+### 7.2 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
