@@ -41,35 +41,6 @@
 
 - A single GPU guide is available at: [ThisIsFair/Nika-Read-Only-SGPU](https://github.com/ThisIsFair/Nika-Read-Only-SGPU)
 
-### 0.1 Spoof network
-
-- This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
-
-- You should set another router between your machine and your ISP router.
-
-- Most routers allow you to change (clone) WAN and WLAN network identifier (MAC address), yet what you need to periodically change is LAN network identifier, because that is what will be in your ARP table (arp -a) and what is collected for identification.
-
-- Educate yourself about [DD-WRT](https://dd-wrt.com/) or [OpenWRT](https://openwrt.org/), and then shop locally for a compatible router:
-  - **Shop locally** as you will be looking at the product tag for **brand**, **model**, and specially **version**.
-  - Updating will be as simple as selecting **factory-to-ddwrt.bin** file in your router update page, for that specific brand+model+version.
-
-- For DD-WRT go to: Administration >> Management >> Remote Access >> Telnet Management >> _check_ [x] Enable >> [Save] >> [Reboot Router]
-
-- Telnet to your router, authenticate and enter:
-```shell
-nvram set lan_hwaddr=XX:XX:XX:XX:XX:XX (set LAN new MAC address)
-nvram get lan_hwaddr
-nvram commit
-reboot
-```
-
-- For DD-WRT go to: Setup >> MAC Address Clone >> _check_ [x] Enable >> [Save]
-  - Clone WAN MAC (set WAN new MAC address)
-  - Clone Wireless MAC (set Wireless new MAC address)
-  - [Save]
-
-- For DD-WRT go to: Administration >> Management >> [Reboot Router]
-
 ### 1. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
@@ -779,3 +750,32 @@ sudo modprobe memflow
 cd path/to/extracted/repository
 sudo -E ./nika
 ```
+
+### 8.1 Spoof network (not required, ignore this)
+
+- This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
+
+- You should set another router between your machine and your ISP router.
+
+- Most routers allow you to change (clone) WAN and WLAN network identifier (MAC address), yet what you need to periodically change is LAN network identifier, because that is what will be in your ARP table (arp -a) and what is collected for identification.
+
+- Educate yourself about [DD-WRT](https://dd-wrt.com/) or [OpenWRT](https://openwrt.org/), and then shop locally for a compatible router:
+  - **Shop locally** as you will be looking at the product tag for **brand**, **model**, and specially **version**.
+  - Updating will be as simple as selecting **factory-to-ddwrt.bin** file in your router update page, for that specific brand+model+version.
+
+- For DD-WRT go to: Administration >> Management >> Remote Access >> Telnet Management >> _check_ [x] Enable >> [Save] >> [Reboot Router]
+
+- Telnet to your router, authenticate and enter:
+```shell
+nvram set lan_hwaddr=XX:XX:XX:XX:XX:XX (set LAN new MAC address)
+nvram get lan_hwaddr
+nvram commit
+reboot
+```
+
+- For DD-WRT go to: Setup >> MAC Address Clone >> _check_ [x] Enable >> [Save]
+  - Clone WAN MAC (set WAN new MAC address)
+  - Clone Wireless MAC (set Wireless new MAC address)
+  - [Save]
+
+- For DD-WRT go to: Administration >> Management >> [Reboot Router]
