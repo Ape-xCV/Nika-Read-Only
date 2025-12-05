@@ -700,7 +700,42 @@ sudo -E ./nika
   ```
   </details>
 
-### 7.2 Spoof GPU (tested from 51x to 57x)
+### 7.2 Spoof EDID
+
+- Pinnacle of HWID ban (EAC case).
+
+| Ban # | Public IP | Router MAC | Monitor 1 | Monitor 2 |
+| ----- | --------- | ---------- | --------- | --------- |
+| 1     | Flagged   | Flagged    | Flagged   |           |
+| 2     | Flagged   | Flagged    | Banned    |           |
+| 3     | Flagged   | Flagged    |           | Flagged   |
+| 4     | Flagged   | Banned     |           | Banned    |
+
+- Download CRU from: [`CRU thread`](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU).
+
+- Backup original EDID (1).
+
+- Modify current EDID (2).
+
+- Apply modified EDID (3).
+
+- Save modified EDID (1).
+
+![CRU.jpg](CRU.jpg)
+
+- Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
+
+| Capture Card               | Dummy Plug        |
+| -------------------------- | ----------------- |
+| Game Capture HD60 S+       | [`Fueran HDMI-2K-3P`](https://www.amazon.com/dp/B06XSY9THQ/) |
+| Game Capture HD60 X        | [`Fueran DP-2K-3P`](https://www.amazon.com/dp/B075PTQ4NH/) |
+| Game Capture 4K60 Pro      | [`Fueran HDMI-2K-3P`](https://www.amazon.de/dp/B06XSY9THQ/) |
+| Game Capture 4K60 Pro MK.2 | [`Fueran DP-2K-3P`](https://www.amazon.de/dp/B07D5GWXQ7/) |
+| Game Capture 4K60 S+       |                   |
+| Game Capture 4K X          |                   |
+| Game Capture 4K Pro        |                   |
+
+### 7.3 Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
