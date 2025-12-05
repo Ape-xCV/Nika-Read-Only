@@ -727,10 +727,10 @@ sudo -E ./nika
 
 | Capture Card               | Dummy Plug        |
 | -------------------------- | ----------------- |
-| Game Capture HD60 S+       | [`Fueran HDMI-2K-3P`](https://www.amazon.com/dp/B06XSY9THQ/) |
-| Game Capture HD60 X        | [`Fueran DP-2K-3P`](https://www.amazon.com/dp/B075PTQ4NH/) |
-| Game Capture 4K60 Pro      | [`Fueran HDMI-2K-3P`](https://www.amazon.de/dp/B06XSY9THQ/) |
-| Game Capture 4K60 Pro MK.2 | [`Fueran DP-2K-3P`](https://www.amazon.de/dp/B07D5GWXQ7/) |
+| Game Capture HD60 S+       | [`Fueran HDMI-2K-3P`](https://www.amazon.com/dp/B06XSY9THQ/) (NA) |
+| Game Capture HD60 X        | [`Fueran HDMI-2K-3P`](https://www.amazon.de/dp/B06XSY9THQ/) (EU) |
+| Game Capture 4K60 Pro      |                   |
+| Game Capture 4K60 Pro MK.2 |                   |
 | Game Capture 4K60 S+       |                   |
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
