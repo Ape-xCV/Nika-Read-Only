@@ -725,6 +725,8 @@ sudo -E ./nika
 
 - Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
 
+- Write modified EDID.
+
 | Capture Card               | Dummy Plug        |
 | -------------------------- | ----------------- |
 | Game Capture HD60 S+       | [`Fueran HDMI-2K-3P`](https://www.amazon.com/dp/B06XSY9THQ/) (NA) |
