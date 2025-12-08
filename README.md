@@ -264,18 +264,11 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
   </features>
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" cores="4" threads="2"/>
-    <feature policy="disable" name="aes"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="vmx"/>
     <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="topoext"/>
-    <feature policy="require" name="invtsc"/>
-    <feature policy="disable" name="amd-ssbd"/>
-    <feature policy="disable" name="ssbd"/>
-    <feature policy="disable" name="virt-ssbd"/>
-    <feature policy="disable" name="rdpid"/>
-    <feature policy="disable" name="rdtscp"/>
   </cpu>
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
