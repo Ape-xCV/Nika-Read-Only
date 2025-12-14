@@ -256,11 +256,12 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
     <kvm>
       <hidden state="on"/>
     </kvm>
-    <pmu state="on"/>
-    <vmport state="off"/>
-    <smm state="on"/>
     <ioapic driver="kvm"/>
     <msrs unknown="fault"/>
+    <pmu state="on"/>
+    <smm state="on"/>
+    <vmport state="off"/>
+    <ps2 state="on"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" cores="4" threads="2"/>
@@ -273,8 +274,8 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="hpet" present="yes"/>
-    <timer name="rtc" present="no"/>
-    <timer name="pit" present="no"/>
+    <timer name="rtc" present="yes"/>
+    <timer name="pit" present="yes"/>
     <timer name="kvmclock" present="no"/>
     <timer name="hypervclock" present="no"/>
   </clock>
