@@ -609,11 +609,13 @@ sudo -E ./nika
 
 - Replace `</qemu:commandline>` and [Apply]:
   <details>
-    <summary>Spoiler <b>(not required, ignore this)</b></summary>
+    <summary>Spoiler</summary>
 
   ```shell
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
   </qemu:commandline>
   ```
   </details>
