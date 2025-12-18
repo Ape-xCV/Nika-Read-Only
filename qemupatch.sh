@@ -262,7 +262,7 @@ get_new_string() {
 }
 
 get_type_4_data() {
-  local data=$(sudo hexdump -v -e '"%02X"' "/sys/firmware/dmi/entries/4-0/raw")
+  local data=$(sudo hexdump -v -e '1 1 "%02X"' "/sys/firmware/dmi/entries/4-0/raw")
   t4_processor_family="${data:12:2}"
   t4_voltage="${data:34:2}"
   t4_external_clock="${data:38:2}${data:36:2}"
@@ -302,7 +302,7 @@ file_pc="$(pwd)/qemu/hw/i386/pc.c"
 file_pcq35="$(pwd)/qemu/hw/i386/pc_q35.c"
 file_atapi="$(pwd)/qemu/hw/ide/atapi.c"
 file_core="$(pwd)/qemu/hw/ide/core.c"
-#file_ich="$(pwd)/qemu/hw/ide/ich.c"
+file_ich="$(pwd)/qemu/hw/ide/ich.c"
 file_adbkbd="$(pwd)/qemu/hw/input/adb-kbd.c"
 file_adbmouse="$(pwd)/qemu/hw/input/adb-mouse.c"
 #file_ads7846="$(pwd)/qemu/hw/input/ads7846.c"
@@ -315,6 +315,8 @@ file_pvpanicisa="$(pwd)/qemu/hw/misc/pvpanic-isa.c"
 file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
 file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
+file_genpcierootport="$(pwd)/qemu/hw/pci-bridge/gen_pcie_root_port.c"
+file_pciepcibridge="$(pwd)/qemu/hw/pci-bridge/pcie_pci_bridge.c"
 file_gpex="$(pwd)/qemu/hw/pci-host/gpex.c"
 file_mptconfig="$(pwd)/qemu/hw/scsi/mptconfig.c"
 file_scsibus="$(pwd)/qemu/hw/scsi/scsi-bus.c"
@@ -333,7 +335,7 @@ file_devstorage="$(pwd)/qemu/hw/usb/dev-storage.c"
 file_devuas="$(pwd)/qemu/hw/usb/dev-uas.c"
 file_devwacom="$(pwd)/qemu/hw/usb/dev-wacom.c"
 #file_hcduhci="$(pwd)/qemu/hw/usb/hcd-uhci.c"
-#file_hcdxhcipci="$(pwd)/qemu/hw/usb/hcd-xhci-pci.c"
+file_hcdxhcipci="$(pwd)/qemu/hw/usb/hcd-xhci-pci.c"
 file_u2femulated="$(pwd)/qemu/hw/usb/u2f-emulated.c"
 file_u2fpassthru="$(pwd)/qemu/hw/usb/u2f-passthru.c"
 file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
@@ -346,6 +348,7 @@ header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
 file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
+#file_configvgaqxl="$(pwd)/qemu/roms/config.vga-qxl"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -372,7 +375,7 @@ if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
 if [[ -f "$file_pcq35" ]]; then rm "$file_pcq35"; fi
 if [[ -f "$file_atapi" ]]; then rm "$file_atapi"; fi
 if [[ -f "$file_core" ]]; then rm "$file_core"; fi
-#if [[ -f "$file_ich" ]]; then rm "$file_ich"; fi
+if [[ -f "$file_ich" ]]; then rm "$file_ich"; fi
 if [[ -f "$file_adbkbd" ]]; then rm "$file_adbkbd"; fi
 if [[ -f "$file_adbmouse" ]]; then rm "$file_adbmouse"; fi
 #if [[ -f "$file_ads7846" ]]; then rm "$file_ads7846"; fi
@@ -385,6 +388,8 @@ if [[ -f "$file_pvpanicisa" ]]; then rm "$file_pvpanicisa"; fi
 if [[ -f "$file_ctrl" ]]; then rm "$file_ctrl"; fi
 if [[ -f "$file_fwcfgacpi" ]]; then rm "$file_fwcfgacpi"; fi
 if [[ -f "$file_nvram_fwcfg" ]]; then rm "$file_nvram_fwcfg"; fi
+if [[ -f "$file_genpcierootport" ]]; then rm "$file_genpcierootport"; fi
+if [[ -f "$pciepcibridge" ]]; then rm "$pciepcibridge"; fi
 if [[ -f "$file_gpex" ]]; then rm "$file_gpex"; fi
 if [[ -f "$file_mptconfig" ]]; then rm "$file_mptconfig"; fi
 if [[ -f "$file_scsibus" ]]; then rm "$file_scsibus"; fi
@@ -403,7 +408,7 @@ if [[ -f "$file_devstorage" ]]; then rm "$file_devstorage"; fi
 if [[ -f "$file_devuas" ]]; then rm "$file_devuas"; fi
 if [[ -f "$file_devwacom" ]]; then rm "$file_devwacom"; fi
 #if [[ -f "$file_hcduhci" ]]; then rm "$file_hcduhci"; fi
-#if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
+if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
 if [[ -f "$file_u2femulated" ]]; then rm "$file_u2femulated"; fi
 if [[ -f "$file_u2fpassthru" ]]; then rm "$file_u2fpassthru"; fi
 if [[ -f "$file_u2f" ]]; then rm "$file_u2f"; fi
@@ -416,6 +421,7 @@ if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
 if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
+#if [[ -f "$file_configvgaqxl" ]]; then rm "$file_configvgaqxl"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -454,7 +460,7 @@ else
   pm_type="2"
 fi
 sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
-sed -i "$file_amlbuild" -Ee "/if \(f->rev <= 4\) \{/i\    build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+## sed -i "$file_amlbuild" -Ee "/if \(f->rev <= 4\) \{/i\    build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -509,13 +515,52 @@ sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 echo "  $file_acpibuild"
 c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
 c3=$(shuf -i 4-6 -n 1)$(get_random_hex 2)
-echo ".rev = 3,                                         -> .rev = 4,"
-sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
+## echo ".rev = 3,                                         -> .rev = 4,"
+## sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
-echo "S%.02X                                            -> $path%.02X"
-sed -i "$file_acpibuild" -Ee "s/S%.02X/$path%.02X/"
+#echo "S%.02X                                            -> $path%.02X"
+#sed -i "$file_acpibuild" -Ee "s/S%.02X/$path%.02X/"
+sed -i "$file_acpibuild" -Ee "/static void build_append_pcihp_notify_entry\(Aml \*method, int slot\)/i\static void get_pci_name(char *cstr, int devfn)\n\
+{\n\
+    int slot = PCI_SLOT(devfn);\n\
+    int func = PCI_FUNC(devfn);\n\
+    switch (slot) {\n\
+        case 27:\n\
+            if (func == 0) sprintf(cstr, \"HDAS\");\n\
+            else sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+        case 29:\n\
+            sprintf(cstr, \"EHC%X\", func);\n\
+            break;\n\
+        case 31:\n\
+            if (func == 0) sprintf(cstr, \"LPCB\");\n\
+            else if (func == 2) sprintf(cstr, \"SAT%X\", func);\n\
+            else if (func == 3) sprintf(cstr, \"SBUS\");\n\
+            else sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+        default:\n\
+            sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+    }\n}\n"
+sed -i "$file_acpibuild" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/{n;d;}"
+sed -i "$file_acpibuild" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/a\        char pci_name[5] = {0};\n\
+        get_pci_name(pci_name, sec->parent_dev->devfn);\n\
+        Aml *br_scope = aml_scope(\"%s\", pci_name);"
+sed -i "$file_acpibuild" -Ee "s/        aml_append\(method, aml_name\(\"\^S%.02X.PCNT\", sec->parent_dev->devfn\)\);/        char pci_name[5] = {0};\n\
+        get_pci_name(pci_name, sec->parent_dev->devfn);\n\
+        aml_append(method, aml_name(\"^%s.PCNT\", pci_name));/"
+sed -i "$file_acpibuild" -Ee "s/    aml_append\(if_ctx, aml_notify\(aml_name\(\"S%.02X\", devfn\), aml_arg\(1\)\)\);/    char pci_name[5] = {0};\n\
+    get_pci_name(pci_name, devfn);\n\
+    aml_append(if_ctx, aml_notify(aml_name(\"%s\", pci_name), aml_arg(1)));/"
+sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/i\        char pci_name[5] = {0};\n\
+        get_pci_name(pci_name, devfn);"
+sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n; s/            dev = aml_scope\(\"S%.02X\", devfn\);/            dev = aml_scope(\"%s\", pci_name);/ }"
+sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n;n;n; s/            dev = aml_device\(\"S%.02X\", devfn\);/            dev = aml_device(\"%s\", pci_name);/ }"
+sed -i "$file_acpibuild" -Ee "s/        dev = aml_device\(\"S%.02X\", devfn\);/        char pci_name[5] = {0};\n\
+        get_pci_name(pci_name, devfn);\n\
+        dev = aml_device(\"%s\", pci_name);/"
 get_new_string 2 1
 echo "\"VMBS\"                                            -> \"${new_string}BS\""
 echo "\"VMBus\"                                           -> \"${new_string}BUS\""
@@ -634,8 +679,21 @@ echo ".S08.                                             -> .${path}08."
 sed -i "$file_piix" -Ee "s/.S08./.${path}08./"
 
 echo "  $file_lpcich9"
-echo ".SF8.                                             -> .${path}F8."
-sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
+cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
+cpu_name="${cpu_name[1]}"
+#echo ".SF8.                                             -> .${path}F8."
+#sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
+echo ".SF8.                                             -> .LPCB."
+sed -i "$file_lpcich9" -Ee "s/.SF8./.LPCB./"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
+  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x790E;  \/\/ FCH LPC Bridge/"
+fi
 
 echo "  $file_i386_fwcfg"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -665,15 +723,9 @@ sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
 #echo "  $file_pcpiix"
 
 echo "  $file_pcq35"
-#index=$(shuf -i 1-${#cpu_models[@]} -n 1)
-IFS=':'
-cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-cpu_vendor="${cpu_vendor[1]}"
-cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
-cpu_name="${cpu_name[1]}"
-#echo "Standard PC (Q35 + ICH9, 2009)                    -> ${cpu_models[$index-1]}"
+echo "Standard PC (Q35 + ICH9, 2009)                    -> ${cpu_name:1}"
 echo "m->default_nic = \"e1000e\";                        -> m->default_nic = \"rtl8139\";"
-#sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_models[$index-1]}/"
+sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_name:1}/"
 sed -i "$file_pcq35" -Ee "s/m->default_nic = \"e1000e\";/m->default_nic = \"rtl8139\";/"
 echo "    m->alias = \"q35\";"
 echo "    v v v v v v v v v v v v v v v v v v v v"
@@ -697,7 +749,13 @@ sed -i "$file_core" -Ee "s/QEMU DVD-ROM/$new_ide_cd_model/"
 sed -i "$file_core" -Ee "s/QEMU MICRODRIVE/$new_ide_cfata_model/"
 sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
 
-#echo "  $file_ich"
+echo "  $file_ich"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
+  echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x7901;  // FCH SATA Controller [AHCI mode]"
+  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
+  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x7901;  \/\/ FCH SATA Controller [AHCI mode]/"
+fi
 
 echo "  $file_adbkbd"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -774,6 +832,22 @@ sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 #get_new_string 4 1
 #echo "\"QEMU\"                                            -> \"$new_string\""
 #sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
+
+echo "  $file_genpcierootport"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
+  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0x1635;  // Renoir Internal PCIe GPP Bridge to Bus"
+  sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
+  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x1635;  \/\/ Renoir Internal PCIe GPP Bridge to Bus/"
+fi
+
+echo "  $file_pciepcibridge"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
+  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x1633;  // Renoir PCIe GPP Bridge"
+  sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
+  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x1633;  \/\/ Renoir PCIe GPP Bridge/"
+fi
 
 echo "  $file_gpex"
 get_new_string 4 1
@@ -884,7 +958,7 @@ sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str,
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    else"
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
-voltage=$(shuf -i 1350-1550 -n 1)
+voltage=$(shuf -i 1300-1450 -n 1)
 get_type_4_data
 echo "    t->processor_family = 0xfe; /* use Processor Family 2 field */"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
@@ -1156,7 +1230,7 @@ echo "bank_locator_str, type17.bank);                   -> bank_locator_str, ban
 echo "memory_type = 0x07; /* RAM */                     -> memory_type = 0x18; /* DDR3 */"
 echo "type_detail = cpu_to_le16(0x02); /* Other */      -> type_detail = cpu_to_le16(0x80); /* Synchronous */"
 sed -i "$file_smbios" -Ee "s/bank_locator_str, type17.bank\);/bank_locator_str, bank_str);/"
-sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x18; \/* DDR3 *\//"
+sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x1A; \/* DDR4 *\//"
 sed -i "$file_smbios" -Ee "s/type_detail = cpu_to_le16\(0x02\); \/\* Other \*\//type_detail = cpu_to_le16\(0x80\); \/* Synchronous *\//"
 echo "    SMBIOS_TABLE_SET_STR(17, manufacturer_str, type17.manufacturer);"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
@@ -1387,6 +1461,14 @@ sed -i "$file_devwacom" -Ee "s/QEMU PenPartner tablet/Wacom PenPartner Tablet/"
 sed -i "$file_devwacom" -Ee "s/_desc   = \"QEMU PenPartner Tablet\"/_desc   = \"Wacom PenPartner Tablet\"/"
 sed -i "$file_devwacom" -Ee "s/desc = \"QEMU PenPartner Tablet\"/desc = \"Wacom PenPartner Tablet\"/"
 
+echo "  $file_hcdxhcipci"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_REDHAT;                              -> 0x1022;"
+  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0x7914;  // FCH USB XHCI Controller"
+  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
+  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x7914;  \/\/ FCH USB XHCI Controller/"
+fi
+
 echo "  $file_u2femulated"
 get_new_string $(shuf -i 5-7 -n 1) 3
 echo "desc = \"QEMU U2F emulated key\"                    -> desc = \"$prefix$suffix U2F emulated key\""
@@ -1508,32 +1590,35 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\//i} QEMU_PACKED;\\n"
 
 echo "  $header_pci"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
-#  echo "QEMU               0x1234                         -> QEMU               0x1022"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
   echo "QUMRANET    0x1af4                                -> QUMRANET    0x1022"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x1022"
   echo "REDHAT             0x1b36                         -> REDHAT             0x1022"
-#  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
+  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
 else
-#  echo "QEMU               0x1234                         -> QEMU               0x8086"
+  echo "QEMU               0x1234                         -> QEMU               0x8086"
   echo "VMWARE             0x15ad                         -> VMWARE             0x8086"
   echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x8086"
   echo "REDHAT             0x1b36                         -> REDHAT             0x8086"
-#  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
+  sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
 fi
+device=$(( ($(date +"%d") + $(date +"%m"))*100 + $(date +"%d") * $(date +"%m") ))
+echo "0x1111                                            -> 0x$device"
+sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 
 echo "  $header_pciids"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
   sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
 else
@@ -1556,7 +1641,7 @@ echo "typedef struct X86CPUDefinition {"
 echo "    v v v v v v v v v v"
 echo "    uint8_t t4_family;"
 echo "    uint8_t t4_upgrade;"
-sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/{ n;d; }"
+sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/{n;d;}"
 sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    uint8_t t4_upgrade;"
 sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    uint8_t t4_family;"
 sed -i "$file_cpu" -Ee "/typedef struct X86CPUDefinition \{/a\    const char *name;"
@@ -1578,7 +1663,7 @@ sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\
 sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_upgrade = def->t4_upgrade;"
 sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_version = malloc(strlen(def->model_id) + 1);"
 sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    strcpy(g_type4_version, def->model_id);"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "\"QEMU Virtual CPU version \"                       -> \"AMD CPU version \""
   echo "\"Common KVM processor\"                            -> \"Common AMD processor\""
   echo "\"Common 32-bit KVM processor\"                     -> \"Common 32-bit AMD processor\""
@@ -1647,8 +1732,22 @@ echo "\"VS#1\0\0\0\0\0\0\0\0\"                            -> 0"
 sed -i "$file_kvm" -Ee "s/\"VS#1\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
 echo "\"XenVMMXenVMM\"                                    -> 0"
 sed -i "$file_kvm" -Ee "s/\"XenVMMXenVMM\"/\"\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\\\\0\"/"
-echo "KVMKVMKVM\0\0\0                                   -> GenuineIntel"
-sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/GenuineIntel/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "KVMKVMKVM\0\0\0                                   -> AuthenticAMD"
+  sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/AuthenticAMD/"
+else
+  echo "KVMKVMKVM\0\0\0                                   -> GenuineIntel"
+  sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/GenuineIntel/"
+fi
+
+#echo "  $file_configvgaqxl"
+#if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+#  echo "CONFIG_VGA_VID=0x1b36                             -> CONFIG_VGA_VID=0x1022"
+#  sed -i "$file_configvgaqxl" -Ee "s/CONFIG_VGA_VID=0x1b36/CONFIG_VGA_VID=0x1022/"
+#else
+#  echo "CONFIG_VGA_VID=0x1b36                             -> CONFIG_VGA_VID=0x8086"
+#  sed -i "$file_configvgaqxl" -Ee "s/CONFIG_VGA_VID=0x1b36/CONFIG_VGA_VID=0x8086/"
+#fi
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -1658,23 +1757,25 @@ else
   exit 0
 fi
 
+
 cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make
 iasl "$file_ssdt1"
-#iasl "$file_ssdt2"
+iasl "$file_ssdt2"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
 sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
-#sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
 echo "$QEMU_DEST/ssdt1.aml"
-#echo "$QEMU_DEST/ssdt2.aml"
+echo "$QEMU_DEST/ssdt2.aml"
 
 sudo mkdir -p /usr/local/share/qemu
-sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
-sudo cp -f "../pc-bios/efi-e1000e.rom" "/usr/local/share/qemu/efi-e1000e.rom"
-sudo cp -f "../pc-bios/efi-rtl8139.rom" "/usr/local/share/qemu/efi-rtl8139.rom"
-sudo cp -f "../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
-#sudo cp -fr "../pc-bios/." "/usr/local/share/qemu/."
+#sudo cp -f "../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
+#sudo cp -f "../pc-bios/efi-e1000e.rom" "/usr/local/share/qemu/efi-e1000e.rom"
+#sudo cp -f "../pc-bios/efi-rtl8139.rom" "/usr/local/share/qemu/efi-rtl8139.rom"
+#sudo cp -f "../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
+#sudo cp -f "../pc-bios/vgabios-qxl.bin" "/usr/local/share/qemu/vgabios-qxl.bin"
+sudo cp -fr "../pc-bios/." "/usr/local/share/qemu/."

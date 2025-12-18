@@ -69,6 +69,7 @@ file_ComponentName="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/ComponentName.c"
 file_Driver="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/Driver.c"
 file_ShellPkg="$(pwd)/edk2/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/edk2/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
+file_AuthServiceInternal="$(pwd)/edk2/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
 
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
@@ -89,6 +90,7 @@ if [[ -f "$file_ComponentName" ]]; then rm "$file_ComponentName"; fi
 if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
+if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
 cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
@@ -295,25 +297,28 @@ sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
 IFS=':'
 cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
 cpu_vendor="${cpu_vendor[1]}"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
-#echo "0x1234                                              -> 0x1022"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "0x1234                                            -> 0x1022"
   echo "0x1b36                                            -> 0x1022"
   echo "0x1af4                                            -> 0x1022"
   echo "0x15ad                                            -> 0x1022"
-#sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
+  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x1b36/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x1af4/0x1022/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x1022/"
 else
-#echo "0x1234                                              -> 0x8086"
+  echo "0x1234                                            -> 0x8086"
   echo "0x1b36                                            -> 0x8086"
   echo "0x1af4                                            -> 0x8086"
   echo "0x15ad                                            -> 0x8086"
-#sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
+  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x1b36/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
 fi
+device=$(( ($(date +"%d") + $(date +"%m"))*100 + $(date +"%d") * $(date +"%m") ))
+echo "0x1111                                            -> 0x$device"
+sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
 
 echo "  $file_ShellPkg"
 echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
@@ -323,6 +328,13 @@ echo "  $file_QemuBootOrderLib"
 get_new_string $(shuf -i 5-7 -n 1) 3
 echo "\"VMMBootOrder%04x\"                                -> \"${prefix}${suffix}%04x\""
 sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"${prefix}${suffix}%04x\"/"
+
+echo "  $file_AuthServiceInternal"
+get_new_string $(shuf -i 5-7 -n 1) 3
+echo "L\"certdb\"                                         -> L\"db${prefix}${suffix}\""
+sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdb\"/L\"db${prefix}${suffix}\"/"
+echo "L\"certdbv\"                                        -> L\"dbv${prefix}${suffix}\""
+sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdbv\"/L\"dbv${prefix}${suffix}\"/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -342,18 +354,11 @@ build_firmware() {
   make -C BaseTools; source edksetup.sh
   echo "Compiling OVMF with Secure Boot and TPM support..."
   build \
-    -a X64 \
-    -p OvmfPkg/OvmfPkgX64.dsc \
-    -b RELEASE \
-    -t GCC5 \
-    -n 0 \
-    -s \
-    -q \
-    --define SECURE_BOOT_ENABLE=TRUE \
-    --define TPM_CONFIG_ENABLE=TRUE \
-    --define TPM_ENABLE=TRUE \
-    --define TPM1_ENABLE=TRUE \
-    --define TPM2_ENABLE=TRUE
+    -D SECURE_BOOT_ENABLE \
+    -D SMM_REQUIRE -D TPM1_ENABLE -D TPM2_ENABLE \
+    -a X64 -p OvmfPkg/OvmfPkgX64.dsc \
+    -b RELEASE -t GCC5 -n 0 \
+    -s -q
 }
 
 if [[ -f "$VARS_DEST" ]]; then
@@ -375,14 +380,14 @@ qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd $VAR
 echo "$CODE_DEST"
 echo "$VARS_DEST"
 
-read -p $'Clear EFI variables? [\e[1mY\e[0m/n]> ' -n 1 -r
+read -p $'Set EFI variables? [\e[1mY\e[0m/n]> ' -n 1 -r
 if [[ $REPLY =~ ^[Nn]$ ]]; then
-  echo ""
-else
   echo ""
   cp -f "$VARS_DEST" "$VARS_DEST_2"
   echo "$VARS_DEST_2"
   exit 0
+else
+  echo ""
 fi
 
 
@@ -393,12 +398,16 @@ cd "$WORK_DIR"
 
 DEFAULTS_JSON="defaults.json"
 EFIVARS_DIR="/sys/firmware/efi/efivars"
-VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
+VARS_LIST=("db" "dbx" "KEK" "PK" "dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
 declare -A GUIDS_LIST=(
-  ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+          ["db"]="d719b2cb-3d3a-4596-a3bc-dad00e67656f"
+         ["dbx"]="d719b2cb-3d3a-4596-a3bc-dad00e67656f"
+         ["KEK"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+          ["PK"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+   ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
   ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
-  ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+   ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
 )
 
 {
@@ -420,6 +429,7 @@ declare -A GUIDS_LIST=(
             attr=0
           fi
           data_hex="${raw_data:8}"
+# Build JSON
           printf '%s\n' "        $sep{"
           printf '            "name": "%s",\n' "$var"
           printf '            "guid": "%s",\n' "$guid"
@@ -435,33 +445,6 @@ declare -A GUIDS_LIST=(
   printf '%s\n' '}'
 } > "$DEFAULTS_JSON"
 
-UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
-declare -A CERTS=(
-  ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
-  ["ms_kek_mscorp_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
-  ["ms_kek_mscorp_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
-  ["ms_db_mscorp_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-  ["ms_db_windows_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
-  ["ms_db_mscorp_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
-  ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
-  ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
-  ["dbxupdate_x64.bin"]="https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
-)
-
-for file in "${!CERTS[@]}"; do
-  wget -q -O "$file" "${CERTS[$file]}"
-done
-
-#  --secure-boot \
-#  --set-pk "$UUID" ms_pk_oem.der \
-#  --add-kek "$UUID" ms_kek_mscorp_2011.der \
-#  --add-kek "$UUID" ms_kek_mscorp_2023.der \
-#  --add-db "$UUID" ms_db_mscorp_2011.der \
-#  --add-db "$UUID" ms_db_windows_2011.der \
-#  --add-db "$UUID" ms_db_mscorp_2023.der \
-#  --add-db "$UUID" ms_db_windows_2023.der \
-#  --add-db "$UUID" ms_db_optionrom_2023.der \
-#  --set-dbx dbxupdate_x64.bin \
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
+  --secure-boot \
   --set-json "$DEFAULTS_JSON"
