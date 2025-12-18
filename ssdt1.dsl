@@ -38,8 +38,7 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
             {
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
-                    //Return (\_SB.PCI0.EC0.FAN0)
-                    Return (One)
+                    Return (0x0F)
                 }
 
                 Method (_ON, 0, NotSerialized)
@@ -104,7 +103,7 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
 
                 Method (_SCP, 1, NotSerialized)  // _SCP: Set Cooling Policy
                 {
-                    Store (Arg0, \_SB.PCI0.EC0.MODE)
+                    //Store (Arg0, \_SB.PCI0.EC0.MODE)
                 }
 
                 Name (_TC1, 0x04)  // _TC1: Thermal Constant 1

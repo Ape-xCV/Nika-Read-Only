@@ -1,32 +1,23 @@
 DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
 {
-    // override for host defined _OSI to handle "Darwin"
-    // all _OSI calls in DSDT are routed to XOSI
-    Method (XOSI, 1, NotSerialized)
+    External (_SB_.PCI0, DeviceObj)
+
+    Scope (_SB.PCI0)
     {
-        Local0 = Package (0x0C)
+        Device (TIMR)
+        {
+            Name (_HID, EisaId ("PNP0100") /* PC-class System Timer */)  // _HID: Hardware ID
+            Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
-                "Windows", 
-                "Windows 2001", 
-                "Windows 2001 SP1", 
-                "Windows 2001 SP2", 
-                "Windows 2001 SP3", 
-                "Windows 2006", 
-                "Windows 2006 SP1", 
-                "Windows 2006 SP2", 
-                "Windows 2009", 
-                "Windows 2012", 
-                "Windows 2013", 
-                "Windows 2015"  // .
+                IO (Decode16, 0x0040, 0x0040, 0x01, 0x04)
+                IO (Decode16, 0x0050, 0x0050, 0x10, 0x04)
+            })
+
+            Method (_STA, 0, NotSerialized)  // _STA: Status
+            {
+                Return (0x0F)
             }
-        If (_OSI ("Darwin"))
-        {
-            Return ((Ones != Match (Local0, MEQ, Arg0, MTR, 0, 0)))
-        }
-        Else
-        {
-            Return (_OSI (Arg0))
-        }
-    }
+        }  // end of TIMR device
+    }  // end of _SB.PCI0 scope
 }
 
