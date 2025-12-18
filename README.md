@@ -198,8 +198,6 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
   ```
   </details>
 
-  - VM created by QEMU is Intel, do not use AMD data.
-
 
 - Replace `</metadata>` and [Apply]:
   <details>
