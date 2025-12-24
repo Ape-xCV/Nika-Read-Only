@@ -571,7 +571,52 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Spoof QEMU (mandatory)
+### 6. Spoof OVMF (mandatory)
+
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install g++
+  sudo dnf install nasm
+  sudo dnf install python3-virt-firmware
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Debian Linux</b>:</summary>
+
+  ```shell
+  sudo apt install g++
+  sudo apt install nasm
+  sudo apt install python3-virt-firmware
+  ```
+  </details>
+
+- Run `edk2patch.sh` to clone, patch, and build OVMF with generated data.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <os>
+    <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
+    <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
+    <bootmenu enable="yes"/>
+  </os>
+  ```
+  </details>
+
+### 6.1. Spoof QEMU (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
@@ -625,51 +670,6 @@ sudo -E ./nika
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
   </qemu:commandline>
-  ```
-  </details>
-
-### 6.1. Spoof OVMF (mandatory)
-
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
-
-
-  <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
-
-  ```shell
-  sudo dnf install g++
-  sudo dnf install nasm
-  sudo dnf install python3-virt-firmware
-  ```
-  </details>
-
-
-  <details>
-    <summary>Build on <b>Debian Linux</b>:</summary>
-
-  ```shell
-  sudo apt install g++
-  sudo apt install nasm
-  sudo apt install python3-virt-firmware
-  ```
-  </details>
-
-- Run `edk2patch.sh` to clone, patch, and build OVMF with generated data.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <os>
-    <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
-    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
-    <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
-    <bootmenu enable="yes"/>
-  </os>
   ```
   </details>
 
