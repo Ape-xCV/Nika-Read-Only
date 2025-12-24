@@ -49,6 +49,14 @@
   - Enable "IOMMU"
   - Disable "Above 4G Decoding"
 
+- Note for Fedora 43 KDE set up:
+  - Unlike Fedora 42 KDE, this new OS has issues
+  - Disconnect cable drom dGPU before installing
+  - After installing, press 'e' with GRUB menu
+  - Replace 'rhgb quiet' with 'module_blacklist=nvidia,nouveau'
+  - Press 'F10' to boot
+  - Without this your taskbar is assigned to your dGPU, which should never happen
+
 - Nested Virtualization for Intel:
 ```shell
 sudo su
