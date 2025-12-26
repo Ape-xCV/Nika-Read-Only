@@ -543,7 +543,7 @@ C:\>
   <details>
     <summary>Install `Steam` on <b>Fedora Linux</b>:</summary>
 
-    sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     sudo dnf install steam
   </details>
 
@@ -556,6 +556,36 @@ steam -console
   - You need to manually specify **guest local IP** for direct connection.
 
 - Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
+
+
+<details>
+  <summary>Hardware decoder with <b>Intel Skylake</b> and newer:</summary>
+
+    sudo dnf install intel-media-driver
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>AMD</b>:</summary>
+
+    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+    sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>Nvidia</b>:</summary>
+
+    sudo dnf install nvidia-vaapi-driver
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>Firefox</b>:</summary>
+
+    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install ffmpeg --allowerasing
+</details>
 
 ### 5. Nika Read Only (on Linux PC)
 
