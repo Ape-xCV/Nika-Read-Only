@@ -601,7 +601,69 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Spoof OVMF (mandatory)
+### 6. Spoof QEMU (mandatory)
+
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf builddep qemu
+  sudo dnf install acpica-tools
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Debian Linux</b>:</summary>
+
+  ```shell
+  sudo apt build-dep qemu
+  sudo apt install acpica-tools
+  ```
+  </details>
+
+- Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+- Make sure that `pc-q35-9.2` is specified in your XML:
+```shell
+<type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+```
+
+
+- Replace from `<pm>` to `</emulator>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <pm>
+    <suspend-to-mem enabled="yes"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+  ```
+  </details>
+
+
+- Replace `</qemu:commandline>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+  </qemu:commandline>
+  ```
+  </details>
+
+### 6.1. Spoof OVMF (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
 
@@ -643,63 +705,6 @@ sudo -E ./nika
     <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
     <bootmenu enable="yes"/>
   </os>
-  ```
-  </details>
-
-### 6.1. Spoof QEMU (mandatory)
-
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
-
-
-  <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
-
-  ```shell
-  sudo dnf builddep qemu
-  sudo dnf install acpica-tools
-  ```
-  </details>
-
-
-  <details>
-    <summary>Build on <b>Debian Linux</b>:</summary>
-
-  ```shell
-  sudo apt build-dep qemu
-  sudo apt install acpica-tools
-  ```
-  </details>
-
-- Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<pm>` to `</emulator>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <pm>
-    <suspend-to-mem enabled="yes"/>
-    <suspend-to-disk enabled="no"/>
-  </pm>
-  <devices>
-    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
-  ```
-  </details>
-
-
-- Replace `</qemu:commandline>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
-  </qemu:commandline>
   ```
   </details>
 
