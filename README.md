@@ -708,7 +708,20 @@ sudo -E ./nika
   ```
   </details>
 
-### 6.2. Spoof EDID
+### 6.2. Build custom Linux kernel (optional)
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install util-linux-script
+  ```
+  </details>
+
+- Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
+
+### 6.3. Spoof EDID
 
 - Pinnacle of HWID ban (EAC case).
 
@@ -745,7 +758,7 @@ sudo -E ./nika
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
 
-### 6.3. Spoof GPU (tested from 51x to 57x)
+### 6.4. Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
