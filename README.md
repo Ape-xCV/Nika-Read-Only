@@ -31,7 +31,6 @@
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Toggle **triggerbot** with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
 * [x] Toggle hitbox with CURSOR_DOWN; `body`/`neck`/`head`/`none` text in the upper left corner of the screen
-* [ ] Hold CAPS_LOCK to **superglide**
 * [x] Press F8 to dump **r5apex** and scan for offsets
 * [x] Press F9 twice to terminate cheat
 
