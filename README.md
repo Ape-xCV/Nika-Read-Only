@@ -398,6 +398,8 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
 
 - Install GPU drivers on Windows VM.
 
+- Set `shader cache size` to **10 GiB** with `Nvidia Control Panel`.
+
 ### 3. Configure evdev passthrough (on Linux PC)
 
 - Find your **mouse** and **keyboard** with:
