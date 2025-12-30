@@ -469,9 +469,12 @@ sudo usermod -aG input $USER
 
 
   <details>
-    <summary>Manually stop `SELinux` every reboot on <b>Fedora Linux</b>:</summary>
+    <summary>Permanently disable `SELinux` on <b>Fedora Linux</b>:</summary>
 
-    sudo setenforce 0
+    sudo nano /etc/selinux/config
+
+    #SELINUX=enforcing
+    SELINUX=disabled
   </details>
 
 
