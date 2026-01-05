@@ -388,6 +388,13 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
 - Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
   * [x] SATA Disk 1 >> [Apply]
 
+- Windows 10 20H1 with KB4598291 has issues with `NVIDIA Corporation TU106 USB Type-C UCSI Controller` and `QEMU USB 3`:
+  - Set `Controller USB 0` to `QEMU USB 2`
+  - Install Windows
+  - Install GPU drivers
+  - Disable `NVIDIA USB Type-C Port Policy Controller` in **Device Manager**
+  - Set `Controller USB 0` to `QEMU USB 3`
+
 ### 2.3. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
