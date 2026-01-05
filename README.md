@@ -17,9 +17,15 @@
 
 ![Screenshot.jpg](Screenshot.jpg)
 
+## Popular games tested (patched QEMU/KVM + i5-6600K)
+
+* [x] Apex Legends (Easy Anti-Cheat)
+* [x] PUBG (BattlEye)
+* [x] Call of Duty: Black Ops 7 | Warzone S01 (RICOCHET Anti-Cheat + TPM 2.0 + Secure Boot)
+
 ## Features
 
-* [x] Stable CR3 shuffle for [Windows 10 20H1](https://archive.org/details/win-10-2004-english-x-64_202010)
+* [x] Stable CR3 shuffle for [Windows 10 20H1](https://archive.org/details/win-10-2004-english-x-64_202010) with [KB4598291](https://www.catalog.update.microsoft.com/Search.aspx?q=kb4598291)
 * [x] Overlay based ESP for players and items
 * [x] Press 5 / 6 / 7 / 8 / 9 / 0 to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
 * [x] Map radar
@@ -385,15 +391,9 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
 
 ### 2.2. Install Windows
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Boot Options >> Boot device order:
-  * [x] SATA Disk 1 >> [Apply]
-
 - Windows 10 20H1 with KB4598291 has issues with `NVIDIA Corporation TU106 USB Type-C UCSI Controller` and `QEMU USB 3`:
   - Set `Controller USB 0` to `QEMU USB 2`
   - Install Windows
-  - Install GPU drivers
-  - Disable `NVIDIA USB Type-C Port Policy Controller` in **Device Manager**
-  - Set `Controller USB 0` to `QEMU USB 3`
 
 ### 2.3. Add passthrough GPU devices to Windows VM
 
