@@ -618,21 +618,30 @@ sudo -E ./nika
 
 
   <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
+    <summary>Build on <b>Fedora 42 KDE</b>:</summary>
 
   ```shell
-  sudo dnf builddep qemu
-  sudo dnf install acpica-tools
+  sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
   ```
   </details>
 
 
   <details>
-    <summary>Build on <b>Debian Linux</b>:</summary>
+    <summary>Build on <b>Fedora 43 KDE</b>:</summary>
 
   ```shell
-  sudo apt build-dep qemu
+  sudo dnf install acpica-tools
+  sudo dnf builddep qemu
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Debian 13 KDE</b>:</summary>
+
+  ```shell
   sudo apt install acpica-tools
+  sudo apt build-dep qemu
   ```
   </details>
 
