@@ -621,7 +621,7 @@ sudo -E ./nika
     <summary>Build on <b>Fedora 42 KDE</b>:</summary>
 
   ```shell
-  sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
+  sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
   ```
   </details>
 
