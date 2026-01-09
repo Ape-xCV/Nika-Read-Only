@@ -316,7 +316,7 @@ else
   sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
 fi
-device=$(( ($(date +"%d") + $(date +"%m"))*100 + $(date +"%d") * $(date +"%m") ))
+device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 echo "0x1111                                            -> 0x$device"
 sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
 

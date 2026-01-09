@@ -1640,7 +1640,7 @@ else
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
 fi
-device=$(( ($(date +"%d") + $(date +"%m"))*100 + $(date +"%d") * $(date +"%m") ))
+device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 
