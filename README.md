@@ -55,11 +55,9 @@
   - Disable "Above 4G Decoding"
 
 - Note for Fedora 43 KDE set up:
-  - Unlike Fedora 42 KDE, this new OS has issues
+  - Avoid release 43
+  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/)
   - Disconnect cable drom dGPU before installing
-  - After installing, press 'e' with GRUB menu
-  - Replace 'rhgb quiet' with 'module_blacklist=nvidia,nouveau'
-  - Press 'F10' to boot
   - Without this your taskbar is assigned to your dGPU, which should never happen
 
 - Nested Virtualization for Intel:
