@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2025-11-30 18:15:40.219170599 +0000
++++ b/arch/x86/kvm/x86.c	2025-11-30 18:20:05.434671588 +0000
 @@ -10782,7 +10782,8 @@
   * exiting to the userspace.  Otherwise, the value will be returned to the
   * userspace.
@@ -10,7 +10,7 @@
  {
  	int r;
  	bool req_int_win =
-@@ -11219,6 +11220,15 @@
+@@ -11219,6 +11220,19 @@
  	return r;
  }
  
@@ -18,7 +18,11 @@
 +{
 +	int result = vcpu_enter_guest_real(vcpu);
 +
-+	adjust_tsc_offset_guest(vcpu, -2000);
++	if (vcpu->renew_exit_time)
++	{
++		adjust_tsc_offset_guest(vcpu, -2000);
++		//vcpu->renew_exit_time = false;
++	}
 +
 +	return result;
 +}  // NIKA end
@@ -26,3 +30,39 @@
  static bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
  {
  	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+--- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-01-04 22:42:43.394099666 +0000
+@@ -6083,6 +6083,12 @@
+ 	return 1;
+ }
+ 
++static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	if (!vcpu->renew_exit_time) vcpu->renew_exit_time = true;
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6096,7 +6102,8 @@
+ 	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+ 	[EXIT_REASON_CR_ACCESS]               = handle_cr,
+ 	[EXIT_REASON_DR_ACCESS]               = handle_dr,
+-	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,
++//	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,  // NIKA removed
++	[EXIT_REASON_CPUID]                   = handle_cpuid,  // NIKA added
+ 	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
+ 	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
+ 	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
+--- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
++++ b/include/linux/kvm_host.h	2025-11-03 20:36:53.049540197 +0000
+@@ -349,6 +349,8 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	bool renew_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;
