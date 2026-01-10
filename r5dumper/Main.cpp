@@ -250,10 +250,9 @@ int main(int argc, char* argv[])
                     *(uint32_t*)(16 + memoryBytes + resume), *(uint32_t*)(20 + memoryBytes + resume),
                     *(uint32_t*)(24 + memoryBytes + resume), *(uint32_t*)(28 + memoryBytes + resume),
                     resume);
-                uint32_t jumpAddr = *(uint32_t*)(memoryBytes + saveAddr[0]) + saveAddr[0] + 4;
                 if (saveAddr[0] > 0) for (int j = 0; j < 4 + (saveAddr[0] - resume) / 4; j++) fprintf(stderr, "         ");
-                if (jumpAddr < memoryBytesSize)
-                    printf("%08X=%08X\n", *(uint32_t*)(memoryBytes + saveAddr[0]), save[0]);
+                if (saveAddr[0] < memoryBytesSize)
+                    printf("%08X=%08X\n", *(uint32_t*)(memoryBytes + saveAddr[0]), *(uint32_t*)(memoryBytes + saveAddr[0]) + saveAddr[0] + 4);
                 step = resume + 4;
             } else step = maxStep;
         }
