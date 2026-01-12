@@ -490,9 +490,6 @@ else
   sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
 fi
 
-echo "0x1af4                                            -> 0x8086"
-sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
-
 #echo "  $file_intelhda"
 
 echo "  $file_escc"
