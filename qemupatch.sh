@@ -342,6 +342,7 @@ file_u2fpassthru="$(pwd)/qemu/hw/usb/u2f-passthru.c"
 file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
 file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
+header_hdacodeccommon="$(pwd)/qemu/hw/audio/hda-codec-common.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
 header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
@@ -416,6 +417,7 @@ if [[ -f "$file_u2fpassthru" ]]; then rm "$file_u2fpassthru"; fi
 if [[ -f "$file_u2f" ]]; then rm "$file_u2f"; fi
 if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
+if [[ -f "$header_hdacodeccommon" ]]; then rm "$header_hdacodeccommon"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
 if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
@@ -480,8 +482,16 @@ echo "\"QEMU\1\0\0\0\"                                    -> \"INTL\1\0\0\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"INTL\\\\1\\\\0\\\\0\\\\0\"/"
 
 echo "  $file_hdacodec"
-echo "0x1af4                                            -> 0x10ec"
-sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10ec/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "0x1af4                                            -> 0x1022"
+  sed -i "$file_hdacodec" -Ee "s/0x1af4/0x1022/"
+else
+  echo "0x1af4                                            -> 0x8086"
+  sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
+fi
+
+echo "0x1af4                                            -> 0x8086"
+sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
 
 #echo "  $file_intelhda"
 
@@ -1529,6 +1539,15 @@ echo "APPNAME6 \"BOCHS \"                                 -> APPNAME6 \"$app_nam
 echo "APPNAME8 \"BXPC    \"                               -> APPNAME8 \"$app_name_8\""
 sed -i "$header_amlbuild" -Ee "s/APPNAME6 \"BOCHS \"/APPNAME6 \"$app_name_6\"/"
 sed -i "$header_amlbuild" -Ee "s/APPNAME8 \"BXPC    \"/APPNAME8 \"$app_name_8\"/"
+
+echo "  $header_hdacodeccommon"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x1637)  // Renoir HD Audio Controller"
+  sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x1637)  \/\/ Renoir HD Audio Controller/"
+else
+  echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x02C8) // Comet Lake PCH-LP cAVS"
+  sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x02C8)  \/\/ Comet Lake PCH-LP cAVS/"
+fi
 
 echo "  $header_smbios"
 echo "/* SMBIOS type 7 - Cache Information */"
