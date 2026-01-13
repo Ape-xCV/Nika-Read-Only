@@ -287,14 +287,17 @@ file_vhostusergpu="$(pwd)/qemu/contrib/vhost-user-gpu/vhost-user-gpu.c"
 file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
 file_acpi_core="$(pwd)/qemu/hw/acpi/core.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
-#file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
+header_hdacodeccommon="$(pwd)/qemu/hw/audio/hda-codec-common.h"
+#header_e1000xregs="$(pwd)/qemu/hw/net/e1000x_regs.h"
+#file_makefile="$(pwd)/qemu/roms/Makefile"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
-#file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
 file_piix="$(pwd)/qemu/hw/isa/piix.c"
 file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
+file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
+file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
 file_multiboot="$(pwd)/qemu/hw/i386/multiboot.c"
 file_pc="$(pwd)/qemu/hw/i386/pc.c"
@@ -342,7 +345,6 @@ file_u2fpassthru="$(pwd)/qemu/hw/usb/u2f-passthru.c"
 file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
 file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
-header_hdacodeccommon="$(pwd)/qemu/hw/audio/hda-codec-common.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
 header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
@@ -362,14 +364,17 @@ if [[ -f "$file_vhostusergpu" ]]; then rm "$file_vhostusergpu"; fi
 if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
 if [[ -f "$file_acpi_core" ]]; then rm "$file_acpi_core"; fi
 if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
-#if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
+if [[ -f "$header_hdacodeccommon" ]]; then rm "$header_hdacodeccommon"; fi
+#if [[ -f "$header_e1000xregs" ]]; then rm "$header_e1000xregs"; fi
+#if [[ -f "$file_makefile" ]]; then rm "$file_makefile"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
-#if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
 if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
 if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
+if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
+if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
 if [[ -f "$file_multiboot" ]]; then rm "$file_multiboot"; fi
 if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
@@ -417,7 +422,6 @@ if [[ -f "$file_u2fpassthru" ]]; then rm "$file_u2fpassthru"; fi
 if [[ -f "$file_u2f" ]]; then rm "$file_u2f"; fi
 if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
-if [[ -f "$header_hdacodeccommon" ]]; then rm "$header_hdacodeccommon"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
 if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
@@ -464,7 +468,10 @@ else
   pm_type="2"
 fi
 sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
-## sed -i "$file_amlbuild" -Ee "/if \(f->rev <= 4\) \{/i\    build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+echo "    if (f->rev <= 4) {"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -482,15 +489,22 @@ echo "\"QEMU\1\0\0\0\"                                    -> \"INTL\1\0\0\0\""
 sed -i "$file_acpi_core" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"INTL\\\\1\\\\0\\\\0\\\\0\"/"
 
 echo "  $file_hdacodec"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "0x1af4                                            -> 0x1022"
-  sed -i "$file_hdacodec" -Ee "s/0x1af4/0x1022/"
-else
-  echo "0x1af4                                            -> 0x8086"
-  sed -i "$file_hdacodec" -Ee "s/0x1af4/0x8086/"
-fi
+echo "0x1af4                                            -> 0x10EC"
+sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10EC/"
 
-#echo "  $file_intelhda"
+echo "  $header_hdacodeccommon"
+echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x1220)  // Realtek ALC1220 CODEC"
+sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x1220)  \/\/ Realtek ALC1220 CODEC/"
+
+#echo "  $header_e1000xregs"
+#echo "0x10D3                                            -> 0x15B8 // Ethernet Connection (2) I219-V"
+#sed -i "$header_e1000xregs" -Ee "s/0x10D3/0x15B8  \/\/ Ethernet Connection (2) I219-V/"
+
+#echo "  $file_makefile"
+#echo "808610d3                                          -> 808615b8"
+#echo "DID := 10d3                                       -> DID := 15b8"
+#sed -i "$file_makefile" -Ee "s/808610d3/808615b8/"
+#sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 15b8/"
 
 echo "  $file_escc"
 echo "QEMU Sun Mouse                                    -> Sun Mouse"
@@ -519,13 +533,11 @@ sed -i "$file_edidgenerate" -Ee "s/0x1234/0x$word/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[16\] = 42/edid\[16\] = $week/"
 sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 
-#echo "  $file_smbusich9"
-
 echo "  $file_acpibuild"
 c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
 c3=$(shuf -i 4-6 -n 1)$(get_random_hex 2)
-## echo ".rev = 3,                                         -> .rev = 4,"
-## sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
+echo ".rev = 3,                                         -> .rev = 4,"
+sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
@@ -703,8 +715,32 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x790E;  \/\/ FCH LPC Bridge/"
 else
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x068D;  // Comet Lake LPC Controller"
-  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x068D;  \/\/ Comet Lake LPC Controller/"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0xA2C5;  // 200 Series PCH LPC Controller (Z270)"
+  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0xA2C5;  \/\/ 200 Series PCH LPC Controller (Z270)/"
+fi
+
+echo "  $file_smbusich9"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0x790B;  //  FCH SMBus Controller"
+  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
+  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x790B;  \/\/  FCH SMBus Controller/"
+else
+  echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0xA2A3;  // 200 Series/Z370 Chipset Family SMBus Controller"
+  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0xA2A3;  \/\/ 200 Series\/Z370 Chipset Family SMBus Controller/"
+fi
+
+echo "  $file_intelhda"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
+  echo "0x293e;                                           -> 0x1637;  //  Renoir HD Audio Controller"
+  sed -i "$file_intelhda" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
+  sed -i "$file_intelhda" -Ee "s/0x293e;/0x1637;  \/\/  Renoir HD Audio Controller/"
+else
+  echo "0x293e;                                           -> 0xA2F0;  // 200 Series PCH HD Audio"
+  echo "Intel HD Audio Controller (ich9)                  -> 200 Series PCH HD Audio"
+  sed -i "$file_intelhda" -Ee "s/0x293e;/0xA2F0;  \/\/ 200 Series PCH HD Audio/"
+  sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/200 Series PCH HD Audio/"
 fi
 
 echo "  $file_i386_fwcfg"
@@ -768,8 +804,8 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x7901;  \/\/ FCH SATA Controller [AHCI mode]/"
 else
-  echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x06D2;  // Comet Lake SATA AHCI Controller"
-  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x06D2;  \/\/ Comet Lake SATA AHCI Controller/"
+  echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0xA282;  //  200 Series PCH SATA controller [AHCI mode]"
+  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0xA282;  \/\/  200 Series PCH SATA controller [AHCI mode]/"
 fi
 
 echo "  $file_adbkbd"
@@ -856,9 +892,9 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x1633;  \/\/ Renoir PCIe GPP Bridge/"
 else
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0x06BA;  // Comet Lake PCI Express Root Port #1"
+  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0xA290;  // 200 Series PCH PCI Express Root Port #1"
   sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x06BA;  \/\/ Comet Lake PCI Express Root Port #1/"
+  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0xA290;  \/\/ 200 Series PCH PCI Express Root Port #1/"
 fi
 
 echo "  $file_pciepcibridge"
@@ -869,9 +905,9 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x1630;  \/\/ Renoir/Cezanne Root Complex/"
 else
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x9B54;  // 10th Gen Core Processor Host Bridge/DRAM Registers"
+  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x191F;  // Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host Bridge/DRAM Registers"
   sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x9B54;  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
+  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x191F;  \/\/ Xeon E3-1200 v5\/E3-1500 v5\/6th Gen Core Processor Host Bridge\/DRAM Registers/"
 fi
 
 echo "  $file_gpex"
@@ -1498,7 +1534,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x7914;  \/\/ FCH USB XHCI Controller/"
 else
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0x06ED;  // Comet Lake USB 3.1 xHCI Host Controller"
+  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0xA2AF;  // 200 Series/Z370 Chipset Family USB 3.0 xHCI Controller"
   sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
   sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x06ED;  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
 fi
@@ -1536,15 +1572,6 @@ echo "APPNAME6 \"BOCHS \"                                 -> APPNAME6 \"$app_nam
 echo "APPNAME8 \"BXPC    \"                               -> APPNAME8 \"$app_name_8\""
 sed -i "$header_amlbuild" -Ee "s/APPNAME6 \"BOCHS \"/APPNAME6 \"$app_name_6\"/"
 sed -i "$header_amlbuild" -Ee "s/APPNAME8 \"BXPC    \"/APPNAME8 \"$app_name_8\"/"
-
-echo "  $header_hdacodeccommon"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x1637)  // Renoir HD Audio Controller"
-  sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x1637)  \/\/ Renoir HD Audio Controller/"
-else
-  echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x02C8) // Comet Lake PCH-LP cAVS"
-  sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x02C8)  \/\/ Comet Lake PCH-LP cAVS/"
-fi
 
 echo "  $header_smbios"
 echo "/* SMBIOS type 7 - Cache Information */"
