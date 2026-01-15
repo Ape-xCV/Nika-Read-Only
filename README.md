@@ -387,7 +387,65 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
 
-### 2.2. Install Windows
+### 2.3. Remove excess PCI
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+- Remove:
+```shell
+    <controller type="pci" index="5" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="5" port="0x14"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x4"/>
+    </controller>
+    <controller type="pci" index="6" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="6" port="0x15"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x5"/>
+    </controller>
+    <controller type="pci" index="7" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="7" port="0x16"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x6"/>
+    </controller>
+    <controller type="pci" index="8" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="8" port="0x17"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x7"/>
+    </controller>
+    <controller type="pci" index="9" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="9" port="0x18"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x0" multifunction="on"/>
+    </controller>
+    <controller type="pci" index="10" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="10" port="0x19"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x1"/>
+    </controller>
+    <controller type="pci" index="11" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="11" port="0x1a"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x2"/>
+    </controller>
+    <controller type="pci" index="12" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="12" port="0x1b"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x3"/>
+    </controller>
+    <controller type="pci" index="13" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="13" port="0x1c"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x4"/>
+    </controller>
+    <controller type="pci" index="14" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="14" port="0x1d"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x5"/>
+    </controller>
+```
+
+### 2.3. Install Windows
 
 - Windows 10 20H1 with KB4598291 has issues with `NVIDIA Corporation TU106 USB Type-C UCSI Controller` and `QEMU USB 3`.
 
@@ -396,7 +454,7 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
   - Virtual Machine Manager >> [Open] >> View >> Details >> USB Redirector 1 >> [Remove]
   - Virtual Machine Manager >> [Open] >> View >> Details >> Controller USB 0 >> Model: `none` >> [Apply]
 
-### 2.3. Add passthrough GPU devices to Windows VM
+### 2.4. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
