@@ -387,7 +387,7 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
 
-### 2.3. Remove excess PCI
+### 2.2. Remove excess PCI
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
