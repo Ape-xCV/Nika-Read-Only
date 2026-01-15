@@ -318,7 +318,9 @@ file_pvpanicisa="$(pwd)/qemu/hw/misc/pvpanic-isa.c"
 file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
 file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
+file_pci="$(pwd)/qemu/hw/pci/pci.c"
 file_genpcierootport="$(pwd)/qemu/hw/pci-bridge/gen_pcie_root_port.c"
+file_hcdxhcipci="$(pwd)/qemu/hw/usb/hcd-xhci-pci.c"
 file_pciepcibridge="$(pwd)/qemu/hw/pci-bridge/pcie_pci_bridge.c"
 file_gpex="$(pwd)/qemu/hw/pci-host/gpex.c"
 file_mptconfig="$(pwd)/qemu/hw/scsi/mptconfig.c"
@@ -339,7 +341,6 @@ file_devuas="$(pwd)/qemu/hw/usb/dev-uas.c"
 file_devwacom="$(pwd)/qemu/hw/usb/dev-wacom.c"
 #file_hcduhci="$(pwd)/qemu/hw/usb/hcd-uhci.c"
 #file_hcdehcipci="$(pwd)/qemu/hw/usb/hcd-ehci-pci.c"
-file_hcdxhcipci="$(pwd)/qemu/hw/usb/hcd-xhci-pci.c"
 file_u2femulated="$(pwd)/qemu/hw/usb/u2f-emulated.c"
 file_u2fpassthru="$(pwd)/qemu/hw/usb/u2f-passthru.c"
 file_u2f="$(pwd)/qemu/hw/usb/u2f.c"
@@ -395,7 +396,9 @@ if [[ -f "$file_pvpanicisa" ]]; then rm "$file_pvpanicisa"; fi
 if [[ -f "$file_ctrl" ]]; then rm "$file_ctrl"; fi
 if [[ -f "$file_fwcfgacpi" ]]; then rm "$file_fwcfgacpi"; fi
 if [[ -f "$file_nvram_fwcfg" ]]; then rm "$file_nvram_fwcfg"; fi
+if [[ -f "$file_pci" ]]; then rm "$file_pci"; fi
 if [[ -f "$file_genpcierootport" ]]; then rm "$file_genpcierootport"; fi
+if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
 if [[ -f "$pciepcibridge" ]]; then rm "$pciepcibridge"; fi
 if [[ -f "$file_gpex" ]]; then rm "$file_gpex"; fi
 if [[ -f "$file_mptconfig" ]]; then rm "$file_mptconfig"; fi
@@ -416,7 +419,6 @@ if [[ -f "$file_devuas" ]]; then rm "$file_devuas"; fi
 if [[ -f "$file_devwacom" ]]; then rm "$file_devwacom"; fi
 #if [[ -f "$file_hcduhci" ]]; then rm "$file_hcduhci"; fi
 #if [[ -f "$file_hcdehcipci" ]]; then rm "$file_hcdehcipci"; fi
-if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
 if [[ -f "$file_u2femulated" ]]; then rm "$file_u2femulated"; fi
 if [[ -f "$file_u2fpassthru" ]]; then rm "$file_u2fpassthru"; fi
 if [[ -f "$file_u2f" ]]; then rm "$file_u2f"; fi
@@ -469,7 +471,7 @@ else
 fi
 sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
 echo "    if (f->rev <= 4) {"
-echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
@@ -688,12 +690,12 @@ echo "    build_append_int_noprefix(tables_blob,0x00000000,4);"
 echo "    acpi_table_end(tables->linker, &table);"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    /* RSDT is pointed to by RSDP */"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_add_table(table_offsets, tables_blob);"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_begin(&table, tables_blob);"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    build_append_int_noprefix(tables_blob,0x00000000,4);"
-sed -i "$file_acpibuild" -Ee "/\/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_end(tables->linker, &table);"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_add_table(table_offsets, tables_blob);"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_begin(&table, tables_blob);"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    build_append_int_noprefix(tables_blob,0x00000000,4);"
+sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_end(tables->linker, &table);"
 
 echo "  $file_piix"
 echo ".S08.                                             -> .${path}08."
@@ -884,30 +886,54 @@ sed -i "$file_nvram_fwcfg" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 #echo "\"QEMU\"                                            -> \"$new_string\""
 #sed -i "$file_nvram_fwcfg" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
+echo "  $file_pci"
+echo "    PCIDeviceClass *pc = PCI_DEVICE_GET_CLASS(pci_dev);"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    static int index;"
+echo "    if (pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)"
+echo "    pc->device_id += ++index;"
+sed -i "$file_pci" -Ee "/    PCIDeviceClass \*pc = PCI_DEVICE_GET_CLASS\(pci_dev\);/a\    static int index;\n\
+    if (pc->vendor_id == PCI_VENDOR_ID_REDHAT &&\n\
+        pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)\n\
+        pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;\n"
+
 echo "  $file_genpcierootport"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0x1448;  // Renoir Device 24: Function 0"
+#  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0x1448;  // Renoir Device 24: Function 0"
   sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x1448;  \/\/ Renoir Device 24: Function 0/"
+#  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x1448;  \/\/ Renoir Device 24: Function 0/"
 else
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0xA290;  // 200 Series PCH PCI Express Root Port #1"
+#  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0xA290;  // 200 Series PCH PCI Express Root Port #1"
   sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x06BA;  \/\/ Comet Lake PCI Express Root Port #1/"
+#  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x06BA;  \/\/ Comet Lake PCI Express Root Port #1/"
+fi
+
+echo "  $file_hcdxhcipci"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
+#  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0x7914;  // FCH USB XHCI Controller"
+  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
+#  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x7914;  \/\/ FCH USB XHCI Controller/"
+else
+  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
+#  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0xA2AF;  // 200 Series/Z370 Chipset Family USB 3.0 xHCI Controller"
+  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
+#  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x06ED;  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
 fi
 
 echo "  $file_pciepcibridge"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x1633;  // Renoir PCIe GPP Bridge"
+#  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x1633;  // Renoir PCIe GPP Bridge"
   sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x1633;  \/\/ Renoir PCIe GPP Bridge/"
+#  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x1633;  \/\/ Renoir PCIe GPP Bridge/"
 else
   echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x191F;  // Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host Bridge/DRAM Registers"
+#  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x191F;  // Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host Bridge/DRAM Registers"
   sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x9B54;  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
+#  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x9B54;  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
 fi
 
 echo "  $file_gpex"
@@ -1012,7 +1038,7 @@ echo "    if (instance > 0)"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 echo "    else"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_TABLE_SET_STR(4, socket_designation_str, sock_str);"
 sed -i "$file_smbios" -e  '/type4.sock_pfx, instance);/{d;}'
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    if (instance > 0)"
@@ -1526,19 +1552,6 @@ sed -i "$file_devwacom" -Ee "s/desc = \"QEMU PenPartner Tablet\"/desc = \"Wacom 
 
 #echo "  $file_hcdehcipci"
 
-echo "  $file_hcdxhcipci"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0x7914;  // FCH USB XHCI Controller"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x7914;  \/\/ FCH USB XHCI Controller/"
-else
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0xA2AF;  // 200 Series/Z370 Chipset Family USB 3.0 xHCI Controller"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x06ED;  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
-fi
-
 echo "  $file_u2femulated"
 get_new_string $(shuf -i 5-7 -n 1) 3
 echo "desc = \"QEMU U2F emulated key\"                    -> desc = \"$prefix$suffix U2F emulated key\""
@@ -1577,7 +1590,7 @@ echo "  $header_smbios"
 echo "/* SMBIOS type 7 - Cache Information */"
 echo "struct smbios_type_7 {"
 echo "} QEMU_PACKED;"
-echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "/* SMBIOS type 8 - Port Connector Information */"
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 8 - Port Connector Information \*\//i/* SMBIOS type 7 - Cache Information */"
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 8 - Port Connector Information \*\//istruct smbios_type_7 {"
@@ -1666,22 +1679,34 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QUMRANET    0x1af4                                -> QUMRANET    0x1022"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x1022"
   echo "REDHAT             0x1b36                         -> REDHAT             0x1022"
+  echo "PCIE_RP     0x000c                                -> PCIE_RP     0x1448  // Renoir Device 24: Function 0"
+  echo "XHCI        0x000d                                -> XHCI        0x7914  // FCH USB XHCI Controller"
+  echo "PCIE_BRIDGE 0x000e                                -> PCIE_BRIDGE 0x1633  // Renoir PCIe GPP Bridge"
   sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
+  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x1448  \/\/ Renoir Device 24: Function 0/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x7914  \/\/ FCH USB XHCI Controller/"
+  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x1633  \/\/ Renoir PCIe GPP Bridge/"
 else
   echo "QEMU               0x1234                         -> QEMU               0x8086"
   echo "VMWARE             0x15ad                         -> VMWARE             0x8086"
   echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x8086"
   echo "REDHAT             0x1b36                         -> REDHAT             0x8086"
+  echo "PCIE_RP     0x000c                                -> PCIE_RP     0x06BA  // Comet Lake PCI Express Root Port #1"
+  echo "XHCI        0x000d                                -> XHCI        0x06ED  // Comet Lake USB 3.1 xHCI Host Controller"
+  echo "PCIE_BRIDGE 0x000e                                -> PCIE_BRIDGE 0x9B54  // 10th Gen Core Processor Host Bridge/DRAM Registers"
   sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
+  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x06BA  \/\/ Comet Lake PCI Express Root Port #1/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x06ED  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
+  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x9B54  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
 fi
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 echo "0x1111                                            -> 0x$device"
@@ -1727,7 +1752,7 @@ echo "    g_type4_family = def->t4_family;"
 echo "    g_type4_upgrade = def->t4_upgrade;"
 echo "    g_type4_version = malloc(strlen(def->model_id) + 1);"
 echo "    strcpy(g_type4_version, def->model_id);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    object_property_set_str(OBJECT(cpu), \"model-id\", def->model_id,"
 sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_family = def->t4_family;"
 sed -i "$file_cpu" -Ee "/    object_property_set_str\(OBJECT\(cpu\), \"model-id\", def->model_id,/i\    g_type4_upgrade = def->t4_upgrade;"
