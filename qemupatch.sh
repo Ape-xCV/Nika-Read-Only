@@ -732,7 +732,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
 else
-  echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0xA2C5;  // 200 Series PCH LPC Controller (Z270)"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x068D;  // Comet Lake LPC Controller"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_8086;/"
 fi
 echo "ICH9 LPC bridge                                   -> LPC Bridge"
@@ -745,7 +745,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_1022;/"
 else
-  echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0xA2A3;  // 200 Series/Z370 Chipset Family SMBus Controller"
+  echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0xA3A3;  // Comet Lake PCH-V SMBus Host Controller"
   sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_8086;/"
 fi
 echo "ICH9 SMBUS Bridge                                 -> SMBus Bridge"
@@ -760,8 +760,8 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_1022;/"
   sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_1022/"
 else
-  echo "0x293e;                                           -> 0xA2F0;  // 200 Series PCH HD Audio"
-  echo "Intel HD Audio Controller (ich9)                  -> 200 Series PCH HD Audio"
+  echo "0x293e;                                           -> 0xA3F0;  // Comet Lake PCH-V cAVS"
+  echo "Intel HD Audio Controller (ich9)                  -> Comet Lake PCH-V cAVS"
   sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_8086;/"
   sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_8086/"
 fi
@@ -827,7 +827,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_1022;/"
 else
-  echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0xA282;  // 200 Series PCH SATA controller [AHCI mode]"
+  echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x06D2;  // Comet Lake SATA AHCI Controller"
   sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_8086;/"
 fi
 
