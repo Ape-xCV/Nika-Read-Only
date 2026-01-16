@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# lspci -nn
+
+lpc_1022="790E"         # FCH LPC Bridge
+smbus_1022="790B"       # FCH SMBus Controller
+hdaudio_1022="1637"     # Renoir HD Audio Controller
+hdaname_1022="Renoir HD Audio Controller"
+sata_1022="7901"        # FCH SATA Controller [AHCI mode]
+rootport_1022="1448"    # Renoir Device 24: Function 0
+xhci_1022="7914"        # FCH USB XHCI Controller
+hostbridge_1022="1633"  # Renoir PCIe GPP Bridge
+
+lpc_8086="068D"         # Comet Lake LPC Controller
+smbus_8086="A3A3"       # Comet Lake PCH-V SMBus Host Controller
+hdaudio_8086="A3F0"     # Comet Lake PCH-V cAVS
+hdaname_8086="Comet Lake PCH-V cAVS"
+sata_8086="06D2"        # Comet Lake SATA AHCI Controller
+rootport_8086="06BA"    # Comet Lake PCI Express Root Port #1
+xhci_8086="06ED"        # Comet Lake USB 3.1 xHCI Host Controller
+hostbridge_8086="9B54"  # 10th Gen Core Processor Host Bridge\/DRAM Registers
+
+
 if [ "$EUID" != 0 ]; then
     faillock --reset
     sudo -E "$0" "$@"
@@ -319,9 +340,6 @@ file_ctrl="$(pwd)/qemu/hw/nvme/ctrl.c"
 file_fwcfgacpi="$(pwd)/qemu/hw/nvram/fw_cfg-acpi.c"
 file_nvram_fwcfg="$(pwd)/qemu/hw/nvram/fw_cfg.c"
 file_pci="$(pwd)/qemu/hw/pci/pci.c"
-file_genpcierootport="$(pwd)/qemu/hw/pci-bridge/gen_pcie_root_port.c"
-file_hcdxhcipci="$(pwd)/qemu/hw/usb/hcd-xhci-pci.c"
-file_pciepcibridge="$(pwd)/qemu/hw/pci-bridge/pcie_pci_bridge.c"
 file_gpex="$(pwd)/qemu/hw/pci-host/gpex.c"
 file_mptconfig="$(pwd)/qemu/hw/scsi/mptconfig.c"
 file_scsibus="$(pwd)/qemu/hw/scsi/scsi-bus.c"
@@ -397,9 +415,6 @@ if [[ -f "$file_ctrl" ]]; then rm "$file_ctrl"; fi
 if [[ -f "$file_fwcfgacpi" ]]; then rm "$file_fwcfgacpi"; fi
 if [[ -f "$file_nvram_fwcfg" ]]; then rm "$file_nvram_fwcfg"; fi
 if [[ -f "$file_pci" ]]; then rm "$file_pci"; fi
-if [[ -f "$file_genpcierootport" ]]; then rm "$file_genpcierootport"; fi
-if [[ -f "$file_hcdxhcipci" ]]; then rm "$file_hcdxhcipci"; fi
-if [[ -f "$pciepcibridge" ]]; then rm "$pciepcibridge"; fi
 if [[ -f "$file_gpex" ]]; then rm "$file_gpex"; fi
 if [[ -f "$file_mptconfig" ]]; then rm "$file_mptconfig"; fi
 if [[ -f "$file_scsibus" ]]; then rm "$file_scsibus"; fi
@@ -715,34 +730,40 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
   sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
-  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x790E;  \/\/ FCH LPC Bridge/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
 else
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0xA2C5;  // 200 Series PCH LPC Controller (Z270)"
-  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x068D;  \/\/ Comet Lake LPC Controller/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_8086;/"
 fi
+echo "ICH9 LPC bridge                                   -> LPC Bridge"
+sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 
 echo "  $file_smbusich9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0x790B;  // FCH SMBus Controller"
   sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
-  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x790B;  \/\/ FCH SMBus Controller/"
+  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_1022;/"
 else
   echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0xA2A3;  // 200 Series/Z370 Chipset Family SMBus Controller"
-  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0xA3A3;  \/\/ Comet Lake PCH-V SMBus Host Controller/"
+  sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_8086;/"
 fi
+echo "ICH9 SMBUS Bridge                                 -> SMBus Bridge"
+sed -i "$file_smbusich9" -Ee "s/ICH9 SMBUS Bridge/SMBus Bridge/"
 
 echo "  $file_intelhda"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "0x293e;                                           -> 0x1637;  // Renoir HD Audio Controller"
+  echo "Intel HD Audio Controller (ich9)                  -> Renoir HD Audio Controller"
   sed -i "$file_intelhda" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
-  sed -i "$file_intelhda" -Ee "s/0x293e;/0x1637;  \/\/ Renoir HD Audio Controller/"
+  sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_1022;/"
+  sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_1022/"
 else
   echo "0x293e;                                           -> 0xA2F0;  // 200 Series PCH HD Audio"
   echo "Intel HD Audio Controller (ich9)                  -> 200 Series PCH HD Audio"
-  sed -i "$file_intelhda" -Ee "s/0x293e;/0xA3F0;  \/\/ Comet Lake PCH-V cAVS/"
-  sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/Comet Lake PCH-V cAVS/"
+  sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_8086;/"
+  sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_8086/"
 fi
 
 echo "  $file_i386_fwcfg"
@@ -804,10 +825,10 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x7901;  // FCH SATA Controller [AHCI mode]"
   sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
-  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x7901;  \/\/ FCH SATA Controller [AHCI mode]/"
+  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_1022;/"
 else
   echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0xA282;  // 200 Series PCH SATA controller [AHCI mode]"
-  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x06D2;  \/\/ Comet Lake SATA AHCI Controller/"
+  sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_8086;/"
 fi
 
 echo "  $file_adbkbd"
@@ -896,45 +917,6 @@ sed -i "$file_pci" -Ee "/    PCIDeviceClass \*pc = PCI_DEVICE_GET_CLASS\(pci_dev
     if (pc->vendor_id == PCI_VENDOR_ID_REDHAT &&\n\
         pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)\n\
         pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;\n"
-
-echo "  $file_genpcierootport"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-#  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0x1448;  // Renoir Device 24: Function 0"
-  sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-#  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x1448;  \/\/ Renoir Device 24: Function 0/"
-else
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-#  echo "PCI_DEVICE_ID_REDHAT_PCIE_RP;                     -> 0xA290;  // 200 Series PCH PCI Express Root Port #1"
-  sed -i "$file_genpcierootport" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-#  sed -i "$file_genpcierootport" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_RP;/0x06BA;  \/\/ Comet Lake PCI Express Root Port #1/"
-fi
-
-echo "  $file_hcdxhcipci"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-#  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0x7914;  // FCH USB XHCI Controller"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-#  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x7914;  \/\/ FCH USB XHCI Controller/"
-else
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-#  echo "PCI_DEVICE_ID_REDHAT_XHCI;                        -> 0xA2AF;  // 200 Series/Z370 Chipset Family USB 3.0 xHCI Controller"
-  sed -i "$file_hcdxhcipci" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-#  sed -i "$file_hcdxhcipci" -Ee "s/PCI_DEVICE_ID_REDHAT_XHCI;/0x06ED;  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
-fi
-
-echo "  $file_pciepcibridge"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x1022;"
-#  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x1633;  // Renoir PCIe GPP Bridge"
-  sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x1022;/"
-#  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x1633;  \/\/ Renoir PCIe GPP Bridge/"
-else
-  echo "PCI_VENDOR_ID_REDHAT;                             -> 0x8086;"
-#  echo "PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;                 -> 0x191F;  // Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host Bridge/DRAM Registers"
-  sed -i "$file_pciepcibridge" -Ee "s/PCI_VENDOR_ID_REDHAT;/0x8086;/"
-#  sed -i "$file_pciepcibridge" -Ee "s/PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;/0x9B54;  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
-fi
 
 echo "  $file_gpex"
 get_new_string 4 1
@@ -1687,9 +1669,9 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
-  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x1448  \/\/ Renoir Device 24: Function 0/"
-  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x7914  \/\/ FCH USB XHCI Controller/"
-  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x1633  \/\/ Renoir PCIe GPP Bridge/"
+  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_1022/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_1022/"
+  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_1022/"
 else
   echo "QEMU               0x1234                         -> QEMU               0x8086"
   echo "VMWARE             0x15ad                         -> VMWARE             0x8086"
@@ -1704,9 +1686,9 @@ else
   sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
-  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x06BA  \/\/ Comet Lake PCI Express Root Port #1/"
-  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x06ED  \/\/ Comet Lake USB 3.1 xHCI Host Controller/"
-  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x9B54  \/\/ 10th Gen Core Processor Host Bridge\/DRAM Registers/"
+  sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_8086/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_8086/"
+  sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_8086/"
 fi
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 echo "0x1111                                            -> 0x$device"
