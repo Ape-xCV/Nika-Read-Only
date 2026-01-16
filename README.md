@@ -704,6 +704,29 @@ sudo -E ./nika
   ```
   </details>
 
+- Edit `qemupatch.sh`, use your own `lspci -nn` data:
+```shell
+lspci -nn
+
+00:1f.0 ISA bridge [0601]: Intel Corporation Tiger Lake-LP LPC Controller [8086:a082] (rev 20)
+00:1f.4 SMBus [0c05]: Intel Corporation Tiger Lake-LP SMBus Controller [8086:a0a3] (rev 20)
+00:1f.3 Multimedia audio controller [0401]: Intel Corporation Tiger Lake-LP Smart Sound Technology Audio Controller [8086:a0c8] (rev 20)
+02:00.0 Non-Volatile memory controller [0108]: Intel Corporation SSD 660P Series [8086:f1a8] (rev 03)
+00:1c.0 PCI bridge [0604]: Intel Corporation Tiger Lake-LP PCI Express Root Port #8 [8086:a0bf] (rev 20)
+00:14.0 USB controller [0c03]: Intel Corporation Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller [8086:a0ed] (rev 20)
+00:00.0 Host bridge [0600]: Intel Corporation Tiger Lake-UP3/H35 4 cores Host Bridge/DRAM Registers [8086:9a14] (rev 01)
+
+
+lpc_8086="a082"         # Tiger Lake-LP LPC Controller
+smbus_8086="a0a3"       # Tiger Lake-LP SMBus Controller
+hdaudio_8086="a0c8"     # Tiger Lake-LP Smart Sound Technology Audio Controller
+hdaname_8086="Tiger Lake-LP Smart Sound Technology Audio Controller"
+sata_8086="f1a8"        # SSD 660P Series
+rootport_8086="a0bf"    # Tiger Lake-LP PCI Express Root Port #8
+xhci_8086="a0ed"        # Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller
+hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
+```
+
 - Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
