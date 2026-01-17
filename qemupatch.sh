@@ -18,7 +18,7 @@ hdaname_8086="Comet Lake PCH-V cAVS"
 sata_8086="06D2"        # Comet Lake SATA AHCI Controller
 rootport_8086="06BA"    # Comet Lake PCI Express Root Port #1
 xhci_8086="06ED"        # Comet Lake USB 3.1 xHCI Host Controller
-hostbridge_8086="9B54"  # 10th Gen Core Processor Host Bridge\/DRAM Registers
+hostbridge_8086="9B54"  # 10th Gen Core Processor Host Bridge/DRAM Registers
 
 
 if [ "$EUID" != 0 ]; then
@@ -1670,7 +1670,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_1022/"
-  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_1022/"
+##  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_1022/"
   sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_1022/"
 else
   echo "QEMU               0x1234                         -> QEMU               0x8086"
@@ -1687,7 +1687,7 @@ else
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_8086/"
-  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_8086/"
+##  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_8086/"
   sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_8086/"
 fi
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
