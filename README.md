@@ -445,16 +445,7 @@ sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
     </controller>
 ```
 
-### 2.3. Install Windows
-
-- Windows 10 20H1 with KB4598291 has issues with `NVIDIA Corporation TU106 USB Type-C UCSI Controller` and `QEMU USB 3`.
-
-- If BSoD on Windows:
-  - Virtual Machine Manager >> [Open] >> View >> Details >> USB Redirector 2 >> [Remove]
-  - Virtual Machine Manager >> [Open] >> View >> Details >> USB Redirector 1 >> [Remove]
-  - Virtual Machine Manager >> [Open] >> View >> Details >> Controller USB 0 >> Model: `none` >> [Apply]
-
-### 2.4. Add passthrough GPU devices to Windows VM
+### 2.3. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
