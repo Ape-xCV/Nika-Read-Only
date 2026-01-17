@@ -1655,6 +1655,7 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\//i} QEMU_PACKED;\\n"
 
 echo "  $header_pci"
+device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1670,7 +1671,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_1022/"
-##  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_1022/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$device/"
   sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_1022/"
 else
   echo "QEMU               0x1234                         -> QEMU               0x8086"
@@ -1687,10 +1688,9 @@ else
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_8086/"
-##  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$xhci_8086/"
+  sed -i "$header_pci" -Ee "s/XHCI        0x000d/XHCI        0x$device/"
   sed -i "$header_pci" -Ee "s/PCIE_BRIDGE 0x000e/PCIE_BRIDGE 0x$hostbridge_8086/"
 fi
-device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 
