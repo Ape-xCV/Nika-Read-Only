@@ -106,7 +106,10 @@ bool scanForPattern(size_t &resume, size_t size, std::string pattern, uint32_t (
         uint8_t saveSlot = 0;
         for (int j = 0; j < pattern.size();) {
             if (pattern[j] <= '9' && pattern[j] >= '0' || pattern[j] <= 'F' && pattern[j] >= 'A') {
-                found = patternBytes[cursorPattern] == (uint8_t)memoryBytes[i+cursorMemory];
+                if (i+cursorMemory < size)
+                    found = patternBytes[cursorPattern] == (uint8_t)memoryBytes[i+cursorMemory];
+                else
+                    found = false;
                 cursorMemory += 1;
                 cursorPattern += 1;
                 j += 2;
@@ -512,6 +515,45 @@ int main(int argc, char* argv[])
     std::cout << "\n[3/3] " << std::dec << recvTablesCount33 << " RecvTables, " << recvPropsCount33 << " RecvProps\n";
 
 
+//488D0D${\"Attempted to perform GetMods\"} [40-80] 399Eu4 [2-10] 8D?u4 [20-50] 488B15${*'}
+//488D0D ${\"Attempted to perform GetMods\"}
+//488D0D ${417474656D7074656420746F 20706572666F726D 204765744D6F6473}
+
+    std::cout << "\n[ModifierOffsets]\n";
+    int modifierNamesCount = 0;
+    resume = 0;
+    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${417474656D7074656420746F 20706572666F726D 204765744D6F6473}", save, saveAddr)) {
+        uint32_t mods_count;
+        uint64_t mods_names;
+        size_t temp = resume + 35 + 20;
+        if (scanForPattern(temp, temp + 40, "39 ? u4", save, saveAddr)) {
+            mods_count = save[0];
+            std::cout << "mods_count = 0x" << std::hex << mods_count << "\n";
+            temp += 6 + 20;
+            if (scanForPattern(temp, temp + 30, "48 8B 15 ${'}", save, saveAddr)) {
+                mods_names = *(uint64_t*)(memoryBytes + save[0]);
+                mods_names -= g_base;
+                std::cout << "mods_names = 0x" << std::hex << mods_names << "\n";
+                std::cout << "\n[ModifierNames]\n";
+                for (int i = 0; i < mods_count; i++) {
+                    uint64_t namePtr = mods_names + i*8;
+                    if (namePtr >= memoryBytesSize - 8) break;
+                    uint64_t nameAddr = *(uint64_t*)(memoryBytes + namePtr);
+                    nameAddr -= g_base;
+                    auto name = (char*)(memoryBytes + nameAddr);
+                    if (strlen(name) == 0) break;
+                    std::cout << name << " = " << std::dec << i << "\n";
+                    std::string fullName = formStr("[ModifierNames]" + std::string(name));
+                    if (mapOffsets[fullName] == 0)
+                        mapOffsets[fullName] = i;
+                    modifierNamesCount++;
+                }
+            }
+        }
+    }
+    std::cout << "\n" << std::dec << modifierNamesCount << " ModifierNames\n";
+
+
     std::cout << "\n[NetworkedStringTables]\n";
     int networkedStringTablesCount = 0;
     maxStep = dataVirtualAddress;
@@ -577,6 +619,7 @@ int main(int argc, char* argv[])
     std::cout << "[1/3] " << std::dec << recvTablesCount13 << " RecvTables, " << recvPropsCount13 << " RecvProps\n";
     std::cout << "[2/3] " << std::dec << recvTablesCount23 << " RecvTables, " << recvPropsCount23 << " RecvProps\n";
     std::cout << "[3/3] " << std::dec << recvTablesCount33 << " RecvTables, " << recvPropsCount33 << " RecvProps\n";
+    std::cout << std::dec << modifierNamesCount << " ModifierNames\n";
     std::cout << std::dec << networkedStringTablesCount << " NetworkedStringTables\n";
     std::cout << std::dec << weaponSettingsCount << " WeaponSettings\n";
 
