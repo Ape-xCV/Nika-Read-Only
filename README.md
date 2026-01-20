@@ -203,6 +203,7 @@ sudo systemctl enable libvirtd.service
 sudo virsh net-autostart default --disable
 sudo virsh net-start default
 sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
+#sudo sysctl kernel.split_lock_mitigate=0 #UNCOMMENT if Intel 12th gen and newer
 ```
 
 ### 2. New VM set up in QEMU/KVM
