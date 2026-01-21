@@ -262,7 +262,7 @@ sudo sysctl kernel.split_lock_mitigate=0
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=3,manufacturer=HP,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Intel(R) Corporation,version=11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz,processor-id=0xBFEBFBFF000806C1"/>
+      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Intel(R) Corporation,version=11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz,max-speed=4200,current-speed=2400"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=D3E4F5"/>
       <qemu:arg value="-smbios"/>
