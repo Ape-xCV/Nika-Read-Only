@@ -364,7 +364,6 @@ file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
-file_makefile="$(pwd)/qemu/roms/Makefile"
 header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
 header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
@@ -438,7 +437,6 @@ if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
-if [[ -f "$file_makefile" ]]; then rm "$file_makefile"; fi
 if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
 if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
@@ -1644,7 +1642,7 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 
 echo "  $header_pci"
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-virtio=$(( 65535 - $device ))
+virtio=$(( 49152 + $device ))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1684,12 +1682,6 @@ echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )"
 sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )/"
-
-echo "  $file_makefile"
-echo "1af41000                                          -> 8086$device"
-echo "DID := 1000                                       -> DID := $device"
-sed -i "$file_makefile" -Ee "s/1af41000/8086$device/"
-sed -i "$file_makefile" -Ee "s/DID := 1000/DID := $device/"
 
 echo "  $header_pciids"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
