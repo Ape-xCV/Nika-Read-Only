@@ -804,7 +804,13 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
   ```
   </details>
 
-### 6.2. Build custom Linux kernel (optional)
+### 6.2. Install virtio ethernet (spoofed)
+
+- Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso)
+
+- [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... >> Browse Local >> virtio-win.iso >> [Finish]
+
+### 6.3. Build custom Linux kernel (optional)
 
 
   <details>
@@ -817,7 +823,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
 
-### 6.3. Spoof EDID
+### 6.4. Spoof EDID
 
 - Pinnacle of HWID ban (EAC case).
 
@@ -854,7 +860,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
 
-### 6.4. Spoof GPU (tested from 51x to 57x)
+### 6.5. Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
