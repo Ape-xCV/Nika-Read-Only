@@ -810,6 +810,14 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... >> Browse Local >> virtio-win.iso >> [Finish]
 
+- Download `virtio.cmd` to `virtio` folder in Desktop (on Windows VM).
+
+- Run `virtio.cmd`, it will copy necessary files from D: (CDROM device with `virtio-win.iso`).
+
+- Restart VM.
+
+- Install virtio ethernet from `virtio` folder (use Device Manager).
+
 ### 6.3. Build custom Linux kernel (optional)
 
 
