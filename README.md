@@ -818,6 +818,11 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Install virtio ethernet from `virtio` folder (use Device Manager).
 
+- Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
+```shell
+bcdedit /set testsigning off
+```
+
 ### 6.3. Build custom Linux kernel (optional)
 
 
