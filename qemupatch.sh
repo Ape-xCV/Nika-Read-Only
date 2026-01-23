@@ -309,8 +309,6 @@ file_amlbuild="$(pwd)/qemu/hw/acpi/aml-build.c"
 file_acpi_core="$(pwd)/qemu/hw/acpi/core.c"
 file_hdacodec="$(pwd)/qemu/hw/audio/hda-codec.c"
 header_hdacodeccommon="$(pwd)/qemu/hw/audio/hda-codec-common.h"
-#header_e1000xregs="$(pwd)/qemu/hw/net/e1000x_regs.h"
-#file_makefile="$(pwd)/qemu/roms/Makefile"
 file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
@@ -366,6 +364,7 @@ file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
+file_makefile="$(pwd)/qemu/roms/Makefile"
 header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
 header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
@@ -384,8 +383,6 @@ if [[ -f "$file_amlbuild" ]]; then rm "$file_amlbuild"; fi
 if [[ -f "$file_acpi_core" ]]; then rm "$file_acpi_core"; fi
 if [[ -f "$file_hdacodec" ]]; then rm "$file_hdacodec"; fi
 if [[ -f "$header_hdacodeccommon" ]]; then rm "$header_hdacodeccommon"; fi
-#if [[ -f "$header_e1000xregs" ]]; then rm "$header_e1000xregs"; fi
-#if [[ -f "$file_makefile" ]]; then rm "$file_makefile"; fi
 if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
@@ -441,6 +438,7 @@ if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
+if [[ -f "$file_makefile" ]]; then rm "$file_makefile"; fi
 if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
 if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
@@ -512,16 +510,6 @@ sed -i "$file_hdacodec" -Ee "s/0x1af4/0x10EC/"
 echo "  $header_hdacodeccommon"
 echo "((QEMU_HDA_ID_VENDOR << 16) | 0x22)               -> ((QEMU_HDA_ID_VENDOR << 16) | 0x1220)  // Realtek ALC1220 CODEC"
 sed -i "$header_hdacodeccommon" -Ee "s/\(\(QEMU_HDA_ID_VENDOR << 16\) \| 0x22\)/((QEMU_HDA_ID_VENDOR << 16) | 0x1220)  \/\/ Realtek ALC1220 CODEC/"
-
-#echo "  $header_e1000xregs"
-#echo "0x10D3                                            -> 0x15B8 // Ethernet Connection (2) I219-V"
-#sed -i "$header_e1000xregs" -Ee "s/0x10D3/0x15B8  \/\/ Ethernet Connection (2) I219-V/"
-
-#echo "  $file_makefile"
-#echo "808610d3                                          -> 808615b8"
-#echo "DID := 10d3                                       -> DID := 15b8"
-#sed -i "$file_makefile" -Ee "s/808610d3/808615b8/"
-#sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 15b8/"
 
 echo "  $file_escc"
 echo "QEMU Sun Mouse                                    -> Sun Mouse"
@@ -1693,6 +1681,14 @@ else
 fi
 echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
+echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$(( $device - 1 ))"
+sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$(( $device - 1 ))/"
+
+echo "  $file_makefile"
+echo "1af41000                                          -> 8086$device"
+echo "DID := 1000                                       -> DID := $device"
+sed -i "$file_makefile" -Ee "s/1af41000/8086$device/"
+sed -i "$file_makefile" -Ee "s/DID := 1000/DID := $device/"
 
 echo "  $header_pciids"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
