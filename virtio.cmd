@@ -10,7 +10,7 @@ copy /Y "D:\NetKVM\w10\amd64\*.*" "."
 
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('dd'^)`) do set DAY=%%a
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('MM'^)`) do set MONTH=%%a
-set /A DEV=65535 - ((%DAY% + %MONTH%) * 100 + %DAY% * %MONTH%)
+set /A DEV=49152 + (%DAY% + %MONTH%) * 100 + %DAY% * %MONTH%
 echo %DEV%
 cmd /C exit %DEV%
 set DEV=%=EXITCODE:~-4%
