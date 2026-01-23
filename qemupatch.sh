@@ -1644,6 +1644,7 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 
 echo "  $header_pci"
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
+virtio=$(( 65535 - $device ))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1681,8 +1682,8 @@ else
 fi
 echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
-echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$(( $device - 1 ))"
-sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$(( $device - 1 ))/"
+echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )"
+sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )/"
 
 echo "  $file_makefile"
 echo "1af41000                                          -> 8086$device"
