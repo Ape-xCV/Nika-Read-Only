@@ -44,21 +44,21 @@
 
 - This guide is for PCs that you can actually plug your monitor into iGPU (internal GPU in CPU), leaving your dGPU exclusively for the VM.
 
-- A single GPU guide is available at: [ThisIsFair/Nika-Read-Only-SGPU](https://github.com/ThisIsFair/Nika-Read-Only-SGPU)
+- A single GPU guide is available at: [ThisIsFair/Nika-Read-Only-SGPU](https://github.com/ThisIsFair/Nika-Read-Only-SGPU).
 
 ### 1. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
-  - VT-d for Intel (VMX)
-  - AMD-Vi for AMD (SVM)
-  - Enable "IOMMU"
-  - Disable "Above 4G Decoding"
+  - VT-d for Intel (VMX).
+  - AMD-Vi for AMD (SVM).
+  - Enable "IOMMU".
+  - Disable "Above 4G Decoding".
 
 - Note for Fedora 43 KDE set up:
-  - Avoid release 43
-  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/)
-  - Disconnect cable drom dGPU before installing
-  - Without this your taskbar is assigned to your dGPU, which should never happen
+  - Avoid release 43.
+  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/).
+  - Disconnect cable drom dGPU before installing.
+  - Without this your taskbar is assigned to your dGPU, which should never happen.
 
 - Nested Virtualization for Intel:
 ```shell
@@ -667,7 +667,7 @@ sudo -E ./nika
 
 ### 6. Spoof QEMU (mandatory)
 
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
 
   <details>
@@ -761,7 +761,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 ### 6.1. Spoof OVMF (mandatory)
 
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom)
+- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
 
   <details>
@@ -806,7 +806,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 ### 6.2. Install virtio ethernet (spoofed)
 
-- Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso)
+- Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
 - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... >> Browse Local >> virtio-win.iso >> [Finish]
 
