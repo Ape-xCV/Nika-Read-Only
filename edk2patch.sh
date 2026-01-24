@@ -446,5 +446,6 @@ declare -A GUIDS_LIST=(
 } > "$DEFAULTS_JSON"
 
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
-  --secure-boot \
+  --set-false CustomMode \
+  --set-false SecureBootEnable \
   --set-json "$DEFAULTS_JSON"
