@@ -364,6 +364,8 @@ file_ap="$(pwd)/qemu/hw/vfio/ap.c"
 header_amlbuild="$(pwd)/qemu/include/hw/acpi/aml-build.h"
 header_smbios="$(pwd)/qemu/include/hw/firmware/smbios.h"
 header_pci="$(pwd)/qemu/include/hw/pci/pci.h"
+header_e1000xregs="$(pwd)/qemu/hw/net/e1000x_regs.h"
+file_makefile="$(pwd)/qemu/roms/Makefile"
 header_pciids="$(pwd)/qemu/include/hw/pci/pci_ids.h"
 header_qemufwcfg="$(pwd)/qemu/include/standard-headers/linux/qemu_fw_cfg.h"
 header_optionrom="$(pwd)/qemu/pc-bios/optionrom/optionrom.h"
@@ -437,6 +439,8 @@ if [[ -f "$file_ap" ]]; then rm "$file_ap"; fi
 if [[ -f "$header_amlbuild" ]]; then rm "$header_amlbuild"; fi
 if [[ -f "$header_smbios" ]]; then rm "$header_smbios"; fi
 if [[ -f "$header_pci" ]]; then rm "$header_pci"; fi
+if [[ -f "$header_e1000xregs" ]]; then rm "$header_e1000xregs"; fi
+if [[ -f "$file_makefile" ]]; then rm "$file_makefile"; fi
 if [[ -f "$header_pciids" ]]; then rm "$header_pciids"; fi
 if [[ -f "$header_qemufwcfg" ]]; then rm "$header_qemufwcfg"; fi
 if [[ -f "$header_optionrom" ]]; then rm "$header_optionrom"; fi
@@ -1682,6 +1686,16 @@ echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )"
 sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )/"
+
+echo "  $header_e1000xregs"
+echo "0x10D3                                            -> 0x10F6"
+sed -i "$header_e1000xregs" -Ee "s/0x10D3/0x10F6/"
+
+echo "  $file_makefile"
+echo "808610d3                                          -> 808610F6"
+echo "DID := 10d3                                       -> DID := 10F6"
+sed -i "$file_makefile" -Ee "s/808610d3/808615b8/"
+sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 15b8/"
 
 echo "  $header_pciids"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
