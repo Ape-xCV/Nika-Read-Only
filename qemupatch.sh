@@ -1694,8 +1694,8 @@ sed -i "$header_e1000xregs" -Ee "s/0x10D3/0x10F6/"
 echo "  $file_makefile"
 echo "808610d3                                          -> 808610F6"
 echo "DID := 10d3                                       -> DID := 10F6"
-sed -i "$file_makefile" -Ee "s/808610d3/808615b8/"
-sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 15b8/"
+sed -i "$file_makefile" -Ee "s/808610d3/808610F6/"
+sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 10F6/"
 
 echo "  $header_pciids"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
