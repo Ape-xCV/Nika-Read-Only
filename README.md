@@ -618,6 +618,7 @@ steam -console
 
 - Steam >> Console >> `connect_remote 192.168.122.221:27036` >> [KEY_ENTER]
   - You need to manually specify **guest local IP** for direct connection.
+  - This will lower stream delay to 10 ms.
 
 - Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
 
