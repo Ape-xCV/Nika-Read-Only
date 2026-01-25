@@ -1841,7 +1841,7 @@ fi
 cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
-make
+make -j
 iasl "$file_ssdt1"
 iasl "$file_ssdt2"
 
