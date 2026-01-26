@@ -1650,7 +1650,7 @@ virtio=$(( 49152 + $device ))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
-  echo "QUMRANET    0x1af4                                -> QUMRANET    0x1022"
+#  echo "QUMRANET    0x1af4                                -> QUMRANET    0x1022"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x1022"
   echo "REDHAT             0x1b36                         -> REDHAT             0x1022"
   echo "PCIE_RP     0x000c                                -> PCIE_RP     0x1448  // Renoir Device 24: Function 0"
@@ -1658,7 +1658,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCIE_BRIDGE 0x000e                                -> PCIE_BRIDGE 0x1633  // Renoir PCIe GPP Bridge"
   sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x1022/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
-  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
+#  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x1022/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x1022/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x1022/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_1022/"
@@ -1667,7 +1667,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
 else
   echo "QEMU               0x1234                         -> QEMU               0x8086"
   echo "VMWARE             0x15ad                         -> VMWARE             0x8086"
-  echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
+#  echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
   echo "QUMRANET 0x1af4                                   -> QUMRANET 0x8086"
   echo "REDHAT             0x1b36                         -> REDHAT             0x8086"
   echo "PCIE_RP     0x000c                                -> PCIE_RP     0x06BA  // Comet Lake PCI Express Root Port #1"
@@ -1675,7 +1675,7 @@ else
   echo "PCIE_BRIDGE 0x000e                                -> PCIE_BRIDGE 0x9B54  // 10th Gen Core Processor Host Bridge/DRAM Registers"
   sed -i "$header_pci" -Ee "s/QEMU               0x1234/QEMU               0x8086/"
   sed -i "$header_pci" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
-  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
+#  sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
   sed -i "$header_pci" -Ee "s/QUMRANET 0x1af4/QUMRANET 0x8086/"
   sed -i "$header_pci" -Ee "s/REDHAT             0x1b36/REDHAT             0x8086/"
   sed -i "$header_pci" -Ee "s/PCIE_RP     0x000c/PCIE_RP     0x$rootport_8086/"
@@ -1684,6 +1684,8 @@ else
 fi
 echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
+echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
+sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
 echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )"
 sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )/"
 
