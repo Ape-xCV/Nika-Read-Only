@@ -641,6 +641,7 @@ steam -console
 <details>
   <summary>Hardware decoder with <b>AMD</b>:</summary>
 
+    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
     sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
     sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 </details>
