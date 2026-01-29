@@ -396,6 +396,7 @@ WORK_DIR="$(pwd)/work"
 mkdir -p "$WORK_DIR"
 cd "$WORK_DIR"
 
+TEMP_JSON="temp.json"
 DEFAULTS_JSON="defaults.json"
 EFIVARS_DIR="/sys/firmware/efi/efivars"
 VARS_LIST=("db" "dbx" "KEK" "PK" "dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
@@ -443,7 +444,22 @@ declare -A GUIDS_LIST=(
   fi
   printf '%s\n' '    ]'
   printf '%s\n' '}'
-} > "$DEFAULTS_JSON"
+} > "$TEMP_JSON"
+
+if [[ -f "$DEFAULTS_JSON" ]]; then
+  read -p $'Renew EFI variables? [y/\e[1mN\e[0m]> ' -n 1 -r
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo ""
+    cp -f "$TEMP_JSON" "$DEFAULTS_JSON"
+    echo "$TEMP_JSON"
+  else
+    echo ""
+    echo "$DEFAULTS_JSON"
+  fi
+else
+  cp -f "$TEMP_JSON" "$DEFAULTS_JSON"
+  echo "$TEMP_JSON"
+fi
 
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --set-false CustomMode \
