@@ -1,10 +1,10 @@
 @echo off
+cd "%~dp0"
 
 if "%1"=="" (
   powershell Start-Process '%~nx0' -ArgumentList 'ELEVATE' -Verb runas
   exit
 )
-cd "%~dp0"
 
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('dd'^)`) do set DAY=%%a
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('MM'^)`) do set MONTH=%%a
