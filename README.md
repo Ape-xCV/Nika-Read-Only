@@ -214,7 +214,7 @@ sudo -E virsh net-edit default
 ```shell
 sudo virsh net-destroy default
 sudo virsh net-start default
-sudo virsh net-autostart default --enable
+sudo virsh net-autostart default
 ```
 
 ### 2. New VM set up in QEMU/KVM
