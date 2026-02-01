@@ -192,18 +192,29 @@ sudo systemctl enable libvirtd.service
 
 - Virtual Machine Manager >> Edit >> Preferences >> New VM >> Storage format: Raw >> [Close]
 
-- Install macchanger:
+- Edit `default` virtual network:
 ```shell
-<Fedora> sudo dnf install macchanger
-<Debian> sudo apt install macchanger
+sudo -E virsh net-edit default
+
+<network>
+  <name>default</name>
+  <uuid>01234567-89ab-cdef-0123-456789abcdef</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='XX:XX:XX:XX:XX:XX'/>
+  <ip address='192.168.xxx.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.xxx.2' end='192.168.xxx.254'/>
+    </dhcp>
+  </ip>
+</network>
 ```
 
-- Manually start `default virtual network` every reboot:
+- Restart `default` virtual network:
 ```shell
-sudo virsh net-autostart default --disable
+sudo virsh net-destroy default
 sudo virsh net-start default
-sudo macchanger --mac=XX:XX:XX:XX:XX:XX virbr0
-sudo sysctl kernel.split_lock_mitigate=0
+sudo virsh net-autostart default --enable
 ```
 
 ### 2. New VM set up in QEMU/KVM
