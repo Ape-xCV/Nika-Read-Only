@@ -25,7 +25,7 @@
 
 ## Features
 
-* [x] [VMAware](https://github.com/kernelwernel/VMAware) v2.6.0 undetected (100%) using AMD host
+* [x] 100% [VMAware](https://github.com/kernelwernel/VMAware) v2.6.0 undetected with AMD host
 * [x] Stable CR3 shuffle for [Windows 10 20H1](https://archive.org/details/win-10-2004-english-x-64_202010) with [KB4598291](https://www.catalog.update.microsoft.com/Search.aspx?q=kb4598291)
 * [x] Overlay based ESP for players and items
 * [x] Press 5 / 6 / 7 / 8 / 9 / 0 to cycle LIGHT / ENERGY / SHOTGUN / HEAVY / SNIPER / GEAR items
