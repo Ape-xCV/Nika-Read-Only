@@ -55,12 +55,6 @@
   - Enable "IOMMU".
   - Disable "Above 4G Decoding".
 
-- Note for Fedora 43 KDE set up:
-  - Avoid release 43.
-  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/).
-  - Disconnect cable drom dGPU before installing.
-  - Without this your taskbar is assigned to your dGPU, which should never happen.
-
 - Nested Virtualization for Intel:
 ```shell
 sudo su
@@ -86,70 +80,34 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 <Debian> sudo update-initramfs -c -k $(uname -r)
 ```
 
-### 1.1. VFIO GPU passthrough (on Linux PC)
+### 1.1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
-- Find GPU location with: `lspci -v | grep -i VGA`
+- Note for Fedora 43 KDE set up:
+  - Avoid release 43.
+  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/).
+  - Disconnect cable drom dGPU before installing.
+  - Without this your taskbar is assigned to your dGPU, which should never happen.
+
+### 1.1b. Alternative single GPU: VNC (for Linux) + GPU (for Windows)
+
+- You can use VNC if you don't have iGPU:
+  - Install Fedora 42 LXDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
+
+- Install headless VNC and switch to terminal mode:
 ```shell
-00:02.0 VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) (prog-if 00 [VGA controller])
-02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
+sudo dnf install xorg-x11-drv-dummy x11vnc mingetty
+sudo firewall-cmd --permanent --add-service=vnc-server
+sudo systemctl set-default multi-user.target
 ```
 
-- GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep -i NVIDIA`
+- Download `dummy.conf` / `headless.sh` / `autologin.sh` to **~/Downloads** and install:
 ```shell
-02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
-        Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
-02:00.1 Audio device: NVIDIA Corporation TU106 High Definition Audio Controller (rev a1)
-        Subsystem: NVIDIA Corporation Device 1f02
-02:00.2 USB controller: NVIDIA Corporation TU106 USB 3.1 Host Controller (rev a1) (prog-if 30 [XHCI])
-        Subsystem: NVIDIA Corporation Device 1f02
-02:00.3 Serial bus controller: NVIDIA Corporation TU106 USB Type-C UCSI Controller (rev a1)
-        Subsystem: NVIDIA Corporation Device 1f02
+cd ~/Downloads
+sudo cp dummy.conf /etc/X11/.
+sudo cp headless.sh /etc/profile.d/.
+chmox +x autologin.sh
+./autologin.sh
 ```
-
-- Find PCI IDs with: `lspci -n -s 02:00`
-```shell
-02:00.0 0300: 10de:1f02 (rev a1)
-02:00.1 0403: 10de:10f9 (rev a1)
-02:00.2 0c03: 10de:1ada (rev a1)
-02:00.3 0c80: 10de:1adb (rev a1)
-```
-
-- Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
-```shell
-GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
-```
-
-- Update GRUB and restart Linux PC:
-```shell
-<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-- Inspect IOMMU enabled with:
-```shell
-if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOMMU enabled."; fi
-```
-
-- Inspect kernel driver in use with: `lspci -k -s 02:00`
-```lua
-02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1)
-        Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
-        Kernel driver in use: vfio-pci
-        Kernel modules: nouveau
-02:00.1 Audio device: NVIDIA Corporation TU106 High Definition Audio Controller (rev a1)
-        Subsystem: NVIDIA Corporation Device 1f02
-        Kernel driver in use: vfio-pci
-        Kernel modules: snd_hda_intel
-02:00.2 USB controller: NVIDIA Corporation TU106 USB 3.1 Host Controller (rev a1)
-        Subsystem: NVIDIA Corporation Device 1f02
-        Kernel driver in use: xhci_hcd
-02:00.3 Serial bus controller: NVIDIA Corporation TU106 USB Type-C UCSI Controller (rev a1)
-        Subsystem: NVIDIA Corporation Device 1f02
-        Kernel driver in use: vfio-pci
-        Kernel modules: i2c_nvidia_gpu
-```
-
-- Not loaded as a module, `xhci_hcd` will be managed by libvirt.
 
 ### 1.2. Configure libvirt
 
@@ -460,7 +418,72 @@ sudo virsh net-autostart default
     </controller>
 ```
 
-### 2.3. Add passthrough GPU devices to Windows VM
+### 2.3. VFIO GPU passthrough (on Linux PC)
+
+- Find GPU location with: `lspci -v | grep -i VGA`
+```shell
+00:02.0 VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) (prog-if 00 [VGA controller])
+02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
+```
+
+- GeForce RTX 2070 has 4 PCI IDs: `lspci -v | grep -i NVIDIA`
+```shell
+02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1) (prog-if 00 [VGA controller])
+        Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
+02:00.1 Audio device: NVIDIA Corporation TU106 High Definition Audio Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+02:00.2 USB controller: NVIDIA Corporation TU106 USB 3.1 Host Controller (rev a1) (prog-if 30 [XHCI])
+        Subsystem: NVIDIA Corporation Device 1f02
+02:00.3 Serial bus controller: NVIDIA Corporation TU106 USB Type-C UCSI Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+```
+
+- Find PCI IDs with: `lspci -n -s 02:00`
+```shell
+02:00.0 0300: 10de:1f02 (rev a1)
+02:00.1 0403: 10de:10f9 (rev a1)
+02:00.2 0c03: 10de:1ada (rev a1)
+02:00.3 0c80: 10de:1adb (rev a1)
+```
+
+- Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
+```shell
+GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
+```
+
+- Update GRUB and restart Linux PC:
+```shell
+<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+- Inspect IOMMU enabled with:
+```shell
+if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOMMU enabled."; fi
+```
+
+- Inspect kernel driver in use with: `lspci -k -s 02:00`
+```lua
+02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1)
+        Subsystem: NVIDIA Corporation TU106 [GeForce RTX 2070]
+        Kernel driver in use: vfio-pci
+        Kernel modules: nouveau
+02:00.1 Audio device: NVIDIA Corporation TU106 High Definition Audio Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+        Kernel driver in use: vfio-pci
+        Kernel modules: snd_hda_intel
+02:00.2 USB controller: NVIDIA Corporation TU106 USB 3.1 Host Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+        Kernel driver in use: xhci_hcd
+02:00.3 Serial bus controller: NVIDIA Corporation TU106 USB Type-C UCSI Controller (rev a1)
+        Subsystem: NVIDIA Corporation Device 1f02
+        Kernel driver in use: vfio-pci
+        Kernel modules: i2c_nvidia_gpu
+```
+
+- Not loaded as a module, `xhci_hcd` will be managed by libvirt.
+
+### 2.4. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
