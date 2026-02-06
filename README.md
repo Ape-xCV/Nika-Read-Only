@@ -109,6 +109,22 @@ chmox +x autologin.sh
 ./autologin.sh
 ```
 
+- WiFi from command line:
+```shell
+nmcli radio wifi on
+nmcli device wifi connect <SSID> --ask
+```
+
+- Take note of IP address for VNC connection:
+```shell
+ip addr
+```
+
+- Restart from command line:
+```shell
+sudo reboot now
+```
+
 ### 1.2. Configure libvirt
 
 
