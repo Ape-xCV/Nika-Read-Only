@@ -105,7 +105,7 @@ sudo systemctl set-default multi-user.target
 cd ~/Downloads
 sudo cp dummy.conf /etc/X11/.
 sudo cp headless.sh /etc/profile.d/.
-chmox +x autologin.sh
+chmod +x autologin.sh
 ./autologin.sh
 ```
 
