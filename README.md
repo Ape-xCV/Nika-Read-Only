@@ -831,9 +831,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
     <summary>Build on <b>Fedora Linux</b>:</summary>
 
   ```shell
-  sudo dnf install g++
-  sudo dnf install nasm
-  sudo dnf install python3-virt-firmware
+  sudo dnf install g++ nasm python3-virt-firmware
   ```
   </details>
 
