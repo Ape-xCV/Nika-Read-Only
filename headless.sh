@@ -7,6 +7,7 @@ if [ $(tty | grep /dev/tty1) ]; then
   x11vnc -display :1 -rfbport 5900 -forever &
   sleep 3
 
+  ip addr
   export DISPLAY=:1
   startlxde
 fi
