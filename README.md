@@ -88,7 +88,7 @@ echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
   - Disconnect cable drom dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
 
-### 1.1b. Alternative single GPU: VNC (for Linux) + GPU (for Windows)
+### 1.1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
   - Install Fedora 42 LXDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
@@ -124,6 +124,8 @@ ip addr
 ```shell
 sudo reboot now
 ```
+
+- Use VNC from smartphone, tablet, or laptop to connect.
 
 ### 1.2. Configure libvirt
 
