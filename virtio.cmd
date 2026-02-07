@@ -19,7 +19,7 @@ echo.
 echo  Install: custom 'NetKVM' folder from (C-Z)
 for %%A in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
   echo|set /P ="%%A "
-  if exist %%A:\NetKVM\. (
+  if exist "%%A:\NetKVM\." (
     echo.
     copy /Y "%%A:\NetKVM\w10\amd64\netkvm.*" "%DEV%.*"
     copy /Y "%%A:\NetKVM\w10\amd64\netkvmp.exe" "%DEV%.exe"
