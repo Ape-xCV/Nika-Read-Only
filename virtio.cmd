@@ -14,8 +14,21 @@ cmd /C exit %DEV%
 set DEV=%=EXITCODE:~-4%
 echo %DEV%
 
-copy /Y "D:\NetKVM\w10\amd64\netkvm.*" "%DEV%.*"
-copy /Y "D:\NetKVM\w10\amd64\netkvmp.exe" "%DEV%.exe"
+setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
+echo.
+echo  Install: custom 'NetKVM' folder from (C-Z)
+for %%A in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+  echo|set /P ="%%A "
+  if exist %%A:\NetKVM\. (
+    echo.
+    copy /Y "%%A:\NetKVM\w10\amd64\netkvm.*" "%DEV%.*"
+    copy /Y "%%A:\NetKVM\w10\amd64\netkvmp.exe" "%DEV%.exe"
+    goto :_EXIT
+  )
+)
+:_EXIT
+echo.
+endlocal
 
 powershell -Command "(Get-Content %DEV%.inf).Replace('1AF4&DEV_1000&SUBSYS_00011AF4&REV_00, PCI\VEN_1AF4&DEV_1000', '8086&DEV_%DEV%&SUBSYS_00018086&REV_00, PCI\VEN_8086&DEV_%DEV%').Replace('kvmnet6', '%DEV%').Replace('netkvmp', '%DEV%') | Out-File -encoding Ascii %DEV%.txt"
 fc %DEV%.inf %DEV%.txt
