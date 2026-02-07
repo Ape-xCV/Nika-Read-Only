@@ -70,8 +70,10 @@ echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
 - Preload `vfio-pci` module so it can bind to PCI IDs:
 ```shell
 sudo su
-echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep radeon pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Update initramfs:
@@ -466,7 +468,7 @@ sudo virsh net-autostart default
 
 - Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-GRUB_CMDLINE_LINUX="module_blacklist=nvidia,nouveau vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX="module_blacklist=nouveau,nvidia vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
 ```
 
 - Update GRUB and restart Linux PC:
