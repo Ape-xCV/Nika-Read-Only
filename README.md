@@ -41,48 +41,7 @@
 * [x] Press F6 to dump **r5apex**, F7 to update **offsets**
 * [x] Press F9 twice to terminate cheat
 
-### 0. Disclaimer
-
-- This guide is for PCs that you can actually plug your monitor into iGPU (internal GPU in CPU), leaving your dGPU exclusively for the VM.
-
-- A single GPU guide is available at: [ThisIsFair/Nika-Read-Only-SGPU](https://github.com/ThisIsFair/Nika-Read-Only-SGPU).
-
-### 1. Environment set up in Linux
-
-- Enter BIOS and enable Virtualization Technology:
-  - VT-d for Intel (VMX).
-  - AMD-Vi for AMD (SVM).
-  - Enable "IOMMU".
-  - Disable "Above 4G Decoding".
-
-- Nested Virtualization for Intel:
-```shell
-sudo su
-echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
-```
-
-- Nested Virtualization for AMD:
-```shell
-sudo su
-echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
-```
-
-- Preload `vfio-pci` module so it can bind to PCI IDs:
-```shell
-sudo su
-echo "softdep radeon pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
-echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
-echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
-echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
-```
-
-- Update initramfs:
-```shell
-<Fedora> sudo dracut --force
-<Debian> sudo update-initramfs -c -k $(uname -r)
-```
-
-### 1.1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
+### 1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
 - Note for Fedora 43 KDE set up:
   - Avoid release 43.
@@ -90,7 +49,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
   - Disconnect cable drom dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
 
-### 1.1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
+### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
   - Install Fedora 42 LXDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
@@ -129,7 +88,7 @@ sudo reboot now
 
 - Use VNC from smartphone, tablet, or laptop to connect.
 
-### 1.2. Configure libvirt
+### 1.1. Configure libvirt
 
 
   <details>
@@ -202,36 +161,22 @@ sudo virsh net-autostart default
 
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: B4NN3D53R14L >> [Finish]
+  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: `generate_your_serial` >> Cache mode: none >> Discard mode: ignore >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
 - [Add Hardware] >> TPM >> Type: Emulated >> Model: CRB >> Version: 2.0 >> [Finish]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: virtio >> [Apply]
-
 - Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
 
 
-- Replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
+- Generate your MAC (UAA) to replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
   <details>
     <summary>Spoiler</summary>
 
   ```shell
   <mac address="xx:xx:xx:xx:xx:xx"/>
-  ```
-  </details>
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> SATA Disk 1 >> XML
-
-
-- Replace `<driver name="qemu" type="raw"/>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <driver name="qemu" type="raw" cache="none" discard="ignore"/>
   ```
   </details>
 
@@ -438,7 +383,42 @@ sudo virsh net-autostart default
     </controller>
 ```
 
-### 2.3. VFIO GPU passthrough (on Linux PC)
+### 2.3. Environment set up in Linux
+
+- Enter BIOS and enable Virtualization Technology:
+  - VT-d for Intel (VMX).
+  - AMD-Vi for AMD (SVM).
+  - Enable "IOMMU".
+  - Disable "Above 4G Decoding".
+
+- Nested Virtualization for Intel:
+```shell
+sudo su
+echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
+```
+
+- Nested Virtualization for AMD:
+```shell
+sudo su
+echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
+```
+
+- Preload `vfio-pci` module so it can bind to PCI IDs:
+```shell
+sudo su
+echo "softdep radeon pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep nouveau pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
+```
+
+- Update initramfs:
+```shell
+<Fedora> sudo dracut --force
+<Debian> sudo update-initramfs -c -k $(uname -r)
+```
+
+### 2.4. VFIO GPU passthrough (on Linux PC)
 
 - Find GPU location with: `lspci -v | grep -i VGA`
 ```shell
@@ -503,7 +483,7 @@ if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOM
 
 - Not loaded as a module, `xhci_hcd` will be managed by libvirt.
 
-### 2.4. Add passthrough GPU devices to Windows VM
+### 2.5. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
@@ -873,13 +853,15 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... >> Browse Local >> virtio-win.iso >> [Finish]
 
-- Download `virtio.cmd` to `virtio` folder in Desktop (on Windows VM).
+- Download `virtio.cmd` to `network` folder in Desktop (on Windows VM).
 
 - Run `virtio.cmd`, it will copy necessary files from D: (CDROM device with `virtio-win.iso`).
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: virtio >> [Apply]
+
 - Restart VM.
 
-- Install virtio ethernet from `virtio` folder (use Device Manager).
+- Install virtio ethernet from `network` folder (use Device Manager).
 
 - Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
 ```shell
