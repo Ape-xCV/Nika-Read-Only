@@ -847,7 +847,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
   ```
   </details>
 
-### 6.2. Install virtio ethernet (spoofed)
+### 6.2. Install virtio ethernet (mandatory)
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
@@ -855,7 +855,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Download `virtio.cmd` to `network` folder in Desktop (on Windows VM).
 
-- Run `virtio.cmd`, it will copy necessary files from D: (CDROM device with `virtio-win.iso`).
+- Run `virtio.cmd`, it will copy necessary files from CDROM device with `virtio-win.iso`.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: virtio >> [Apply]
 
