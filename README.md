@@ -451,6 +451,9 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
 ```
 
+- For single GPU `vfio-pci.ids` is actually not required as the host is in terminal mode.
+  - You can switch TTY with `CTRL+ALT+F2` / `CTRL+ALT+F3` / `...` while the VM is not running.
+
 - Update GRUB and restart Linux PC:
 ```shell
 <Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
