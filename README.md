@@ -460,11 +460,6 @@ GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb in
 <Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-- Inspect IOMMU enabled with:
-```shell
-if compgen -G "/sys/kernel/iommu_groups/*/devices/*" > /dev/null; then echo "IOMMU enabled."; fi
-```
-
 - Inspect kernel driver in use with: `lspci -k -s 02:00`
 ```lua
 02:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2070] (rev a1)
