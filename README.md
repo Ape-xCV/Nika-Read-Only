@@ -820,9 +820,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
     <summary>Build on <b>Debian Linux</b>:</summary>
 
   ```shell
-  sudo apt install g++
-  sudo apt install nasm
-  sudo apt install python3-virt-firmware
+  sudo apt install g++ nasm python3-virt-firmware
   ```
   </details>
 
