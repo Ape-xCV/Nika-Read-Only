@@ -560,7 +560,8 @@ int main(int argc, char* argv[])
     maxStep = dataVirtualAddress;
     for (size_t step = 0; step < maxStep;) {
         resume = step;
-        if (scanForPattern(resume, dataVirtualAddress, "488D15 ${'} 498BCBE8 ${4C8BC9}", save, saveAddr)) {
+        //if (scanForPattern(resume, dataVirtualAddress, "488D15 ${'} 498BCBE8 ${4C8BC9}", save, saveAddr)) {
+        if (scanForPattern(resume, dataVirtualAddress, "488D15 ${'} ?8BCBE8 ${4C8B?}", save, saveAddr)) {  //2026Feb10
             auto nameNetworkedStringTable = (char*)(memoryBytes + save[0]);
             size_t temp = resume + 15;
             if (scanForPattern(temp, temp + 64, "488905 ${'}", save, saveAddr)) {
