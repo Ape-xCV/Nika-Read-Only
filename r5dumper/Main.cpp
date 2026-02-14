@@ -593,7 +593,8 @@ int main(int argc, char* argv[])
     if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
         uint32_t weaponSettingsSize = save[0];
         resume = 0;
-        if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'} 49 63 D0", save, saveAddr)) {
+        //if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'} 49 63 D0", save, saveAddr)) {
+        if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'} 44 0F B6 44 24", save, saveAddr)) {  //2026Feb10
             uint32_t weaponSettings = save[0];
             std::cout << "\n[WeaponSettings]\n";\
             for (uint32_t i = 0; i < weaponSettingsSize * 2; ++i) {
@@ -632,10 +633,12 @@ int main(int argc, char* argv[])
                         {"HighlightSettings",         "? 48 8B 15 ${'} 48 03 D1 4C 8D 04 40 ?"},                        //488B15${'} 4803D1 4C8D0440
                         {"InputSystem",               "00 00 00 00 89 4C 24 20 48 8D 0D ${'}"},                         //00000000 894C2420 488D0D$'
                         {"LocalPlayer",               "? 48 8B 05 ${???????? '} 488D0D???? 4488????? 4C89"},            //488B05${'} 488D0D???? 4488????? 4C89
+                        {"ModelNames",                "? 48 8B 0D ${'} 48 85 C9 74 0F 8D 42 01"},
                       //{"NetworkVarTablePtr",        "? 48 8D 15 ${'}     83 7C CA 0C 07 74 ? 48 8B D7"},
                         {"NetworkVarTablePtr",        "? 48 8D ?  ${'}     83 7C ?  ?  ?  74 ? 48 8B D7 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ?"},
 //2026Feb10        413910E8 48037508 8D48198B 03485214 0D8D48D2   08627B93 0CD17C83    48117406   8D48D78B    1B00F20D C3CDE801 13EB0019 @ a9cf15
                         {"SignonState",               "C6411401 803D?? ???74 68803D? ???? 7509833D ${? '}"},
+                        {"WeaponNames",               "? ? ? 74 12 48 8B 0D ${'} 48 8B 01 FF 50 58 ? ?"},
                         {"WeaponSettingsMeta_base",   "? ? 4C 8B 83 ? ? ? ? 4C 8D 8B u4"},
                         {"LevelName",                 "? 48 8D 15 ${'} 48 8B 45 F8 48 8D 0D ?"},                        //488D15${'} 488B45F8488D0D
                       //{"LocalEntityHandle",         "           ?  ? 8B 05 ${'} 44 0F B7 05 ? ? ? ? 83 F8 FF 74"},    //8B05${'} 440FB705???? 83F8FF 74
