@@ -530,7 +530,8 @@ int main(int argc, char* argv[])
             mods_count = save[0];
             std::cout << "mods_count = 0x" << std::hex << mods_count << "\n";
             temp += 6 + 20;
-            if (scanForPattern(temp, temp + 30, "48 8B 15 ${'}", save, saveAddr)) {
+            //if (scanForPattern(temp, temp + 30, "48 8B 15 ${'}", save, saveAddr)) {
+            if (scanForPattern(temp, temp + 90, "48 8B ? ${'}", save, saveAddr)) {  //2026Feb10
                 mods_names = *(uint64_t*)(memoryBytes + save[0]);
                 mods_names -= g_base;
                 std::cout << "mods_names = 0x" << std::hex << mods_names << "\n";
