@@ -588,6 +588,7 @@ int main(int argc, char* argv[])
     std::cout << "\n" << std::dec << networkedStringTablesCount << " NetworkedStringTables\n";
 
 
+std::cout << "\n[WeaponSettingsMeta]\n";
     int weaponSettingsCount = 0;
     struct RawWeaponDataField
     {
@@ -608,12 +609,16 @@ int main(int argc, char* argv[])
     if (scanForPattern(resume, dataVirtualAddress, "488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}", save, saveAddr)) resume -= 50 + 7 + 10 + 5;
     if (resume > 0 && scanForPattern(resume, dataVirtualAddress, "3D u2 00 00", save, saveAddr)) {
     //if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
-        uint32_t weaponSettingsSize = save[0];
+        std::cout << "count = 0x" << std::hex << save[0] << "\n";
+        mapOffsets["[WeaponSettingsMeta]count"] = save[0];
+        uint32_t weaponSettingsMetaCount = save[0];
         if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'}", save, saveAddr)) {
-            uint32_t weaponSettings = save[0];
-            std::cout << "\n[WeaponSettings]\n";\
-            for (uint32_t i = 0; i < weaponSettingsSize * 2; ++i) {
-                auto weaponDataField = reinterpret_cast<const RawWeaponDataField*>(memoryBytes + weaponSettings + i*sizeof(RawWeaponDataField));
+            std::cout << "list = 0x" << std::hex << save[0] << "\n";
+            mapOffsets["[WeaponSettingsMeta]list"] = save[0];
+            uint32_t weaponSettingsMetaList = save[0];
+            std::cout << "\n[WeaponSettings]\n";
+            for (uint32_t i = 0; i < weaponSettingsMetaCount * 2; ++i) {
+                auto weaponDataField = reinterpret_cast<const RawWeaponDataField*>(memoryBytes + weaponSettingsMetaList + i*sizeof(RawWeaponDataField));
                 uint64_t weaponDataFieldName = weaponDataField->name;
                 weaponDataFieldName -= g_base;
                 if (weaponDataFieldName < memoryBytesSize) {
@@ -655,7 +660,10 @@ int main(int argc, char* argv[])
 //2026Feb10        413910E8 48037508 8D48198B 03485214 0D8D48D2   08627B93 0CD17C83    48117406   8D48D78B    1B00F20D C3CDE801 13EB0019 @ a9cf15
                         {"SignonState",               "C6411401 803D?? ???74 68803D? ???? 7509833D ${? '}"},
                         {"WeaponNames",               "? ? ? 74 12 48 8B 0D ${'} 48 8B 01 FF 50 58 ? ?"},
-                        {"WeaponSettingsMeta_base",   "? ? 4C 8B 83 ? ? ? ? 4C 8D 8B u4"},
+                      //{"WeaponSettingsMeta_base",   "? ? 4C 8B 83 ? ? ? ? 4C 8D 8B u2 00 00"},
+//2026Jan14        74FF8548 CB8B4826 EA987CE8 C08548FF 8B4C1974  00184083 8B8D4C00   00001AA8 48D38B48 BEE8CF8B 48003658 38247C8B @ 755e67
+                        {"WeaponSettingsMeta_base",   "? 48 8B 8B u2 00 00 49 8B C6 ?"},
+//2026Feb10        0F44F310 0FF31011 F3047811 40110F44 8B8B4808   00001AE8 44C68B49   2454280F FF570F60 24B48B4C 000000D0 C0570F45 @ 6789d8
                         {"LevelName",                 "? 48 8D 15 ${'} 48 8B 45 F8 48 8D 0D ?"},                        //488D15${'} 488B45F8488D0D
                       //{"LocalEntityHandle",         "? ? 8B 05 ${'}     44 0F B7 05 ? ? ? ?  83 F8 FF 74"},           //8B05${'} 440FB705???? 83F8FF 74
 //2026Jan14        FF018B48 00013090 38473B00 00BB850F 058B0000  017CC015 05B70F44    017CC00F 74FFF883    D0B70F15 05E2C148 74D50348 @ 84bb2b
@@ -685,6 +693,12 @@ int main(int argc, char* argv[])
 //2025Aug26        50FF018B C0854830 63484C74 8D48384E 0548C804   00000954 008B2074 74FFF883  F8B70F19 05E7C148 74FD0348 10E8C10D @ 821408
                         {"m_gameTimescale",           "? 8B 84 C8 u4                83 F8 ? ?"},
 //2025Sep16        8B485074 3050FF01 74C08548 4E634845 C8848B38   00000954 74FFF883 F8B70F19  05E7C148 74FD0348 10E8C10D 75084739 @ 82d3d5
+                        {"m_flProjectileSpeed=",      "?  0F 10 87 u2 00 00  45 0F 57 ?  F3 ? ? ?"},
+//2025Aug26        7D110FF3 0F44F384 E8884511 FF9463DD 87100FF3    000027F0  D2570F45    100F44F3 45702474 F3DB570F 7C100F44 0F457424 @ bf3c03
+//2026Feb10        F354247C 44110F44 F8E85824 F3FF91A2 87100F44    00002860  DB570F45    87100FF3 00002870 F0280F45 C0058B48 4501C26E @ c58509
+                        {"m_flProjectileScale=",      "C1 0F 2E C1 7A ? 75 ? F3 0F 10 87 u2 00 00"},
+//2025Aug26        0F415840 44F3C12F 0845110F 280F0373 C12E0FC1    0D750F7A  87100FF3    000027F8 EBF8280F 100FF308 0027F8BF 058B4800 @ bf3c6a
+//2026Feb10        F39C4511 5840100F C12F0F41 280F0373 C12E0FC1    08750A7A  87100FF3    00002868 3E058B48 4101C0C4 000001BF 100FF300 @ c58563
                       //{"m_iName",                   "?  48 8D 8E u4                  49 8B D3 E8 ? ? ? ?  85 C0 74 21"},
                         {"m_iName",                   "37 48 8D 8E u4       48 8D 15 ? ?  ?  ?  E8 ? ? ? ?  85 C0 ?  ? "},
 //2025Aug26        C3950F02 E908C383 000000CA 74F68548 8E8D4837    00000479 F7158D48   E800F9B2    00B63252 0875C085    E904588D 000000A6 @ 84321a
