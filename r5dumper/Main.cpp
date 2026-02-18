@@ -591,12 +591,11 @@ int main(int argc, char* argv[])
         uint16_t offset;
         uint8_t  _pad[2];
     };
+//3Du20000 [1-10] 488D05${'} [30-50] 488D0D${\"Weapon setting '%s' is type %s, not %s.\"} 4F8B84C2${'}
     resume = 0;
     if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
         uint32_t weaponSettingsSize = save[0];
-        resume = 0;
-        //if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'} 49 63 D0", save, saveAddr)) {
-        if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'} 44 0F B6 44 24", save, saveAddr)) {  //2026Feb10
+        if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'}", save, saveAddr)) {
             uint32_t weaponSettings = save[0];
             std::cout << "\n[WeaponSettings]\n";\
             for (uint32_t i = 0; i < weaponSettingsSize * 2; ++i) {
@@ -631,9 +630,9 @@ int main(int argc, char* argv[])
     const std::string signatures[][2] = {
 
                         {"ClientState",               "? ? ? E8 ${'} 48 81 C4 68 04 00 00 C3"},
-                        {"GlobalVars",                "48 8B 01 48 8D 15 ${'} FF 50 10 85 C0 75"},                      //488B01 488D15${'} FF5010 85C0 75
+                        {"GlobalVars",                "? ? 48 8B 01 48 8D 15 ${'} FF 50 10 85 C0 75 ? ?"},              //488B01 488D15${'} FF5010 85C0 75
                         {"HighlightSettings",         "? 48 8B 15 ${'} 48 03 D1 4C 8D 04 40 ?"},                        //488B15${'} 4803D1 4C8D0440
-                        {"InputSystem",               "00 00 00 00 89 4C 24 20 48 8D 0D ${'}"},                         //00000000 894C2420 488D0D$'
+                        {"InputSystem",               "? 00 00 00 00 89 4C 24 20 48 8D 0D ${'}"},                       //00000000 894C2420 488D0D$'
                         {"LocalPlayer",               "? 48 8B 05 ${???????? '} 488D0D???? 4488????? 4C89"},            //488B05${'} 488D0D???? 4488????? 4C89
                         {"ModelNames",                "? 48 8B 0D ${'} 48 85 C9 74 0F 8D 42 01"},
                       //{"NetworkVarTablePtr",        "? 48 8D 15 ${'}     83 7C CA 0C 07 74 ? 48 8B D7 ? ?"},
