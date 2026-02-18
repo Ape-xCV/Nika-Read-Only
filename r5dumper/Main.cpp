@@ -87,6 +87,10 @@ std::vector<uint8_t> getPatternBytes(std::string pattern)
             i += 2;  // u4
             continue;
         }
+        if (pattern[i] == 'u' && pattern[i+1] == '2') {
+            i += 2;  // u2
+            continue;
+        }
         bytes.push_back(std::stoi(pattern.substr(i, 2), nullptr, 16));
         i += 2;
     }
@@ -130,6 +134,13 @@ bool scanForPattern(size_t &resume, size_t size, std::string pattern, uint32_t (
                 saveSlot++;
                 cursorMemory += 4;
                 j += 2;  // u4
+            }else
+            if (pattern[j] == 'u' && pattern[j+1] == '2') {
+                save[saveSlot] = *(uint16_t*)(memoryBytes + i + cursorMemory);
+                saveAddr[saveSlot] = i + cursorMemory;
+                saveSlot++;
+                cursorMemory += 2;
+                j += 2;  // u2
             }else
             if (pattern[j] == '$' && pattern[j+1] == '{') {
                 jump = *(int32_t*)(memoryBytes + i + cursorMemory);
@@ -517,12 +528,12 @@ int main(int argc, char* argv[])
 
 //488D0D${\"Attempted to perform GetMods\"} [40-80] 399Eu4 [2-10] 8D?u4 [20-50] 488B15${*'}
 //488D0D ${\"Attempted to perform GetMods\"}
-//488D0D ${417474656D7074656420746F 20706572666F726D 204765744D6F6473}
+//488D0D ${417474656D70746564 20746F 20706572666F726D 204765744D6F6473}
 
     std::cout << "\n[ModifierOffsets]\n";
     int modifierNamesCount = 0;
     resume = 0;
-    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${417474656D7074656420746F 20706572666F726D 204765744D6F6473}", save, saveAddr)) {
+    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${417474656D70746564 20746F 20706572666F726D 204765744D6F6473}", save, saveAddr)) {
         uint32_t mods_count;
         uint64_t mods_names;
         size_t temp = resume + 35 + 20;
@@ -592,8 +603,11 @@ int main(int argc, char* argv[])
         uint8_t  _pad[2];
     };
 //3Du20000 [1-10] 488D05${'} [30-50] 488D0D${\"Weapon setting '%s' is type %s, not %s.\"} 4F8B84C2${'}
+//488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}
     resume = 0;
-    if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
+    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}", save, saveAddr)) resume -= 50 + 7 + 10 + 5;
+    if (resume > 0 && scanForPattern(resume, dataVirtualAddress, "3D u2 00 00", save, saveAddr)) {
+    //if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
         uint32_t weaponSettingsSize = save[0];
         if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'}", save, saveAddr)) {
             uint32_t weaponSettings = save[0];
