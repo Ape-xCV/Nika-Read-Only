@@ -536,18 +536,24 @@ int main(int argc, char* argv[])
     int modifierNamesCount = 0;
     resume = 0;
     if (scanForPattern(resume, dataVirtualAddress, "488D0D ${417474656D70746564 20746F 20706572666F726D 204765744D6F6473}", save, saveAddr)) {
-        uint32_t mods_count;
-        uint64_t mods_names;
         size_t temp = resume + 35 + 20;
-        if (scanForPattern(temp, temp + 40, "39 ? u4", save, saveAddr)) {
-            mods_count = save[0];
+        if (scanForPattern(temp, temp + 40, "39 9E u4", save, saveAddr)) {
+            uint32_t mods_count = save[0];
             std::cout << "mods_count = 0x" << std::hex << mods_count << "\n";
+            mapOffsets["[ModifierOffsets]mods_count"] = mods_count;
+            temp += 6 + 2;
+            if (scanForPattern(temp, temp + 20, "8D ? u4", save, saveAddr)) {
+                uint32_t mods_list = save[0];
+                std::cout << "mods_list = 0x" << std::hex << mods_list << "\n";
+                mapOffsets["[ModifierOffsets]mods_list"] = mods_list;
+            }
             temp += 6 + 20;
             //if (scanForPattern(temp, temp + 30, "48 8B 15 ${'}", save, saveAddr)) {
-            if (scanForPattern(temp, temp + 90, "48 8B ? ${'}", save, saveAddr)) {  //2026Feb10
-                mods_names = *(uint64_t*)(memoryBytes + save[0]);
+            if (scanForPattern(temp, temp + 70, "48 8B ? ${'}", save, saveAddr)) {  //2026Feb10
+                uint64_t mods_names = *(uint64_t*)(memoryBytes + save[0]);
                 mods_names -= g_base;
                 std::cout << "mods_names = 0x" << std::hex << mods_names << "\n";
+                mapOffsets["[ModifierOffsets]mods_names"] = mods_names;
                 std::cout << "\n[ModifierNames]\n";
                 for (int i = 0; i < mods_count; i++) {
                     uint64_t namePtr = mods_names + i*8;
@@ -608,28 +614,33 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //3Du20000 [1-10] 488D05${'} [30-50] 488D0D${\"Weapon setting '%s' is type %s, not %s.\"} 4F8B84C2${'}
 //488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}
     resume = 0;
-    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}", save, saveAddr)) resume -= 50 + 7 + 10 + 5;
-    if (resume > 0 && scanForPattern(resume, dataVirtualAddress, "3D u2 00 00", save, saveAddr)) {
-    //if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
-        std::cout << "count = 0x" << std::hex << save[0] << "\n";
-        mapOffsets["[WeaponSettingsMeta]count"] = save[0];
-        uint32_t weaponSettingsMetaCount = save[0];
-        if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'}", save, saveAddr)) {
-            std::cout << "list = 0x" << std::hex << save[0] << "\n";
-            mapOffsets["[WeaponSettingsMeta]list"] = save[0];
-            uint32_t weaponSettingsMetaList = save[0];
-            std::cout << "\n[WeaponSettings]\n";
-            for (uint32_t i = 0; i < weaponSettingsMetaCount * 2; ++i) {
-                auto weaponDataField = reinterpret_cast<const RawWeaponDataField*>(memoryBytes + weaponSettingsMetaList + i*sizeof(RawWeaponDataField));
-                uint64_t weaponDataFieldName = weaponDataField->name;
-                weaponDataFieldName -= g_base;
-                if (weaponDataFieldName < memoryBytesSize) {
-                    auto weaponName = (char*)(memoryBytes + weaponDataFieldName);
-                    std::cout << weaponName << " = 0x" << weaponDataField->offset << "\n";
-                    std::string fullName = formStr("[WeaponSettings]" + std::string(weaponName));
-                    if (mapOffsets[fullName] == 0)
-                        mapOffsets[fullName] = weaponDataField->offset;
-                    weaponSettingsCount++;
+    if (scanForPattern(resume, dataVirtualAddress, "488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}", save, saveAddr)) {
+        uint32_t weps_types = save[0];
+        std::cout << "weps_types = 0x" << std::hex << weps_types << "\n";
+        mapOffsets["[WeaponSettingsMeta]weps_types "] = weps_types;
+        resume -= 50 + 7 + 10 + 5;
+        if (scanForPattern(resume, dataVirtualAddress, "3D u2 00 00", save, saveAddr)) {
+        //if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
+            uint32_t weps_count = save[0];
+            std::cout << "weps_count = 0x" << std::hex << weps_count << "\n";
+            mapOffsets["[WeaponSettingsMeta]weps_count"] = weps_count;
+            if (scanForPattern(resume, dataVirtualAddress, "48 8D 05 ${'}", save, saveAddr)) {
+                uint32_t weps_list = save[0];
+                std::cout << "weps_list = 0x" << std::hex << weps_list << "\n";
+                mapOffsets["[WeaponSettingsMeta]weps_list"] = weps_list;
+                std::cout << "\n[WeaponSettings]\n";
+                for (uint32_t i = 0; i < weps_count * 2; ++i) {
+                    auto weaponDataField = reinterpret_cast<const RawWeaponDataField*>(memoryBytes + weps_list + i*sizeof(RawWeaponDataField));
+                    uint64_t weaponDataFieldName = weaponDataField->name;
+                    weaponDataFieldName -= g_base;
+                    if (weaponDataFieldName < memoryBytesSize) {
+                        auto weaponName = (char*)(memoryBytes + weaponDataFieldName);
+                        std::cout << weaponName << " = 0x" << weaponDataField->offset << "\n";
+                        std::string fullName = formStr("[WeaponSettings]" + std::string(weaponName));
+                        if (mapOffsets[fullName] == 0)
+                            mapOffsets[fullName] = weaponDataField->offset;
+                        weaponSettingsCount++;
+                    }
                 }
             }
         }
