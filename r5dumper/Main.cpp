@@ -83,12 +83,12 @@ std::vector<uint8_t> getPatternBytes(std::string pattern)
             i += 1;  // }
             continue;
         }
-        if (pattern[i] == 'u' && pattern[i+1] == '4') {
-            i += 2;  // u4
-            continue;
-        }
         if (pattern[i] == 'u' && pattern[i+1] == '2') {
             i += 2;  // u2
+            continue;
+        }
+        if (pattern[i] == 'u' && pattern[i+1] == '4') {
+            i += 2;  // u4
             continue;
         }
         bytes.push_back(std::stoi(pattern.substr(i, 2), nullptr, 16));
@@ -128,19 +128,12 @@ bool scanForPattern(size_t &resume, size_t size, std::string pattern, uint32_t (
                 cursorPattern += 1;
                 j += 1;  // ?
             }else
-            if (pattern[j] == 'u' && pattern[j+1] == '4') {
-                save[saveSlot] = *(uint32_t*)(memoryBytes + i + cursorMemory);
-                saveAddr[saveSlot] = i + cursorMemory;
-                saveSlot++;
-                cursorMemory += 4;
-                j += 2;  // u4
-            }else
-            if (pattern[j] == 'u' && pattern[j+1] == '2') {
-                save[saveSlot] = *(uint16_t*)(memoryBytes + i + cursorMemory);
-                saveAddr[saveSlot] = i + cursorMemory;
-                saveSlot++;
-                cursorMemory += 2;
-                j += 2;  // u2
+            if (pattern[j] == '%') {
+                jump = *(int8_t*)(memoryBytes + i + cursorMemory);
+                cursorMemory += 1;  // Skip 1 byte used for jump
+                cursorMemory += jump;
+//                printf("jump: %d ** data: %.08X\n", jump, *(uint32_t*)(memoryBytes + i + cursorMemory));
+                j += 1;  // %
             }else
             if (pattern[j] == '$' && pattern[j+1] == '{') {
                 jump = *(int32_t*)(memoryBytes + i + cursorMemory);
@@ -160,12 +153,19 @@ bool scanForPattern(size_t &resume, size_t size, std::string pattern, uint32_t (
                 cursorMemory = cursorMemoryPrev + 4;
                 j += 1;  // }
             }else
-            if (pattern[j] == '%') {
-                jump = *(int8_t*)(memoryBytes + i + cursorMemory);
-                cursorMemory += 1;  // Skip 1 byte used for jump
-                cursorMemory += jump;
-//                printf("jump: %d ** data: %.08X\n", jump, *(uint32_t*)(memoryBytes + i + cursorMemory));
-                j += 1;  // %
+            if (pattern[j] == 'u' && pattern[j+1] == '2') {
+                save[saveSlot] = *(uint16_t*)(memoryBytes + i + cursorMemory);
+                saveAddr[saveSlot] = i + cursorMemory;
+                saveSlot++;
+                cursorMemory += 2;
+                j += 2;  // u2
+            }else
+            if (pattern[j] == 'u' && pattern[j+1] == '4') {
+                save[saveSlot] = *(uint32_t*)(memoryBytes + i + cursorMemory);
+                saveAddr[saveSlot] = i + cursorMemory;
+                saveSlot++;
+                cursorMemory += 4;
+                j += 2;  // u4
             }else { found = false; break; }
         }
         if (found) {
@@ -404,23 +404,25 @@ int main(int argc, char* argv[])
             if (m_dataClassName < memoryBytesSize && m_dataNumFields >= 0x0001 && m_dataNumFields <= 0x1000) {
                 auto dataClassName = (char*)(memoryBytes + m_dataClassName);
                 m_dataDesc -= g_base;
-                auto dataTypeDesc = reinterpret_cast<const DataTypeDesc*>(memoryBytes + m_dataDesc);
-                for (int i = 0; i < m_dataNumFields; i++) {
-                    uint64_t m_fieldName = dataTypeDesc[i].m_fieldName;
-                    m_fieldName -= g_base;
-                    if (m_fieldName < memoryBytesSize) {
-                        if (i == 0)
-                            std::cout << "\n[DataMap." << dataClassName << "]\n";
-                        auto fieldName = (char*)(memoryBytes + m_fieldName);
-                        uint32_t m_fieldOffset = dataTypeDesc[i].m_fieldOffset[0];
-                        std::cout << fieldName << " = 0x" << std::hex << m_fieldOffset << "\n";
-                        std::string fullName = formStr("[DataMap." + std::string(dataClassName) + "]" + fieldName);
-                        if (mapOffsets[fullName] == 0)
-                            mapOffsets[fullName] = m_fieldOffset;
-                        dataFieldsCount++;
+                if (m_dataDesc < memoryBytesSize) {
+                    auto dataTypeDesc = reinterpret_cast<const DataTypeDesc*>(memoryBytes + m_dataDesc);
+                    for (int i = 0; i < m_dataNumFields; i++) {
+                        uint64_t m_fieldName = dataTypeDesc[i].m_fieldName;
+                        m_fieldName -= g_base;
+                        if (m_fieldName < memoryBytesSize) {
+                            if (i == 0)
+                                std::cout << "\n[DataMap." << dataClassName << "]\n";
+                            auto fieldName = (char*)(memoryBytes + m_fieldName);
+                            uint32_t m_fieldOffset = dataTypeDesc[i].m_fieldOffset[0];
+                            std::cout << fieldName << " = 0x" << std::hex << m_fieldOffset << "\n";
+                            std::string fullName = formStr("[DataMap." + std::string(dataClassName) + "]" + fieldName);
+                            if (mapOffsets[fullName] == 0)
+                                mapOffsets[fullName] = m_fieldOffset;
+                            dataFieldsCount++;
+                        }
                     }
+                    dataMapsCount++;
                 }
-                dataMapsCount++;
             }
             step = resume + 8;
         } else { break; }
