@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
                     *(uint32_t*)(24 + memoryBytes + resume), *(uint32_t*)(28 + memoryBytes + resume),
                     resume);
                 if (saveAddr[0] > 0) for (int j = 0; j < 4 + (saveAddr[0] - resume) / 4; j++) fprintf(stderr, "         ");
-                if (saveAddr[0] < memoryBytesSize)
+                if (saveAddr[0] < memoryBytesSize - 0x8000)
                     printf("%08X=%08X\n", *(uint32_t*)(memoryBytes + saveAddr[0]), *(uint32_t*)(memoryBytes + saveAddr[0]) + saveAddr[0] + 4);
                 step = resume + 4;
             } else step = maxStep;
@@ -328,7 +328,7 @@ int main(int argc, char* argv[])
             for (int i = 0x0008; i < 0x0034; i++) {
                 uint64_t m_pszName = *(uint64_t*)(memoryBytes + addressConVar + i);
                 m_pszName -= g_base;
-                if (m_pszName < memoryBytesSize) {
+                if (m_pszName < memoryBytesSize - 0x8000) {
                     std::memcpy(nameConVar, &memoryBytes[m_pszName], 127);
                     if (strncmp(nameConVar, "mp_gamemode", 11) == 0) {
                         std::cout << nameConVar << "=0x" << std::hex << addressConVar << "\n";
@@ -351,7 +351,7 @@ int main(int argc, char* argv[])
             if (ptr == vftable) {
                 uint64_t m_pszName = *(uint64_t*)(memoryBytes + addressConVar + offset);
                 m_pszName -= g_base;
-                if (m_pszName < memoryBytesSize) {
+                if (m_pszName < memoryBytesSize - 0x8000) {
                     std::memcpy(nameConVar, &memoryBytes[m_pszName], 127);
                     std::string fullName = formStr("[ConVars]" + std::string(nameConVar));
                     if (mapConVars[fullName] == 0)
@@ -401,15 +401,15 @@ int main(int argc, char* argv[])
             uint32_t m_dataNumFields = *(uint32_t*)(memoryBytes + save[0] + 0x0008);
             uint64_t m_dataClassName = *(uint64_t*)(memoryBytes + save[0] + 0x0010);
             m_dataClassName -= g_base;
-            if (m_dataClassName < memoryBytesSize && m_dataNumFields >= 0x0001 && m_dataNumFields <= 0x1000) {
+            if (m_dataClassName < memoryBytesSize - 0x8000 && m_dataNumFields >= 0x0001 && m_dataNumFields <= 0x1000) {
                 auto dataClassName = (char*)(memoryBytes + m_dataClassName);
                 m_dataDesc -= g_base;
-                if (m_dataDesc < memoryBytesSize) {
+                if (m_dataDesc < memoryBytesSize - 0x8000) {
                     auto dataTypeDesc = reinterpret_cast<const DataTypeDesc*>(memoryBytes + m_dataDesc);
                     for (int i = 0; i < m_dataNumFields; i++) {
                         uint64_t m_fieldName = dataTypeDesc[i].m_fieldName;
                         m_fieldName -= g_base;
-                        if (m_fieldName < memoryBytesSize) {
+                        if (m_fieldName < memoryBytesSize - 0x8000) {
                             if (i == 0)
                                 std::cout << "\n[DataMap." << dataClassName << "]\n";
                             auto fieldName = (char*)(memoryBytes + m_fieldName);
@@ -435,13 +435,13 @@ int main(int argc, char* argv[])
     auto recvProp  = reinterpret_cast<const  RecvProp*>(memoryBytes + recvPropSave);\
     uint64_t m_tableName = recvTable->m_name;\
     m_tableName -= g_base;\
-    if (m_tableName < memoryBytesSize && recvTable->m_iProps > 0 && recvTable->m_iProps <= 0x1000) {\
+    if (m_tableName < memoryBytesSize - 0x8000 && recvTable->m_iProps > 0 && recvTable->m_iProps <= 0x1000) {\
         auto tableName = (char*)(memoryBytes + m_tableName);\
         std::cout << "\n[RecvTable." << tableName << "]\n";\
         for (int i = 0; i < recvTable->m_iProps; i++) {\
             uint64_t m_propName = recvProp[i].m_name;\
             m_propName -= g_base;\
-            if (m_propName < memoryBytesSize && recvProp[i].m_offset > 0) {\
+            if (m_propName < memoryBytesSize - 0x8000 && recvProp[i].m_offset > 0) {\
                 auto propName = (char*)(memoryBytes + m_propName);\
                 std::cout << propName << " = 0x" << std::hex << recvProp[i].m_offset << "\n";\
                 std::string fullName = formStr("[RecvTable." + std::string(tableName) + "]" + propName);\
@@ -634,7 +634,7 @@ std::cout << "\n[WeaponSettingsMeta]\n";
                     auto weaponDataField = reinterpret_cast<const RawWeaponDataField*>(memoryBytes + weps_list + i*sizeof(RawWeaponDataField));
                     uint64_t weaponDataFieldName = weaponDataField->name;
                     weaponDataFieldName -= g_base;
-                    if (weaponDataFieldName < memoryBytesSize) {
+                    if (weaponDataFieldName < memoryBytesSize - 0x8000) {
                         auto weaponName = (char*)(memoryBytes + weaponDataFieldName);
                         std::cout << weaponName << " = 0x" << weaponDataField->offset << "\n";
                         std::string fullName = formStr("[WeaponSettings]" + std::string(weaponName));
@@ -817,12 +817,12 @@ std::cout << "\n[WeaponSettingsMeta]\n";
         if (scanForPattern(resume, maxStep, "u4 ? 7F 00 00 ? ? ? ? ? 7F 00 00 ? ? ? ? ? 7F 00 00", save, saveAddr)) {
             addressConCommand = *(uint64_t*)(memoryBytes + resume);
             addressConCommand -= g_base;
-            if (addressConCommand < memoryBytesSize) {
+            if (addressConCommand < memoryBytesSize - 0x8000) {
                 uint64_t m_pszName           = *(uint64_t*)(memoryBytes + addressConCommand + 0x0018 - 8);
                 uint64_t m_fnCommandCallback = *(uint64_t*)(memoryBytes + addressConCommand + 0x0048 - 8);
                 uint32_t m_fnCommandType     = *(uint32_t*)(memoryBytes + addressConCommand + 0x0058 - 8);
                 m_pszName -= g_base;
-                if (m_pszName < memoryBytesSize && m_fnCommandCallback && m_fnCommandType == 2) {
+                if (m_pszName < memoryBytesSize - 0x8000 && m_fnCommandCallback && m_fnCommandType == 2) {
                     std::memcpy(nameConCommand, &memoryBytes[m_pszName], 31);
                     if (nameConCommand[0] == '+') {
                         size_t temp = m_fnCommandCallback - g_base;
