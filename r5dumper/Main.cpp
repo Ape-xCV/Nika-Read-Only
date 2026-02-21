@@ -550,13 +550,14 @@ int main(int argc, char* argv[])
             temp += 6 + 20;
             //if (scanForPattern(temp, temp + 30, "48 8B 15 ${'}", save, saveAddr)) {
             if (scanForPattern(temp, temp + 70, "48 8B ? ${'}", save, saveAddr)) {  //2026Feb10
-                uint64_t mods_names = *(uint64_t*)(memoryBytes + save[0]);
-                mods_names -= g_base;
+                uint32_t mods_names = save[0];
                 std::cout << "mods_names = 0x" << std::hex << mods_names << "\n";
                 mapOffsets["[ModifierOffsets]mods_names"] = mods_names;
                 std::cout << "\n[ModifierNames]\n";
+                uint64_t mods_names_derva = *(uint64_t*)(memoryBytes + mods_names);
+                mods_names_derva -= g_base;
                 for (int i = 0; i < mods_count; i++) {
-                    uint64_t namePtr = mods_names + i*8;
+                    uint64_t namePtr = mods_names_derva + i*8;
                     if (namePtr >= memoryBytesSize - 8) break;
                     uint64_t nameAddr = *(uint64_t*)(memoryBytes + namePtr);
                     nameAddr -= g_base;
