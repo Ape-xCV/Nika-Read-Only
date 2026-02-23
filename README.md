@@ -383,7 +383,7 @@ sudo virsh net-autostart default
     </controller>
 ```
 
-### 2.3. Environment set up in Linux
+### 3. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
   - VT-d for Intel (VMX).
@@ -395,12 +395,14 @@ sudo virsh net-autostart default
 ```shell
 sudo su
 echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm ignore_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
 sudo su
 echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm ignore_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Preload `vfio-pci` module so it can bind to PCI IDs:
@@ -418,7 +420,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 <Debian> sudo update-initramfs -c -k $(uname -r)
 ```
 
-### 2.4. VFIO GPU passthrough (on Linux PC)
+### 3.1. VFIO GPU passthrough (on Linux PC)
 
 - Find GPU location with: `lspci -v | grep -i VGA`
 ```shell
@@ -481,7 +483,7 @@ GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb in
 
 - Not loaded as a module, `xhci_hcd` will be managed by libvirt.
 
-### 2.5. Add passthrough GPU devices to Windows VM
+### 3.2. Add passthrough GPU devices to Windows VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
@@ -493,7 +495,7 @@ GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb in
 
 - Set `shader cache size` to **10 GiB** with `Nvidia Control Panel`.
 
-### 3. Configure evdev passthrough (on Linux PC)
+### 4. Configure evdev passthrough (on Linux PC)
 
 - Find your **mouse** and **keyboard** with:
 ```shell
@@ -546,7 +548,7 @@ sudo systemctl restart libvirtd
 
 - Toggle input with LEFT_CTRL + RIGHT_CTRL when needed.
 
-### 3.1. Configure VM
+### 4.1. Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
@@ -590,7 +592,7 @@ sudo usermod -aG input $USER
 
 - Restart Linux PC.
 
-### 4. Usage
+### 5. Usage
 
 - For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
@@ -605,11 +607,11 @@ sudo usermod -aG input $USER
 | Capture card                 | 30-300 ms | Overlay+Glow | Investment for faster device |
 | Steam Remote Play            | 10 ms     | Overlay+Glow | Encoded video                |
 
-### 4.1. Cable
+### 5.1. Cable
 
 - Plug monitor into passthrough GPU.
 
-### 4.2. Capture card
+### 5.2. Capture card
 
 
   <details>
@@ -625,7 +627,7 @@ sudo usermod -aG input $USER
 gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
 ```
 
-### 4.3. Steam Remote Play
+### 5.3. Steam Remote Play
 
 - Take note of **guest local IP**:
 ```shell
@@ -694,7 +696,7 @@ steam -console
     sudo dnf install ffmpeg --allowerasing
 </details>
 
-### 5. Nika Read Only (on Linux PC)
+### 6. Nika Read Only (on Linux PC)
 
 - Install:
 ```shell
@@ -708,7 +710,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 6. Spoof QEMU (mandatory)
+### 7. Spoof QEMU (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
@@ -802,7 +804,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
   ```
   </details>
 
-### 6.1. Spoof OVMF (mandatory)
+### 7.1. Spoof OVMF (mandatory)
 
 - This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
@@ -843,7 +845,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
   ```
   </details>
 
-### 6.2. Install virtio ethernet (mandatory)
+### 7.2. Install virtio ethernet (mandatory)
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
@@ -864,7 +866,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 bcdedit /set testsigning off
 ```
 
-### 6.3. Build custom Linux kernel (optional)
+### 7.3. Build custom Linux kernel (optional)
 
 
   <details>
@@ -877,7 +879,7 @@ bcdedit /set testsigning off
 
 - Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
 
-### 6.4. Spoof EDID
+### 7.4. Spoof EDID
 
 - Pinnacle of HWID ban (EAC case).
 
@@ -914,7 +916,7 @@ bcdedit /set testsigning off
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
 
-### 6.5. Spoof GPU (tested from 51x to 57x)
+### 7.5. Spoof GPU (tested from 51x to 57x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
@@ -923,7 +925,7 @@ bcdedit /set testsigning off
 - Run the cheat BEFORE the game at least once.
 - Check new UUID with `nvidia-smi -L`.
 
-### 7. memflow-kvm (not required, ignore this)
+### 8. memflow-kvm (not required, ignore this)
 
 
   <details>
@@ -957,7 +959,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 7.1. Spoof network (not required, ignore this)
+### 8.1. Spoof network (not required, ignore this)
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
 
