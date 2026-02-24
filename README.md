@@ -65,7 +65,7 @@ sudo systemctl set-default multi-user.target
 ```shell
 cd ~/Downloads
 sudo cp dummy.conf /etc/X11/.
-sudo cp headless.sh /etc/profile.d/.
+#sudo cp headless.sh /etc/profile.d/.
 chmod +x autologin.sh
 ./autologin.sh
 ```
@@ -84,6 +84,18 @@ ip addr
 - Restart from command line:
 ```shell
 sudo reboot now
+```
+
+- Start X on local hardware (for VM with virtual VGA):
+```shell
+startx
+```
+
+- Start X over headless VNC (for VM with passthrough GPU):
+```shell
+cd ~/Downloads
+chmod +x headless.sh
+./headless.sh
 ```
 
 - Use VNC from smartphone, tablet, or laptop to connect.
