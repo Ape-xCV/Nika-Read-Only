@@ -136,6 +136,24 @@ sudo usermod -aG libvirt $USER
 sudo systemctl enable libvirtd.service
 ```
 
+
+  <details>
+    <summary>Permanently disable `SELinux` on <b>Fedora Linux</b>:</summary>
+
+    sudo nano /etc/selinux/config
+
+    #SELINUX=enforcing
+    SELINUX=disabled
+  </details>
+
+
+  <details>
+    <summary>Permanently disable `AppArmor` on <b>Debian Linux</b>:</summary>
+
+    sudo systemctl stop apparmor
+    sudo systemctl disable apparmor
+  </details>
+
 - Restart Linux PC.
 
 - Virtual Machine Manager >> Edit >> Preferences >> General >> _check_ [x] Enable XML editing >> [Close]
@@ -583,24 +601,6 @@ sudo systemctl restart libvirtd
 test $UID = 0 && exit
 sudo usermod -aG input $USER
 ```
-
-
-  <details>
-    <summary>Permanently disable `SELinux` on <b>Fedora Linux</b>:</summary>
-
-    sudo nano /etc/selinux/config
-
-    #SELINUX=enforcing
-    SELINUX=disabled
-  </details>
-
-
-  <details>
-    <summary>Permanently disable `AppArmor` on <b>Debian Linux</b>:</summary>
-
-    sudo systemctl stop apparmor
-    sudo systemctl disable apparmor
-  </details>
 
 - Restart Linux PC.
 
