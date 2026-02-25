@@ -52,7 +52,7 @@
 ### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
-  - Install Fedora 42 LXDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
+  - Install Fedora 42 MATE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
 
 - Install headless VNC and switch to terminal mode:
 ```shell
