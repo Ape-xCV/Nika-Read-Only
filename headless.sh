@@ -9,6 +9,6 @@ if [ $(tty | grep /dev/tty1) ]; then
 
   ip addr
   export DISPLAY=:1
-  startlxde
-  #mate-session
+  #startlxde
+  mate-session
 fi
