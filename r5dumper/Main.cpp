@@ -618,7 +618,7 @@ std::cout << "\n[WeaponSettingsMeta]\n";
     if (scanForPattern(resume, dataVirtualAddress, "488D0D ${576561706F6E 2073657474696E67 2027257327 206973 2074797065 2025732C 206E6F74 2025732E} 4F8B84? ${'}", save, saveAddr)) {
         uint32_t weps_types = save[0];
         std::cout << "weps_types = 0x" << std::hex << weps_types << "\n";
-        mapOffsets["[WeaponSettingsMeta]weps_types "] = weps_types;
+        mapOffsets["[WeaponSettingsMeta]weps_types"] = weps_types;
         resume -= 50 + 7 + 10 + 5;
         if (scanForPattern(resume, dataVirtualAddress, "3D u2 00 00", save, saveAddr)) {
         //if (scanForPattern(resume, dataVirtualAddress, "41 8D 40 FF 3D u4 0F 87", save, saveAddr)) {
