@@ -480,7 +480,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 - Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb split_lock_detect=off intel_iommu=on iommu=pt"
 ```
 
 - For single GPU `vfio-pci.ids` is actually not required as the host is in terminal mode.
