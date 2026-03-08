@@ -1,0 +1,68 @@
+--- a/arch/x86/kvm/x86.c	2026-03-04 12:25:12.000000000 +0000
++++ b/arch/x86/kvm/x86.c	2026-03-08 12:49:20.641989604 +0000
+@@ -11055,7 +11055,8 @@
+  * exiting to the userspace.  Otherwise, the value will be returned to the
+  * userspace.
+  */
+-static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
++//static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA removed
++static int vcpu_enter_guest_real(struct kvm_vcpu *vcpu)  // NIKA added
+ {
+ 	int r;
+ 	bool req_int_win =
+@@ -11493,6 +11494,19 @@
+ 	return r;
+ }
+ 
++static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	int result = vcpu_enter_guest_real(vcpu);
++
++	if (vcpu->renew_exit_time)
++	{
++		adjust_tsc_offset_guest(vcpu, -2000);
++		//vcpu->renew_exit_time = false;
++	}
++
++	return result;
++}  // NIKA end
++
+ static bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
+ {
+ 	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+--- a/arch/x86/kvm/vmx/vmx.c	2026-03-04 12:25:12.000000000 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-03-08 12:51:28.264830930 +0000
+@@ -6105,6 +6105,12 @@
+ 				     vmx_get_msr_imm_reg(vcpu));
+ }
+ 
++static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	if (!vcpu->renew_exit_time) vcpu->renew_exit_time = true;
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6118,7 +6124,8 @@
+ 	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+ 	[EXIT_REASON_CR_ACCESS]               = handle_cr,
+ 	[EXIT_REASON_DR_ACCESS]               = handle_dr,
+-	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,
++//	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,  // NIKA removed
++	[EXIT_REASON_CPUID]                   = handle_cpuid,  // NIKA added
+ 	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
+ 	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
+ 	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
+--- a/include/linux/kvm_host.h	2026-03-04 12:25:12.000000000 +0000
++++ b/include/linux/kvm_host.h	2026-03-08 12:52:12.770035687 +0000
+@@ -352,6 +352,8 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	bool renew_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;
