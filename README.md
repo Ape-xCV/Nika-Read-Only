@@ -46,13 +46,15 @@
 - Note for Fedora 43 KDE set up:
   - Avoid release 43.
   - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/).
-  - Disconnect cable drom dGPU before installing.
+  - Disconnect from Internet before installing and avoid updating after.
+  - Disconnect cable from dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
 
 ### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
   - Install Fedora 42 MATE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
+  - Disconnect from Internet before installing and avoid updating after.
 
 - Install headless VNC and switch to terminal mode:
 ```shell
@@ -728,7 +730,7 @@ sudo -E ./nika
 
 
   <details>
-    <summary>Build on <b>Fedora 42 KDE</b>:</summary>
+    <summary>Build on <b>Fedora 42</b>:</summary>
 
   ```shell
   sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
@@ -737,17 +739,7 @@ sudo -E ./nika
 
 
   <details>
-    <summary>Build on <b>Fedora 43 KDE</b>:</summary>
-
-  ```shell
-  sudo dnf install acpica-tools
-  sudo dnf builddep qemu
-  ```
-  </details>
-
-
-  <details>
-    <summary>Build on <b>Debian 13 KDE</b>:</summary>
+    <summary>Build on <b>Debian 13</b>:</summary>
 
   ```shell
   sudo apt install acpica-tools
