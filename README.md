@@ -482,7 +482,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 - Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb ibt=off split_lock_detect=off intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb split_lock_detect=off intel_iommu=on iommu=pt"
 ```
 
 - For single GPU `vfio-pci.ids` is actually not required as the host is in terminal mode.
@@ -930,6 +930,17 @@ bcdedit /set testsigning off
 - Check new UUID with `nvidia-smi -L`.
 
 ### 8. memflow-kvm (not required, ignore this)
+
+- Edit `/etc/default/grub`, add **ibt=off**:
+```shell
+GRUB_CMDLINE_LINUX="ibt=off ..."
+```
+
+- Update GRUB and restart Linux PC:
+```shell
+<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
 
 
   <details>
