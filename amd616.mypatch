@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2025-11-30 18:15:40.219170599 +0000
++++ b/arch/x86/kvm/x86.c	2026-03-24 22:44:02.434794107 +0000
 @@ -10782,7 +10782,8 @@
   * exiting to the userspace.  Otherwise, the value will be returned to the
   * userspace.
