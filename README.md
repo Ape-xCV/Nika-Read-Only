@@ -608,8 +608,14 @@ sudo usermod -aG input $USER
 
 ### 5. Usage
 
-- For **window settings**, open; System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
+- For **KDE window settings**:
+  - System Settings >> Window Management >> Window Rules >> Import... >> GLFW.kwinrule
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
+
+- For **MATE taskbar settings**:
+  - Top taskbar >> Right-click >> Add to Panel... >> Window List >> [Add] >> [Close]
+  - Bottom taskbar >> Delete This Panel
+  - Top taskbar >> Properties >> Orientation: Bottom >> _check_ [x] Show hide buttons >> [Close]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video VGA >> Model: None >> [Apply]
 
