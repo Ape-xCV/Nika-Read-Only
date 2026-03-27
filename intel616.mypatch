@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-03-24 22:47:13.955415008 +0000
++++ b/arch/x86/kvm/x86.c	2026-03-27 23:13:54.198503585 +0000
 @@ -10782,7 +10782,8 @@
   * exiting to the userspace.  Otherwise, the value will be returned to the
   * userspace.
@@ -18,7 +18,7 @@
 +{
 +	int result = vcpu_enter_guest_real(vcpu);
 +
-+	adjust_tsc_offset_guest(vcpu, -1700);
++	adjust_tsc_offset_guest(vcpu, -1700);  // Adjust for 100 < VMEXIT < 900
 +
 +	return result;
 +}  // NIKA end
