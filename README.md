@@ -37,7 +37,7 @@
 * [x] Toggle **aimbot** with CURSOR_LEFT; "**<**" symbol in the upper left corner of the screen
 * [x] Toggle **ADS locking** with CURSOR_RIGHT; "**>**" symbol in the upper left corner of the screen
 * [x] Toggle **crosshair triggerbot** with CURSOR_UP; "**^**" symbol in the upper left corner of the screen
-* [x] Toggle **hitbox** with CURSOR_DOWN; `body`/`neck`/`head`/`none` text in the upper left corner of the screen
+* [x] Toggle **hitbox** with CURSOR_DOWN; `body` / `neck` / `head` / `none` text in the upper left corner of the screen
 * [x] Press F6 to dump **r5apex**, F7 to update **offsets**
 * [x] Press F9 twice to terminate cheat
 
