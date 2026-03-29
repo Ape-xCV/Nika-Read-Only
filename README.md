@@ -518,7 +518,7 @@ GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb sp
 ### 3.2. Add passthrough GPU devices to Windows VM
 
 - Start VM and install Windows.
-  - For single GPU switch to VNC after this.
+  - For single GPU switch to VNC after Windows install.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - 02:00.0 NVIDIA Corporation TU106 [GeForce RTX 2070] >> **[Finish]**
