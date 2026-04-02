@@ -879,7 +879,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 bcdedit /set testsigning off
 ```
 
-### 7.3. Build custom Linux kernel (optional)
+### 7.3. Build custom Linux kernel (not required, memflow-kvm incompatible)
 
 
   <details>
