@@ -892,53 +892,7 @@ bcdedit /set testsigning off
 
 - Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
 
-### 7.4. Spoof EDID
-
-- Pinnacle of HWID ban (EAC case).
-
-| Ban # | Public IP | Router MAC | Monitor 1 | Monitor 2 |
-| ----- | --------- | ---------- | --------- | --------- |
-| 1     | Flagged   | Flagged    | Flagged   |           |
-| 2     | Flagged   | Flagged    | Banned    |           |
-| 3     | Flagged   | Flagged    |           | Flagged   |
-| 4     | Flagged   | Banned     |           | Banned    |
-
-- Download CRU from: [`CRU thread`](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU).
-
-- Backup original EDID (1).
-
-- Modify current EDID (2).
-
-- Apply modified EDID (3).
-
-- Save modified EDID (1).
-
-![CRU.jpg](CRU.jpg)
-
-- Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
-
-- Write modified EDID.
-
-| Capture Card               | Dummy Plug        |
-| -------------------------- | ----------------- |
-| Game Capture HD60 S+       | [`Fueran HDMI-2K-1P`](https://www.amazon.com/dp/B06XT1Z9TF/) (NA) |
-| Game Capture HD60 X        | [`Fueran HDMI-2K-1P`](https://www.amazon.de/dp/B06XT1Z9TF/) (EU) |
-| Game Capture 4K60 Pro      |                   |
-| Game Capture 4K60 Pro MK.2 |                   |
-| Game Capture 4K60 S+       |                   |
-| Game Capture 4K X          |                   |
-| Game Capture 4K Pro        |                   |
-
-### 7.5. Spoof GPU (tested from 51x to 57x)
-
-- Disable ROM BAR for each PCI Host Device:
-  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
-
-- Check old UUID with `nvidia-smi -L`.
-- Run the cheat BEFORE the game at least once.
-- Check new UUID with `nvidia-smi -L`.
-
-### 8. memflow-kvm (not required, ignore this)
+### 7.4. memflow-kvm (memflow-qemu alternative, memflow-win32 error)
 
 - Edit `/etc/default/grub`, add **ibt=off**:
 ```shell
@@ -983,7 +937,53 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 8.1. Spoof network (not required, ignore this)
+### 7.5. Spoof EDID
+
+- Pinnacle of HWID ban (EAC case).
+
+| Ban # | Public IP | Router MAC | Monitor 1 | Monitor 2 |
+| ----- | --------- | ---------- | --------- | --------- |
+| 1     | Flagged   | Flagged    | Flagged   |           |
+| 2     | Flagged   | Flagged    | Banned    |           |
+| 3     | Flagged   | Flagged    |           | Flagged   |
+| 4     | Flagged   | Banned     |           | Banned    |
+
+- Download CRU from: [`CRU thread`](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU).
+
+- Backup original EDID (1).
+
+- Modify current EDID (2).
+
+- Apply modified EDID (3).
+
+- Save modified EDID (1).
+
+![CRU.jpg](CRU.jpg)
+
+- Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
+
+- Write modified EDID.
+
+| Capture Card               | Dummy Plug        |
+| -------------------------- | ----------------- |
+| Game Capture HD60 S+       | [`Fueran HDMI-2K-1P`](https://www.amazon.com/dp/B06XT1Z9TF/) (NA) |
+| Game Capture HD60 X        | [`Fueran HDMI-2K-1P`](https://www.amazon.de/dp/B06XT1Z9TF/) (EU) |
+| Game Capture 4K60 Pro      |                   |
+| Game Capture 4K60 Pro MK.2 |                   |
+| Game Capture 4K60 S+       |                   |
+| Game Capture 4K X          |                   |
+| Game Capture 4K Pro        |                   |
+
+### 7.6. Spoof GPU (tested from 51x to 57x)
+
+- Disable ROM BAR for each PCI Host Device:
+  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
+
+- Check old UUID with `nvidia-smi -L`.
+- Run the cheat BEFORE the game at least once.
+- Check new UUID with `nvidia-smi -L`.
+
+### 8. Spoof network (not required, ignore this)
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
 
