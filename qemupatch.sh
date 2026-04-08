@@ -103,6 +103,9 @@ cpu_models=(
   "Intel(R) Core(TM) i5-8600K CPU @ 3.60GHz"
   "Intel(R) Core(TM) i5-8600 CPU @ 3.10GHz"
   "Intel(R) Core(TM) i5-8600T CPU @ 2.30GHz" #44
+  "Intel(R) Core(TM) i7-8665U CPU @ 1.90GHz" #45
+  "Intel(R) Core(TM) i5-8365U CPU @ 1.60GHz"
+  "Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz" #47
 )
 
 cpu_families=(
@@ -153,6 +156,9 @@ cpu_families=(
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
   "CD" #Intel® Core™ i5 processor
+  "C6" #Intel® Core™ i7 processor
+  "CD" #Intel® Core™ i5 processor
+  "CE" #Intel® Core™ i3 processor
 )
 
 cpu_sockets=(
@@ -197,6 +203,9 @@ cpu_sockets=(
   "2D" #LGA 1150
   "2D" #LGA 1150
 
+  "32" #LGA 1151
+  "32" #LGA 1151
+  "32" #LGA 1151
   "32" #LGA 1151
   "32" #LGA 1151
   "32" #LGA 1151
@@ -253,6 +262,9 @@ cpu_steppings=(
   "10"
   "10"
   "10"
+  "12"
+  "12"
+  "11"
 )
 
 get_random_element() {
@@ -1795,12 +1807,15 @@ sed -i "$file_cpu" -Ee "s/Westmere E56xx\/L56xx\/X56xx \(Nehalem-C\)/${cpu_model
 sed -i "$file_cpu" -Ee "/        .name = \"Westmere\",/a\        .t4_upgrade = 0x${cpu_sockets[$haswell-1]},"
 sed -i "$file_cpu" -Ee "/        .name = \"Westmere\",/a\        .t4_family = 0x${cpu_families[$haswell-1]},"
 sed -i "$file_cpu" -Ee "s/Westmere E56xx\/L56xx\/X56xx \(IBRS update\)/${cpu_models[$haswell-1]}/"
-coffeelake=$(shuf -i 39-44 -n 1)
+#coffeelake=$(shuf -i 39-44 -n 1)
+coffeelake=$(shuf -i 45-47 -n 1)
 echo "        .name = \"IvyBridge\","
-echo ".model = 58,                                      -> .model = 158,"
+#echo ".model = 58,                                      -> .model = 158,"
+echo ".model = 58,                                      -> .model = 142,"
 echo ".stepping = 9,                                    -> .stepping = ${cpu_steppings[$coffeelake-1]},"
 echo "Intel Xeon E3-12xx v2 (Ivy Bridge)                -> ${cpu_models[$coffeelake-1]}"
-sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n; s/.model = 58,/.model = 158,/ }"
+#sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n; s/.model = 58,/.model = 158,/ }"
+sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n; s/.model = 58,/.model = 142,/ }"
 sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/{ n;n;n;n;n; s/.stepping = 9,/.stepping = ${cpu_steppings[$coffeelake-1]},/ }"
 sed -i "$file_cpu" -Ee "s/Intel Xeon E3-12xx v2 \(Ivy Bridge\)/${cpu_models[$coffeelake-1]}/"
 sed -i "$file_cpu" -Ee "/        .name = \"IvyBridge\",/a\        .t4_upgrade = 0x${cpu_sockets[$coffeelake-1]},"
@@ -1821,6 +1836,7 @@ else
   echo "KVMKVMKVM\0\0\0                                   -> GenuineIntel"
   sed -i "$file_kvm" -Ee "s/KVMKVMKVM\\\\0\\\\0\\\\0/GenuineIntel/"
 fi
+sed -i "$file_kvm" -Ee "/int kvm_arch_init\(MachineState \*ms, KVMState \*s\)/{ n;n; s/    int ret;/    int ret = kvm_vm_enable_cap(s, KVM_CAP_DISABLE_QUIRKS2, 0, KVM_X86_QUIRK_FIX_HYPERCALL_INSN);/ }"
 
 #echo "  $file_configvgaqxl"
 #if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
