@@ -26,3 +26,15 @@
  static bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
  {
  	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+--- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-04-08 01:15:03.869817254 +0100
+@@ -6104,7 +6104,8 @@
+ 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+-	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
++//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
++	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
+ 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
