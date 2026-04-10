@@ -41,6 +41,10 @@
 * [x] Press F6 to dump **r5apex**, F7 to update **offsets**
 * [x] Press F9 twice to terminate cheat
 
+### 0. Disclaimer
+
+- If you skip any detail, enjoy your ban.
+
 ### 1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
 - Note for Fedora 43 KDE set up:
