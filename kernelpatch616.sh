@@ -29,7 +29,7 @@ else
 fi
 sed -i "intel616.mypatch" -Ee "/\+	case 0x16:  \/\/ NIKA added/{n;N;d;}"
 sed -i "intel616.mypatch" -Ee "/\+	case 0x16:  \/\/ NIKA added/a\+		entry->eax *= ${denominator};  // NIKA added\n\
-+		entry->ebx /= ${numerator};  // NIKA added"
++		entry->ebx *= ${numerator};  // NIKA added"
 sed -i "intel616.mypatch" -Ee "/\+\/\/	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  \/\/ NIKA removed/{n;d;}"
 sed -i "intel616.mypatch" -Ee "/\+\/\/	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  \/\/ NIKA removed/a\+	kvm_caps.default_tsc_scaling_ratio = mul_u64_u32_div(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, ${numerator}, ${denominator});  // NIKA added"
 sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/{n;d;}"

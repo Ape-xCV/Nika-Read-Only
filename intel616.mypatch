@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-15 20:38:29.323696066 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-16 12:03:28.501607487 +0100
 @@ -1559,6 +1559,11 @@
  		}
  		break;
@@ -7,7 +7,7 @@
 +	case 0x15:  // NIKA added
 +	case 0x16:  // NIKA added
 +		entry->eax *= 2;  // NIKA added
-+		entry->ebx /= 1;  // NIKA added
++		entry->ebx *= 1;  // NIKA added
 +		break;  // NIKA added
  	case 0x1d:
  		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
@@ -46,7 +46,7 @@
  		hw_breakpoint_restore();
  
  	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
-+//	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
++	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
  	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
  
  	vcpu->mode = OUTSIDE_GUEST_MODE;
