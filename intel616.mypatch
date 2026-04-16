@@ -13,7 +13,7 @@
  		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
  			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-04-16 00:32:20.882496441 +0100
++++ b/arch/x86/kvm/x86.c	2026-04-16 12:08:24.015211472 +0100
 @@ -9889,7 +9889,8 @@
  			      __scale_tsc(kvm_caps.max_tsc_scaling_ratio, tsc_khz));
  		kvm_caps.max_guest_tsc_khz = max;
@@ -46,7 +46,7 @@
  		hw_breakpoint_restore();
  
  	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
-+	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
++//	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
  	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
  
  	vcpu->mode = OUTSIDE_GUEST_MODE;
