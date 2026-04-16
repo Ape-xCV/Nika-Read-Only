@@ -1,40 +1,52 @@
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-15 20:38:29.323696066 +0100
+@@ -1559,6 +1559,11 @@
+ 		}
+ 		break;
+ 	/* Intel AMX TILE */
++	case 0x15:  // NIKA added
++	case 0x16:  // NIKA added
++		entry->eax *= 2;  // NIKA added
++		entry->ebx /= 1;  // NIKA added
++		break;  // NIKA added
+ 	case 0x1d:
+ 		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
+ 			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-03-27 23:13:54.198503585 +0000
-@@ -10782,7 +10782,8 @@
-  * exiting to the userspace.  Otherwise, the value will be returned to the
-  * userspace.
-  */
--static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
-+//static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA removed
-+static int vcpu_enter_guest_real(struct kvm_vcpu *vcpu)  // NIKA added
- {
- 	int r;
- 	bool req_int_win =
-@@ -11219,6 +11220,15 @@
- 	return r;
- }
++++ b/arch/x86/kvm/x86.c	2026-04-16 00:32:20.882496441 +0100
+@@ -9889,7 +9889,8 @@
+ 			      __scale_tsc(kvm_caps.max_tsc_scaling_ratio, tsc_khz));
+ 		kvm_caps.max_guest_tsc_khz = max;
+ 	}
+-	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;
++//	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  // NIKA removed
++	kvm_caps.default_tsc_scaling_ratio = mul_u64_u32_div(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, 1, 2);  // NIKA added
+ 	kvm_init_msr_lists();
+ 	return 0;
  
-+static int vcpu_enter_guest(struct kvm_vcpu *vcpu)  // NIKA begin
-+{
-+	int result = vcpu_enter_guest_real(vcpu);
-+
-+	adjust_tsc_offset_guest(vcpu, -1700);  // Adjust for 100 < VMEXIT < 900
-+
-+	return result;
-+}  // NIKA end
-+
- static bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
- {
- 	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
---- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-04-08 01:15:03.869817254 +0100
-@@ -6104,7 +6104,8 @@
- 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
- 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
- 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
--	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
-+//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
-+	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
- 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
- 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
- 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
+@@ -10186,6 +10187,7 @@
+ 
+ out:
+ 	vcpu->run->hypercall.ret = ret;
++	kvm_queue_exception(vcpu, UD_VECTOR);  // NIKA added
+ 	return 1;
+ }
+ EXPORT_SYMBOL_GPL(____kvm_emulate_hypercall);
+@@ -10213,7 +10215,8 @@
+ 	 * If the quirk is disabled, synthesize a #UD and let the guest pick up
+ 	 * the pieces.
+ 	 */
+-	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {
++//	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {  // NIKA removed
++	if (true || !kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {  // NIKA added
+ 		ctxt->exception.error_code_valid = false;
+ 		ctxt->exception.vector = UD_VECTOR;
+ 		ctxt->have_exception = true;
+@@ -11128,6 +11131,7 @@
+ 		hw_breakpoint_restore();
+ 
+ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
++//	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
+ 	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
+ 
+ 	vcpu->mode = OUTSIDE_GUEST_MODE;

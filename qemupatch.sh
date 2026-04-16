@@ -103,9 +103,9 @@ cpu_models=(
   "Intel(R) Core(TM) i5-8600K CPU @ 3.60GHz"
   "Intel(R) Core(TM) i5-8600 CPU @ 3.10GHz"
   "Intel(R) Core(TM) i5-8600T CPU @ 2.30GHz" #44
-  "Intel(R) Core(TM) i7-8665U CPU @ 1.90GHz" #45
-  "Intel(R) Core(TM) i5-8365U CPU @ 1.60GHz"
-  "Intel(R) Core(TM) i3-8145U CPU @ 2.10GHz" #47
+  "Intel(R) Core(TM) i7-8557U CPU @ 1.70GHz" #45
+  "Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz"
+  "Intel(R) Core(TM) i3-8140U CPU @ 2.10GHz" #47
 )
 
 cpu_families=(
@@ -209,9 +209,9 @@ cpu_sockets=(
   "32" #LGA 1151
   "32" #LGA 1151
   "32" #LGA 1151
-  "32" #LGA 1151
-  "32" #LGA 1151
-  "32" #LGA 1151
+  "3C" #BGA 1528
+  "3C" #BGA 1528
+  "3C" #BGA 1528
 )
 
 cpu_steppings=(
@@ -262,9 +262,9 @@ cpu_steppings=(
   "10"
   "10"
   "10"
-  "12"
-  "12"
-  "11"
+  "10"
+  "10"
+  "10"
 )
 
 get_random_element() {
@@ -307,7 +307,7 @@ get_type_4_data() {
 
 if [[ ! -d qemubackup ]]; then
   echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, clone started..."
-  git clone --single-branch --branch stable-9.2 https://github.com/qemu/qemu.git qemubackup
+  git clone --single-branch --branch master https://github.com/qemu/qemu.git qemubackup
 else
   echo -e "$(pwd)/\e[1mqemubackup\e[0m found."
 fi
@@ -325,13 +325,13 @@ file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
+file_pcihp="$(pwd)/qemu/hw/acpi/pcihp.c"
 file_piix="$(pwd)/qemu/hw/isa/piix.c"
 file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
 file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
 file_multiboot="$(pwd)/qemu/hw/i386/multiboot.c"
-file_pc="$(pwd)/qemu/hw/i386/pc.c"
 #file_pcpiix="$(pwd)/qemu/hw/i386/pc_piix.c"
 file_pcq35="$(pwd)/qemu/hw/i386/pc_q35.c"
 file_atapi="$(pwd)/qemu/hw/ide/atapi.c"
@@ -400,13 +400,13 @@ if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
+if [[ -f "$file_pcihp" ]]; then rm "$file_pcihp"; fi
 if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
 if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
 if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
 if [[ -f "$file_multiboot" ]]; then rm "$file_multiboot"; fi
-if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
 #if [[ -f "$file_pcpiix" ]]; then rm "$file_pcpiix"; fi
 if [[ -f "$file_pcq35" ]]; then rm "$file_pcq35"; fi
 if [[ -f "$file_atapi" ]]; then rm "$file_atapi"; fi
@@ -560,9 +560,11 @@ sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
-#echo "S%.02X                                            -> $path%.02X"
-#sed -i "$file_acpibuild" -Ee "s/S%.02X/$path%.02X/"
-sed -i "$file_acpibuild" -Ee "/static void build_append_pcihp_notify_entry\(Aml \*method, int slot\)/i\static void get_pci_name(char *cstr, int devfn)\n\
+
+echo "  $file_pcihp"
+echo "S%.02X                                            -> $path%.02X"
+#sed -i "$file_pcihp" -Ee "s/S%.02X/$path%.02X/"
+sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent_scope, const PCIBus \*bus\)/i\static void get_pci_name(char *cstr, int devfn)\n\
 {\n\
     int slot = PCI_SLOT(devfn);\n\
     int func = PCI_FUNC(devfn);\n\
@@ -584,23 +586,25 @@ sed -i "$file_acpibuild" -Ee "/static void build_append_pcihp_notify_entry\(Aml 
             sprintf(cstr, \"$path%.02X\", devfn);\n\
             break;\n\
     }\n}\n"
-sed -i "$file_acpibuild" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/{n;d;}"
-sed -i "$file_acpibuild" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/a\        char pci_name[5] = {0};\n\
+sed -i "$file_pcihp" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/{n;d;}"
+sed -i "$file_pcihp" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/a\        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, sec->parent_dev->devfn);\n\
         Aml *br_scope = aml_scope(\"%s\", pci_name);"
-sed -i "$file_acpibuild" -Ee "s/        aml_append\(method, aml_name\(\"\^S%.02X.PCNT\", sec->parent_dev->devfn\)\);/        char pci_name[5] = {0};\n\
+sed -i "$file_pcihp" -Ee "s/        aml_append\(method, aml_name\(\"\^S%.02X.PCNT\", sec->parent_dev->devfn\)\);/        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, sec->parent_dev->devfn);\n\
         aml_append(method, aml_name(\"^%s.PCNT\", pci_name));/"
-sed -i "$file_acpibuild" -Ee "s/    aml_append\(if_ctx, aml_notify\(aml_name\(\"S%.02X\", devfn\), aml_arg\(1\)\)\);/    char pci_name[5] = {0};\n\
+sed -i "$file_pcihp" -Ee "s/    aml_append\(if_ctx, aml_notify\(aml_name\(\"S%.02X\", devfn\), aml_arg\(1\)\)\);/    char pci_name[5] = {0};\n\
     get_pci_name(pci_name, devfn);\n\
     aml_append(if_ctx, aml_notify(aml_name(\"%s\", pci_name), aml_arg(1)));/"
-sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/i\        char pci_name[5] = {0};\n\
+sed -i "$file_pcihp" -Ee "/        if \(bus->devices\[devfn\]\) \{/i\        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, devfn);"
-sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n; s/            dev = aml_scope\(\"S%.02X\", devfn\);/            dev = aml_scope(\"%s\", pci_name);/ }"
-sed -i "$file_acpibuild" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n;n;n; s/            dev = aml_device\(\"S%.02X\", devfn\);/            dev = aml_device(\"%s\", pci_name);/ }"
-sed -i "$file_acpibuild" -Ee "s/        dev = aml_device\(\"S%.02X\", devfn\);/        char pci_name[5] = {0};\n\
+sed -i "$file_pcihp" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n; s/            dev = aml_scope\(\"S%.02X\", devfn\);/            dev = aml_scope(\"%s\", pci_name);/ }"
+sed -i "$file_pcihp" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n;n;n; s/            dev = aml_device\(\"S%.02X\", devfn\);/            dev = aml_device(\"%s\", pci_name);/ }"
+sed -i "$file_pcihp" -Ee "s/        dev = aml_device\(\"S%.02X\", devfn\);/        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, devfn);\n\
         dev = aml_device(\"%s\", pci_name);/"
+
+echo "  $file_acpibuild"
 get_new_string 2 1
 echo "\"VMBS\"                                            -> \"${new_string}BS\""
 echo "\"VMBus\"                                           -> \"${new_string}BUS\""
@@ -616,42 +620,42 @@ echo "         * Emulate Windows ACPI OSYS/_OSI logic in DSDT."
 echo "         * Adds Windows 2001/2006/2009/2012/2013/2015."
 echo "         */"
 sed -i "$file_acpibuild" -e  '/    if (i440fx) {/{n;d;}'
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        Aml *osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\         */"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\         * Adds Windows 2001/2006/2009/2012/2013/2015."
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\         * Emulate Windows ACPI OSYS/_OSI logic in DSDT."
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        /*"
-sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        sb_scope = aml_scope(\"_SB\");"
+sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        sb_scope = aml_scope(\"_SB\");\n\
+        /*\n\
+         * Emulate Windows ACPI OSYS/_OSI logic in DSDT.\n\
+         * Adds Windows 2001/2006/2009/2012/2013/2015.\n\
+         */\n\
+        aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));\n\
+        Aml *osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);"
 echo "    } else if (q35) {"
 echo "        sb_scope = aml_scope(\"_SB\");"
 echo "    v v v v v v v v v"
@@ -660,59 +664,45 @@ echo "         * Emulate Windows ACPI OSYS/_OSI logic in DSDT."
 echo "         * Adds Windows 2001/2006/2009/2012/2013/2015."
 echo "         */"
 sed -i "$file_acpibuild" -e  '/    } else if (q35) {/{n;d;}'
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, osi);"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        );"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        Aml *osi = aml_if("
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\         */"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\         * Adds Windows 2001/2006/2009/2012/2013/2015."
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\         * Emulate Windows ACPI OSYS/_OSI logic in DSDT."
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        /*"
-sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        sb_scope = aml_scope(\"_SB\");"
+sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        sb_scope = aml_scope(\"_SB\");\n\
+        /*\n\
+         * Emulate Windows ACPI OSYS/_OSI logic in DSDT.\n\
+         * Adds Windows 2001/2006/2009/2012/2013/2015.\n\
+         */\n\
+        aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));\n\
+        Aml *osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);\n\
+        osi = aml_if(\n\
+            aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))\n\
+        );\n\
+        aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));\n\
+        aml_append(sb_scope, osi);"
 sed -i "$file_acpibuild" -e  '/create fw_cfg node/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/Helpful to speedup Windows guests/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
-echo "    acpi_add_table(table_offsets, tables_blob);"
-echo "    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
-echo "        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
-echo "    acpi_table_begin(&table, tables_blob);"
-echo "    build_append_int_noprefix(tables_blob,0x00000000,4);"
-echo "    acpi_table_end(tables->linker, &table);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "    /* RSDT is pointed to by RSDP */"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_add_table(table_offsets, tables_blob);"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    AcpiTable table = { .sig = \"BGRT\", .rev = 1,"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_begin(&table, tables_blob);"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    build_append_int_noprefix(tables_blob,0x00000000,4);"
-sed -i "$file_acpibuild" -Ee "/    \/\* RSDT is pointed to by RSDP \*\//i\    acpi_table_end(tables->linker, &table);"
 
 echo "  $file_piix"
 echo ".S08.                                             -> .${path}08."
@@ -727,7 +717,9 @@ cpu_name="${cpu_name[1]}"
 #echo ".SF8.                                             -> .${path}F8."
 #sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
 echo ".SF8.                                             -> .LPCB."
+echo "ICH9 LPC bridge                                   -> LPC Bridge"
 sed -i "$file_lpcich9" -Ee "s/.SF8./.LPCB./"
+sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
@@ -737,8 +729,6 @@ else
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x068D;  // Comet Lake LPC Controller"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_8086;/"
 fi
-echo "ICH9 LPC bridge                                   -> LPC Bridge"
-sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 
 echo "  $file_smbusich9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
@@ -785,14 +775,6 @@ echo "  $file_multiboot"
 echo "\"qemu\"                                            -> \"Windows Boot Manager\""
 sed -i "$file_multiboot" -Ee "s/\"qemu\"/\"Windows Boot Manager\"/"
 
-echo "  $file_pc"
-echo "\"QEMU Virtual CPU version \"                       -> \"CPU version \""
-echo "\"QEMU Virtual CPU version \"                       -> \"CPU version \""
-echo "\"QEMU Virtual CPU version \"                       -> \"CPU version \""
-sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
-sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
-sed -i "$file_pc" -Ee "s/\"QEMU Virtual CPU version \"/\"CPU version \"/"
-
 #echo "  $file_pcpiix"
 
 echo "  $file_pcq35"
@@ -800,10 +782,10 @@ echo "Standard PC (Q35 + ICH9, 2009)                    -> ${cpu_name:1}"
 echo "m->default_nic = \"e1000e\";                        -> m->default_nic = \"rtl8139\";"
 sed -i "$file_pcq35" -Ee "s/Standard PC \(Q35 \+ ICH9, 2009\)/${cpu_name:1}/"
 sed -i "$file_pcq35" -Ee "s/m->default_nic = \"e1000e\";/m->default_nic = \"rtl8139\";/"
-echo "    m->alias = \"q35\";"
+echo "    pc_q35_machine_10_0_options(m);"
 echo "    v v v v v v v v v v v v v v v v v v v v"
 echo "    m->smbios_memory_device_size = 8 * GiB;"
-sed -i "$file_pcq35" -Ee "/    m->alias = \"q35\";/a\    m->smbios_memory_device_size = 8 * GiB;"
+sed -i "$file_pcq35" -Ee "/    pc_q35_machine_10_0_options\(m\);/a\    m->smbios_memory_device_size = 8 * GiB;"
 echo "smbios_memory_device_size = 16                    -> smbios_memory_device_size = 8"
 sed -i "$file_pcq35" -Ee "s/smbios_memory_device_size = 16/smbios_memory_device_size = 8/"
 
@@ -913,12 +895,13 @@ echo "  $file_pci"
 echo "    PCIDeviceClass *pc = PCI_DEVICE_GET_CLASS(pci_dev);"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    static int index;"
-echo "    if (pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)"
-echo "    pc->device_id += ++index;"
+echo "    if (pc->vendor_id == PCI_VENDOR_ID_REDHAT &&"
+echo "        pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)"
+echo "        pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;"
 sed -i "$file_pci" -Ee "/    PCIDeviceClass \*pc = PCI_DEVICE_GET_CLASS\(pci_dev\);/a\    static int index;\n\
     if (pc->vendor_id == PCI_VENDOR_ID_REDHAT &&\n\
         pc->device_id == PCI_DEVICE_ID_REDHAT_PCIE_RP + index)\n\
-        pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;\n"
+        pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;"
 
 echo "  $file_gpex"
 get_new_string 4 1
@@ -933,7 +916,7 @@ echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 echo "0000111122223333                                  -> $serial"
 sed -i "$file_mptconfig" -Ee "s/QEMU MPT Fusion/$prefix$suffix MPT Fusion/"
 sed -i "$file_mptconfig" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
-sed -i "$file_mptconfig" -Ee "s/0000111122223333/$number/"
+sed -i "$file_mptconfig" -Ee "s/0000111122223333/$serial/"
 
 echo "  $file_scsibus"
 get_new_string 4 1
@@ -966,16 +949,14 @@ echo "static struct {"
 echo "    const char *socket_designation_l1;"
 echo "    const char *socket_designation_l2;"
 echo "    const char *socket_designation_l3;"
-#echo "    const char *socket_designation;"
 echo "} type7;"
 echo "^ ^ ^ ^ ^ ^ ^ ^"
 echo "struct type8_instance {"
-sed -i "$file_smbios" -Ee "/struct type8_instance \{/istatic struct {"
-sed -i "$file_smbios" -Ee "/struct type8_instance \{/i\    const char *socket_designation_l1;"
-sed -i "$file_smbios" -Ee "/struct type8_instance \{/i\    const char *socket_designation_l2;"
-sed -i "$file_smbios" -Ee "/struct type8_instance \{/i\    const char *socket_designation_l3;"
-#sed -i "$file_smbios" -Ee "/struct type8_instance \{/i\    const char *socket_designation;"
-sed -i "$file_smbios" -Ee "/struct type8_instance \{/i} type7;\\n"
+sed -i "$file_smbios" -Ee "/struct type8_instance \{/istatic struct {\n\
+    const char *socket_designation_l1;\n\
+    const char *socket_designation_l2;\n\
+    const char *socket_designation_l3;\n\
+} type7;\n"
 echo "static struct {"
 echo "    const char *description;"
 echo "} type26;"
@@ -987,37 +968,39 @@ echo "    const char *description;"
 echo "} type28;"
 echo "^ ^ ^ ^ ^ ^ ^ ^"
 echo "static QEnumLookup type41_kind_lookup = {"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/istatic struct {"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i\    const char *description;"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i} type26;\\n"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/istatic struct {"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i\    const char *description;"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i} type27;\\n"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/istatic struct {"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i\    const char *description;"
-sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/i} type28;\\n"
+sed -i "$file_smbios" -Ee "/static QEnumLookup type41_kind_lookup = \{/istatic struct {\n\
+    const char *description;\n\
+} type26;\n\
+\n\
+static struct {\n\
+    const char *description;\n\
+} type27;\n\
+\n\
+static struct {\n\
+    const char *description;\n\
+} type28;\n"
 echo "#define T7_BASE 0x700"
 echo "#define T8_BASE 0x800"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "#define T9_BASE 0x900"
-sed -i "$file_smbios" -Ee "/#define T9_BASE 0x900/i#define T7_BASE 0x700"
-sed -i "$file_smbios" -Ee "/#define T9_BASE 0x900/i#define T8_BASE 0x800"
+sed -i "$file_smbios" -Ee "/#define T9_BASE 0x900/i#define T7_BASE 0x700\n\
+#define T8_BASE 0x800"
 echo "#define T20_BASE 0x1400"
 echo "#define T26_BASE 0x1A00"
 echo "#define T27_BASE 0x1B00"
 echo "#define T28_BASE 0x1C00"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "#define T32_BASE 0x2000"
-sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T20_BASE 0x1400"
-sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T26_BASE 0x1A00"
-sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T27_BASE 0x1B00"
-sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T28_BASE 0x1C00"
+sed -i "$file_smbios" -Ee "/#define T32_BASE 0x2000/i#define T20_BASE 0x1400\n\
+#define T26_BASE 0x1A00\n\
+#define T27_BASE 0x1B00\n\
+#define T28_BASE 0x1C00"
 echo "uint8_t g_type4_family;"
 echo "uint8_t g_type4_upgrade;"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "static void smbios_build_type_4_table(MachineState *ms, unsigned instance,"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_4_table\(MachineState \*ms, unsigned instance,/iuint8_t g_type4_family;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_4_table\(MachineState \*ms, unsigned instance,/iuint8_t g_type4_upgrade;"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_4_table\(MachineState \*ms, unsigned instance,/iuint8_t g_type4_family;\n\
+uint8_t g_type4_upgrade;"
 echo "    if (instance > 0)"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 echo "    else"
@@ -1025,10 +1008,10 @@ echo "        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_TABLE_SET_STR(4, socket_designation_str, sock_str);"
 sed -i "$file_smbios" -e  '/type4.sock_pfx, instance);/{d;}'
-sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    if (instance > 0)"
-sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
-sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    else"
-sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
+sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    if (instance > 0)\n\
+        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);\n\
+    else\n\
+        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
 voltage=$(shuf -i 1300-1450 -n 1)
 get_type_4_data
 echo "    t->processor_family = 0xfe; /* use Processor Family 2 field */"
@@ -1052,93 +1035,66 @@ echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    if (g_type4_upgrade > 0) t->processor_upgrade = g_type4_upgrade;"
 sed -i "$file_smbios" -Ee "/    t->processor_upgrade = 0x01; \/\* Other \*\//a\    if (g_type4_upgrade > 0) t->processor_upgrade = g_type4_upgrade;"
 echo "t->processor_upgrade = 0x01;                      -> t->processor_upgrade = 0x$t4_processor_upgrade;"
-echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
-echo "family2 = cpu_to_le16(type4.processor_family);    -> family2 = cpu_to_le16(t->processor_family);"
-sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
-sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
-sed -i "$file_smbios" -Ee "s/family2 = cpu_to_le16\(type4.processor_family\);/family2 = cpu_to_le16\(t->processor_family\);/"
 echo "l1_cache_handle = cpu_to_le16(0xFFFF)             -> l1_cache_handle = cpu_to_le16(T7_BASE + 1)"
 echo "l2_cache_handle = cpu_to_le16(0xFFFF)             -> l2_cache_handle = cpu_to_le16(T7_BASE + 2)"
 echo "l3_cache_handle = cpu_to_le16(0xFFFF)             -> l3_cache_handle = cpu_to_le16(T7_BASE + 3)"
+echo "t->processor_characteristics = cpu_to_le16(0x02); -> t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);"
+echo "family2 = cpu_to_le16(type4.processor_family);    -> family2 = cpu_to_le16(t->processor_family);"
+sed -i "$file_smbios" -Ee "s/t->processor_upgrade = 0x01;/t->processor_upgrade = 0x$t4_processor_upgrade;/"
 sed -i "$file_smbios" -Ee "s/l1_cache_handle = cpu_to_le16\(0xFFFF\)/l1_cache_handle = cpu_to_le16(T7_BASE + 1)/"
 sed -i "$file_smbios" -Ee "s/l2_cache_handle = cpu_to_le16\(0xFFFF\)/l2_cache_handle = cpu_to_le16(T7_BASE + 2)/"
 sed -i "$file_smbios" -Ee "s/l3_cache_handle = cpu_to_le16\(0xFFFF\)/l3_cache_handle = cpu_to_le16(T7_BASE + 3)/"
-echo "    SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation);"
+sed -i "$file_smbios" -Ee "s/t->processor_characteristics = cpu_to_le16\(0x02\);/t->processor_characteristics = cpu_to_le16(0x$t4_processor_characteristics);/"
+sed -i "$file_smbios" -Ee "s/family2 = cpu_to_le16\(type4.processor_family\);/family2 = cpu_to_le16\(t->processor_family\);/"
+echo "    if      (level == 0b000) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l1);"
+echo "    else if (level == 0b001) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l2);"
+echo "    else if (level == 0b010) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l3);"
 echo "    SMBIOS_BUILD_TABLE_POST;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "static void smbios_build_type_8_table(void)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/istatic void smbios_build_type_7_table(unsigned offset, uint8_t level, uint8_t system_cache_type, uint16_t installed_size, uint32_t installed_size_2)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i{"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    SMBIOS_BUILD_TABLE_PRE(7, T7_BASE + offset, true); /* required */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->cache_configuration = 0b0000000100000000 | level; // 000000 WriteBack(01) Disabled(0) Internal(00) 0 NotSocketed(0) L1(000)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->maximum_cache_size = installed_size;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->installed_size = installed_size;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->supported_sram_type = 0b0000000000100000;            // 0000000000 Synchronous(1) 00000"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->current_sram_type = 0b0000000000100000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->cache_speed = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->error_correction_type = 0x06;                        // Multi-bit ECC"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->system_cache_type = system_cache_type;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->associativity = 0x06;                                // Fully Associative"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->maximum_cache_size_2 = installed_size_2;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    t->installed_size_2 = installed_size_2;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    if      (level == 0b000) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l1);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    else if (level == 0b001) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l2);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    else if (level == 0b010) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l3);"
-#sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/i}\\n"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/istatic void smbios_build_type_7_table(unsigned offset, uint8_t level, uint8_t system_cache_type, uint16_t installed_size, uint32_t installed_size_2)\n\
+{\n\
+    SMBIOS_BUILD_TABLE_PRE(7, T7_BASE + offset, true); /* required */\n\
+    t->cache_configuration = 0b0000000100000000 | level; // 000000 WriteBack(01) Disabled(0) Internal(00) 0 NotSocketed(0) L1(000)\n\
+    t->maximum_cache_size = installed_size;\n\
+    t->installed_size = installed_size;\n\
+    t->supported_sram_type = 0b0000000000100000;         // 0000000000 Synchronous(1) 00000\n\
+    t->current_sram_type = 0b0000000000100000;\n\
+    t->cache_speed = 0;\n\
+    t->error_correction_type = 0x06;                     // Multi-bit ECC\n\
+    t->system_cache_type = system_cache_type;\n\
+    t->associativity = 0x06;                             // Fully Associative\n\
+    t->maximum_cache_size_2 = installed_size_2;\n\
+    t->installed_size_2 = installed_size_2;\n\
+    if      (level == 0b000) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l1);\n\
+    else if (level == 0b001) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l2);\n\
+    else if (level == 0b010) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l3);\n\
+    SMBIOS_BUILD_TABLE_POST;\n\
+}\n"
 echo "SMBIOS_BUILD_TABLE_PRE(8, T0_BASE                 -> SMBIOS_BUILD_TABLE_PRE(8, T8_BASE"
-sed -i "$file_smbios" -Ee "s/SMBIOS_BUILD_TABLE_PRE\(8, T0_BASE/SMBIOS_BUILD_TABLE_PRE(8, T8_BASE/"
 echo "t->segment_group_number = 0xff;                   -> t->segment_group_number = cpu_to_le16(0);"
 echo "t->bus_number = 0xff;                             -> t->bus_number = 0x00;"
+sed -i "$file_smbios" -Ee "s/SMBIOS_BUILD_TABLE_PRE\(8, T0_BASE/SMBIOS_BUILD_TABLE_PRE(8, T8_BASE/"
 sed -i "$file_smbios" -Ee "s/t->segment_group_number = 0xff;/t->segment_group_number = cpu_to_le16(0);/"
 sed -i "$file_smbios" -Ee "s/t->bus_number = 0xff;/t->bus_number = 0x00;/"
 echo "            t->device_number = 0xff;"
 echo "            v v v v v v v v v v v v v v v"
 echo "            if (t9->current_usage == 0x04)"
 echo "                t->device_number = t9->slot_id << 3;"
-sed -i "$file_smbios" -Ee "/            t->device_number = 0xff;/a\                t->device_number = t9->slot_id << 3;"
-sed -i "$file_smbios" -Ee "/            t->device_number = 0xff;/a\            if (t9->current_usage == 0x04)"
+sed -i "$file_smbios" -Ee "/            t->device_number = 0xff;/a\            if (t9->current_usage == 0x04)\n\
+                t->device_number = t9->slot_id << 3;"
 echo "uint64_t start, uint64_t size)                    -> uint64_t start, uint64_t size, unsigned dimm_cnt)"
-sed -i "$file_smbios" -Ee "s/uint64_t start, uint64_t size\)/uint64_t start, uint64_t size, unsigned dimm_cnt)/"
 echo "partition_width = 1; /* One device per row */     -> partition_width = dimm_cnt;"
+sed -i "$file_smbios" -Ee "s/uint64_t start, uint64_t size\)/uint64_t start, uint64_t size, unsigned dimm_cnt)/"
 sed -i "$file_smbios" -Ee "s/partition_width = 1; \/\* One device per row \*\//partition_width = dimm_cnt;/"
-echo "static void smbios_build_type_20_table(unsigned instance, uint64_t size)"
-echo "{"
-echo "    uint64_t start, end, start_kb, end_kb;"
+rpm=$(shuf -i 1450-1850 -n 1)
+temperature=$(shuf -i 350-550 -n 1)
 echo "    SMBIOS_BUILD_TABLE_PRE(20, T20_BASE + instance, true); /* required */"
 echo "    t->memory_device_handle = cpu_to_le16(T17_BASE + instance);"
 echo "    t->memory_array_mapped_address_handle = cpu_to_le16(T19_BASE);"
 echo "    SMBIOS_BUILD_TABLE_POST;"
 echo "}"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_20_table(unsigned instance, uint64_t size)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i{"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    uint64_t start, end, start_kb, end_kb;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_PRE(20, T20_BASE + instance, true); /* required */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    start = instance * size;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    end = start + size - 1;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    assert(end > start);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    start_kb = start / KiB;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    end_kb = end / KiB;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    if (start_kb < UINT32_MAX && end_kb < UINT32_MAX) {"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->starting_address = cpu_to_le32(start_kb);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->ending_address = cpu_to_le32(end_kb);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->extended_starting_address = t->extended_ending_address = cpu_to_le64(0);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    } else {"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->starting_address = t->ending_address = cpu_to_le32(UINT32_MAX);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->extended_starting_address = cpu_to_le64(start);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\        t->extended_ending_address = cpu_to_le64(end);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    }"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->memory_device_handle = cpu_to_le16(T17_BASE + instance);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->memory_array_mapped_address_handle = cpu_to_le16(T19_BASE);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->partition_row_position = 0xFF; /* Unknown */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->interleave_position = 0; /* Not interleaved */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->interleaved_data_depth = 0; /* Not interleaved */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
-rpm=$(shuf -i 1450-1850 -n 1)
-temperature=$(shuf -i 350-550 -n 1)
 echo "    SMBIOS_TABLE_SET_STR(26, description, type26.description);"
 echo "    SMBIOS_BUILD_TABLE_POST;"
 echo "}"
@@ -1150,45 +1106,70 @@ echo "    SMBIOS_BUILD_TABLE_POST;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "static void smbios_build_type_32_table(void)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_26_table(void)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i{"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_PRE(26, T26_BASE, true); /* required */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->location_and_status = 0b01100011; // OK (011) Processor (00011)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->maximum_value = 0x8000;           // in millivolts"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->minimum_value = 0x8000;           // in millivolts"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->resolution = 10;                  // in 1/10 mV"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->tolerance = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->accuracy = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->oem_defined = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = $voltage;             // in millivolts"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(26, description, type26.description);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_27_table(void)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i{"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_PRE(27, T27_BASE, true); /* required */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->temperature_probe_handle = T28_BASE;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->device_type_and_status = 0b01100011; // OK (011) Fan (00011)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->cooling_unit_group = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->oem_defined = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_speed = $rpm;                // in RPM"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(27, description, type27.description);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_28_table(void)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i{"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_PRE(28, T28_BASE, true); /* required */"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->location_and_status = 0b01100011; // OK (011) Processor (00011)"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->maximum_value = 1270;             // in 1/10 °C"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->minimum_value = -550;             // in 1/10 °C"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->resolution = 100;                 // in 1/1000 °C"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->tolerance = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->accuracy = 0x8000;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->oem_defined = 0;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    t->nominal_value = $temperature;              // in 1/10 °C"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_TABLE_SET_STR(28, description, type28.description);"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i\    SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/i}\\n"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_20_table(unsigned instance, uint64_t size)\n\
+{\n\
+    uint64_t start, end, start_kb, end_kb;\n\
+    SMBIOS_BUILD_TABLE_PRE(20, T20_BASE + instance, true); /* required */\n\
+    start = instance * size;\n\
+    end = start + size - 1;\n\
+    assert(end > start);\n\
+    start_kb = start / KiB;\n\
+    end_kb = end / KiB;\n\
+    if (start_kb < UINT32_MAX && end_kb < UINT32_MAX) {\n\
+        t->starting_address = cpu_to_le32(start_kb);\n\
+        t->ending_address = cpu_to_le32(end_kb);\n\
+        t->extended_starting_address = t->extended_ending_address = cpu_to_le64(0);\n\
+    } else {\n\
+        t->starting_address = t->ending_address = cpu_to_le32(UINT32_MAX);\n\
+        t->extended_starting_address = cpu_to_le64(start);\n\
+        t->extended_ending_address = cpu_to_le64(end);\n\
+    }\n\
+    t->memory_device_handle = cpu_to_le16(T17_BASE + instance);\n\
+    t->memory_array_mapped_address_handle = cpu_to_le16(T19_BASE);\n\
+    t->partition_row_position = 0xFF; /* Unknown */\n\
+    t->interleave_position = 0; /* Not interleaved */\n\
+    t->interleaved_data_depth = 0; /* Not interleaved */\n\
+    SMBIOS_BUILD_TABLE_POST;\n\
+}\n"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_26_table(void)\n\
+{\n\
+    SMBIOS_BUILD_TABLE_PRE(26, T26_BASE, true); /* required */\n\
+    t->location_and_status = 0b01100011; // OK (011) Processor (00011)\n\
+    t->maximum_value = 0x8000;           // in millivolts\n\
+    t->minimum_value = 0x8000;           // in millivolts\n\
+    t->resolution = 10;                  // in 1/10 mV\n\
+    t->tolerance = 0x8000;\n\
+    t->accuracy = 0x8000;\n\
+    t->oem_defined = 0;\n\
+    t->nominal_value = $voltage;             // in millivolts\n\
+    SMBIOS_TABLE_SET_STR(26, description, type26.description);\n\
+    SMBIOS_BUILD_TABLE_POST;\n\
+}\n"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_27_table(void)\n\
+{\n\
+    SMBIOS_BUILD_TABLE_PRE(27, T27_BASE, true); /* required */\n\
+    t->temperature_probe_handle = T28_BASE;\n\
+    t->device_type_and_status = 0b01100011; // OK (011) Fan (00011)\n\
+    t->cooling_unit_group = 0;\n\
+    t->oem_defined = 0;\n\
+    t->nominal_speed = $rpm;                // in RPM\n\
+    SMBIOS_TABLE_SET_STR(27, description, type27.description);\n\
+    SMBIOS_BUILD_TABLE_POST;\n\
+}\n"
+sed -i "$file_smbios" -Ee "/static void smbios_build_type_32_table\(void\)/istatic void smbios_build_type_28_table(void)\n\
+{\n\
+    SMBIOS_BUILD_TABLE_PRE(28, T28_BASE, true); /* required */\n\
+    t->location_and_status = 0b01100011; // OK (011) Processor (00011)\n\
+    t->maximum_value = 1270;             // in 1/10 °C\n\
+    t->minimum_value = -550;             // in 1/10 °C\n\
+    t->resolution = 100;                 // in 1/1000 °C\n\
+    t->tolerance = 0x8000;\n\
+    t->accuracy = 0x8000;\n\
+    t->oem_defined = 0;\n\
+    t->nominal_value = $temperature;              // in 1/10 °C\n\
+    SMBIOS_TABLE_SET_STR(28, description, type28.description);\n\
+    SMBIOS_BUILD_TABLE_POST;\n\
+}\n"
 echo "char *g_type4_version;"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void smbios_set_defaults(const char *manufacturer, const char *product,"
@@ -1202,9 +1183,9 @@ echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_SET_DEFAULT(type17.loc_pfx, \"DIMM\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.loc_pfx, \"DIMM\"\);/i\    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.loc_pfx, \"DIMM\"\);/i\    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.loc_pfx, \"DIMM\"\);/i\    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
+sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.loc_pfx, \"DIMM\"\);/i\    SMBIOS_SET_DEFAULT(type7.socket_designation_l1, \"L1 Cache\");\n\
+    SMBIOS_SET_DEFAULT(type7.socket_designation_l2, \"L2 Cache\");\n\
+    SMBIOS_SET_DEFAULT(type7.socket_designation_l3, \"L3 Cache\");"
 echo "    SMBIOS_SET_DEFAULT(type17.bank, \"BANK\");"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_SET_DEFAULT(type17.manufacturer, manufacturer);"
@@ -1214,29 +1195,29 @@ echo "    v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    SMBIOS_SET_DEFAULT(type26.description, \"VPROBE0\");"
 echo "    SMBIOS_SET_DEFAULT(type27.description, \"FAN0\");"
 echo "    SMBIOS_SET_DEFAULT(type28.description, \"TPROBE0\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.manufacturer, manufacturer\);/a\    SMBIOS_SET_DEFAULT(type28.description, \"TPROBE0\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.manufacturer, manufacturer\);/a\    SMBIOS_SET_DEFAULT(type27.description, \"FAN0\");"
-sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.manufacturer, manufacturer\);/a\    SMBIOS_SET_DEFAULT(type26.description, \"VPROBE0\");"
+sed -i "$file_smbios" -Ee "/    SMBIOS_SET_DEFAULT\(type17.manufacturer, manufacturer\);/a\    SMBIOS_SET_DEFAULT(type26.description, \"VPROBE0\");\n\
+    SMBIOS_SET_DEFAULT(type27.description, \"FAN0\");\n\
+    SMBIOS_SET_DEFAULT(type28.description, \"TPROBE0\");"
 echo "unsigned i, dimm_cnt, offset;                     -> unsigned i, dimm_cnt, slot_cnt, offset;"
 sed -i "$file_smbios" -Ee "s/unsigned i, dimm_cnt, offset;/unsigned i, dimm_cnt, slot_cnt, offset;/"
-echo "    smbios_build_type_7_table(0 ,0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB"
+echo "    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB"
 echo "    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB"
 echo "    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB"
 echo "    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    smbios_build_type_8_table();"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
+sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB\n\
+    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB\n\
+    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB\n\
+    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
 echo "               mc->smbios_memory_device_size;"
 echo "    v v v v v v v v v v v v"
 echo "    slot_cnt = 4;"
 echo "    if (slot_cnt < dimm_cnt)"
 echo "        slot_cnt = dimm_cnt;"
-sed -i "$file_smbios" -Ee "/               mc->smbios_memory_device_size;/a\        slot_cnt = dimm_cnt;"
-sed -i "$file_smbios" -Ee "/               mc->smbios_memory_device_size;/a\    if (slot_cnt < dimm_cnt)"
-sed -i "$file_smbios" -Ee "/               mc->smbios_memory_device_size;/a\    slot_cnt = 4;"
+sed -i "$file_smbios" -Ee "/               mc->smbios_memory_device_size;/a\    slot_cnt = 4;\n\
+    if (slot_cnt < dimm_cnt)\n\
+        slot_cnt = dimm_cnt;"
 echo "smbios_build_type_16_table(dimm_cnt)              -> smbios_build_type_16_table(slot_cnt)"
 sed -i "$file_smbios" -Ee "s/smbios_build_type_16_table\(dimm_cnt\)/smbios_build_type_16_table(slot_cnt)/"
 echo "    srand(time(0));"
@@ -1248,9 +1229,9 @@ echo "        for (i = dimm_cnt; i < slot_cnt; i++)"
 echo "            smbios_build_type_17_table(i, 0);"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    for (i = 0; i < mem_array_size; i++) {"
-sed -i "$file_smbios" -Ee "/    for \(i = 0; i < mem_array_size; i\+\+\) \{/i\    if (slot_cnt > dimm_cnt)"
-sed -i "$file_smbios" -Ee "/    for \(i = 0; i < mem_array_size; i\+\+\) \{/i\        for (i = dimm_cnt; i < slot_cnt; i++)"
-sed -i "$file_smbios" -Ee "/    for \(i = 0; i < mem_array_size; i\+\+\) \{/i\            smbios_build_type_17_table(i, 0);\\n"
+sed -i "$file_smbios" -Ee "/    for \(i = 0; i < mem_array_size; i\+\+\) \{/i\    if (slot_cnt > dimm_cnt)\n\
+        for (i = dimm_cnt; i < slot_cnt; i++)\n\
+            smbios_build_type_17_table(i, 0);\n"
 echo "mem_array[i].length);                             -> mem_array[i].length, dimm_cnt);"
 sed -i "$file_smbios" -Ee "s/mem_array\[i\].length\);/mem_array[i].length, dimm_cnt);/"
 echo "    for (i = 0; i < dimm_cnt; i++)"
@@ -1260,11 +1241,11 @@ echo "    smbios_build_type_27_table();"
 echo "    smbios_build_type_28_table();"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    smbios_build_type_32_table();"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    for (i = 0; i < dimm_cnt; i++)"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\        smbios_build_type_20_table(i, GET_DIMM_SZ);\\n"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    smbios_build_type_26_table();"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    smbios_build_type_27_table();"
-sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    smbios_build_type_28_table();"
+sed -i "$file_smbios" -Ee "/    smbios_build_type_32_table\(\);/i\    for (i = 0; i < dimm_cnt; i++)\n\
+        smbios_build_type_20_table(i, GET_DIMM_SZ);\n\n\
+    smbios_build_type_26_table();\n\
+    smbios_build_type_27_table();\n\
+    smbios_build_type_28_table();"
 echo "bios_starting_address_segment = cpu_to_le16(0xE800) -> bios_starting_address_segment = cpu_to_le16(0xE000)"
 echo "bios_rom_size = 0                                 -> bios_rom_size = 0xFF"
 echo "bios_characteristics = cpu_to_le64(0x08)          -> bios_characteristics = cpu_to_le64(0x0040001330099880)"
@@ -1277,8 +1258,8 @@ echo "    char loc_str[128];"
 echo "    v v v v v v v v v v"
 echo "    char bank_str[128];"
 echo "    char serial_str[128];"
-sed -i "$file_smbios" -Ee "/    char loc_str\[128\];/a\    char serial_str[128];"
-sed -i "$file_smbios" -Ee "/    char loc_str\[128\];/a\    char bank_str[128];"
+sed -i "$file_smbios" -Ee "/    char loc_str\[128\];/a\    char bank_str[128];\n\
+    char serial_str[128];"
 echo "total_width = cpu_to_le16(0xFFFF);                -> total_width = cpu_to_le16(64); /* 64-bit no ECC */"
 echo "data_width = cpu_to_le16(0xFFFF);                 -> data_width = cpu_to_le16(64); /* 64-bit no ECC */"
 echo "type17.loc_pfx, instance);                        -> type17.loc_pfx, instance % 2);"
@@ -1286,7 +1267,7 @@ sed -i "$file_smbios" -Ee "s/bios_starting_address_segment = cpu_to_le16\(0xE800
 sed -i "$file_smbios" -Ee "s/t->bios_rom_size = 0/t->bios_rom_size = 0xFF/"
 sed -i "$file_smbios" -Ee "s/bios_characteristics = cpu_to_le64\(0x08\)/bios_characteristics = cpu_to_le64(0x0040001330099880)/"
 sed -i "$file_smbios" -Ee "s/bios_characteristics_extension_bytes\[0\] = 0/bios_characteristics_extension_bytes[0] = 0x03/"
-sed -i "$file_smbios" -Ee "s/bios_characteristics_extension_bytes\[1\] = 0x14/bios_characteristics_extension_bytes[1] = 0x0D/"
+sed -i "$file_smbios" -Ee "s/bios_characteristics_extension_bytes\[1\] = 0x04/bios_characteristics_extension_bytes[1] = 0x0D/"
 sed -i "$file_smbios" -Ee "s/feature_flags = 0x01/feature_flags = 0x09/"
 sed -i "$file_smbios" -Ee "s/location = 0x01; \/\* Other \*\//location = 0x03; \/* Motherboard *\//"
 sed -i "$file_smbios" -Ee "s/error_correction = 0x06/error_correction = 0x03/"
@@ -1324,34 +1305,35 @@ echo "    }"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    size_mb = QEMU_ALIGN_UP(size, MiB) / MiB;"
 sed -i "$file_smbios" -e  '/    SMBIOS_BUILD_TABLE_PRE(17, T17_BASE/{n;n;n;n;N;d;}'
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\    if (size == 0) {"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->total_width = cpu_to_le16(0xFFFF); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->data_width = cpu_to_le16(0xFFFF); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->size = cpu_to_le16(0); /* Not installed */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->form_factor = 0x02; /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->device_set = 0; /* Not in a set */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        snprintf(loc_str, sizeof(loc_str), \"%s %d\", type17.loc_pfx, instance % 2);"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_TABLE_SET_STR(17, device_locator_str, loc_str);"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_TABLE_SET_STR(17, bank_locator_str, bank_str);"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->memory_type = 0x02; /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->type_detail = cpu_to_le16(0x04); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->speed = cpu_to_le16(0); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->manufacturer_str = 0;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->serial_number_str = 0;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->asset_tag_number_str = 0;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->part_number_str = 0;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->attributes = 0; /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->extended_size = cpu_to_le32(0); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->configured_clock_speed = 0; /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->minimum_voltage = cpu_to_le16(0); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->maximum_voltage = cpu_to_le16(0); /* Unknown */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        t->configured_voltage = cpu_to_le16(0); /* Unknown */\\n"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        SMBIOS_BUILD_TABLE_POST;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\        return;"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\    }"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\    t->total_width = cpu_to_le16(64); /* 64-bit no ECC */"
-sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\    t->data_width = cpu_to_le16(64); /* 64-bit no ECC */"
+sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\    if (size == 0) {\n\
+        t->total_width = cpu_to_le16(0xFFFF); /* Unknown */\n\
+        t->data_width = cpu_to_le16(0xFFFF); /* Unknown */\n\
+        t->size = cpu_to_le16(0); /* Not installed */\n\
+        t->form_factor = 0x02; /* Unknown */\n\
+        t->device_set = 0; /* Not in a set */\n\
+        snprintf(loc_str, sizeof(loc_str), \"%s %d\", type17.loc_pfx, instance % 2);\n\
+        SMBIOS_TABLE_SET_STR(17, device_locator_str, loc_str);\n\
+        snprintf(bank_str, sizeof(bank_str), \"%s %d\", type17.bank, instance / 2);\n\
+        SMBIOS_TABLE_SET_STR(17, bank_locator_str, bank_str);\n\
+        t->memory_type = 0x02; /* Unknown */\n\
+        t->type_detail = cpu_to_le16(0x04); /* Unknown */\n\
+        t->speed = cpu_to_le16(0); /* Unknown */\n\
+        t->manufacturer_str = 0;\n\
+        t->serial_number_str = 0;\n\
+        t->asset_tag_number_str = 0;\n\
+        t->part_number_str = 0;\n\
+        t->attributes = 0; /* Unknown */\n\
+        t->extended_size = cpu_to_le32(0); /* Unknown */\n\
+        t->configured_clock_speed = 0; /* Unknown */\n\
+        t->minimum_voltage = cpu_to_le16(0); /* Unknown */\n\
+        t->maximum_voltage = cpu_to_le16(0); /* Unknown */\n\
+        t->configured_voltage = cpu_to_le16(0); /* Unknown */\n\
+\n\
+        SMBIOS_BUILD_TABLE_POST;\n\
+        return;\n\
+    }\n\
+    t->total_width = cpu_to_le16(64); /* 64-bit no ECC */\n\
+    t->data_width = cpu_to_le16(64); /* 64-bit no ECC */"
 
 echo "  $file_lu"
 get_new_string 4 1
@@ -1487,9 +1469,9 @@ echo "  $file_devsmartcardreader"
 get_new_string $(shuf -i 5-7 -n 1) 3
 number=$(get_random_dec 10)
 echo "_MANUFACTURER]  = \"QEMU\"                          -> _MANUFACTURER]  = \"$prefix$suffix\""
-echo "_PRODUCT]       = \"QEMU USB CCID\"                 -> _PRODUCT]       = \"$prefix$suffix CCID\""
+echo "_PRODUCT]       = \"QEMU USB CCID\"                 -> _PRODUCT]       = \"$prefix$suffix USB CCID\""
 echo "_SERIALNUMBER]  = \"1\"                             -> _SERIALNUMBER]  = \"$number\""
-echo "_desc   = \"QEMU USB CCID\"                         -> _desc   = \"$prefix$suffix CCID\""
+echo "_desc   = \"QEMU USB CCID\"                         -> _desc   = \"$prefix$suffix USB CCID\""
 sed -i "$file_devsmartcardreader" -Ee "s/_MANUFACTURER]  = \"QEMU\"/_MANUFACTURER]  = \"$prefix$suffix\"/"
 sed -i "$file_devsmartcardreader" -Ee "s/_PRODUCT]       = \"QEMU USB CCID\"/_PRODUCT]       = \"$prefix$suffix USB CCID\"/"
 sed -i "$file_devsmartcardreader" -Ee "s/_SERIALNUMBER]  = \"1\"/_SERIALNUMBER]  = \"$number\"/"
@@ -1743,10 +1725,10 @@ echo "extern uint8_t g_type4_family;"
 echo "extern uint8_t g_type4_upgrade;"
 echo "extern char *g_type4_version;"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "static void x86_cpu_load_model(X86CPU *cpu, X86CPUModel *model)"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern uint8_t g_type4_family;"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern uint8_t g_type4_upgrade;"
-sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, X86CPUModel \*model\)/iextern char *g_type4_version;"
+echo "static void x86_cpu_load_model(X86CPU *cpu, const X86CPUModel *model)"
+sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, const X86CPUModel \*model\)/iextern uint8_t g_type4_family;"
+sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, const X86CPUModel \*model\)/iextern uint8_t g_type4_upgrade;"
+sed -i "$file_cpu" -Ee "/static void x86_cpu_load_model\(X86CPU \*cpu, const X86CPUModel \*model\)/iextern char *g_type4_version;"
 echo "    g_type4_family = def->t4_family;"
 echo "    g_type4_upgrade = def->t4_upgrade;"
 echo "    g_type4_version = malloc(strlen(def->model_id) + 1);"

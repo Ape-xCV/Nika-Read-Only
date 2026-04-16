@@ -788,9 +788,9 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
-- Make sure that `pc-q35-9.2` is specified in your XML:
+- Make sure that `pc-q35-11.0` is specified in your XML:
 ```shell
-<type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
 ```
 
 
@@ -855,7 +855,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
   ```shell
   <os>
-    <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+    <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
     <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
     <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
     <bootmenu enable="yes"/>
