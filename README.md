@@ -331,6 +331,8 @@ sudo virsh net-autostart default
   ```
   </details>
 
+  - For host @2468002000Hz, using `<timer name="tsc" frequency="1234001000"/>` will scale guest TSC down @2:1 ratio.
+
 
 - Replace from `<memballoon model="virtio">` to `</memballoon>` and [Apply]:
   <details>
