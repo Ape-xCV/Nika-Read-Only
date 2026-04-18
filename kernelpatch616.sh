@@ -6,38 +6,16 @@ if [ "$EUID" != 0 ]; then
     exit $?
 fi
 
-read -p $'TSC \e[1mnumerator\e[0m CPU@2.40GHz * \e[1m[1]\e[0m / 2 = CPU@1.20GHz> ' -n 1 -r
-if [[ $REPLY =~ ^[123456789]$ ]]; then
-  echo ""
-  numerator=$REPLY
-else
-  exit 0
-fi
-read -p $'TSC \e[1mdenominator\e[0m CPU@2.40GHz * 1 / \e[1m[2]\e[0m = CPU@1.20GHz> ' -n 1 -r
-if [[ $REPLY =~ ^[123456789]$ ]]; then
-  echo ""
-  denominator=$REPLY
-else
-  exit 0
-fi
-read -p $'TSC \e[1moffset\e[0m -500 * \e[1m[0]\e[0m = -0> ' -n 1 -r
+read -p $'TSC \e[1moffset\e[0m -500 * \e[1m[3]\e[0m = -1500> ' -n 1 -r
 if [[ $REPLY =~ ^[0123456789]$ ]]; then
   echo ""
   offset=$REPLY
 else
   exit 0
 fi
-sed -i "intel616.mypatch" -Ee "/\+	case 0x16:  \/\/ NIKA added/{n;N;d;}"
-sed -i "intel616.mypatch" -Ee "/\+	case 0x16:  \/\/ NIKA added/a\+		entry->eax *= ${denominator};  // NIKA added\n\
-+		entry->ebx *= ${numerator};  // NIKA added"
-sed -i "intel616.mypatch" -Ee "/\+\/\/	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  \/\/ NIKA removed/{n;d;}"
-sed -i "intel616.mypatch" -Ee "/\+\/\/	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  \/\/ NIKA removed/a\+	kvm_caps.default_tsc_scaling_ratio = mul_u64_u32_div(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, ${numerator}, ${denominator});  // NIKA added"
 sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/{n;d;}"
-if [[ "${offset}" == "0" ]]; then
-  sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/a\+//	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added"
-else
-  sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/a\+	adjust_tsc_offset_guest(vcpu, -$((500*offset)));  // NIKA added"
-fi
+sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/a\+	vcpu->total_exit_time += $((500*offset));  // NIKA added  // Adjust for 100 < VMEXIT < 900"
+cp -f "intel616.mypatch" "amd616.mypatch"
 
 
 TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"

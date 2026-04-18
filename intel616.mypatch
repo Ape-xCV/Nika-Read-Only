@@ -1,30 +1,6 @@
---- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-16 12:03:28.501607487 +0100
-@@ -1559,6 +1559,11 @@
- 		}
- 		break;
- 	/* Intel AMX TILE */
-+	case 0x15:  // NIKA added
-+	case 0x16:  // NIKA added
-+		entry->eax *= 2;  // NIKA added
-+		entry->ebx *= 1;  // NIKA added
-+		break;  // NIKA added
- 	case 0x1d:
- 		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
- 			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-04-16 12:08:24.015211472 +0100
-@@ -9889,7 +9889,8 @@
- 			      __scale_tsc(kvm_caps.max_tsc_scaling_ratio, tsc_khz));
- 		kvm_caps.max_guest_tsc_khz = max;
- 	}
--	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;
-+//	kvm_caps.default_tsc_scaling_ratio = 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits;  // NIKA removed
-+	kvm_caps.default_tsc_scaling_ratio = mul_u64_u32_div(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, 1, 2);  // NIKA added
- 	kvm_init_msr_lists();
- 	return 0;
- 
-@@ -10186,6 +10187,7 @@
++++ b/arch/x86/kvm/x86.c	2026-04-18 01:25:22.381286657 +0100
+@@ -10186,6 +10186,7 @@
  
  out:
  	vcpu->run->hypercall.ret = ret;
@@ -32,7 +8,7 @@
  	return 1;
  }
  EXPORT_SYMBOL_GPL(____kvm_emulate_hypercall);
-@@ -10213,7 +10215,8 @@
+@@ -10213,7 +10214,8 @@
  	 * If the quirk is disabled, synthesize a #UD and let the guest pick up
  	 * the pieces.
  	 */
@@ -42,11 +18,29 @@
  		ctxt->exception.error_code_valid = false;
  		ctxt->exception.vector = UD_VECTOR;
  		ctxt->have_exception = true;
-@@ -11128,6 +11131,7 @@
+@@ -11128,6 +11130,13 @@
  		hw_breakpoint_restore();
  
  	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
-+//	adjust_tsc_offset_guest(vcpu, -500);  // NIKA added
++	vcpu->total_exit_time += 1500;  // NIKA added  // Adjust for 100 < VMEXIT < 900
++	u64 tsc = rdtsc();  // NIKA added
++	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc, tsc + vcpu->total_exit_time);  // NIKA added
++	if (1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 2) < ratio  // NIKA added
++		&& 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits > ratio)  // NIKA added
++		kvm_caps.default_tsc_scaling_ratio = ratio;  // NIKA added
++	kvm_vcpu_write_tsc_multiplier(vcpu, kvm_caps.default_tsc_scaling_ratio);  // NIKA added
  	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
  
  	vcpu->mode = OUTSIDE_GUEST_MODE;
+--- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
++++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
+@@ -349,6 +349,9 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	u64 last_exit_start;  // NIKA added
++	u64 total_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;
