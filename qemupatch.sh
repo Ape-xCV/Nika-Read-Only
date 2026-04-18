@@ -1640,7 +1640,7 @@ sed -i "$header_smbios" -Ee "/\/\* SMBIOS type 32 - System Boot Information \*\/
 
 echo "  $header_pci"
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-virtio=$(( 49152 + $device ))
+virtio=$((49152 + device))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1680,8 +1680,8 @@ echo "0x1111                                            -> 0x$device"
 sed -i "$header_pci" -Ee "s/0x1111/0x$device/"
 echo "QUMRANET    0x1af4                                -> QUMRANET    0x8086"
 sed -i "$header_pci" -Ee "s/QUMRANET    0x1af4/QUMRANET    0x8086/"
-echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )"
-sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $(($virtio - 1)) )/"
+echo "VIRTIO_10_BASE     0x1040                         -> VIRTIO_10_BASE     0x$( printf '%X' $((virtio - 1)) )"
+sed -i "$header_pci" -Ee "s/VIRTIO_10_BASE     0x1040/VIRTIO_10_BASE     0x$( printf '%X' $((virtio - 1)) )/"
 
 echo "  $header_e1000xregs"
 echo "0x10D3                                            -> 0x10F6"
