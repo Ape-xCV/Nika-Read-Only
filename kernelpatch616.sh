@@ -15,7 +15,7 @@ else
 fi
 sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/{n;d;}"
 sed -i "intel616.mypatch" -Ee "/ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;/a\+	vcpu->total_exit_time += $((500*offset));  // NIKA added  // Adjust for 100 < VMEXIT < 900"
-cp -f "intel616.mypatch" "amd616.mypatch"
+#cp -f "intel616.mypatch" "amd616.mypatch"
 
 
 TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
