@@ -1,6 +1,27 @@
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
+@@ -1402,6 +1402,8 @@
+ 		cpuid_entry_override(entry, CPUID_7_0_EBX);
+ 		cpuid_entry_override(entry, CPUID_7_ECX);
+ 		cpuid_entry_override(entry, CPUID_7_EDX);
++		entry->edx &= 0x73FFFFFF;  // NIKA added
++		break;  // NIKA added
+ 
+ 		/* KVM only supports up to 0x7.2, capped above via min(). */
+ 		if (max_idx >= 1) {
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-04-19 13:32:52.433957948 +0100
-@@ -1290,6 +1290,8 @@
++++ b/arch/x86/kvm/svm/svm.c	2026-04-23 12:40:21.430798223 +0100
+@@ -1250,7 +1250,8 @@
+ 	set_dr_intercepts(svm);
+ 
+ 	set_exception_intercept(svm, PF_VECTOR);
+-	set_exception_intercept(svm, UD_VECTOR);
++//	set_exception_intercept(svm, UD_VECTOR);  // NIKA removed
++	clr_exception_intercept(svm, UD_VECTOR);  // NIKA added
+ 	set_exception_intercept(svm, MC_VECTOR);
+ 	set_exception_intercept(svm, AC_VECTOR);
+ 	set_exception_intercept(svm, DB_VECTOR);
+@@ -1290,6 +1291,8 @@
  	svm_set_intercept(svm, INTERCEPT_XSETBV);
  	svm_set_intercept(svm, INTERCEPT_RDPRU);
  	svm_set_intercept(svm, INTERCEPT_RSM);
@@ -9,16 +30,16 @@
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
  		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -4470,7 +4472,32 @@
+@@ -4470,7 +4473,32 @@
  	if (!static_cpu_has(X86_FEATURE_V_SPEC_CTRL))
  		x86_spec_ctrl_set_guest(svm->virt_spec_ctrl);
  
 +reenter_guest_fast:  // NIKA added
  	svm_vcpu_enter_exit(vcpu, spec_ctrl_intercepted);
-+/*
-+ * Author: Marcos
-+ * GRUB_CMDLINE_LINUX="mitigations=off processor.max_cstate=1 tsc=reliable"
-+ */
++	/*
++	 * Author: Marcos
++	 * GRUB_CMDLINE_LINUX="mitigations=off processor.max_cstate=1 tsc=reliable"
++	 */
 +	static u32 rax_0;  // NIKA extra
 +	if (unlikely(svm->vmcb->control.exit_code == SVM_EXIT_CPUID)) {  // NIKA begin
 +		if (svm->vmcb->save.rax == 0) {

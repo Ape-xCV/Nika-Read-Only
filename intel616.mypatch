@@ -1,46 +1,30 @@
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
+@@ -1402,6 +1402,8 @@
+ 		cpuid_entry_override(entry, CPUID_7_0_EBX);
+ 		cpuid_entry_override(entry, CPUID_7_ECX);
+ 		cpuid_entry_override(entry, CPUID_7_EDX);
++		entry->edx &= 0x73FFFFFF;  // NIKA added
++		break;  // NIKA added
+ 
+ 		/* KVM only supports up to 0x7.2, capped above via min(). */
+ 		if (max_idx >= 1) {
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-04-18 01:25:22.381286657 +0100
-@@ -10186,6 +10186,7 @@
- 
- out:
- 	vcpu->run->hypercall.ret = ret;
-+	kvm_queue_exception(vcpu, UD_VECTOR);  // NIKA added
- 	return 1;
++++ b/arch/x86/kvm/x86.c	2026-04-23 16:43:21.258406387 +0100
+@@ -7804,6 +7804,8 @@
+ 						       insn, insn_len);
  }
- EXPORT_SYMBOL_GPL(____kvm_emulate_hypercall);
-@@ -10213,7 +10214,8 @@
- 	 * If the quirk is disabled, synthesize a #UD and let the guest pick up
- 	 * the pieces.
- 	 */
--	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {
-+//	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {  // NIKA removed
-+	if (true || !kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_FIX_HYPERCALL_INSN)) {  // NIKA added
- 		ctxt->exception.error_code_valid = false;
- 		ctxt->exception.vector = UD_VECTOR;
- 		ctxt->have_exception = true;
-@@ -11128,6 +11130,13 @@
- 		hw_breakpoint_restore();
  
- 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
-+	vcpu->total_exit_time += 1500;  // NIKA added  // Adjust for 100 < VMEXIT < 900
-+	u64 tsc = rdtsc();  // NIKA added
-+	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc, tsc + vcpu->total_exit_time);  // NIKA added
-+	if (1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 2) < ratio  // NIKA added
-+		&& 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits > ratio)  // NIKA added
-+		kvm_caps.default_tsc_scaling_ratio = ratio;  // NIKA added
-+	kvm_vcpu_write_tsc_multiplier(vcpu, kvm_caps.default_tsc_scaling_ratio);  // NIKA added
- 	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
- 
- 	vcpu->mode = OUTSIDE_GUEST_MODE;
---- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
-@@ -349,6 +349,9 @@
- 	unsigned int halt_poll_ns;
- 	bool valid_wakeup;
- 
-+	u64 last_exit_start;  // NIKA added
-+	u64 total_exit_time;  // NIKA added
++static int handle_emulation_failure(struct kvm_vcpu *vcpu, int emulation_type);  // NIKA added
 +
- #ifdef CONFIG_HAS_IOMEM
- 	int mmio_needed;
- 	int mmio_read_completed;
+ int handle_ud(struct kvm_vcpu *vcpu)
+ {
+ 	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
+@@ -7812,6 +7814,7 @@
+ 	char sig[5]; /* ud2; .ascii "kvm" */
+ 	struct x86_exception e;
+ 	int r;
++	handle_emulation_failure(vcpu, emul_type);  // NIKA added
+ 
+ 	r = kvm_check_emulate_insn(vcpu, emul_type, NULL, 0);
+ 	if (r != X86EMUL_CONTINUE)
