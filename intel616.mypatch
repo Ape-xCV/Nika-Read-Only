@@ -10,21 +10,25 @@
  		/* KVM only supports up to 0x7.2, capped above via min(). */
  		if (max_idx >= 1) {
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-04-23 16:43:21.258406387 +0100
-@@ -7804,6 +7804,8 @@
- 						       insn, insn_len);
- }
++++ b/arch/x86/kvm/x86.c	2026-04-23 23:30:40.437887893 +0100
+@@ -10205,6 +10205,8 @@
  
-+static int handle_emulation_failure(struct kvm_vcpu *vcpu, int emulation_type);  // NIKA added
-+
- int handle_ud(struct kvm_vcpu *vcpu)
+ static int emulator_fix_hypercall(struct x86_emulate_ctxt *ctxt)
  {
- 	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
-@@ -7812,6 +7814,7 @@
- 	char sig[5]; /* ud2; .ascii "kvm" */
- 	struct x86_exception e;
- 	int r;
-+	handle_emulation_failure(vcpu, emul_type);  // NIKA added
- 
- 	r = kvm_check_emulate_insn(vcpu, emul_type, NULL, 0);
- 	if (r != X86EMUL_CONTINUE)
++	return X86EMUL_UNHANDLEABLE;  // NIKA added
++
+ 	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
+ 	char instruction[3];
+ 	unsigned long rip = kvm_rip_read(vcpu);
+--- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-04-23 23:31:56.487706316 +0100
+@@ -6104,7 +6104,8 @@
+ 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+-	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
++//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
++	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
+ 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
