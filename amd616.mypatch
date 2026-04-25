@@ -10,7 +10,7 @@
  		/* KVM only supports up to 0x7.2, capped above via min(). */
  		if (max_idx >= 1) {
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-04-23 12:40:21.430798223 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-04-25 21:49:47.851480417 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -40,9 +40,9 @@
 +	 * Author: Marcos
 +	 * GRUB_CMDLINE_LINUX="mitigations=off processor.max_cstate=1 tsc=reliable"
 +	 */
-+	static u32 rax_0;  // NIKA extra
 +	if (unlikely(svm->vmcb->control.exit_code == SVM_EXIT_CPUID)) {  // NIKA begin
 +		if (svm->vmcb->save.rax == 0) {
++			static u32 rax_0;  // NIKA extra
 +			if (rax_0 == 0)  // NIKA extra
 +				rax_0 = cpuid_eax(0);  // NIKA extra
 +			svm->vmcb->save.rax = rax_0;  // NIKA extra

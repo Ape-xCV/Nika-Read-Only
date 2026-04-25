@@ -70,6 +70,7 @@ file_Driver="$(pwd)/edk2/OvmfPkg/QemuVideoDxe/Driver.c"
 file_ShellPkg="$(pwd)/edk2/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/edk2/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 file_AuthServiceInternal="$(pwd)/edk2/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
+file_Q35MchIch9="$(pwd)/edk2/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
 
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
@@ -91,6 +92,7 @@ if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
 if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
+if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
 mkdir -p edk2
 cp -fr edk2backup/. edk2/.
 cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
@@ -317,6 +319,7 @@ else
   sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
 fi
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
+memory=$((49152 - device))
 echo "0x1111                                            -> 0x$device"
 sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
 
@@ -335,6 +338,10 @@ echo "L\"certdb\"                                         -> L\"db${prefix}${suf
 sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdb\"/L\"db${prefix}${suffix}\"/"
 echo "L\"certdbv\"                                        -> L\"dbv${prefix}${suffix}\""
 sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdbv\"/L\"dbv${prefix}${suffix}\"/"
+
+echo "  $file_Q35MchIch9"
+echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$( printf '%X' $((memory - 1)) )"
+sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$( printf '%X' $((memory - 1)) )/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then

@@ -1649,6 +1649,7 @@ struct smbios_type_28 {\n\
 echo "  $header_pci"
 device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
 virtio=$((49152 + device))
+memory=$((49152 - device))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1702,6 +1703,8 @@ sed -i "$file_makefile" -Ee "s/808610d3/808610F6/"
 sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 10F6/"
 
 echo "  $header_pciids"
+echo "PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0           -> PCI_DEVICE_ID_INTEL_P35_MCH      0x$( printf '%X' $((memory - 1)) )"
+sed -i "$header_pciids" -Ee "s/PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0/PCI_DEVICE_ID_INTEL_P35_MCH      0x$( printf '%X' $((memory - 1)) )/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
   sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
