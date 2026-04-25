@@ -1,0 +1,34 @@
+--- a/arch/x86/kvm/cpuid.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-25 00:01:21.937501797 +0100
+@@ -1450,6 +1450,8 @@
+ 		cpuid_entry_override(entry, CPUID_7_0_EBX);
+ 		cpuid_entry_override(entry, CPUID_7_ECX);
+ 		cpuid_entry_override(entry, CPUID_7_EDX);
++		entry->edx &= 0x73FFFFFF;  // NIKA added
++		break;  // NIKA added
+ 
+ 		/* KVM only supports up to 0x7.2, capped above via min(). */
+ 		if (max_idx >= 1) {
+--- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/x86.c	2026-04-25 00:09:25.278202837 +0100
+@@ -10494,6 +10494,8 @@
+ 
+ static int emulator_fix_hypercall(struct x86_emulate_ctxt *ctxt)
+ {
++	return X86EMUL_UNHANDLEABLE;  // NIKA added
++
+ 	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
+ 	char instruction[3];
+ 	unsigned long rip = kvm_rip_read(vcpu);
+--- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-04-25 00:10:51.193794192 +0100
+@@ -6255,7 +6255,8 @@
+ 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+-	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
++//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
++	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
+ 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
