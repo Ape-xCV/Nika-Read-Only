@@ -794,8 +794,9 @@ sed -i "$file_pcq35" -Ee "s/smbios_memory_device_size = 16/smbios_memory_device_
 echo "  $file_atapi"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
-echo "QEMU DVD-ROM                                      -> $new_string DVD-ROM"
 sed -i "$file_atapi" -Ee "s/\"QEMU\"/\"$new_string\"/"
+get_new_string 3 1
+echo "QEMU DVD-ROM                                      -> $new_string DVD-ROM"
 sed -i "$file_atapi" -Ee "s/QEMU DVD-ROM/$new_string DVD-ROM/"
 
 echo "  $file_core"
