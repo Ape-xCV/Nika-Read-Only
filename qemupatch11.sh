@@ -307,7 +307,7 @@ get_type_4_data() {
 
 if [[ ! -d qemu11backup ]]; then
   echo -e "$(pwd)/\e[1mqemu11backup\e[0m does not exist, clone started..."
-  git clone --single-branch --branch master https://github.com/qemu/qemu.git qemu11backup
+  git clone --single-branch --branch stable-11.0 https://github.com/qemu/qemu.git qemu11backup
 else
   echo -e "$(pwd)/\e[1mqemu11backup\e[0m found."
 fi
