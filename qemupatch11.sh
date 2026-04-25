@@ -1880,3 +1880,4 @@ sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
 #sudo cp -f "../pc-bios/vgabios-qxl.bin" "/usr/local/share/qemu/vgabios-qxl.bin"
 sudo cp -fr "../pc-bios/." "/usr/local/share/qemu/."
+sudo cp -fr "$(pwd)/qemu-bundle/usr/local/share/qemu/." "/usr/local/share/qemu/."
