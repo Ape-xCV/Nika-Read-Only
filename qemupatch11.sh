@@ -20,7 +20,7 @@ sata_8086="06D2"        # Comet Lake SATA AHCI Controller
 rootport_8086="06BA"    # Comet Lake PCI Express Root Port #1
 xhci_8086="06ED"        # Comet Lake USB 3.1 xHCI Host Controller
 hostbridge_8086="9B54"  # 10th Gen Core Processor Host Bridge/DRAM Registers
-pcibridge_8086="9B53"   # Comet Lake-S 6c Host Bridge/DRAM Controller
+pcibridge_8086="1901"   # 6th-10th Gen Core Processor PCIe Controller (x16)
 
 
 if [ "$EUID" != 0 ]; then
