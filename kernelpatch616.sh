@@ -15,7 +15,7 @@ KERNEL_MINOR="16"
 KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-latest"
 
 if [[ ! -d ${TKG_DIR} ]]; then
-  echo -e "$(pwd)/\e[1m${TKG_DIR}\e[0m does not exist, clone started..."
+  echo -e "$(pwd)/\e[1m${TKG_DIR}\e[0m does not exist, cloning..."
   git clone --single-branch --branch "master" "${TKG_URL}" "${TKG_DIR}"
 else
   echo -e "$(pwd)/\e[1m${TKG_DIR}\e[0m found."
