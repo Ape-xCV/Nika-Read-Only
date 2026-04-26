@@ -9,8 +9,8 @@ hdaname_1022="Renoir HD Audio Controller"
 sata_1022="7901"        # FCH SATA Controller [AHCI mode]
 rootport_1022="1448"    # Renoir Device 24: Function 0
 xhci_1022="7914"        # FCH USB XHCI Controller
-hostbridge_1022="1633"  # Renoir PCIe GPP Bridge
-pcibridge_1022="1630"   # Renoir/Cezanne Root Complex
+hostbridge_1022="1630"  # Renoir/Cezanne Root Complex
+pcibridge_1022="1633"   # Renoir PCIe GPP Bridge
 
 lpc_8086="068D"         # Comet Lake LPC Controller
 smbus_8086="A3A3"       # Comet Lake PCH-V SMBus Host Controller
@@ -479,9 +479,9 @@ if [[ -f "$file_kvmcpu" ]]; then rm "$file_kvmcpu"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
-cp -fr qemu11backup/. qemu/.
-cp -f *.dsl qemu/.
-#cp -f *.aml qemu/.
+cp -fr qemu11backup/. qemu
+cp -f *.dsl qemu
+#cp -f *.aml qemu
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -1900,4 +1900,4 @@ sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/efi-rtl8139.rom" "/usr/local/share/qemu/efi-rtl8139.rom"
 #sudo cp -f "$(pwd)/../pc-bios/vgabios-stdvga.bin" "/usr/local/share/qemu/vgabios-stdvga.bin"
 #sudo cp -f "$(pwd)/../pc-bios/vgabios-qxl.bin" "/usr/local/share/qemu/vgabios-qxl.bin"
-sudo cp -fr "$(pwd)/../pc-bios/." "/usr/local/share/qemu/."
+sudo cp -fr "$(pwd)/../pc-bios/." "/usr/local/share/qemu"

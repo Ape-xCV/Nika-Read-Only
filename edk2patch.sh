@@ -102,7 +102,7 @@ if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
 if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
 mkdir -p edk2
-cp -fr edk2backup/. edk2/.
+cp -fr edk2backup/. edk2
 cp -fr splash.bmp edk2/MdeModulePkg/Logo/Logo.bmp
 cp -fr /sys/firmware/acpi/bgrt/image edk2/MdeModulePkg/Logo/Logo.bmp
 
