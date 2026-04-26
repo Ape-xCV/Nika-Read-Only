@@ -10,6 +10,7 @@ sata_1022="7901"        # FCH SATA Controller [AHCI mode]
 rootport_1022="1448"    # Renoir Device 24: Function 0
 xhci_1022="7914"        # FCH USB XHCI Controller
 hostbridge_1022="1633"  # Renoir PCIe GPP Bridge
+pcibridge_1022="1630"   # Renoir/Cezanne Root Complex
 
 lpc_8086="068D"         # Comet Lake LPC Controller
 smbus_8086="A3A3"       # Comet Lake PCH-V SMBus Host Controller
@@ -19,12 +20,26 @@ sata_8086="06D2"        # Comet Lake SATA AHCI Controller
 rootport_8086="06BA"    # Comet Lake PCI Express Root Port #1
 xhci_8086="06ED"        # Comet Lake USB 3.1 xHCI Host Controller
 hostbridge_8086="9B54"  # 10th Gen Core Processor Host Bridge/DRAM Registers
+pcibridge_8086="9B53"   # Comet Lake-S 6c Host Bridge/DRAM Controller
 
 
 if [ "$EUID" != 0 ]; then
     faillock --reset
     sudo -E "$0" "$@"
     exit $?
+fi
+
+if [[ ! -f vars.sh ]]; then
+  device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
+  virtio=$((49152 + device))
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
+  echo "device=\"$device\""                 >  vars.sh
+  echo "virtio=\"$virtio\""                 >> vars.sh
+  echo "pcibridge_1022=\"$pcibridge_1022\"" >> vars.sh
+  echo "pcibridge_8086=\"$pcibridge_8086\"" >> vars.sh
+else
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
+  source vars.sh
 fi
 
 QEMU_DEST="/usr/local/bin"
@@ -306,7 +321,7 @@ get_type_4_data() {
 }
 
 if [[ ! -d qemu11backup ]]; then
-  echo -e "$(pwd)/\e[1mqemu11backup\e[0m does not exist, clone started..."
+  echo -e "$(pwd)/\e[1mqemu11backup\e[0m does not exist, cloning..."
   git clone --single-branch --branch stable-11.0 https://github.com/qemu/qemu.git qemu11backup
 else
   echo -e "$(pwd)/\e[1mqemu11backup\e[0m found."
@@ -1648,9 +1663,6 @@ struct smbios_type_28 {\n\
 } QEMU_PACKED;\n"
 
 echo "  $header_pci"
-device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-virtio=$((49152 + device))
-memory=$((49152 - device))
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "QEMU               0x1234                         -> QEMU               0x1022"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
@@ -1704,12 +1716,14 @@ sed -i "$file_makefile" -Ee "s/808610d3/808610F6/"
 sed -i "$file_makefile" -Ee "s/DID := 10d3/DID := 10F6/"
 
 echo "  $header_pciids"
-echo "PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0           -> PCI_DEVICE_ID_INTEL_P35_MCH      0x$( printf '%X' $((memory - 1)) )"
-sed -i "$header_pciids" -Ee "s/PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0/PCI_DEVICE_ID_INTEL_P35_MCH      0x$( printf '%X' $((memory - 1)) )/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0           -> PCI_DEVICE_ID_INTEL_P35_MCH      0x$pcibridge_1022"
+  sed -i "$header_pciids" -Ee "s/PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0/PCI_DEVICE_ID_INTEL_P35_MCH      0x$pcibridge_1022/"
   echo "VMWARE             0x15ad                         -> VMWARE             0x1022"
   sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x1022/"
 else
+  echo "PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0           -> PCI_DEVICE_ID_INTEL_P35_MCH      0x$pcibridge_8086"
+  sed -i "$header_pciids" -Ee "s/PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0/PCI_DEVICE_ID_INTEL_P35_MCH      0x$pcibridge_8086/"
   echo "VMWARE             0x15ad                         -> VMWARE             0x8086"
   sed -i "$header_pciids" -Ee "s/VMWARE             0x15ad/VMWARE             0x8086/"
 fi

@@ -6,6 +6,14 @@ if [ "$EUID" != 0 ]; then
     exit $?
 fi
 
+if [[ ! -f vars.sh ]]; then
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, aborting..."
+  exit 0
+else
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
+  source vars.sh
+fi
+
 SCRIPT_DIR="$(pwd)"
 EDK2_DEST="/usr/share/edk2/ovmf"
 CODE_FILE="OVMF_CODE_4M.patched.qcow2"
@@ -318,8 +326,6 @@ else
   sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
   sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
 fi
-device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-memory=$((49152 - device))
 echo "0x1111                                            -> 0x$device"
 sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
 
@@ -340,8 +346,13 @@ echo "L\"certdbv\"                                        -> L\"dbv${prefix}${su
 sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdbv\"/L\"dbv${prefix}${suffix}\"/"
 
 echo "  $file_Q35MchIch9"
-echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$( printf '%X' $((memory - 1)) )"
-sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$( printf '%X' $((memory - 1)) )/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_1022"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_1022/"
+else
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_8086"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_8086/"
+fi
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
