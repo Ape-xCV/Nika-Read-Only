@@ -879,6 +879,8 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Restart VM.
 
+- Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device.
+
 - Install virtio ethernet from `network` folder (use Device Manager).
 
 - Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
