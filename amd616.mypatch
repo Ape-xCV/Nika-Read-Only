@@ -1,16 +1,5 @@
---- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
-@@ -1402,6 +1402,8 @@
- 		cpuid_entry_override(entry, CPUID_7_0_EBX);
- 		cpuid_entry_override(entry, CPUID_7_ECX);
- 		cpuid_entry_override(entry, CPUID_7_EDX);
-+		entry->edx &= 0x73FFFFFF;  // NIKA added
-+		break;  // NIKA added
- 
- 		/* KVM only supports up to 0x7.2, capped above via min(). */
- 		if (max_idx >= 1) {
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-04-25 21:49:47.851480417 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-04-28 20:45:42.179257976 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -30,36 +19,57 @@
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
  		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -4470,7 +4473,32 @@
- 	if (!static_cpu_has(X86_FEATURE_V_SPEC_CTRL))
- 		x86_spec_ctrl_set_guest(svm->virt_spec_ctrl);
+@@ -3364,6 +3367,20 @@
+ 	return 0;
+ }
  
-+reenter_guest_fast:  // NIKA added
- 	svm_vcpu_enter_exit(vcpu, spec_ctrl_intercepted);
-+	/*
-+	 * Author: Marcos
-+	 * GRUB_CMDLINE_LINUX="mitigations=off processor.max_cstate=1 tsc=reliable"
-+	 */
-+	if (unlikely(svm->vmcb->control.exit_code == SVM_EXIT_CPUID)) {  // NIKA begin
-+		if (svm->vmcb->save.rax == 0) {
-+			static u32 rax_0;  // NIKA extra
-+			if (rax_0 == 0)  // NIKA extra
-+				rax_0 = cpuid_eax(0);  // NIKA extra
-+			svm->vmcb->save.rax = rax_0;  // NIKA extra
++static int cpuid_interception(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->total_exit_time += 2100;  // Adjust for 100 < VMEXIT < 900
++	u64 tsc = rdtsc();
++	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc - vcpu->total_exit_time, tsc);
++	if (ratio > 1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 2) && ratio < 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits) {
++		kvm_caps.default_tsc_scaling_ratio = ratio;
++		vcpu->arch.tsc_scaling_ratio = ratio;
++		wrmsrq(MSR_AMD64_TSC_RATIO, ratio);
++		__this_cpu_write(current_tsc_ratio, ratio);
++	}
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
 +
-+			vcpu->arch.regs[VCPU_REGS_RBX] = 0x68747541;  // 'htuA'
-+			vcpu->arch.regs[VCPU_REGS_RDX] = 0x69746e65;  // 'itne'
-+			vcpu->arch.regs[VCPU_REGS_RCX] = 0x444d4163;  // 'DMAc'
-+
-+			u64 next_rip = svm->vmcb->control.next_rip;
-+			if (!next_rip)
-+				next_rip = svm->vmcb->save.rip + svm->vmcb->control.insn_len;
-+			svm->vmcb->save.rip = next_rip;
-+			vcpu->arch.regs[VCPU_REGS_RIP] = next_rip;
-+
-+			goto reenter_guest_fast;
-+		}
-+	}  // NIKA end
+ static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
+ 	[SVM_EXIT_READ_CR0]			= cr_interception,
+ 	[SVM_EXIT_READ_CR3]			= cr_interception,
+@@ -3402,7 +3419,8 @@
+ 	[SVM_EXIT_SMI]				= smi_interception,
+ 	[SVM_EXIT_VINTR]			= interrupt_window_interception,
+ 	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
+-	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,
++//	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,  // NIKA removed
++	[SVM_EXIT_CPUID]			= cpuid_interception,  // NIKA added
+ 	[SVM_EXIT_IRET]                         = iret_interception,
+ 	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
+ 	[SVM_EXIT_PAUSE]			= pause_interception,
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
+@@ -1402,6 +1402,8 @@
+ 		cpuid_entry_override(entry, CPUID_7_0_EBX);
+ 		cpuid_entry_override(entry, CPUID_7_ECX);
+ 		cpuid_entry_override(entry, CPUID_7_EDX);
++		entry->edx &= 0x73FFFFFF;  // NIKA added
++		break;  // NIKA added
  
- 	if (!static_cpu_has(X86_FEATURE_V_SPEC_CTRL))
- 		x86_spec_ctrl_restore_host(svm->virt_spec_ctrl);
+ 		/* KVM only supports up to 0x7.2, capped above via min(). */
+ 		if (max_idx >= 1) {
+--- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
++++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
+@@ -349,6 +349,9 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	u64 last_exit_start;  // NIKA added
++	u64 total_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;

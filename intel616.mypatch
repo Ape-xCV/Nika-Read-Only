@@ -1,14 +1,45 @@
---- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
-@@ -1402,6 +1402,8 @@
- 		cpuid_entry_override(entry, CPUID_7_0_EBX);
- 		cpuid_entry_override(entry, CPUID_7_ECX);
- 		cpuid_entry_override(entry, CPUID_7_EDX);
-+		entry->edx &= 0x73FFFFFF;  // NIKA added
-+		break;  // NIKA added
+--- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-04-28 18:10:48.879082941 +0100
+@@ -6083,6 +6083,19 @@
+ 	return 1;
+ }
  
- 		/* KVM only supports up to 0x7.2, capped above via min(). */
- 		if (max_idx >= 1) {
++static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	vcpu->total_exit_time += 2100;  // Adjust for 100 < VMEXIT < 900
++	u64 tsc = rdtsc();
++	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc - vcpu->total_exit_time, tsc);
++	if (ratio > 1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 2) && ratio < 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits) {
++		kvm_caps.default_tsc_scaling_ratio = ratio;
++		vcpu->arch.tsc_scaling_ratio = ratio;
++		vmcs_write64(TSC_MULTIPLIER, ratio);
++	}
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6096,7 +6109,8 @@
+ 	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+ 	[EXIT_REASON_CR_ACCESS]               = handle_cr,
+ 	[EXIT_REASON_DR_ACCESS]               = handle_dr,
+-	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,
++//	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,  // NIKA removed
++	[EXIT_REASON_CPUID]                   = handle_cpuid,  // NIKA added
+ 	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
+ 	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
+ 	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
+@@ -6104,7 +6118,8 @@
+ 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+-	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
++//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
++	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
+ 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
 --- a/arch/x86/kvm/x86.c	2025-10-12 12:01:05.000000000 +0100
 +++ b/arch/x86/kvm/x86.c	2026-04-23 23:30:40.437887893 +0100
 @@ -10205,6 +10205,8 @@
@@ -20,15 +51,15 @@
  	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
  	char instruction[3];
  	unsigned long rip = kvm_rip_read(vcpu);
---- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-04-23 23:31:56.487706316 +0100
-@@ -6104,7 +6104,8 @@
- 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
- 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
- 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
--	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
-+//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
-+	[EXIT_REASON_VMCALL]                  = kvm_handle_invalid_op,  // NIKA added
- 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
- 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
- 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
+--- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
++++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
+@@ -349,6 +349,9 @@
+ 	unsigned int halt_poll_ns;
+ 	bool valid_wakeup;
+ 
++	u64 last_exit_start;  // NIKA added
++	u64 total_exit_time;  // NIKA added
++
+ #ifdef CONFIG_HAS_IOMEM
+ 	int mmio_needed;
+ 	int mmio_read_completed;
