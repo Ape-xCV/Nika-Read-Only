@@ -51,16 +51,31 @@
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
 --- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-21 22:12:00.901113156 +0100
-@@ -1402,6 +1402,8 @@
++++ b/arch/x86/kvm/cpuid.c	2026-04-29 00:47:51.314212661 +0100
+@@ -1402,6 +1402,7 @@
  		cpuid_entry_override(entry, CPUID_7_0_EBX);
  		cpuid_entry_override(entry, CPUID_7_ECX);
  		cpuid_entry_override(entry, CPUID_7_EDX);
 +		entry->edx &= 0x73FFFFFF;  // NIKA added
-+		break;  // NIKA added
  
  		/* KVM only supports up to 0x7.2, capped above via min(). */
  		if (max_idx >= 1) {
+@@ -1413,6 +1414,7 @@
+ 			cpuid_entry_override(entry, CPUID_7_1_EDX);
+ 			entry->ebx = 0;
+ 			entry->ecx = 0;
++			entry->edx &= 0x73FFFFFF;  // NIKA added
+ 		}
+ 		if (max_idx >= 2) {
+ 			entry = do_host_cpuid(array, function, 2);
+@@ -1423,6 +1425,7 @@
+ 			entry->ecx = 0;
+ 			entry->ebx = 0;
+ 			entry->eax = 0;
++			entry->edx &= 0x73FFFFFF;  // NIKA added
+ 		}
+ 		break;
+ 	case 0xa: { /* Architectural Performance Monitoring */
 --- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
 +++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
 @@ -349,6 +349,9 @@
