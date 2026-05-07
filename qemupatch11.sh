@@ -30,16 +30,20 @@ if [ "$EUID" != 0 ]; then
 fi
 
 if [[ ! -f vars.sh ]]; then
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
   virtio=$((49152 + device))
-  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
-  echo "device=\"$device\""                 >  vars.sh
-  echo "virtio=\"$virtio\""                 >> vars.sh
-  echo "pcibridge_1022=\"$pcibridge_1022\"" >> vars.sh
-  echo "pcibridge_8086=\"$pcibridge_8086\"" >> vars.sh
+  echo "device=\"$device\""                  >  vars.sh
+  echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
+  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 else
   echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
   source vars.sh
+  echo "device=\"$device\""                  >  vars.sh
+  echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
+  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 fi
 
 QEMU_DEST="/usr/local/bin"

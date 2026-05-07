@@ -347,11 +347,11 @@ sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdbv\"/L\"dbv${prefix}${suffix}\
 
 echo "  $file_Q35MchIch9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_1022"
-  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_1022/"
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022/"
 else
-  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_8086"
-  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$pcibridge_8086/"
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086/"
 fi
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
