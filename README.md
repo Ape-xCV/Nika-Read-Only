@@ -197,6 +197,7 @@ sudo virsh net-autostart default
 
 - Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
+  - CPUs >> _uncheck_ [ ] Copy host CPU configuration >> Model: IvyBridge >> [Apply]
   - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: `generate_your_serial` >> Cache mode: none >> Discard mode: ignore >> [Finish]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
@@ -816,8 +817,6 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
     <summary>Spoiler</summary>
 
   ```shell
-    <qemu:arg value='-cpu'/>
-    <qemu:arg value='host,kvm-pv-enforce-cpuid=on'/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
     <qemu:arg value="-acpitable"/>
