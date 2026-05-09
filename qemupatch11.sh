@@ -1875,7 +1875,6 @@ sed -i "$file_kvmcpu" -Ee "s/\"kvmclock-stable-bit\", \"on\"/\"kvmclock-stable-b
 #  sed -i "$file_configvgaqxl" -Ee "s/CONFIG_VGA_VID=0x1b36/CONFIG_VGA_VID=0x8086/"
 #fi
 
-echo "  $file_ssdt1"
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
 random=$(shuf -i 1-3 -n 1)
@@ -1888,8 +1887,8 @@ else
     oem_information="Sunwoda"
   fi
 fi
-
 if [[ "$chassis_type" != "Desktop" ]]; then
+  echo "  $file_ssdt1"
   echo "        Device (BAT0)"
   echo "        ^ ^ ^ ^ ^ ^ ^"
   echo "        Device (EC0)"
