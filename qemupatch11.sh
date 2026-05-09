@@ -1834,8 +1834,8 @@ sed -i "$file_cpu" -Ee "s/Intel Xeon E3-12xx v2 \(Ivy Bridge, IBRS\)/${cpu_model
 echo "    DEFINE_PROP_BOOL(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,"
 echo "    v v v v v v v v v v v v"
 echo "                     true),"
-#sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/{n;d;}"
-#sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/a\                     true),"
+sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/{n;d;}"
+sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/a\                     true),"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                    -> 0"
