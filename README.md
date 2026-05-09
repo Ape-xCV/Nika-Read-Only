@@ -816,6 +816,8 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
     <summary>Spoiler</summary>
 
   ```shell
+    <qemu:arg value='-cpu'/>
+    <qemu:arg value='host,kvm-pv-enforce-cpuid=on'/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
     <qemu:arg value="-acpitable"/>
