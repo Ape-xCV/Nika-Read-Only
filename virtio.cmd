@@ -8,8 +8,8 @@ if "%1"=="" (
 
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('dd'^)`) do set DAY=%%a
 for /F "usebackq" %%a in (`PowerShell ^(Get-Date^).ToString^('MM'^)`) do set MONTH=%%a
-set /A DAY=1000%DAY% %% 1000
-set /A MONTH=1000%MONTH% %% 1000
+set /A DAY=1%DAY% %% 100
+set /A MONTH=1%MONTH% %% 100
 set /A DEV=49152 + (%DAY% + %MONTH%) * 100 + %DAY% * %MONTH%
 echo %DEV%
 cmd /C exit %DEV%
