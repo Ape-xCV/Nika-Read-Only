@@ -1875,6 +1875,66 @@ sed -i "$file_kvmcpu" -Ee "s/\"kvmclock-stable-bit\", \"on\"/\"kvmclock-stable-b
 #  sed -i "$file_configvgaqxl" -Ee "s/CONFIG_VGA_VID=0x1b36/CONFIG_VGA_VID=0x8086/"
 #fi
 
+echo "  $file_ssdt1"
+design_capacity=$((RANDOM % 20000 + 41000))
+design_voltage=$((RANDOM % 300 + 12500))
+random=$(shuf -i 1-3 -n 1)
+if [[ "$random" == "1" ]]; then
+  oem_information="Celxpert"
+else
+  if [[ "$random" == "2" ]]; then
+    oem_information="Simplo"
+  else
+    oem_information="Sunwoda"
+  fi
+fi
+
+if [[ "$chassis_type" != "Desktop" ]]; then
+  echo "        Device (BAT0)"
+  echo "        ^ ^ ^ ^ ^ ^ ^"
+  echo "        Device (EC0)"
+  sed -i "$file_ssdt1" -Ee "/        Device \(EC0\)/i\        Device (BAT0)\n\
+        {\n\
+            Name (_HID, EisaId (\"PNP0C0A\"))\n\
+\n\
+            Method (_STA, 0, NotSerialized)\n\
+            {\n\
+                Return (0x1F)\n\
+            }\n\
+\n\
+            Method (_BIF, 0, NotSerialized)\n\
+            {\n\
+                Return (Package (0x0D)\n\
+                {\n\
+                    Zero,    // 0=mWh 1=mAh\n\
+                    0x$( printf '%X' $design_capacity ),  // $design_capacity mWh Design Capacity\n\
+                    0x$( printf '%X' $((design_capacity * 9/10)) ),  // $((design_capacity * 9/10)) mWh Last Full Charge Capacity\n\
+                    One,     // 1=Rechargeable\n\
+                    0x$( printf '%X' $design_voltage ),  // $design_voltage mV Design Voltage\n\
+                    0x$( printf '%X' $((design_capacity / 10)) ),  // $((design_capacity / 10)) mWh Design Capacity Warning\n\
+                    0x$( printf '%X' $((design_capacity / 20)) ),   // $((design_capacity / 20)) mWh Design Capacity Low\n\
+                    0x$( printf '%X' $((design_capacity / 1000)) ),    // $((design_capacity / 1000)) mWh Battery Capacity Granularity 1\n\
+                    0x$( printf '%X' $((design_capacity / 1000)) ),    // $((design_capacity / 1000)) mWh Battery Capacity Granularity 2\n\
+                    \"Primary\",\n\
+                    \"SerialNumber\",\n\
+                    \"LION\",  // Battery Type\n\
+                    \"$oem_information\"\n\
+                })\n\
+            }\n\
+\n\
+            Method (_BST, 0, NotSerialized)\n\
+            {\n\
+                Return (Package (0x04)\n\
+                {\n\
+                    Zero,\n\
+                    Zero,\n\
+                    0x$( printf '%X' $((design_capacity * 9/10)) ),  // $((design_capacity * 9/10)) mWh Battery Remaining Capacity\n\
+                    0x$( printf '%X' $((design_voltage * (100 - random)/100)) )   // $((design_voltage * (100 - random)/100)) mV Battery Present Voltage\n\
+                })\n\
+            }\n\
+        }  // end of BAT0 device\n"
+fi
+
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo ""
