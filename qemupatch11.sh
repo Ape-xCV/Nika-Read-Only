@@ -510,8 +510,8 @@ echo "QEMU vhost-user-gpu                               -> Intel(R) HD Graphics"
 sed -i "$file_vhostusergpu" -Ee "s/QEMU vhost-user-gpu/Intel(R) HD Graphics/"
 
 echo "  $file_amlbuild"
-#chassis_type=$(sudo dmidecode --string chassis-type)
-chassis_type="Desktop"
+chassis_type=$(sudo dmidecode --string chassis-type)
+#chassis_type="Desktop"
 if [[ "$chassis_type" == "Desktop" ]]; then
   pm_type="1"
 else
