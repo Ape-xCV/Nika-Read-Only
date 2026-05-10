@@ -1887,6 +1887,7 @@ else
     oem_information="Sunwoda"
   fi
 fi
+random=$(shuf -i 1-5 -n 1)
 if [[ "$chassis_type" != "Desktop" ]]; then
   echo "  $file_ssdt1"
   echo "        Device (BAT0)"
@@ -1907,7 +1908,7 @@ if [[ "$chassis_type" != "Desktop" ]]; then
                 {\n\
                     Zero,    // 0=mWh 1=mAh\n\
                     0x$( printf '%X' $design_capacity ),  // $design_capacity mWh Design Capacity\n\
-                    0x$( printf '%X' $((design_capacity * 9/10)) ),  // $((design_capacity * 9/10)) mWh Last Full Charge Capacity\n\
+                    0x$( printf '%X' $((design_capacity * (95 - random)/100)) ),  // $((design_capacity * (95 - random)/100)) mWh Last Full Charge Capacity\n\
                     One,     // 1=Rechargeable\n\
                     0x$( printf '%X' $design_voltage ),  // $design_voltage mV Design Voltage\n\
                     0x$( printf '%X' $((design_capacity / 10)) ),  // $((design_capacity / 10)) mWh Design Capacity Warning\n\
@@ -1927,7 +1928,7 @@ if [[ "$chassis_type" != "Desktop" ]]; then
                 {\n\
                     Zero,\n\
                     Zero,\n\
-                    0x$( printf '%X' $((design_capacity * 9/10)) ),  // $((design_capacity * 9/10)) mWh Battery Remaining Capacity\n\
+                    0x$( printf '%X' $((design_capacity * (95 - random)/100)) ),  // $((design_capacity * (95 - random)/100)) mWh Battery Remaining Capacity\n\
                     0x$( printf '%X' $((design_voltage * (100 - random)/100)) )   // $((design_voltage * (100 - random)/100)) mV Battery Present Voltage\n\
                 })\n\
             }\n\
