@@ -1896,7 +1896,7 @@ if [[ "$chassis_type" != "Desktop" ]]; then
   sed -i "$file_ssdt1" -Ee "/        Device \(EC0\)/i\        Device (BAT0)\n\
         {\n\
             Name (_HID, EisaId (\"PNP0C0A\"))\n\
-\n\
+            Name (_UID, Zero)\n\
             Method (_STA, 0, NotSerialized)\n\
             {\n\
                 Return (0x1F)\n\
