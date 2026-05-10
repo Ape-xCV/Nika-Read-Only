@@ -1836,6 +1836,8 @@ echo "    v v v v v v v v v v v v"
 echo "                     true),"
 sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/{n;d;}"
 sed -i "$file_cpu" -Ee "/    DEFINE_PROP_BOOL\(\"kvm-pv-enforce-cpuid\", X86CPU, kvm_pv_enforce_cpuid,/a\                     true),"
+echo "X86CPU, expose_kvm, true),                        -> X86CPU, expose_kvm, false),"
+sed -i "$file_cpu" -Ee "s/X86CPU, expose_kvm, true\),/X86CPU, expose_kvm, false),/"
 
 echo "  $file_kvm"
 echo "\"Microsoft VS\"                                    -> 0"
