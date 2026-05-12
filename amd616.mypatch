@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-04-28 20:45:42.179257976 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-05-11 21:16:33.011630755 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -19,71 +19,84 @@
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
  		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -3364,6 +3367,20 @@
+@@ -1979,6 +1982,17 @@
+ 		vcpu->arch.cpuid_dynamic_bits_dirty = true;
+ }
+ 
++static void svm_set_cpuid_intercept_for_each_vcpu(struct kvm_vcpu *vcpu, bool b)  // NIKA begin
++{
++	unsigned long i;
++	struct kvm_vcpu *tmp;
++	kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
++		tmp->intercept_cpuid = b;
++		tmp->infer_intercept = true;
++		kvm_vcpu_kick(tmp);
++	}
++}  // NIKA end
++
+ static void svm_set_segment(struct kvm_vcpu *vcpu,
+ 			    struct kvm_segment *var, int seg)
+ {
+@@ -2007,6 +2021,9 @@
+ 		/* This is symmetric with svm_get_segment() */
+ 		svm->vmcb->save.cpl = (var->dpl & 3);
+ 
++	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xffff0000 && seg == VCPU_SREG_CS))  // VIRTFUNC added
++		svm_set_cpuid_intercept_for_each_vcpu(vcpu, true);  // VIRTFUNC added
++
+ 	vmcb_mark_dirty(svm->vmcb, VMCB_SEG);
+ }
+ 
+@@ -3364,6 +3381,15 @@
  	return 0;
  }
  
-+static int cpuid_interception(struct kvm_vcpu *vcpu)  // NIKA begin
++static int cpuid_interception(struct kvm_vcpu *vcpu)  // VIRTFUNC begin
 +{
-+	vcpu->total_exit_time += 2100;  // Adjust for 100 < VMEXIT < 900
-+	u64 tsc = rdtsc();
-+	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc - vcpu->total_exit_time, tsc);
-+	if (ratio > 1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 2) && ratio < 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits) {
-+		kvm_caps.default_tsc_scaling_ratio = ratio;
-+		vcpu->arch.tsc_scaling_ratio = ratio;
-+		wrmsrq(MSR_AMD64_TSC_RATIO, ratio);
-+		__this_cpu_write(current_tsc_ratio, ratio);
-+	}
-+	return kvm_emulate_cpuid(vcpu);
-+}  // NIKA end
++	u32 eax = kvm_rax_read(vcpu);
++	int ret = kvm_emulate_cpuid(vcpu);
++	if (eax == 8)
++		svm_set_cpuid_intercept_for_each_vcpu(vcpu, false);
++	return ret;
++}  // VIRTFUNC end
 +
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3402,7 +3419,8 @@
+@@ -3402,7 +3428,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
 -	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,
-+//	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,  // NIKA removed
-+	[SVM_EXIT_CPUID]			= cpuid_interception,  // NIKA added
++//	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,  // VIRTFUNC removed
++	[SVM_EXIT_CPUID]			= cpuid_interception,  // VIRTFUNC added
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
---- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/cpuid.c	2026-04-29 00:47:51.314212661 +0100
-@@ -1402,6 +1402,7 @@
- 		cpuid_entry_override(entry, CPUID_7_0_EBX);
- 		cpuid_entry_override(entry, CPUID_7_ECX);
- 		cpuid_entry_override(entry, CPUID_7_EDX);
-+		entry->edx &= 0x73FFFFFF;  // NIKA added
+@@ -4428,6 +4455,13 @@
  
- 		/* KVM only supports up to 0x7.2, capped above via min(). */
- 		if (max_idx >= 1) {
-@@ -1413,6 +1414,7 @@
- 			cpuid_entry_override(entry, CPUID_7_1_EDX);
- 			entry->ebx = 0;
- 			entry->ecx = 0;
-+			entry->edx &= 0x73FFFFFF;  // NIKA added
- 		}
- 		if (max_idx >= 2) {
- 			entry = do_host_cpuid(array, function, 2);
-@@ -1423,6 +1425,7 @@
- 			entry->ecx = 0;
- 			entry->ebx = 0;
- 			entry->eax = 0;
-+			entry->edx &= 0x73FFFFFF;  // NIKA added
- 		}
- 		break;
- 	case 0xa: { /* Architectural Performance Monitoring */
+ 	sync_lapic_to_cr8(vcpu);
+ 
++	if (unlikely(vcpu->infer_intercept)) {  // VIRTFUNC begin
++		vcpu->infer_intercept = false;
++		if (vcpu->intercept_cpuid) svm_set_intercept(to_svm(vcpu), INTERCEPT_CPUID);
++		else svm_clr_intercept(to_svm(vcpu), INTERCEPT_CPUID);
++		vmcb_mark_dirty(svm->vmcb, VMCB_INTERCEPTS);
++	}  // VIRTFUNC end
++
+ 	if (unlikely(svm->asid != svm->vmcb->control.asid)) {
+ 		svm->vmcb->control.asid = svm->asid;
+ 		vmcb_mark_dirty(svm->vmcb, VMCB_ASID);
 --- a/include/linux/kvm_host.h	2025-10-12 12:01:05.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-04-17 20:24:52.426116029 +0100
-@@ -349,6 +349,9 @@
++++ b/include/linux/kvm_host.h	2026-05-11 21:19:01.382668222 +0100
+@@ -349,6 +349,11 @@
  	unsigned int halt_poll_ns;
  	bool valid_wakeup;
  
 +	u64 last_exit_start;  // NIKA added
 +	u64 total_exit_time;  // NIKA added
++	bool intercept_cpuid;  // NIKA added
++	bool infer_intercept;  // NIKA added
 +
  #ifdef CONFIG_HAS_IOMEM
  	int mmio_needed;
