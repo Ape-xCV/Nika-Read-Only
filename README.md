@@ -781,7 +781,8 @@ smbus_8086="a0a3"       # Tiger Lake-LP SMBus Controller
 hdaudio_8086="a0c8"     # Tiger Lake-LP Smart Sound Technology Audio Controller
 hdaname_8086="Tiger Lake-LP Smart Sound Technology Audio Controller"
 sata_8086="f1a8"        # SSD 660P Series
-rootport_8086="a0bf"    # Tiger Lake-LP PCI Express Root Port #8
+#rootport_8086="a0bf"    # Tiger Lake-LP PCI Express Root Port #8
+rootport_8086="a0b8"    # 8-7=1, a0bf-7=a0b8, Tiger Lake-LP PCI Express Root Port #1
 xhci_8086="a0ed"        # Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller
 hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 ```
