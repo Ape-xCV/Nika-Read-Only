@@ -986,9 +986,6 @@ sudo -E ./nika
 
 ### 7.6. Spoof GPU (tested from 51x to 57x)
 
-- Disable ROM BAR for each PCI Host Device:
-  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
-
 - Check old UUID with `nvidia-smi -L`.
 - Run the cheat BEFORE the game at least once.
 - Check new UUID with `nvidia-smi -L`.
