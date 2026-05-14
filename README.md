@@ -791,11 +791,6 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
-- Make sure that `pc-q35-11.0` is specified in your XML:
-```shell
-<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
-```
-
 
 - Replace from `<pm>` to `</emulator>` and [Apply]:
   <details>
@@ -824,6 +819,11 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
   </qemu:commandline>
   ```
   </details>
+
+- Make sure that `pc-q35-11.0` is specified in your XML:
+```shell
+<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
+```
 
 ### 7.1. Spoof OVMF (mandatory)
 
