@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-05-11 21:16:33.011630755 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-05-13 19:43:07.404612327 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -19,7 +19,7 @@
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
  		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -1979,6 +1982,17 @@
+@@ -1979,6 +1982,19 @@
  		vcpu->arch.cpuid_dynamic_bits_dirty = true;
  }
  
@@ -27,7 +27,9 @@
 +{
 +	unsigned long i;
 +	struct kvm_vcpu *tmp;
++	u64 tsc = rdtsc();
 +	kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
++		tmp->last_exit_start = tsc;
 +		tmp->intercept_cpuid = b;
 +		tmp->infer_intercept = true;
 +		kvm_vcpu_kick(tmp);
@@ -37,7 +39,7 @@
  static void svm_set_segment(struct kvm_vcpu *vcpu,
  			    struct kvm_segment *var, int seg)
  {
-@@ -2007,6 +2021,9 @@
+@@ -2007,6 +2023,9 @@
  		/* This is symmetric with svm_get_segment() */
  		svm->vmcb->save.cpl = (var->dpl & 3);
  
@@ -47,33 +49,32 @@
  	vmcb_mark_dirty(svm->vmcb, VMCB_SEG);
  }
  
-@@ -3364,6 +3381,15 @@
+@@ -3364,6 +3383,14 @@
  	return 0;
  }
  
-+static int cpuid_interception(struct kvm_vcpu *vcpu)  // VIRTFUNC begin
++static int cpuid_interception(struct kvm_vcpu *vcpu)  // NIKA begin
 +{
-+	u32 eax = kvm_rax_read(vcpu);
-+	int ret = kvm_emulate_cpuid(vcpu);
-+	if (eax == 8)
++//	if (rdtsc() - vcpu->last_exit_start > 290304000000)  // Intel® Core™ processors >120 seconds
++	if (rdtsc() - vcpu->last_exit_start > 145152000000)  // Intel® Core™ processors >60 seconds
 +		svm_set_cpuid_intercept_for_each_vcpu(vcpu, false);
-+	return ret;
-+}  // VIRTFUNC end
++	return kvm_emulate_cpuid(vcpu);
++}  // NIKA end
 +
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3402,7 +3428,8 @@
+@@ -3402,7 +3429,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
 -	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,
-+//	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,  // VIRTFUNC removed
-+	[SVM_EXIT_CPUID]			= cpuid_interception,  // VIRTFUNC added
++//	[SVM_EXIT_CPUID]			= kvm_emulate_cpuid,  // NIKA removed
++	[SVM_EXIT_CPUID]			= cpuid_interception,  // NIKA added
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -4428,6 +4455,13 @@
+@@ -4428,6 +4456,13 @@
  
  	sync_lapic_to_cr8(vcpu);
  
