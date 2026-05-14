@@ -52,8 +52,7 @@ get_new_string() {
 
 if [[ ! -d edk2backup ]]; then
   echo -e "$(pwd)/\e[1medk2backup\e[0m does not exist, clone started..."
-  git clone --recursive --single-branch --branch edk2-stable202505 https://github.com/tianocore/edk2.git edk2backup
-#  git clone --recursive --single-branch --branch edk2-stable202508 https://github.com/tianocore/edk2.git edk2backup
+  git clone --recursive --single-branch --branch edk2-stable202602 https://github.com/tianocore/edk2.git edk2backup
 else
   echo -e "$(pwd)/\e[1medk2backup\e[0m found."
 fi
@@ -184,35 +183,35 @@ sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/1,   \/\/ BiosCharacteristicsNotSup
 echo "           // Remaining BiosCharacteristics bits left unset :60"
 echo "           v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "           0    // ReservedForVendor                        :32"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a0x400013   // ReservedForVendor                             :32"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // NecPc98                                       :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // CgaMonoIsSupported                            :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // PrinterIsSupported                            :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // SerialIsSupported                             :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // Keyboard8042IsSupported                       :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // PrintScreenIsSupported                        :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // Floppy35_288IsSupported                       :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // Floppy35_720IsSupported                       :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // Floppy525_12IsSupported                       :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // Floppy525_360IsSupported                      :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // JapaneseToshibaFloppyIsSupported              :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // JapaneseNecFloppyIsSupported                  :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // EDDSpecificationIsSupported                   :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // BootFromPcmciaIsSupported                     :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // RomBiosIsSocketed                             :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // SelectableBootIsSupported                     :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // BootFromCdIsSupported                         :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // EscdSupportIsAvailable                        :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // VlVesaIsSupported                             :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // BiosShadowingAllowed                          :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // BiosIsUpgradable                              :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // ApmIsSupported                                :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // PlugAndPlayIsSupported                        :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // PcmciaIsSupported                             :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      1,   // PciIsSupported                                :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // EisaIsSupported                               :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // McaIsSupported                                :1"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // IsaIsSupported                                :1"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "/           \/\/ Remaining BiosCharacteristics bits left unset :60/a\      0,   // IsaIsSupported                                :1\n\
+      0,   // McaIsSupported                                :1\n\
+      0,   // EisaIsSupported                               :1\n\
+      1,   // PciIsSupported                                :1\n\
+      0,   // PcmciaIsSupported                             :1\n\
+      0,   // PlugAndPlayIsSupported                        :1\n\
+      0,   // ApmIsSupported                                :1\n\
+      1,   // BiosIsUpgradable                              :1\n\
+      1,   // BiosShadowingAllowed                          :1\n\
+      0,   // VlVesaIsSupported                             :1\n\
+      0,   // EscdSupportIsAvailable                        :1\n\
+      1,   // BootFromCdIsSupported                         :1\n\
+      1,   // SelectableBootIsSupported                     :1\n\
+      0,   // RomBiosIsSocketed                             :1\n\
+      0,   // BootFromPcmciaIsSupported                     :1\n\
+      1,   // EDDSpecificationIsSupported                   :1\n\
+      0,   // JapaneseNecFloppyIsSupported                  :1\n\
+      0,   // JapaneseToshibaFloppyIsSupported              :1\n\
+      0,   // Floppy525_360IsSupported                      :1\n\
+      0,   // Floppy525_12IsSupported                       :1\n\
+      0,   // Floppy35_720IsSupported                       :1\n\
+      0,   // Floppy35_288IsSupported                       :1\n\
+      0,   // PrintScreenIsSupported                        :1\n\
+      0,   // Keyboard8042IsSupported                       :1\n\
+      1,   // SerialIsSupported                             :1\n\
+      1,   // PrinterIsSupported                            :1\n\
+      0,   // CgaMonoIsSupported                            :1\n\
+      0,   // NecPc98                                       :1\n\
+0x400013   // ReservedForVendor                             :32"
 echo "0,   // BiosReserved                                        -> 0x03, // BiosReserved"
 echo "0x1C // SystemReserved                                      -> 0x0D // SystemReserved"
 echo "0,     // UINT8                     SystemBiosMajorRelease  -> $version_major,     // UINT8                     SystemBiosMajorRelease"
@@ -232,35 +231,35 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/1,   \/\/ BiosCharacteristicsNotSupporte
 echo "    // Remaining BiosCharacteristics bits left unset :60"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    0    // ReservedForVendor                        :32"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a0x400013 // ReservedForVendor                             :32"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // NecPc98                                       :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // CgaMonoIsSupported                            :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // PrinterIsSupported                            :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // SerialIsSupported                             :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // Keyboard8042IsSupported                       :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // PrintScreenIsSupported                        :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // Floppy35_288IsSupported                       :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // Floppy35_720IsSupported                       :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // Floppy525_12IsSupported                       :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // Floppy525_360IsSupported                      :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // JapaneseToshibaFloppyIsSupported              :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // JapaneseNecFloppyIsSupported                  :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // EDDSpecificationIsSupported                   :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // BootFromPcmciaIsSupported                     :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // RomBiosIsSocketed                             :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // SelectableBootIsSupported                     :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // BootFromCdIsSupported                         :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // EscdSupportIsAvailable                        :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // VlVesaIsSupported                             :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // BiosShadowingAllowed                          :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // BiosIsUpgradable                              :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // ApmIsSupported                                :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // PlugAndPlayIsSupported                        :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // PcmciaIsSupported                             :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    1,   // PciIsSupported                                :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // EisaIsSupported                               :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // McaIsSupported                                :1"
-sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // IsaIsSupported                                :1"
+sed -i "$file_SmbiosPlatformDxe" -Ee "/    \/\/ Remaining BiosCharacteristics bits left unset :60/a\    0,   // IsaIsSupported                                :1\n\
+    0,   // McaIsSupported                                :1\n\
+    0,   // EisaIsSupported                               :1\n\
+    1,   // PciIsSupported                                :1\n\
+    0,   // PcmciaIsSupported                             :1\n\
+    0,   // PlugAndPlayIsSupported                        :1\n\
+    0,   // ApmIsSupported                                :1\n\
+    1,   // BiosIsUpgradable                              :1\n\
+    1,   // BiosShadowingAllowed                          :1\n\
+    0,   // VlVesaIsSupported                             :1\n\
+    0,   // EscdSupportIsAvailable                        :1\n\
+    1,   // BootFromCdIsSupported                         :1\n\
+    1,   // SelectableBootIsSupported                     :1\n\
+    0,   // RomBiosIsSocketed                             :1\n\
+    0,   // BootFromPcmciaIsSupported                     :1\n\
+    1,   // EDDSpecificationIsSupported                   :1\n\
+    0,   // JapaneseNecFloppyIsSupported                  :1\n\
+    0,   // JapaneseToshibaFloppyIsSupported              :1\n\
+    0,   // Floppy525_360IsSupported                      :1\n\
+    0,   // Floppy525_12IsSupported                       :1\n\
+    0,   // Floppy35_720IsSupported                       :1\n\
+    0,   // Floppy35_288IsSupported                       :1\n\
+    0,   // PrintScreenIsSupported                        :1\n\
+    0,   // Keyboard8042IsSupported                       :1\n\
+    1,   // SerialIsSupported                             :1\n\
+    1,   // PrinterIsSupported                            :1\n\
+    0,   // CgaMonoIsSupported                            :1\n\
+    0,   // NecPc98                                       :1\n\
+0x400013 // ReservedForVendor                             :32"
 echo "0,   // BiosReserved                                        -> 0x03, // BiosReserved"
 echo "0x1C // SystemReserved                                      -> 0x0D // SystemReserved"
 echo "0,     // UINT8                     SystemBiosMajorRelease  -> $version_major,     // UINT8                     SystemBiosMajorRelease"
