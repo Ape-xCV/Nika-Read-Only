@@ -109,14 +109,14 @@ chmod +x headless.sh
 
 
   <details>
-    <summary>Install on <b>Fedora Linux (Fedora 44 KDE)</b>:</summary>
+    <summary>Install on <b>Fedora Linux</b>:</summary>
 
     sudo dnf install @virtualization
   </details>
 
 
   <details>
-    <summary>Install on <b>Debian Linux (Debian 13 KDE)</b>:</summary>
+    <summary>Install on <b>Debian Linux</b>:</summary>
 
     sudo apt update
     sudo apt install virt-manager
