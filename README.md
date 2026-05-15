@@ -47,9 +47,8 @@
 
 ### 1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
-- Note for Fedora 43 KDE set up:
-  - Avoid release 43.
-  - Install Fedora 42 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/KDE/x86_64/iso/).
+- Note for Fedora 44 KDE set up:
+  - Install Fedora 44 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/).
   - Disconnect from Internet before installing and avoid updating after.
   - Disconnect cable from dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
@@ -57,7 +56,7 @@
 ### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
-  - Install Fedora 42 MATE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/42/Spins/x86_64/iso/).
+  - Install Fedora 44 MATE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Spins/x86_64/iso/).
   - Disconnect from Internet before installing and avoid updating after.
 
 - Install headless VNC and switch to terminal mode:
@@ -110,7 +109,7 @@ chmod +x headless.sh
 
 
   <details>
-    <summary>Install on <b>Fedora Linux (Fedora 42 KDE)</b>:</summary>
+    <summary>Install on <b>Fedora Linux (Fedora 44 KDE)</b>:</summary>
 
     sudo dnf install @virtualization
   </details>
@@ -746,7 +745,7 @@ sudo -E ./nika
 
 
   <details>
-    <summary>Build on <b>Fedora 42</b>:</summary>
+    <summary>Build on <b>Fedora 44</b>:</summary>
 
   ```shell
   sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
