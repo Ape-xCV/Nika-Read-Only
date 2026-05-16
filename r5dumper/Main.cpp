@@ -176,6 +176,13 @@ bool scanForPattern(size_t &resume, size_t size, std::string pattern, uint32_t (
     return false;
 }
 
+bool isValidPtr(uint64_t ptr)
+{
+    if (ptr >= memoryBytesSize - 8)
+        return false;
+    return true;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -558,9 +565,10 @@ int main(int argc, char* argv[])
                 mods_names_derva -= g_base;
                 for (int i = 0; i < mods_count; i++) {
                     uint64_t namePtr = mods_names_derva + i*8;
-                    if (namePtr >= memoryBytesSize - 8) break;
+                    if (!isValidPtr(namePtr)) break;
                     uint64_t nameAddr = *(uint64_t*)(memoryBytes + namePtr);
                     nameAddr -= g_base;
+                    if (!isValidPtr(nameAddr)) break;
                     auto name = (char*)(memoryBytes + nameAddr);
                     if (strlen(name) == 0) break;
                     std::cout << name << " = " << std::dec << i << "\n";
