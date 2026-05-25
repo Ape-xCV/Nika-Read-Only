@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-04-28 20:45:42.179257976 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-05-25 16:43:01.986916368 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -50,6 +50,16 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
+@@ -3414,7 +3432,8 @@
+ 	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
+ 	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
+ 	[SVM_EXIT_VMRUN]			= vmrun_interception,
+-	[SVM_EXIT_VMMCALL]			= kvm_emulate_hypercall,
++//	[SVM_EXIT_VMMCALL]			= kvm_emulate_hypercall,  // NIKA removed
++	[SVM_EXIT_VMMCALL]			= kvm_handle_invalid_op,  // NIKA added
+ 	[SVM_EXIT_VMLOAD]			= vmload_interception,
+ 	[SVM_EXIT_VMSAVE]			= vmsave_interception,
+ 	[SVM_EXIT_STGI]				= stgi_interception,
 --- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
 +++ b/arch/x86/kvm/cpuid.c	2026-04-29 00:47:51.314212661 +0100
 @@ -1402,6 +1402,7 @@
