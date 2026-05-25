@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-05-13 19:43:07.404612327 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-05-25 16:57:45.212447864 +0100
 @@ -1250,7 +1250,8 @@
  	set_dr_intercepts(svm);
  
@@ -74,7 +74,17 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -4428,6 +4456,13 @@
+@@ -3414,7 +3442,8 @@
+ 	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
+ 	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
+ 	[SVM_EXIT_VMRUN]			= vmrun_interception,
+-	[SVM_EXIT_VMMCALL]			= kvm_emulate_hypercall,
++//	[SVM_EXIT_VMMCALL]			= kvm_emulate_hypercall,  // NIKA removed
++	[SVM_EXIT_VMMCALL]			= kvm_handle_invalid_op,  // NIKA added
+ 	[SVM_EXIT_VMLOAD]			= vmload_interception,
+ 	[SVM_EXIT_VMSAVE]			= vmsave_interception,
+ 	[SVM_EXIT_STGI]				= stgi_interception,
+@@ -4428,6 +4457,13 @@
  
  	sync_lapic_to_cr8(vcpu);
  
