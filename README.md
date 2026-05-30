@@ -229,13 +229,13 @@ sudo virsh net-autostart default
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
     <qemu:commandline>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=1,manufacturer=HP,product=HP Laptop 14s-dq2xxx,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=1,manufacturer=Gigabyte Technology Co.,, Ltd.,product=HP Laptop 14s-dq2xxx,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=2,manufacturer=HP,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
+      <qemu:arg value="type=2,manufacturer=Gigabyte Technology Co.,, Ltd.,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=3,manufacturer=HP,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=3,manufacturer=Gigabyte Technology Co.,, Ltd.,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Intel(R) Corporation,version=11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz,max-speed=4200,current-speed=2400"/>
+      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 5 3600X 6-Core Processor,max-speed=4400,current-speed=3800"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=D3E4F5"/>
       <qemu:arg value="-smbios"/>
