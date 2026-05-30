@@ -229,9 +229,9 @@ sudo virsh net-autostart default
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
     <qemu:commandline>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=1,manufacturer=Gigabyte Technology Co.,, Ltd.,product=HP Laptop 14s-dq2xxx,version=23.41,serial=D3E4F56789"/>
+      <qemu:arg value="type=1,manufacturer=Gigabyte Technology Co.,, Ltd.,product=HP Laptop 14s-fq2xxx,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=2,manufacturer=Gigabyte Technology Co.,, Ltd.,product=87FD,version=34.12,serial=B1C2D3E4F56789"/>
+      <qemu:arg value="type=2,manufacturer=Gigabyte Technology Co.,, Ltd.,product=89FE,version=34.12,serial=B1C2D3E4F56789"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=3,manufacturer=Gigabyte Technology Co.,, Ltd.,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
