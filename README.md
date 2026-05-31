@@ -235,7 +235,7 @@ sudo virsh net-autostart default
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=3,manufacturer=Gigabyte Technology Co.,, Ltd.,version=23.41,serial=D3E4F56789"/>
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 5 3600X 6-Core Processor,max-speed=4400,current-speed=3800"/>
+      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 5 5625U 6-Core Processor,max-speed=4300,current-speed=2300"/>
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=D3E4F5"/>
       <qemu:arg value="-smbios"/>
