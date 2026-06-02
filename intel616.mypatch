@@ -1,12 +1,12 @@
 --- a/arch/x86/kvm/vmx/vmx.c	2025-10-12 12:01:05.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-06-02 21:24:55.325229563 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-06-02 22:55:17.394608185 +0100
 @@ -6083,6 +6083,19 @@
  	return 1;
  }
  
 +static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
 +{
-+	vcpu->total_exit_time += 2000;  // Adjust for 100 < VMEXIT < 900
++	vcpu->total_exit_time += 1900;  // Adjust for 100 < VMEXIT < 900
 +	u64 tsc = rdtsc();
 +	u64 ratio = mul_u64_u64_div_u64(1ULL << kvm_caps.tsc_scaling_ratio_frac_bits, tsc - vcpu->total_exit_time, tsc);
 +	if (ratio > 1ULL << (kvm_caps.tsc_scaling_ratio_frac_bits - 3) && ratio < 1ULL << kvm_caps.tsc_scaling_ratio_frac_bits) {
