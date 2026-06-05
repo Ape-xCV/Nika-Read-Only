@@ -974,12 +974,12 @@ sudo -E ./nika
 
 - Write modified EDID.
 
-| Capture Card               | Dummy Plug        |
+| Capture Card               | Dummy/Passthrough |
 | -------------------------- | ----------------- |
 | Game Capture HD60 S+       | [`Fueran HDMI-2K-1P`](https://www.amazon.com/dp/B06XT1Z9TF/) (NA) |
 | Game Capture HD60 X        | [`Fueran HDMI-2K-1P`](https://www.amazon.de/dp/B06XT1Z9TF/) (EU) |
-| Game Capture 4K60 Pro      |                   |
-| Game Capture 4K60 Pro MK.2 |                   |
+| Game Capture 4K60 Pro      | [`Fueran HDMI-2K-4K`](https://www.amazon.de/dp/B0FL93Y452/) (NA) |
+| Game Capture 4K60 Pro MK.2 | [`Fueran HDMI-2K-4K`](https://www.amazon.de/dp/B0FZDCCNRJ/) (EU) |
 | Game Capture 4K60 S+       |                   |
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
