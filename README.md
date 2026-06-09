@@ -53,6 +53,7 @@
   - Disconnect from Internet before installing and avoid updating after.
   - Disconnect cable from dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
+  - Dolphin >> F10 >> Configure >> Configure Dolphin... >> Previews >> _uncheck_ [ ] Folders >> [Apply]
 
 ### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
