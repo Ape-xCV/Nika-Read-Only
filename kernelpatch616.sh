@@ -81,5 +81,6 @@ fi
 #fi
 
 cd "$TKG_DIR"
+sed -i "linux-tkg-config/prepare" -e  's/llvm_opt=""/llvm_opt="KCFLAGS=\\"-Wno-error=discarded-qualifiers\\" HOSTCFLAGS=\\"-Wno-error=discarded-qualifiers\\""/'
 chmod +x "install.sh"
 ./install.sh install
