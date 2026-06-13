@@ -890,7 +890,7 @@ hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
 bcdedit /set testsigning off
 ```
 
-### 7.3. Build custom Linux kernel (not required, memflow-kvm incompatible)
+### 7.3. Build custom Linux kernel
 
 
   <details>
@@ -903,7 +903,22 @@ bcdedit /set testsigning off
 
 - Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
 
-### 7.4. memflow-kvm (memflow-qemu alternative, memflow-win32 error)
+- Install `kernel-6.16.12_tkg_eevdf+-1.x86_64`:
+```shell
+cd "linux-tkg/RPMs"
+sudo dnf install kernel-6.16.12_tkg_eevdf+-1.x86_64.rpm
+```
+
+### 7.4. memflow-kvm (memflow-qemu alternative if memflow-win32 error)
+
+- Boot `kernel-6.16.12_tkg_eevdf+-1.x86_64`:
+```shell
+sudo dnf install dkms
+cd "linux-tkg/RPMs"
+sudo dnf install kernel-devel-6.16.12_tkg_eevdf+-1.x86_64.rpm --allowerasing
+wget https://github.com/memflow/memflow-kvm/releases/download/v0.2.1/memflow-0.2.1-source-only.dkms.tar.gz
+sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
+```
 
 - Edit `/etc/default/grub`, add **ibt=off**:
 ```shell
@@ -914,31 +929,6 @@ GRUB_CMDLINE_LINUX="ibt=off ..."
 ```shell
 <Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 <Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-
-  <details>
-    <summary>Install <b>dkms</b> on <b>Fedora Linux</b>:</summary>
-
-    sudo dnf install kernel-devel-$(uname -r)
-    sudo dnf install kernel-devel-matched-$(uname -r)
-    sudo dnf install dkms
-  </details>
-
-
-  <details>
-    <summary>Install <b>dkms</b> on <b>Debian Linux</b>:</summary>
-
-    sudo apt install linux-headers-amd64=6.12.38-1
-    sudo apt install dkms
-  </details>
-
-- Download `memflow-0.2.1-source-only.dkms.tar.gz` from:
-https://github.com/memflow/memflow-kvm/releases
-
-- Install:
-```shell
-sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```
 
 - Run:
