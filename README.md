@@ -911,11 +911,14 @@ sudo dnf install kernel-6.16.12_tkg_eevdf+-1.x86_64.rpm
 
 ### 7.4. memflow-kvm (not required, install if memflow-win32 error)
 
-- Boot `kernel-6.16.12_tkg_eevdf+-1.x86_64`:
+- Boot `kernel-6.16.12_tkg_eevdf+-1.x86_64`.
+
+- Install `dkms`:
 ```shell
-sudo dnf install dkms
 cd "linux-tkg/RPMs"
-sudo dnf install kernel-devel-6.16.12_tkg_eevdf+-1.x86_64.rpm --allowerasing
+sudo dnf install kernel-devel-6.16.12_tkg_eevdf+-1.x86_64.rpm
+sudo dnf download dkms
+sudo rpm -i --nodeps dkms-3.4.1-1.fc44.noarch.rpm
 sudo wget https://github.com/memflow/memflow-kvm/releases/download/v0.2.1/memflow-0.2.1-source-only.dkms.tar.gz
 sudo dkms install --archive=memflow-0.2.1-source-only.dkms.tar.gz
 ```
