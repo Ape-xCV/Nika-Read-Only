@@ -1,0 +1,11 @@
+--- a/scripts/package/kernel.spec	2026-06-13 18:28:11.448072217 +0100
++++ b/scripts/package/kernel.spec	2026-06-13 18:34:56.293053498 +0100
+@@ -118,7 +118,7 @@
+ mkdir -p %{buildroot}/lib/modules/%{KERNELRELEASE}
+ cp $(%{make} %{makeflags} -s image_name) %{buildroot}/lib/modules/%{KERNELRELEASE}/vmlinuz
+ # DEPMOD=true makes depmod no-op. We do not package depmod-generated files.
+-%{make} %{makeflags} INSTALL_MOD_PATH=%{buildroot} %{?install_mod_strip:INSTALL_MOD_STRIP=1} DEPMOD=true modules_install
++%{make} %{makeflags} INSTALL_MOD_PATH=%{buildroot} DEPMOD=true INSTALL_MOD_STRIP=1 modules_install
+ %{make} %{makeflags} INSTALL_HDR_PATH=%{buildroot}/usr headers_install
+ cp System.map %{buildroot}/lib/modules/%{KERNELRELEASE}
+ cp .config %{buildroot}/lib/modules/%{KERNELRELEASE}/config
