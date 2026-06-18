@@ -14,7 +14,7 @@ get_edid_data() {
 #  local data=$(hexdump -v -e '1 1 "%02X"' $file)
   data=$(hexdump -v -e '1 1 "%02X"' $file)
   size="${#data}"
-  echo "$1 $(( size/2 )) bytes"
+  echo "$file $(( size/2 )) bytes"
   manufacturer="${data:16:4}"
   product="${data:20:4}"
   serial="${data:24:8}"
@@ -32,9 +32,9 @@ spoof_edid_slot() {
     if [[ "${slot_n:i:2}" != "00" ]] && [[ "${slot_n:i+2:2}" == "0A" ]]; then
       for j in {0..24..2}; do
         if [[ "$j" -le "$i" ]]; then
-          output=${output}$(  printf "%X" "'${string:j/2:1}"  )
+          output+=$(  printf "%X" "'${string:j/2:1}"  )
         else
-          output=${output}${slot_n:j:2}
+          output+=${slot_n:j:2}
         fi
       done
       break
@@ -115,7 +115,7 @@ data="${data:0:154}$slot_2${data:180:$((size-180))}"
 data="${data:0:190}$slot_3${data:216:$((size-216))}"
 
 printf "$(  printf '\\x%s' ${data:0:2}  )" > output.bin
-for i in {2..510..2}; do
+for ((i=2; i<size; i+=2)); do
   printf "$(  printf '\\x%s' ${data:i:2}  )" >> output.bin
 done
 echo "output.bin $(( size/2 )) bytes"
