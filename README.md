@@ -966,7 +966,16 @@ sudo -E ./nika
 
 - Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
 
-- Write modified EDID.
+- EDWriter >> Read EDID >> Save file... >> `edidfile.bin` >> [Save]
+
+- Download `edidpatch.cmd` to EDWriter folder (on Windows VM).
+
+- Run:
+```shell
+edidpatch.cmd edidfile.bin
+```
+
+- Write modified EDID to Dummy/Passthrough.
 
 | Capture Card               | Dummy/Passthrough |
 | -------------------------- | ----------------- |
