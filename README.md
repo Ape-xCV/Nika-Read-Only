@@ -952,18 +952,6 @@ sudo -E ./nika
 | 3     | Flagged   | Flagged    |           | Flagged   |
 | 4     | Flagged   | Banned     |           | Banned    |
 
-- Download CRU from: [`CRU thread`](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU).
-
-- Backup original EDID (1).
-
-- Modify current EDID (2).
-
-- Apply modified EDID (3).
-
-- Save modified EDID (1).
-
-![CRU.jpg](CRU.jpg)
-
 - Download EDWriter from: [`EDWriter thread`](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer).
 
 - EDWriter >> Read EDID >> Save file... >> `edidfile.bin` >> [Save]
