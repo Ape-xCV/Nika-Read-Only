@@ -489,7 +489,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 - Edit `/etc/default/grub`, use either **intel_iommu=on** or **amd_iommu=on**:
 ```shell
-GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb split_lock_detect=off mitigations=off processor.max_cstate=1 tsc=reliable intel_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX="nofb vfio-pci.ids=10de:1f02,10de:10f9,10de:1ada,10de:1adb split_lock_detect=off intel_iommu=on iommu=pt"
 ```
 
 - For single GPU `vfio-pci.ids` is actually not required as the host is in terminal mode.
@@ -906,6 +906,18 @@ bcdedit /set testsigning off
 ```shell
 cd "linux-tkg/RPMs"
 sudo dnf install kernel-6.16.12_tkg_eevdf+-1.x86_64.rpm
+```
+
+- Edit `/etc/default/grub`, add **mitigations=off/on**:
+```shell
+<Intel® Core™ processors 6th gen> GRUB_CMDLINE_LINUX="mitigations=off ..."
+<Intel® Core™ processors 11th gen> GRUB_CMDLINE_LINUX="mitigations=on ..."
+```
+
+- Update GRUB and restart Linux PC:
+```shell
+<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 ### 7.4. memflow-kvm (not required, install if memflow-win32 error)
