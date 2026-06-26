@@ -398,7 +398,8 @@ int main(int argc, char* argv[])
         uint64_t _pad1[5];
         uint64_t m_td;
         int32_t  m_fieldSizeInBytes;
-        uint64_t _pad2[5];
+      //uint64_t _pad2[5];
+        uint64_t _pad2[6];  // [6] since 2026-Jun-23
     };
     maxStep = textVirtualAddress + textVirtualSize;
     for (size_t step = textVirtualAddress; step < maxStep;) {
