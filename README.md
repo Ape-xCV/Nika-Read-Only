@@ -433,14 +433,14 @@ sudo virsh net-autostart default
 - Nested Virtualization for Intel:
 ```shell
 sudo su
-echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
 sudo su
-echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm_amd nested=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
