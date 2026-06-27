@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-06-27 12:52:59.806266453 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-06-27 15:56:18.385899865 +0100
 @@ -1010,12 +1010,12 @@
  	 * to change it directly without causing a vmexit.  In that case read
  	 * it after vmexit and store it in vmx->spec_ctrl.
@@ -133,6 +133,10 @@
  	vmx_vcpu_enter_exit(vcpu, __vmx_vcpu_run_flags(vmx));
  
 +	if (!vcpu->kvm->intercept_cpuid && vmx_get_exit_reason(vcpu).basic == EXIT_REASON_CPUID) {  // NIKA begin
++		// If there's an NMI or an unhandled interrupt event pending, fall back to slow path
++		if (unlikely(vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
++			goto reenter_guest_slow;
++
 +		in_eax = vcpu->arch.regs[VCPU_REGS_RAX];
 +		in_ecx = vcpu->arch.regs[VCPU_REGS_RCX];
 +		if (in_eax <= 0x24) {
@@ -159,10 +163,6 @@
 +
 +		//vmx_recover_nmi_blocking(vmx);  // Not required for CPUID
 +		vmx_complete_interrupts(vmx);
-+
-+		// If there's an NMI or an unhandled interrupt event pending, fall back to slow path
-+		if (unlikely(vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
-+			goto reenter_guest_slow;
 +
 +		/* 1. Fast */
 +		__vmcs_writel(GUEST_RIP, __vmcs_readl(GUEST_RIP) + 2);  // CPUID is 2 bytes
