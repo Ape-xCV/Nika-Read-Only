@@ -856,7 +856,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   ```
   </details>
 
-- Run `edk2patch.sh` to clone, patch, and build OVMF with generated data.
+- Run `ovmfpatch.sh` to clone, patch, and build OVMF with generated data.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
