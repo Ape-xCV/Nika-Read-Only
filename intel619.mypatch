@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-07-18 23:23:15.674572823 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-07-22 17:52:46.805078817 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -81,16 +81,12 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6241,52 @@
+@@ -6234,6 +6241,48 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
 +static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
 +{
-+	/*
-+	 * Intel® Core™ processors 6th gen: GRUB_CMDLINE_LINUX="mitigations=off"
-+	 * Intel® Core™ processors 11th gen: GRUB_CMDLINE_LINUX="mitigations=on"
-+	 */
 +//	if (vcpu->kvm->intercept_cpuid && rdtsc() - vcpu->kvm->last_exit_start > 290304000000)  // Intel® Core™ processors >120 seconds
 +	if (vcpu->kvm->intercept_cpuid && rdtsc() - vcpu->kvm->last_exit_start > 145152000000)  // Intel® Core™ processors >60 seconds
 +		vcpu->kvm->intercept_cpuid = false;
@@ -104,7 +100,7 @@
 +	in_ecx = ecx;
 +	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 +//	if (in_eax == 0x01) ecx |= 0x80000000;  // Hyper-V fix
-+	if (in_eax == 0x07 && in_ecx == 0x00) edx &= 0x73FFFFFF;  // Skylake fix
++//	if (in_eax == 0x07 && in_ecx == 0x00) edx &= 0x73FFFFFF;  // GRUB_CMDLINE_LINUX="mitigations=off" fix
 +	kvm_rax_write(vcpu, eax);
 +	kvm_rbx_write(vcpu, ebx);
 +	kvm_rcx_write(vcpu, ecx);
@@ -134,7 +130,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6300,8 @@
+@@ -6247,7 +6296,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -144,7 +140,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6309,8 @@
+@@ -6255,7 +6305,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -154,7 +150,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7434,9 @@
+@@ -7379,9 +7430,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -166,7 +162,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7449,7 @@
+@@ -7394,7 +7445,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -175,7 +171,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,7 +7546,7 @@
+@@ -7491,7 +7542,7 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -184,7 +180,7 @@
  
  	atomic_switch_perf_msrs(vmx);
  	if (intel_pmu_lbr_is_enabled(vcpu))
-@@ -7504,9 +7559,85 @@
+@@ -7504,9 +7555,85 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -270,7 +266,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7663,7 @@
+@@ -7532,7 +7659,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
