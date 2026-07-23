@@ -317,6 +317,9 @@ sudo virsh net-autostart default
     <feature policy="require" name="vmx"/>
     <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="topoext"/>
+    <feature policy="require" name="spec-ctrl"/>
+    <feature policy="require" name="stibp"/>
+    <feature policy="require" name="ssbd"/>
   </cpu>
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
