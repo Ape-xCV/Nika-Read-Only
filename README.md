@@ -221,7 +221,7 @@ sudo virsh net-autostart default
 
 - Replace `<domain type="kvm">` and [Apply]:
   <details>
-    <summary>Spoiler <b>(do NOT use this example, instead modify it with your own SMBIOS data; sudo dmidecode)</b></summary>
+    <summary>Spoiler <b>(do NOT use this example, instead modify it with fake SMBIOS data; sudo dmidecode)</b></summary>
 
   ```shell
   <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
