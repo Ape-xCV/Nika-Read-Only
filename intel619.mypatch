@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-07-22 17:52:46.805078817 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-07-23 19:08:35.299256726 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -28,7 +28,15 @@
  
  	return flags;
  }
-@@ -3772,6 +3773,11 @@
+@@ -2253,6 +2254,7 @@
+ u64 vmx_get_supported_debugctl(struct kvm_vcpu *vcpu, bool host_initiated)
+ {
+ 	u64 debugctl = 0;
++	debugctl |= DEBUGCTLMSR_BTF;  // NIKA added
+ 
+ 	if (boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT) &&
+ 	    (host_initiated || guest_cpu_cap_has(vcpu, X86_FEATURE_BUS_LOCK_DETECT)))
+@@ -3772,6 +3774,11 @@
  		var->type |= 0x1; /* Accessed */
  
  	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(var));
@@ -40,7 +48,7 @@
  }
  
  void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -4250,10 +4256,10 @@
+@@ -4250,10 +4257,10 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -53,7 +61,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4584,7 @@
+@@ -4578,7 +4585,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -62,7 +70,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4608,7 @@
+@@ -4602,6 +4609,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -70,7 +78,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5734,8 @@
+@@ -5727,8 +5735,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -81,7 +89,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6241,48 @@
+@@ -6234,6 +6242,48 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -130,7 +138,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6296,8 @@
+@@ -6247,7 +6297,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -140,7 +148,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6305,8 @@
+@@ -6255,7 +6306,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -150,7 +158,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7430,9 @@
+@@ -7379,9 +7431,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -162,7 +170,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7445,7 @@
+@@ -7394,7 +7446,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -171,7 +179,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,7 +7542,7 @@
+@@ -7491,7 +7543,7 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -180,7 +188,7 @@
  
  	atomic_switch_perf_msrs(vmx);
  	if (intel_pmu_lbr_is_enabled(vcpu))
-@@ -7504,9 +7555,85 @@
+@@ -7504,9 +7556,85 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -266,7 +274,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7659,7 @@
+@@ -7532,7 +7660,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
@@ -276,8 +284,29 @@
  	if (is_guest_mode(vcpu)) {
  		/*
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-07-09 00:13:32.937304491 +0100
-@@ -9234,7 +9234,14 @@
++++ b/arch/x86/kvm/x86.c	2026-07-23 17:00:46.495699406 +0100
+@@ -543,7 +543,9 @@
+ 		return 0;
+ 
+ 	if (!ignore_msrs) {
+-		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
++//		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",  // NIKA removed
++		/* sysctl -w kernel.printk_ratelimit_burst=1000 */
++		if (report_ignored_msrs && printk_ratelimit()) pr_err("unhandled %s: 0x%x data 0x%llx\n",  // NIKA added
+ 				      op, msr, *data);
+ 		return ret;
+ 	}
+@@ -4343,6 +4345,9 @@
+ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
+ 	switch (msr_info->index) {
++	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
++		msr_info->data = 1ULL << 30;  /* Bit 30 state 1=locked, bit 0 debug 0=disabled */
++		break;
+ 	case MSR_IA32_PLATFORM_ID:
+ 	case MSR_IA32_EBL_CR_POWERON:
+ 	case MSR_IA32_LASTBRANCHFROMIP:
+@@ -9234,7 +9239,14 @@
  		kvm_run->exit_reason = KVM_EXIT_DEBUG;
  		return 0;
  	}
@@ -293,7 +322,7 @@
  	return 1;
  }
  
-@@ -10494,6 +10501,8 @@
+@@ -10494,6 +10506,8 @@
  
  static int emulator_fix_hypercall(struct x86_emulate_ctxt *ctxt)
  {
@@ -302,7 +331,7 @@
  	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
  	char instruction[3];
  	unsigned long rip = kvm_rip_read(vcpu);
-@@ -12522,7 +12531,7 @@
+@@ -12522,7 +12536,7 @@
  	unsigned long rflags;
  	int i, r;
  
@@ -311,7 +340,7 @@
  		return -EINVAL;
  
  	vcpu_load(vcpu);
-@@ -13251,6 +13260,13 @@
+@@ -13251,6 +13265,13 @@
  	}
  
  	once_init(&kvm->arch.nx_once);
