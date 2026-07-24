@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-07-22 18:42:54.350812200 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-07-24 15:54:11.813276287 +0100
 @@ -217,8 +217,8 @@
  			svm_leave_nested(vcpu);
  			svm_set_gif(svm, true);
@@ -77,6 +77,21 @@
  
  	/* Decode the instruction for usage later */
  	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
+@@ -2997,10 +3017,10 @@
+ 		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
+ 		 * way to communicate lack of support to the guest.
+ 		 */
+-		if (data & DEBUGCTLMSR_BTF) {
+-			kvm_pr_unimpl_wrmsr(vcpu, MSR_IA32_DEBUGCTLMSR, data);
+-			data &= ~DEBUGCTLMSR_BTF;
+-		}
++//		if (data & DEBUGCTLMSR_BTF) {  // NIKA removed
++//			kvm_pr_unimpl_wrmsr(vcpu, MSR_IA32_DEBUGCTLMSR, data);  // NIKA removed
++//			data &= ~DEBUGCTLMSR_BTF;  // NIKA removed
++//		}  // NIKA removed
+ 
+ 		if (data & DEBUGCTL_RESERVED_BITS)
+ 			return 1;
 @@ -3158,6 +3178,14 @@
  	return 0;
  }
@@ -126,6 +141,31 @@
  	if (unlikely(svm->asid != svm->vmcb->control.asid)) {
  		svm->vmcb->control.asid = svm->asid;
  		vmcb_mark_dirty(svm->vmcb, VMCB_ASID);
+--- a/arch/x86/kvm/svm/svm.h	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/svm/svm.h	2026-07-24 15:47:20.773520065 +0100
+@@ -673,7 +673,8 @@
+ BUILD_SVM_MSR_BITMAP_HELPERS(void, clear, __clear)
+ BUILD_SVM_MSR_BITMAP_HELPERS(void, set, __set)
+ 
+-#define DEBUGCTL_RESERVED_BITS (~DEBUGCTLMSR_LBR)
++//#define DEBUGCTL_RESERVED_BITS (~DEBUGCTLMSR_LBR)  // NIKA removed
++#define DEBUGCTL_RESERVED_BITS (~(DEBUGCTLMSR_LBR | DEBUGCTLMSR_BTF))  /* NIKA added */
+ 
+ /* svm.c */
+ extern bool dump_invalid_vmcb;
+--- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/x86.c	2026-07-24 15:05:39.545175147 +0100
+@@ -543,7 +543,9 @@
+ 		return 0;
+ 
+ 	if (!ignore_msrs) {
+-		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
++//		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",  // NIKA removed
++		/* sysctl -w kernel.printk_ratelimit_burst=1000 */
++		if (report_ignored_msrs && printk_ratelimit()) pr_err("unhandled %s: 0x%x data 0x%llx\n",  // NIKA added
+ 				      op, msr, *data);
+ 		return ret;
+ 	}
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
 +++ b/include/linux/kvm_host.h	2026-07-04 11:02:12.849240662 +0100
 @@ -353,6 +353,10 @@
