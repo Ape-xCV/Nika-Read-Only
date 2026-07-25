@@ -47,8 +47,8 @@
 
 ### 1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
-- Note for Fedora 44 KDE set up:
-  - Install Fedora 44 KDE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/).
+- Note for Fedora 44 KDE (or XFCE) set up:
+  - Install Fedora 44 KDE (or XFCE) from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/).
   - Disconnect from Internet before installing and avoid updating after.
   - Disconnect cable from dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
@@ -624,6 +624,7 @@ sudo usermod -aG input $USER
   - Also check; System Settings >> Display & Monitor >> Scale: 100%
 
 - For **XFCE taskbar settings**:
+  - Bottom taskbar >> Right-click >> Panel >> Panel Preferences... >> _click_ [-] Remove the currently selected panel >> [Remove] >> [Close]
   - Top taskbar >> Right-click >> Panel >> Panel Preferences... >> Automatically hide the panel: Always >> [Close]
   - Top taskbar >> Applications >> Settings >> Settings Manager >> Window Manager Tweaks >> Accessibility >> _check_ [x] Hide title of windows when maximized >> [Close]
 
