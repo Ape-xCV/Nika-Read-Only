@@ -897,7 +897,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 bcdedit /set testsigning off
 ```
 
-### 7.3. Build custom Linux kernel
+### 7.3. Build custom Linux kernel (mandatory)
 
 
   <details>
@@ -985,8 +985,8 @@ edidpatch.cmd edidfile.bin
 
 | Capture Card               | Dummy/Passthrough |
 | -------------------------- | ----------------- |
-| Game Capture HD60 S+       | [`Fueran HDMI-2K-1P`](https://www.amazon.com/dp/B06XT1Z9TF/) (NA) |
-| Game Capture HD60 X        | [`Fueran HDMI-2K-1P`](https://www.amazon.de/dp/B06XT1Z9TF/) (EU) |
+| Game Capture HD60 S+       | [`Fueran HDMI-2K-2P`](https://www.amazon.com/dp/B074P1K5W2/) (NA) |
+| Game Capture HD60 X        | [`Fueran HDMI-2K-2P`](https://www.amazon.de/dp/B087R3NXC6/) (EU) |
 | Game Capture 4K60 Pro      | [`Fueran HDMI-2K-4K`](https://www.amazon.com/dp/B0FL93Y452/) (NA) |
 | Game Capture 4K60 Pro MK.2 | [`Fueran HDMI-2K-4K`](https://www.amazon.de/dp/B0FZDCCNRJ/) (EU) |
 | Game Capture 4K60 S+       |                   |
