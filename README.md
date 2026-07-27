@@ -106,7 +106,39 @@ chmod +x headless.sh
 
 - Use VNC from smartphone, tablet, or laptop to connect.
 
-### 1.1. Configure libvirt
+### 1.1. Install hardware decoder prior to libvirt and Steam
+
+
+<details>
+  <summary>Hardware decoder with <b>Intel Skylake</b> and newer:</summary>
+
+    sudo dnf install intel-media-driver
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>AMD</b>:</summary>
+
+    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>Nvidia</b>:</summary>
+
+    sudo dnf install nvidia-vaapi-driver
+</details>
+
+
+<details>
+  <summary>Hardware decoder with <b>Firefox</b>:</summary>
+
+    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install ffmpeg --allowerasing
+</details>
+
+### 1.2. Configure libvirt
 
 
   <details>
@@ -701,37 +733,6 @@ steam -console
   - This will lower stream delay to 10 ms.
 
 - Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
-
-
-<details>
-  <summary>Hardware decoder with <b>Intel Skylake</b> and newer:</summary>
-
-    sudo dnf install intel-media-driver
-</details>
-
-
-<details>
-  <summary>Hardware decoder with <b>AMD</b>:</summary>
-
-    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
-    sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
-</details>
-
-
-<details>
-  <summary>Hardware decoder with <b>Nvidia</b>:</summary>
-
-    sudo dnf install nvidia-vaapi-driver
-</details>
-
-
-<details>
-  <summary>Hardware decoder with <b>Firefox</b>:</summary>
-
-    sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-    sudo dnf install ffmpeg --allowerasing
-</details>
 
 ### 6. Nika Read Only (on Linux PC)
 
