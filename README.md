@@ -876,28 +876,16 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   ```
   </details>
 
-### 7.2. Install virtio ethernet (mandatory)
+### 7.2. Replace network (mandatory)
 
-- Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
 
-- [Add Hardware] >> Storage >> Device type: CDROM device >> Manage... >> Browse Local >> virtio-win.iso >> [Finish]
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> USB/PCI Host Device:
+  - USB/PCI Network Interface Card >> **[Finish]**
 
-- Download `virtio.cmd` to `network` folder in Desktop (on Windows VM).
-
-- Run `virtio.cmd`, it will copy necessary files from CDROM device.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: virtio >> [Apply]
-
-- Restart VM.
+- Start VM.
 
 - Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device.
-
-- Install virtio ethernet from `network` folder (use Device Manager).
-
-- Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
-```shell
-bcdedit /set testsigning off
-```
 
 ### 7.3. Build custom Linux kernel (mandatory)
 
@@ -1001,7 +989,7 @@ edidpatch.cmd edidfile.bin
 - Run the cheat BEFORE the game at least once.
 - Check new UUID with `nvidia-smi -L`.
 
-### 8. Spoof network (not required, ignore this)
+### 8. Spoof network
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
 
