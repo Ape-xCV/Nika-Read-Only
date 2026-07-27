@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-07-24 15:54:11.813276287 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-07-27 18:14:45.797696968 +0100
 @@ -217,8 +217,8 @@
  			svm_leave_nested(vcpu);
  			svm_set_gif(svm, true);
@@ -11,6 +11,19 @@
  
  			/*
  			 * Free the nested guest state, unless we are in SMM.
+@@ -779,10 +779,10 @@
+ 	svm_set_intercept_for_msr(vcpu, MSR_IA32_SYSENTER_ESP, MSR_TYPE_RW,
+ 				  guest_cpuid_is_intel_compatible(vcpu));
+ 
+-	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {
++//	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {  // NIKA removed
+ 		svm_disable_intercept_for_msr(vcpu, MSR_IA32_APERF, MSR_TYPE_R);
+ 		svm_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
+-	}
++//	}  // NIKA removed
+ 
+ 	if (kvm_cpu_cap_has(X86_FEATURE_SHSTK)) {
+ 		bool shstk_enabled = guest_cpu_cap_has(vcpu, X86_FEATURE_SHSTK);
 @@ -1037,7 +1037,8 @@
  	set_dr_intercepts(svm);
  
@@ -30,7 +43,17 @@
  		set_exception_intercept(svm, GP_VECTOR);
  
  	svm_set_intercept(svm, INTERCEPT_INTR);
-@@ -1077,6 +1078,8 @@
+@@ -1057,7 +1058,8 @@
+ 		svm_set_intercept(svm, INTERCEPT_SMI);
+ 
+ 	svm_set_intercept(svm, INTERCEPT_SELECTIVE_CR0);
+-	svm_set_intercept(svm, INTERCEPT_RDPMC);
++//	svm_set_intercept(svm, INTERCEPT_RDPMC);  // NIKA removed
++	svm_clr_intercept(svm, INTERCEPT_RDPMC);  // NIKA added
+ 	svm_set_intercept(svm, INTERCEPT_CPUID);
+ 	svm_set_intercept(svm, INTERCEPT_INVD);
+ 	svm_set_intercept(svm, INTERCEPT_INVLPG);
+@@ -1077,6 +1079,8 @@
  	svm_set_intercept(svm, INTERCEPT_XSETBV);
  	svm_set_intercept(svm, INTERCEPT_RDPRU);
  	svm_set_intercept(svm, INTERCEPT_RSM);
@@ -39,7 +62,7 @@
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
  		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -1747,6 +1750,19 @@
+@@ -1747,6 +1751,19 @@
  		vcpu->arch.cpuid_dynamic_bits_dirty = true;
  }
  
@@ -59,7 +82,7 @@
  static void svm_set_segment(struct kvm_vcpu *vcpu,
  			    struct kvm_segment *var, int seg)
  {
-@@ -1775,6 +1791,9 @@
+@@ -1775,6 +1792,9 @@
  		/* This is symmetric with svm_get_segment() */
  		svm->vmcb->save.cpl = (var->dpl & 3);
  
@@ -69,7 +92,7 @@
  	vmcb_mark_dirty(svm->vmcb, VMCB_SEG);
  }
  
-@@ -2201,6 +2220,7 @@
+@@ -2201,6 +2221,7 @@
  	/* Both #GP cases have zero error_code */
  	if (error_code)
  		goto reinject;
@@ -77,7 +100,7 @@
  
  	/* Decode the instruction for usage later */
  	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
-@@ -2997,10 +3017,10 @@
+@@ -2997,10 +3018,10 @@
  		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
  		 * way to communicate lack of support to the guest.
  		 */
@@ -92,7 +115,7 @@
  
  		if (data & DEBUGCTL_RESERVED_BITS)
  			return 1;
-@@ -3158,6 +3178,14 @@
+@@ -3158,6 +3179,14 @@
  	return 0;
  }
  
@@ -107,7 +130,7 @@
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3196,7 +3224,8 @@
+@@ -3196,7 +3225,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
@@ -117,7 +140,7 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -3208,7 +3237,8 @@
+@@ -3208,7 +3238,8 @@
  	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
  	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
  	[SVM_EXIT_VMRUN]			= vmrun_interception,
@@ -127,7 +150,7 @@
  	[SVM_EXIT_VMLOAD]			= vmload_interception,
  	[SVM_EXIT_VMSAVE]			= vmsave_interception,
  	[SVM_EXIT_STGI]				= stgi_interception,
-@@ -4237,6 +4267,13 @@
+@@ -4237,6 +4268,13 @@
  
  	sync_lapic_to_cr8(vcpu);
  
