@@ -410,6 +410,7 @@ file_cpu="$(pwd)/qemu/target/i386/cpu.c"
 file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 file_kvmcpu="$(pwd)/qemu/target/i386/kvm/kvm-cpu.c"
 #file_configvgaqxl="$(pwd)/qemu/roms/config.vga-qxl"
+header_x86="$(pwd)/qemu/include/hw/i386/x86.h"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -486,6 +487,7 @@ if [[ -f "$file_cpu" ]]; then rm "$file_cpu"; fi
 if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
 if [[ -f "$file_kvmcpu" ]]; then rm "$file_kvmcpu"; fi
 #if [[ -f "$file_configvgaqxl" ]]; then rm "$file_configvgaqxl"; fi
+if [[ -f "$header_x86" ]]; then rm "$header_x86"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -1911,6 +1913,10 @@ sed -i "$file_kvmcpu" -Ee "s/\"kvmclock-stable-bit\", \"on\"/\"kvmclock-stable-b
 #  echo "CONFIG_VGA_VID=0x1b36                             -> CONFIG_VGA_VID=0x8086"
 #  sed -i "$file_configvgaqxl" -Ee "s/CONFIG_VGA_VID=0x1b36/CONFIG_VGA_VID=0x8086/"
 #fi
+
+echo "  $header_x86"
+echo "((1<<5) | (1<<9) | (1<<10) | (1<<11))             -> (1<<9)"
+sed -i "$header_x86" -Ee "s/\(\(1<<5\) \| \(1<<9\) \| \(1<<10\) \| \(1<<11\)\)/(1<<9)/"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
