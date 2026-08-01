@@ -94,7 +94,7 @@ sudo reboot now
 
 - Start X on local hardware (for VM with virtual VGA):
 ```shell
-startx
+startxfce4
 ```
 
 - Start X over headless VNC (for VM with passthrough GPU):
