@@ -177,20 +177,19 @@
  /* svm.c */
  extern bool dump_invalid_vmcb;
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-07-24 15:05:39.545175147 +0100
-@@ -543,7 +543,9 @@
++++ b/arch/x86/kvm/x86.c	2026-08-02 16:56:07.046265802 +0100
+@@ -543,6 +543,9 @@
  		return 0;
  
  	if (!ignore_msrs) {
--		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
-+//		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",  // NIKA removed
-+		/* sysctl -w kernel.printk_ratelimit_burst=1000 */
-+		if (report_ignored_msrs && printk_ratelimit()) pr_err("unhandled %s: 0x%x data 0x%llx\n",  // NIKA added
++		if (report_ignored_msrs)  // NIKA added
++			/* sudo sysctl -w kernel.printk_ratelimit_burst=1000 */
++			/* sudo dmesg [-l debug] */
+ 		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
  				      op, msr, *data);
  		return ret;
- 	}
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-07-04 11:02:12.849240662 +0100
++++ b/include/linux/kvm_host.h	2026-08-02 14:55:53.253993254 +0100
 @@ -353,6 +353,10 @@
  	unsigned int halt_poll_ns;
  	bool valid_wakeup;
@@ -202,3 +201,22 @@
  #ifdef CONFIG_HAS_IOMEM
  	int mmio_needed;
  	int mmio_read_completed;
+@@ -883,11 +887,15 @@
+ 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_info(fmt, ...) \
+ 	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++/*#define kvm_debug(fmt, ...) \  */
++/*	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)  */
+ #define kvm_debug(fmt, ...) \
+-	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++/*#define kvm_debug_ratelimited(fmt, ...) \  */
++/*	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \  */
++/*			     ## __VA_ARGS__)  */
+ #define kvm_debug_ratelimited(fmt, ...) \
+-	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
+-			     ## __VA_ARGS__)
++	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_pr_unimpl(fmt, ...) \
+ 	pr_err_ratelimited("kvm [%i]: " fmt, \
+ 			   task_tgid_nr(current), ## __VA_ARGS__)

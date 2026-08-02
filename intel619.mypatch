@@ -284,19 +284,18 @@
  	if (is_guest_mode(vcpu)) {
  		/*
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-07-23 17:00:46.495699406 +0100
-@@ -543,7 +543,9 @@
++++ b/arch/x86/kvm/x86.c	2026-08-02 16:56:30.431180655 +0100
+@@ -543,6 +543,9 @@
  		return 0;
  
  	if (!ignore_msrs) {
--		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
-+//		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",  // NIKA removed
-+		/* sysctl -w kernel.printk_ratelimit_burst=1000 */
-+		if (report_ignored_msrs && printk_ratelimit()) pr_err("unhandled %s: 0x%x data 0x%llx\n",  // NIKA added
++		if (report_ignored_msrs)  // NIKA added
++			/* sudo sysctl -w kernel.printk_ratelimit_burst=1000 */
++			/* sudo dmesg [-l debug] */
+ 		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
  				      op, msr, *data);
  		return ret;
- 	}
-@@ -4343,6 +4345,9 @@
+@@ -4343,6 +4346,9 @@
  int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
  	switch (msr_info->index) {
@@ -306,7 +305,7 @@
  	case MSR_IA32_PLATFORM_ID:
  	case MSR_IA32_EBL_CR_POWERON:
  	case MSR_IA32_LASTBRANCHFROMIP:
-@@ -9234,7 +9239,14 @@
+@@ -9234,7 +9240,14 @@
  		kvm_run->exit_reason = KVM_EXIT_DEBUG;
  		return 0;
  	}
@@ -322,7 +321,7 @@
  	return 1;
  }
  
-@@ -10494,6 +10506,8 @@
+@@ -10494,6 +10507,8 @@
  
  static int emulator_fix_hypercall(struct x86_emulate_ctxt *ctxt)
  {
@@ -331,16 +330,16 @@
  	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
  	char instruction[3];
  	unsigned long rip = kvm_rip_read(vcpu);
-@@ -12522,7 +12536,7 @@
+@@ -12522,7 +12537,7 @@
  	unsigned long rflags;
  	int i, r;
  
 -	if (vcpu->arch.guest_state_protected)
-+//	if (vcpu->arch.guest_state_protected)  // NIKA exclude for #DB
++	if (vcpu->arch.guest_state_protected)  // NIKA exclude for #DB
  		return -EINVAL;
  
  	vcpu_load(vcpu);
-@@ -13251,6 +13265,13 @@
+@@ -13251,6 +13266,13 @@
  	}
  
  	once_init(&kvm->arch.nx_once);
@@ -355,7 +354,7 @@
  
  out_uninit_mmu:
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-07-09 00:39:26.395518194 +0100
++++ b/include/linux/kvm_host.h	2026-08-01 22:40:16.053015040 +0100
 @@ -767,7 +767,21 @@
  	int node_idx;
  };
@@ -378,3 +377,22 @@
  #ifdef KVM_HAVE_MMU_RWLOCK
  	rwlock_t mmu_lock;
  #else
+@@ -883,11 +897,15 @@
+ 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_info(fmt, ...) \
+ 	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++/*#define kvm_debug(fmt, ...) \  */
++/*	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)  */
+ #define kvm_debug(fmt, ...) \
+-	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++/*#define kvm_debug_ratelimited(fmt, ...) \  */
++/*	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \  */
++/*			     ## __VA_ARGS__)  */
+ #define kvm_debug_ratelimited(fmt, ...) \
+-	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
+-			     ## __VA_ARGS__)
++	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_pr_unimpl(fmt, ...) \
+ 	pr_err_ratelimited("kvm [%i]: " fmt, \
+ 			   task_tgid_nr(current), ## __VA_ARGS__)
