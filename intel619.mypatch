@@ -507,8 +507,8 @@
  	if (is_guest_mode(vcpu)) {
  		/*
 --- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-08-03 13:52:29.721010145 +0100
-@@ -6,12 +6,25 @@
++++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-08-03 19:10:19.785599820 +0100
+@@ -6,12 +6,23 @@
   */
  #define COMPILE_OFFSETS
  
@@ -526,8 +526,6 @@
 +	OFFSET(OFFSET_KVM_VCPU_KVM, kvm_vcpu, kvm);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_VCPU_ID, kvm_vcpu, vcpu_id);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_ARCH_REGS, kvm_vcpu, arch.regs);  // NIKA added
-+	OFFSET(OFFSET_VCPU_VMX_LOADED_VMCS, vcpu_vmx, loaded_vmcs);  // NIKA added
-+	OFFSET(OFFSET_LOADED_VMCS_LAUNCHED, loaded_vmcs, launched);  // NIKA added
 +	OFFSET(OFFSET_VCPU_VMX_LOADED_VMCS, vcpu_vmx, loaded_vmcs);  // NIKA added
 +	OFFSET(OFFSET_LOADED_VMCS_LAUNCHED, loaded_vmcs, launched);  // NIKA added
 +
