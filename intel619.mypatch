@@ -1,5 +1,228 @@
+--- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-03 17:38:21.878363509 +0100
+@@ -237,6 +237,220 @@
+ 	mov %r15, VCPU_R15(%_ASM_AX)
+ #endif
+ 
++#ifdef CONFIG_X86_64  // NIKA begin
++	mov %_ASM_AX, %r15                              /* %r15 = vcpu->arch.regs */
++
++	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
++	mov $0x4408, %edi                               /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
++	vmread %rdi, %r10
++	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	test $0x80000000, %r10d                         /* Test VALID (bit 31) */
++	jnz .Lfastpath_slowpath
++
++	mov $0x4402, %edi                               /* Read VM_EXIT_REASON (VMCS 0x4402) */
++	vmread %rdi, %r10
++	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	cmp $10, %r10w                                  /* EXIT_REASON_CPUID (10) == r10 'w' lower 16 bits */
++	jne .Lfastpath_slowpath
++
++	mov %r15, %rdi                                  /* %rdi = vcpu->arch.regs */
++	sub $OFFSET_KVM_VCPU_ARCH_REGS, %rdi            /* %rdi = struct kvm_vcpu * */
++	mov OFFSET_KVM_VCPU_KVM(%rdi), %rsi             /* %rsi = struct kvm * */
++	cmpb $0, OFFSET_KVM_INTERCEPT_CPUID(%rsi)       /* Check if kvm->intercept_cpuid == false */
++	jne .Lfastpath_slowpath
++
++	mov $0x6820, %r11d                              /* Read GUEST_RFLAGS (VMCS 0x6820) */
++	vmread %r11, %r10
++	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	test $0x100, %r10d                              /* Test X86_EFLAGS_TF (bit 8) */
++	jnz .Lfastpath_slowpath
++
++	mov VCPU_RAX(%r15), %r8d                        /* %r8d = in_eax */
++	mov VCPU_RCX(%r15), %r9d                        /* %r9d = in_ecx */
++	cmp $0x01, %r8d
++	je .Lhandle_topology_leaf
++	cmp $0x0B, %r8d
++	je .Lhandle_topology_leaf
++	cmp $0x1F, %r8d
++	je .Lhandle_topology_leaf
++	jmp .Lcheck_standard_leaf
++
++
++.Lhandle_topology_leaf:
++	/* Compute smt_bits = ceil(log2(threads_per_core)) */
++	mov OFFSET_KVM_THREADS_PER_CORE(%rsi), %ecx
++	xor %r10d, %r10d                                /* smt_bits = 0 */
++	dec %ecx
++	jz .Lsmt_done
++	bsr %ecx, %r10d
++	inc %r10d
++.Lsmt_done:
++
++	/* Compute core_bits = ceil(log2(cores_per_socket)) */
++	mov OFFSET_KVM_CORES_PER_SOCKET(%rsi), %ecx
++	xor %r11d, %r11d                                /* core_bits = 0 */
++	dec %ecx
++	jz .Lcore_done
++	bsr %ecx, %r11d
++	inc %r11d
++.Lcore_done:
++
++	/* Retrieve vcpu_id */
++	mov OFFSET_KVM_VCPU_VCPU_ID(%rdi), %eax         /* %eax = vcpu_id */
++
++	/* thread_idx = vcpu_id % threads_per_core */
++	mov OFFSET_KVM_THREADS_PER_CORE(%rsi), %ecx
++	xor %edx, %edx
++	div %ecx                                        /* %edx = thread_idx, %eax = vcpu_id / threads_per_core */
++	mov %edx, %r12d                                 /* %r12d = thread_idx */
++
++	/* core_idx = (vcpu_id / threads_per_core) % cores_per_socket */
++	mov OFFSET_KVM_CORES_PER_SOCKET(%rsi), %ecx
++	xor %edx, %edx
++	div %ecx                                        /* %edx = core_idx, %eax = socket_idx */
++	mov %edx, %r13d                                 /* %r13d = core_idx */
++	mov %eax, %r14d                                 /* %r14d = socket_idx */
++
++	/* calculated_edx = (socket_idx << (smt_bits + core_bits)) | (core_idx << smt_bits) | thread_idx */
++	mov %r10d, %ecx
++	add %r11d, %ecx
++	shl %cl, %r14d
++
++	mov %r10d, %ecx
++	shl %cl, %r13d
++
++	or %r13d, %r14d
++	or %r12d, %r14d                                 /* %r14d = calculated_edx */
++
++	cmp $0x01, %r8d
++	jne .Ltopology_ext_leaves
++
++	/* --- Leaf 0x01 Handling --- */
++	xor %r9d, %r9d                                  /* in_ecx = 0 */
++	/* apic_id = calculated_edx < 255 ? calculated_edx : 255 */
++	mov %r14d, %r10d
++	cmp $255, %r10d
++	jb .Lapic_id_ok
++	mov $255, %r10d
++.Lapic_id_ok:
++	/* Index into kvm->cpuid_cache[1][0] */
++	mov $1, %r8d
++	imul $(64 * 20), %r8d, %r8d
++	lea OFFSET_KVM_CPUID_CACHE(%rsi, %r8, 1), %r11
++
++	mov 8(%r11), %ebx                               /* guest_ebx = cached ebx & 0x00FFFFFF */
++	and $0x00FFFFFF, %ebx
++	shl $24, %r10d
++	or %r10d, %ebx                                  /* guest_ebx |= (apic_id << 24) */
++
++	mov %rbx, VCPU_RBX(%r15)
++	mov 4(%r11), %r10d
++	mov %r10, VCPU_RAX(%r15)
++	mov 12(%r11), %r10d
++	mov %r10, VCPU_RCX(%r15)
++	mov 16(%r11), %r10d
++	mov %r10, VCPU_RDX(%r15)
++	jmp .Ladvance_rip_and_reenter
++
++.Ltopology_ext_leaves:
++	/* --- Leaves 0x0B & 0x1F Handling --- */
++	/* Look up cached values for [in_eax][in_ecx] */
++	mov %r8d, %r10d
++	shl $6, %r10d
++	add %r9d, %r10d
++	imul $20, %r10d, %r10d
++	lea OFFSET_KVM_CPUID_CACHE(%rsi, %r10, 1), %r11
++
++	mov %r14, VCPU_RDX(%r15)                        /* EDX = calculated_edx */
++	mov 4(%r11), %r10d
++	mov %r10, VCPU_RAX(%r15)
++	mov 8(%r11), %r10d
++	mov %r10, VCPU_RBX(%r15)
++	mov 12(%r11), %r10d
++	mov %r10, VCPU_RCX(%r15)
++	jmp .Ladvance_rip_and_reenter
++
++
++.Lcheck_standard_leaf:
++	cmp $0x24, %r8d
++	ja .Lfastpath_slowpath
++
++	/* Check indexed sub-leaf mask bit: (0x00000019E0FDF890ULL >> in_eax) & 1 */
++	mov $0x00000019E0FDF890, %r10
++	mov %r8d, %ecx
++	shr %cl, %r10
++	and $1, %r10
++	jnz .Lsubleaf_indexed
++
++	xor %r9d, %r9d                                  /* in_ecx = 0 */
++	jmp .Lfetch_cache_entry
++
++.Lsubleaf_indexed:
++	cmp $0x3F, %r9d
++	jbe .Lfetch_cache_entry
++	mov $0x3F, %r9d                                 /* in_ecx = min(in_ecx, 0x3F) */
++
++.Lfetch_cache_entry:
++	/* Index = (in_eax * 64 + in_ecx) * 20 */
++	mov %r8d, %r10d
++	shl $6, %r10d
++	add %r9d, %r10d
++	imul $20, %r10d, %r10d
++	lea OFFSET_KVM_CPUID_CACHE(%rsi, %r10, 1), %r11
++
++	/* Verify rdy == 1 */
++	cmpl $1, (%r11)
++	jne .Lfastpath_slowpath
++
++	/* Cache hit: Write EAX, EBX, ECX, EDX into vcpu->arch.regs */
++	mov 4(%r11),  %r10d
++	mov %r10, VCPU_RAX(%r15)
++	mov 8(%r11),  %r10d
++	mov %r10, VCPU_RBX(%r15)
++	mov 12(%r11), %r10d
++	mov %r10, VCPU_RCX(%r15)
++	mov 16(%r11), %r10d
++	mov %r10, VCPU_RDX(%r15)
++
++
++.Ladvance_rip_and_reenter:
++	mov $0x440C, %edi                               /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
++	vmread %rdi, %r11
++	mov $0x681E, %edi                               /* Read GUEST_RIP (VMCS 0x681E) */
++	vmread %rdi, %r10
++	add %r11, %r10
++	vmwrite %r10, %rdi                              /* Write GUEST_RIP (VMCS %rdi) */
++
++	mov %r15, %rdi                                  /* %rdi = vcpu->arch.regs */
++	sub $OFFSET_KVM_VCPU_ARCH_REGS, %rdi            /* %rdi = struct vcpu_vmx * (or struct kvm_vcpu *) */
++	mov OFFSET_VCPU_VMX_LOADED_VMCS(%rdi), %r10     /* %r10 = struct loaded_vmcs * */
++	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%r10)      /* vmx->loaded_vmcs->launched = 1 */
++
++	/* Reload GPRs from vcpu->arch.regs (%r15) */
++	mov VCPU_RAX(%r15), %_ASM_AX
++	mov VCPU_RCX(%r15), %_ASM_CX
++	mov VCPU_RDX(%r15), %_ASM_DX
++	mov VCPU_RBX(%r15), %_ASM_BX
++	mov VCPU_RBP(%r15), %_ASM_BP
++	mov VCPU_RSI(%r15), %_ASM_SI
++	mov VCPU_RDI(%r15), %_ASM_DI
++	mov VCPU_R8 (%r15), %r8
++	mov VCPU_R9 (%r15), %r9
++	mov VCPU_R10(%r15), %r10
++	mov VCPU_R11(%r15), %r11
++	mov VCPU_R12(%r15), %r12
++	mov VCPU_R13(%r15), %r13
++	mov VCPU_R14(%r15), %r14
++
++	/* MUST BE LAST: Reload guest R15 from memory (overwriting our @regs pointer) */
++	mov VCPU_R15(%r15), %r15
++
++	/* Execute VMRESUME to return directly to guest execution loop */
++	jmp .Lvmresume
++
++.Lfastpath_slowpath:
++#endif  // NIKA end
++
+ 	/* Clear return value to indicate VM-Exit (as opposed to VM-Fail). */
+ 	xor %ebx, %ebx
+ 
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-07-23 19:08:35.299256726 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-03 04:39:22.211995081 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -192,13 +415,13 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
-+	u32 in_eax, in_ecx;  // NIKA added
-+reenter_guest_fast:  // NIKA added
++//	u32 in_eax, in_ecx;  // NIKA added
++//reenter_guest_fast:  // NIKA added
 +
  	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
  	vmx_vcpu_enter_exit(vcpu, __vmx_vcpu_run_flags(vmx));
- 
-+	if (!vcpu->kvm->intercept_cpuid && vmx_get_exit_reason(vcpu).basic == EXIT_REASON_CPUID) {  // NIKA begin
++/*
++	if (vmx_get_exit_reason(vcpu).basic == EXIT_REASON_CPUID && !vcpu->kvm->intercept_cpuid) {  // NIKA begin
 +//		if (unlikely(vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
 +//			goto reenter_guest_slow;  // If an NMI or interrupt is pending, we MUST hit the slow path
 +
@@ -257,7 +480,7 @@
 +			} else goto reenter_guest_slow;
 +		}
 +		else goto reenter_guest_slow;
-+
+ 
 +		__vmcs_writel(GUEST_RIP, __vmcs_readl(GUEST_RIP) + vmcs_read32(VM_EXIT_INSTRUCTION_LEN));  // Manually advance RIP past CPUID
 +
 +#ifndef CONFIG_X86_64
@@ -270,7 +493,7 @@
 +		goto reenter_guest_fast;
 +	}
 +reenter_guest_slow:  // NIKA end
-+
++*/
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
@@ -283,6 +506,34 @@
  
  	if (is_guest_mode(vcpu)) {
  		/*
+--- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-08-03 13:52:29.721010145 +0100
+@@ -6,12 +6,25 @@
+  */
+ #define COMPILE_OFFSETS
+ 
++#include <linux/kvm_host.h>  // NIKA added
+ #include <linux/kbuild.h>
+ #include "vmx/vmx.h"
+ #include "svm/svm.h"
+ 
+ static void __used common(void)
+ {
++	OFFSET(OFFSET_KVM_CPUID_CACHE, kvm, cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_KVM_INTERCEPT_CPUID, kvm, intercept_cpuid);  // NIKA added
++	OFFSET(OFFSET_KVM_THREADS_PER_CORE, kvm, threads_per_core);  // NIKA added
++	OFFSET(OFFSET_KVM_CORES_PER_SOCKET, kvm, cores_per_socket);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_KVM, kvm_vcpu, kvm);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_VCPU_ID, kvm_vcpu, vcpu_id);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_ARCH_REGS, kvm_vcpu, arch.regs);  // NIKA added
++	OFFSET(OFFSET_VCPU_VMX_LOADED_VMCS, vcpu_vmx, loaded_vmcs);  // NIKA added
++	OFFSET(OFFSET_LOADED_VMCS_LAUNCHED, loaded_vmcs, launched);  // NIKA added
++	OFFSET(OFFSET_VCPU_VMX_LOADED_VMCS, vcpu_vmx, loaded_vmcs);  // NIKA added
++	OFFSET(OFFSET_LOADED_VMCS_LAUNCHED, loaded_vmcs, launched);  // NIKA added
++
+ 	if (IS_ENABLED(CONFIG_KVM_AMD)) {
+ 		BLANK();
+ 		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/x86.c	2026-08-02 16:56:30.431180655 +0100
 @@ -543,6 +543,9 @@
