@@ -1,41 +1,42 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-05 01:35:51.221508799 +0100
-@@ -237,6 +237,140 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-05 16:36:48.354191469 +0100
+@@ -237,6 +237,145 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
 +#ifdef CONFIG_X86_64  // NIKA begin
-+	mov $0x4402, %edi                               /* Read VM_EXIT_REASON (VMCS 0x4402) */
-+	vmread %rdi, %r10
-+	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	mov $0x4402, %edx                               /* Read VM_EXIT_REASON (VMCS 0x4402) */
++	vmread %rdx, %r10
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +	cmp $10, %r10w                                  /* EXIT_REASON_CPUID (10) == r10 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
 +
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
-+	mov $0x4408, %edi                               /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
-+	vmread %rdi, %r10
-+	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	mov $0x4408, %edx                               /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
++	vmread %rdx, %r10
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +	test $0x80000000, %r10d                         /* Test VALID (bit 31) */
 +	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_INTERRUPTIBILITY_INFO for STI or MOV SS blocking */
-+	mov $0x4824, %edi                               /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
-+	vmread %rdi, %r10
-+	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	mov $0x4824, %edx                               /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
++	vmread %rdx, %r10
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +	test $0x03, %r10d                               /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
 +	jnz .Lfastpath_slowpath
 +
-+	mov $0x6820, %r11d                              /* Read GUEST_RFLAGS (VMCS 0x6820) */
-+	vmread %r11, %r10
-+	jc .Lfastpath_slowpath                          /* Carry, VMREAD failure */
++	mov $0x6820, %edx                               /* Read GUEST_RFLAGS (VMCS 0x6820) */
++	vmread %rdx, %r10
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +	test $0x100, %r10d                              /* Test X86_EFLAGS_TF (bit 8) */
 +	jnz .Lfastpath_slowpath
 +
-+	mov %_ASM_AX, %r15                              /* %r15 = vcpu->arch.regs */
-+	mov %r15, %rdi                                  /* %rdi = vcpu->arch.regs */
-+	sub $OFFSET_KVM_VCPU_ARCH_REGS, %rdi            /* %rdi = struct kvm_vcpu * */
-+	mov VCPU_RAX(%r15), %r8d                        /* %r8d = in_eax */
-+	mov VCPU_RCX(%r15), %r9d                        /* %r9d = in_ecx */
++	mov %_ASM_AX, %rdi                              /* %rdi = vcpu->arch.regs */
++//	mov %rdi, %rsi                                  /* %rsi = vcpu->arch.regs */
++//	sub $OFFSET_KVM_VCPU_ARCH_REGS, %rsi            /* %rsi = struct kvm_vcpu * (or struct vcpu_vmx *) */
++	lea -OFFSET_KVM_VCPU_ARCH_REGS(%rdi), %rsi      /* %rsi = struct kvm_vcpu * (or struct vcpu_vmx *) */
++	mov VCPU_RAX(%rdi), %r8d                        /* %r8d = in_eax */
++	mov VCPU_RCX(%rdi), %r9d                        /* %r9d = in_ecx */
 +
 +
 +.Lcheck_standard_leaf:
@@ -64,7 +65,7 @@
 +	shl $6, %r10d
 +	add %r9d, %r10d
 +	imul $20, %r10d, %r10d
-+	lea OFFSET_KVM_VCPU_CPUID_CACHE(%rdi, %r10, 1), %r11
++	lea OFFSET_KVM_VCPU_CPUID_CACHE(%rsi, %r10, 1), %r11
 +	jmp .Lverify_and_write
 +
 +
@@ -82,7 +83,7 @@
 +	shl $6, %r10d
 +	add %r9d, %r10d
 +	imul $20, %r10d, %r10d
-+	lea OFFSET_KVM_VCPU_EXT_CPUID_CACHE(%rdi, %r10, 1), %r11
++	lea OFFSET_KVM_VCPU_EXT_CPUID_CACHE(%rsi, %r10, 1), %r11
 +
 +
 +.Lverify_and_write:
@@ -92,45 +93,49 @@
 +
 +	/* Cache hit: Write EAX, EBX, ECX, EDX into vcpu->arch.regs */
 +	mov 4(%r11),  %r10d
-+	mov %r10, VCPU_RAX(%r15)
++	mov %r10, VCPU_RAX(%rdi)
 +	mov 8(%r11),  %r10d
-+	mov %r10, VCPU_RBX(%r15)
++	mov %r10, VCPU_RBX(%rdi)
 +	mov 12(%r11), %r10d
-+	mov %r10, VCPU_RCX(%r15)
++	mov %r10, VCPU_RCX(%rdi)
 +	mov 16(%r11), %r10d
-+	mov %r10, VCPU_RDX(%r15)
++	mov %r10, VCPU_RDX(%rdi)
 +
 +.Ladvance_rip_and_reenter:
-+	mov $0x440C, %edi                               /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
-+	vmread %rdi, %r11
-+	mov $0x681E, %edi                               /* Read GUEST_RIP (VMCS 0x681E) */
-+	vmread %rdi, %r10
-+	add %r11, %r10
-+	vmwrite %r10, %rdi                              /* Write GUEST_RIP (VMCS %rdi) */
++	mov $0x440C, %edx                               /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
++	vmread %rdx, %r11
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
++	mov $0x681E, %edx                               /* Read GUEST_RIP (VMCS 0x681E) */
++	vmread %rdx, %r10
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +
-+	mov %r15, %rdi                                  /* %rdi = vcpu->arch.regs */
-+	sub $OFFSET_KVM_VCPU_ARCH_REGS, %rdi            /* %rdi = struct vcpu_vmx * (or struct kvm_vcpu *) */
-+	mov OFFSET_VCPU_VMX_LOADED_VMCS(%rdi), %r10     /* %r10 = struct loaded_vmcs * */
++	add %r11, %r10
++	vmwrite %r10, %rdx                              /* Write GUEST_RIP (VMCS %rdx) */
++	jna .Lfastpath_slowpath                         /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++
++//	lea -OFFSET_KVM_VCPU_ARCH_REGS(%rdi), %rsi      /* %rsi = struct vcpu_vmx * (or struct kvm_vcpu *) */
++	mov OFFSET_VCPU_VMX_LOADED_VMCS(%rsi), %r10     /* %r10 = struct loaded_vmcs * */
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%r10)      /* vmx->loaded_vmcs->launched = 1 */
 +
-+	/* Reload GPRs from vcpu->arch.regs (%r15) */
-+	mov VCPU_RAX(%r15), %_ASM_AX
-+	mov VCPU_RCX(%r15), %_ASM_CX
-+	mov VCPU_RDX(%r15), %_ASM_DX
-+	mov VCPU_RBX(%r15), %_ASM_BX
-+	mov VCPU_RBP(%r15), %_ASM_BP
-+	mov VCPU_RSI(%r15), %_ASM_SI
-+	mov VCPU_RDI(%r15), %_ASM_DI
-+	mov VCPU_R8 (%r15), %r8
-+	mov VCPU_R9 (%r15), %r9
-+	mov VCPU_R10(%r15), %r10
-+	mov VCPU_R11(%r15), %r11
-+	mov VCPU_R12(%r15), %r12
-+	mov VCPU_R13(%r15), %r13
-+	mov VCPU_R14(%r15), %r14
++	/* Reload GPRs from vcpu->arch.regs (%rdi) */
++	mov VCPU_RAX(%rdi), %_ASM_AX
++	mov VCPU_RCX(%rdi), %_ASM_CX
++	mov VCPU_RDX(%rdi), %_ASM_DX
++	mov VCPU_RBX(%rdi), %_ASM_BX
++	mov VCPU_RBP(%rdi), %_ASM_BP
++	mov VCPU_RSI(%rdi), %_ASM_SI
++//	mov VCPU_RDI(%rdi), %_ASM_DI
++	mov VCPU_R8 (%rdi), %r8
++	mov VCPU_R9 (%rdi), %r9
++	mov VCPU_R10(%rdi), %r10
++	mov VCPU_R11(%rdi), %r11
++	mov VCPU_R12(%rdi), %r12
++	mov VCPU_R13(%rdi), %r13
++	mov VCPU_R14(%rdi), %r14
++	mov VCPU_R15(%rdi), %r15
 +
-+	/* MUST BE LAST: Reload guest R15 from memory (overwriting our @regs pointer) */
-+	mov VCPU_R15(%r15), %r15
++	/* MUST BE LAST: Reload guest RDI from memory (overwriting our @regs pointer) */
++	mov VCPU_RDI(%rdi), %_ASM_DI
 +
 +	/* Execute VMRESUME to return directly to guest execution loop */
 +	jmp .Lvmresume
