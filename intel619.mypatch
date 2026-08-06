@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-05 16:36:48.354191469 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-05 20:54:41.576559555 +0100
 @@ -237,6 +237,145 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -103,14 +103,14 @@
 +
 +.Ladvance_rip_and_reenter:
 +	mov $0x440C, %edx                               /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
-+	vmread %rdx, %r11
-+	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
-+	mov $0x681E, %edx                               /* Read GUEST_RIP (VMCS 0x681E) */
 +	vmread %rdx, %r10
 +	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
++	mov $0x681E, %edx                               /* Read GUEST_RIP (VMCS 0x681E) */
++	vmread %rdx, %r11
++	jc .Lfastpath_slowpath                          /* Branches if CF == 1, VMREAD failure */
 +
-+	add %r11, %r10
-+	vmwrite %r10, %rdx                              /* Write GUEST_RIP (VMCS %rdx) */
++	add %r10, %r11
++	vmwrite %r11, %rdx                              /* Write GUEST_RIP (VMCS %rdx) */
 +	jna .Lfastpath_slowpath                         /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
 +
 +//	lea -OFFSET_KVM_VCPU_ARCH_REGS(%rdi), %rsi      /* %rsi = struct vcpu_vmx * (or struct kvm_vcpu *) */
@@ -118,21 +118,21 @@
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%r10)      /* vmx->loaded_vmcs->launched = 1 */
 +
 +	/* Reload GPRs from vcpu->arch.regs (%rdi) */
-+	mov VCPU_RAX(%rdi), %_ASM_AX
-+	mov VCPU_RCX(%rdi), %_ASM_CX
-+	mov VCPU_RDX(%rdi), %_ASM_DX
-+	mov VCPU_RBX(%rdi), %_ASM_BX
-+	mov VCPU_RBP(%rdi), %_ASM_BP
-+	mov VCPU_RSI(%rdi), %_ASM_SI
-+//	mov VCPU_RDI(%rdi), %_ASM_DI
-+	mov VCPU_R8 (%rdi), %r8
-+	mov VCPU_R9 (%rdi), %r9
-+	mov VCPU_R10(%rdi), %r10
-+	mov VCPU_R11(%rdi), %r11
-+	mov VCPU_R12(%rdi), %r12
-+	mov VCPU_R13(%rdi), %r13
-+	mov VCPU_R14(%rdi), %r14
 +	mov VCPU_R15(%rdi), %r15
++	mov VCPU_R14(%rdi), %r14
++	mov VCPU_R13(%rdi), %r13
++	mov VCPU_R12(%rdi), %r12
++	mov VCPU_R11(%rdi), %r11
++	mov VCPU_R10(%rdi), %r10
++	mov VCPU_R9 (%rdi), %r9
++	mov VCPU_R8 (%rdi), %r8
++//	mov VCPU_RDI(%rdi), %_ASM_DI
++	mov VCPU_RSI(%rdi), %_ASM_SI
++	mov VCPU_RBP(%rdi), %_ASM_BP
++	mov VCPU_RBX(%rdi), %_ASM_BX
++	mov VCPU_RDX(%rdi), %_ASM_DX
++	mov VCPU_RCX(%rdi), %_ASM_CX
++	mov VCPU_RAX(%rdi), %_ASM_AX
 +
 +	/* MUST BE LAST: Reload guest RDI from memory (overwriting our @regs pointer) */
 +	mov VCPU_RDI(%rdi), %_ASM_DI
