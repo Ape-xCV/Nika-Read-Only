@@ -1,6 +1,6 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-06 23:14:44.810819692 +0100
-@@ -237,6 +237,150 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-07 17:40:12.480189694 +0100
+@@ -237,6 +237,153 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -16,17 +16,20 @@
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
 +	mov $0x4408, %esi                   /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
 +	vmread %_ASM_SI, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
 +	test $0x80000000, %edx              /* Test VALID (bit 31) */
 +	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_INTERRUPTIBILITY_INFO for STI or MOV SS blocking */
-+	mov $0x4824, %esi                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
-+	vmread %_ASM_SI, %_ASM_DX
-+	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
-+	jnz .Lfastpath_slowpath
++//	mov $0x4824, %esi                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
++//	vmread %_ASM_SI, %_ASM_DX
++//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++//	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
++//	jnz .Lfastpath_slowpath
 +
 +	mov $0x6820, %esi                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
 +	vmread %_ASM_SI, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
 +	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
 +	jnz .Lfastpath_slowpath
 +
