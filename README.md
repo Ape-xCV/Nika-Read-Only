@@ -885,7 +885,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Start VM.
 
-- Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device.
+- Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device
 
 ### 7.3. Build custom Linux kernel (mandatory)
 
