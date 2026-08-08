@@ -458,8 +458,8 @@ sudo virsh net-autostart default
 ### 3. Environment set up in Linux
 
 - Enter BIOS and enable Virtualization Technology:
-  - VT-d for Intel (VMX).
-  - AMD-Vi for AMD (SVM).
+  - Enable VT-d for Intel (VMX).
+  - Enable AMD-Vi for AMD (SVM).
   - Enable "IOMMU".
   - Disable "Above 4G Decoding".
 
