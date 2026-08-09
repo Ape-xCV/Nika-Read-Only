@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-07 17:40:12.480189694 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-09 16:26:14.121060780 +0100
 @@ -237,6 +237,153 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -21,11 +21,11 @@
 +	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_INTERRUPTIBILITY_INFO for STI or MOV SS blocking */
-+//	mov $0x4824, %esi                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
-+//	vmread %_ASM_SI, %_ASM_DX
-+//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+//	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
-+//	jnz .Lfastpath_slowpath
++	mov $0x4824, %esi                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
++	vmread %_ASM_SI, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
++	jnz .Lfastpath_slowpath
 +
 +	mov $0x6820, %esi                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
 +	vmread %_ASM_SI, %_ASM_DX
@@ -155,7 +155,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-04 22:40:32.991175973 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-09 16:25:47.657502695 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -342,8 +342,8 @@
  	vmx_vcpu_enter_exit(vcpu, __vmx_vcpu_run_flags(vmx));
 +/*
 +	if (vmx_get_exit_reason(vcpu).basic == EXIT_REASON_CPUID) {  // NIKA begin
-+//		if (unlikely(vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
-+//			goto reenter_guest_slow;  // If an NMI or interrupt is pending, we MUST hit the slow path
++		if (unlikely(vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
++			goto reenter_guest_slow;  // If an NMI or interrupt is pending, we MUST hit the slow path
 +
 +		if (vmcs_readl(GUEST_RFLAGS) & X86_EFLAGS_TF)
 +			goto reenter_guest_slow;
