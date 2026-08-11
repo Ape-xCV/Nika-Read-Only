@@ -366,6 +366,8 @@ else
   echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086"
   sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086/"
 fi
+echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
+sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
 
 echo "  $file_BhyveDefines"
 echo "0x800000                                          -> 0x810000"

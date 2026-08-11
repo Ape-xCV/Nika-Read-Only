@@ -78,6 +78,8 @@ file_ShellPkg="$(pwd)/ovmf/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/ovmf/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 file_AuthServiceInternal="$(pwd)/ovmf/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
 file_Q35MchIch9="$(pwd)/ovmf/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
+file_BhyveDefines="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
+file_OvmfPkgDefines="$(pwd)/edk2/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
 
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
@@ -100,6 +102,8 @@ if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
 if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
+if [[ -f "$file_BhyveDefines" ]]; then rm "$file_BhyveDefines"; fi
+if [[ -f "$file_OvmfPkgDefines" ]]; then rm "$file_OvmfPkgDefines"; fi
 mkdir -p ovmf
 cp -fr ovmfbackup/. ovmf
 cp -fr splash.bmp ovmf/MdeModulePkg/Logo/Logo.bmp
@@ -352,6 +356,16 @@ else
   echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086"
   sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086/"
 fi
+echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
+sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
+
+echo "  $file_BhyveDefines"
+echo "0x800000                                          -> 0x810000"
+sed -i "$file_BhyveDefines" -Ee "s/0x800000/0x810000/"
+
+echo "  $file_OvmfPkgDefines"
+echo "0x800000                                          -> 0x810000"
+sed -i "$file_OvmfPkgDefines" -Ee "s/0x800000/0x810000/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then

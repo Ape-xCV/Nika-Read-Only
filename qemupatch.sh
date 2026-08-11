@@ -34,10 +34,12 @@ if [[ ! -f vars.sh ]]; then
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
   vendor=$((         device + ((RANDOM%768)+256) ))
   xhci=$((   49152 - device - ((RANDOM%768)+256) ))
+  cpu=$((     8192          + ((RANDOM%24561)+2) ))
   virtio=$(( 49152 + device ))
   echo "device=\"$device\""                  >  vars.sh
   echo "vendor=\"$vendor\""                  >> vars.sh
   echo "xhci=\"$xhci\""                      >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "virtio=\"$virtio\""                  >> vars.sh
   echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
@@ -47,6 +49,7 @@ else
   echo "device=\"$device\""                  >  vars.sh
   echo "vendor=\"$vendor\""                  >> vars.sh
   echo "xhci=\"$xhci\""                      >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "virtio=\"$virtio\""                  >> vars.sh
   echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
@@ -308,7 +311,7 @@ get_random_hex()    { head /dev/urandom | tr -dc '0-9A-F' | head -c "$1"; }
 
 get_new_string() {
   local random_string=""
-  local vowel_count=0
+  local vowel_count=-1
   while [ $vowel_count -ne $2 ]
   do
     random_string="$(get_random_string 100)"
@@ -411,6 +414,7 @@ file_kvm="$(pwd)/qemu/target/i386/kvm/kvm.c"
 file_kvmcpu="$(pwd)/qemu/target/i386/kvm/kvm-cpu.c"
 #file_configvgaqxl="$(pwd)/qemu/roms/config.vga-qxl"
 header_x86="$(pwd)/qemu/include/hw/i386/x86.h"
+header_pchotplug="$(pwd)/qemu/include/hw/acpi/pc-hotplug.h"
 header_cpu="$(pwd)/qemu/target/i386/cpu.h"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
@@ -489,6 +493,7 @@ if [[ -f "$file_kvm" ]]; then rm "$file_kvm"; fi
 if [[ -f "$file_kvmcpu" ]]; then rm "$file_kvmcpu"; fi
 #if [[ -f "$file_configvgaqxl" ]]; then rm "$file_configvgaqxl"; fi
 if [[ -f "$header_x86" ]]; then rm "$header_x86"; fi
+if [[ -f "$header_pchotplug" ]]; then rm "$header_pchotplug"; fi
 if [[ -f "$header_cpu" ]]; then rm "$header_cpu"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
@@ -746,25 +751,33 @@ sed -i "$file_acpibuild" -Ee "s/\"GPE0/\"$new_string/g"
 get_new_string 3 1
 sed -i "$file_acpibuild" -Ee "s/\"SMI/\"$new_string/g"
 sed -i "$file_acpibuild" -Ee "s/resources\"/interface\"/g"
+get_new_string 3 0
+lnk=$new_string
+get_new_string 3 0
+gsi=$new_string
 echo "        if_ctx = aml_if(aml_equal(aml_name(\"PICF\"), aml_int(0)));"
 echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "        aml_append(if_ctx, aml_return(build_q35_routing_table(\"LNK\")));"
+echo "        aml_append(if_ctx, aml_return(build_q35_routing_table(\"${lnk}\")));"
 echo "        aml_append(method, if_ctx);"
 echo "        else_ctx = aml_else();"
-echo "        aml_append(else_ctx, aml_return(build_q35_routing_table(\"GSI\")));"
+echo "        aml_append(else_ctx, aml_return(build_q35_routing_table(\"${gsi}\")));"
 sed -i "$file_acpibuild" -e  '/    aml_append(table, method);/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/        if_ctx = aml_if(aml_equal(aml_name(\"PICF\"), aml_int(0)));/{n;N;N;N;d;}'
-sed -i "$file_acpibuild" -Ee "/        if_ctx = aml_if\(aml_equal\(aml_name\(\"PICF\"\), aml_int\(0\)\)\);/a\        aml_append(if_ctx, aml_return(build_q35_routing_table(\"LNK\")));\n\
+sed -i "$file_acpibuild" -Ee "/        if_ctx = aml_if\(aml_equal\(aml_name\(\"PICF\"\), aml_int\(0\)\)\);/a\        aml_append(if_ctx, aml_return(build_q35_routing_table(\"${lnk}\")));\n\
         aml_append(method, if_ctx);\n\
         else_ctx = aml_else();\n\
-        aml_append(else_ctx, aml_return(build_q35_routing_table(\"GSI\")));"
-sed -i "$file_acpibuild" -e  '/LNKD", 3, aml_name("PRQD/{n;N;N;N;N;d;}'
-sed -i "$file_acpibuild" -e  '/GSID/{n;N;N;N;N;d;}'
-sed -i "$file_acpibuild" -e  '/    pkg = aml_package(128);/{n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
-sed -i "$file_acpibuild" -Ee "/    pkg = aml_package\(128\);/a\    for (i = 0; i < 0x20; i++) {\n\
-        name[3] = 'A' + (i & 0x3);\n\
-        append_q35_prt_entry(pkg, i, name);\n\
-    }"
+        aml_append(else_ctx, aml_return(build_q35_routing_table(\"${gsi}\")));"
+echo "\"LNK                                              -> \"${lnk}"
+sed -i "$file_acpibuild" -Ee "s/LNKA/${lnk}A/"
+sed -i "$file_acpibuild" -Ee "s/LNKB/${lnk}B/"
+sed -i "$file_acpibuild" -Ee "s/LNKC/${lnk}C/"
+sed -i "$file_acpibuild" -Ee "s/LNKD/${lnk}D/"
+sed -i "$file_acpibuild" -Ee "s/LNKE/${lnk}E/"
+sed -i "$file_acpibuild" -Ee "s/LNKF/${lnk}F/"
+sed -i "$file_acpibuild" -Ee "s/LNKG/${lnk}G/"
+sed -i "$file_acpibuild" -Ee "s/LNKH/${lnk}H/"
+echo "\"GSI                                              -> \"${gsi}"
+sed -i "$file_acpibuild" -Ee "s/\"GSI/\"${gsi}/g"
 echo "100000000                                         -> 41666666"
 sed -i "$file_acpibuild" -Ee "s/100000000/41666666/"
 
@@ -773,21 +786,6 @@ get_new_string $(shuf -i 5-7 -n 1) 3
 echo "CPU hotplug                                       -> CPU $prefix$suffix"
 sed -i "$file_acpi_cpu" -Ee "s/CPU Hotplug/CPU $prefix$suffix/gI"
 sed -i "$file_acpi_cpu" -Ee "s/resources\"/interface\"/g"
-sed -i "$file_acpi_cpu" -e  '/    cpu_ctrl_dev = aml_device("%s", cphp_res_path);/{n;n;N;d;}'
-echo "#if 0"
-echo "        ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "        crs = aml_resource_template();"
-sed -i "$file_acpi_cpu" -Ee "/        crs = aml_resource_template\(\);/i#if 0"
-echo "        aml_append(cpu_ctrl_dev, aml_name_decl(\"_CRS\", crs));"
-echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "#endif"
-sed -i "$file_acpi_cpu" -Ee "/        aml_append\(cpu_ctrl_dev, aml_name_decl\(\"_CRS\", crs\)\);/a#endif"
-echo "PRST\", rs, aml_int(base_addr),                    -> PRST\", rs, aml_int(0),"
-sed -i "$file_acpi_cpu" -Ee "s/PRST\", rs, aml_int\(base_addr\),/PRST\", rs, aml_int(0),/"
-sed -i "$file_acpi_cpu" -e  '/            g_array_free(madt_buf, true);/{n;n;N;N;N;N;d;}'
-sed -i "$file_acpi_cpu" -Ee "/            g_array_free\(madt_buf, true\);/{ n; a\            method = aml_method(\"_RMV\", 0, AML_NOTSERIALIZED);\n\
-            aml_append(method, aml_return(aml_int(0)));\n\
-            aml_append(dev, method);" -Ee " }"
 
 echo "  $file_pcihp"
 echo "PCI hotplug                                       -> PCI $prefix$suffix"
@@ -1955,6 +1953,10 @@ sed -i "$file_kvmcpu" -Ee "s/\"kvmclock-stable-bit\", \"on\"/\"kvmclock-stable-b
 echo "  $header_x86"
 echo "((1<<5) | (1<<9) | (1<<10) | (1<<11))             -> (1<<9)"
 sed -i "$header_x86" -Ee "s/\(\(1<<5\) \| \(1<<9\) \| \(1<<10\) \| \(1<<11\)\)/(1<<9)/"
+
+echo "  $header_pchotplug"
+echo "ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8                   -> ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )"
+sed -i "$header_pchotplug" -Ee "s/ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8/ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )/"
 
 echo "  $header_cpu"
 echo "MCE_BANKS_DEF   10                                -> MCE_BANKS_DEF   32"
