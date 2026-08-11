@@ -78,8 +78,8 @@ file_ShellPkg="$(pwd)/ovmf/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/ovmf/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 file_AuthServiceInternal="$(pwd)/ovmf/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
 file_Q35MchIch9="$(pwd)/ovmf/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
-file_BhyveDefines="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
-file_OvmfPkgDefines="$(pwd)/edk2/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
+file_BhyveDefines="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
+file_OvmfPkgDefines="$(pwd)/ovmf/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
 
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
