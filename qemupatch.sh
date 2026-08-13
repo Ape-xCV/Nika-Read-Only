@@ -32,9 +32,9 @@ fi
 if [[ ! -f vars.sh ]]; then
   echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-  vendor=$((         device + ((RANDOM%768)+256) ))
-  xhci=$((   49152 - device - ((RANDOM%768)+256) ))
-  cpu=$((     8192          + ((RANDOM%24561)+2) ))
+  vendor=$((         device + ((RANDOM%768 )+256) ))
+  xhci=$((   49152 - device - ((RANDOM%768 )+256) ))
+  cpu=$((    16384          + ((RANDOM%4094)*4  ) ))
   virtio=$(( 49152 + device ))
   echo "device=\"$device\""                  >  vars.sh
   echo "vendor=\"$vendor\""                  >> vars.sh
