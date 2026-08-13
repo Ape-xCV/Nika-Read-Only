@@ -34,7 +34,7 @@ if [[ ! -f vars.sh ]]; then
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
   vendor=$((         device + ((RANDOM%768 )+256) ))
   xhci=$((   49152 - device - ((RANDOM%768 )+256) ))
-  cpu=$((    16384          + ((RANDOM%4094)*4  ) ))
+  cpu=$((    16384          + ((RANDOM%3070)*4  ) ))
   virtio=$(( 49152 + device ))
   echo "device=\"$device\""                  >  vars.sh
   echo "vendor=\"$vendor\""                  >> vars.sh
