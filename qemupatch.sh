@@ -32,9 +32,9 @@ fi
 if [[ ! -f vars.sh ]]; then
   echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-  vendor=$((         device + ((RANDOM%768 )+256) ))
-  xhci=$((   49152 - device - ((RANDOM%768 )+256) ))
-  cpu=$((    16384          + ((RANDOM%3070)*4  ) ))
+  vendor=$((         device + ((RANDOM%768)+256) ))
+  xhci=$((   49152 - device - ((RANDOM%768)+256) ))
+  cpu=$((    16384          + ((RANDOM%1024)*16) ))
   virtio=$(( 49152 + device ))
   echo "device=\"$device\""                  >  vars.sh
   echo "vendor=\"$vendor\""                  >> vars.sh
@@ -669,80 +669,104 @@ sed -i "$file_acpibuild" -Ee "/    if \(i440fx\) \{/a\        sb_scope = aml_sco
          * Adds Windows 2001/2006/2009/2012/2013/2015.\n\
          */\n\
         aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));\n\
+        method = aml_method(\"_INI\", 0, AML_NOTSERIALIZED);\n\
         Aml *osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);"
+        aml_append(method, osi);\n\
+        aml_append(sb_scope, method);"
+get_new_string 4 1
 echo "    } else if (q35) {"
 echo "        sb_scope = aml_scope(\"_SB\");"
 echo "    v v v v v v v v v"
+echo "        sb_scope = aml_scope(\"_SB\");"
+echo "        dev = aml_device(\"PCI0.$new_string\");"
+echo "        aml_append(dev, aml_name_decl(\"_HID\", aml_string(\"PNP0C02\")));"
+echo "        aml_append(dev, aml_name_decl(\"_UID\", aml_int(1)));"
+echo "        crs = aml_resource_template();"
+echo "        aml_append(crs, aml_io(AML_DECODE16, ICH9_CPU_HOTPLUG_IO_BASE, ICH9_CPU_HOTPLUG_IO_BASE, 0x01, ACPI_CPU_HOTPLUG_REG_LEN));"
+echo "        aml_append(dev, aml_name_decl(\"_CRS\", crs));"
+echo "        aml_append(sb_scope, dev);"
 echo "        /*"
 echo "         * Emulate Windows ACPI OSYS/_OSI logic in DSDT."
 echo "         * Adds Windows 2001/2006/2009/2012/2013/2015."
 echo "         */"
 sed -i "$file_acpibuild" -e  '/    } else if (q35) {/{n;d;}'
 sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        sb_scope = aml_scope(\"_SB\");\n\
+        dev = aml_device(\"$new_string\");\n\
+        aml_append(dev, aml_name_decl(\"_HID\", aml_string(\"PNP0C02\")));\n\
+        aml_append(dev, aml_name_decl(\"_UID\", aml_int(1)));\n\
+        crs = aml_resource_template();\n\
+        aml_append(crs, aml_io(AML_DECODE16, ICH9_CPU_HOTPLUG_IO_BASE, ICH9_CPU_HOTPLUG_IO_BASE, 0x01, ACPI_CPU_HOTPLUG_REG_LEN));\n\
+        aml_append(dev, aml_name_decl(\"_CRS\", crs));\n\
+        aml_append(sb_scope, dev);\n\
         /*\n\
          * Emulate Windows ACPI OSYS/_OSI logic in DSDT.\n\
          * Adds Windows 2001/2006/2009/2012/2013/2015.\n\
          */\n\
         aml_append(sb_scope, aml_name_decl(\"OSYS\", aml_int(0x03E8)));\n\
+        method = aml_method(\"_INI\", 0, AML_NOTSERIALIZED);\n\
         Aml *osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2001\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D1), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2006\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D6), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2009\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07D9), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2012\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DC), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2013\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DD), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);\n\
+        aml_append(method, osi);\n\
         osi = aml_if(\n\
             aml_equal(aml_call1(\"_OSI\", aml_string(\"Windows 2015\")), aml_int(1))\n\
         );\n\
         aml_append(osi, aml_store(aml_int(0x07DF), aml_name(\"OSYS\")));\n\
-        aml_append(sb_scope, osi);"
+        aml_append(method, osi);\n\
+        aml_append(sb_scope, method);"
+#echo "    crs_range_set_init(&crs_range_set);"
+#echo "    v v v v v v v v v v v v v v v v v v"
+#echo "    if (q35) crs_range_insert(crs_range_set.io_ranges, ICH9_CPU_HOTPLUG_IO_BASE, ICH9_CPU_HOTPLUG_IO_BASE + ACPI_CPU_HOTPLUG_REG_LEN - 1);"
+#sed -i "$file_acpibuild" -Ee "/    crs_range_set_init\(&crs_range_set\);/a\    if (q35) crs_range_insert(crs_range_set.io_ranges, ICH9_CPU_HOTPLUG_IO_BASE, ICH9_CPU_HOTPLUG_IO_BASE + ACPI_CPU_HOTPLUG_REG_LEN - 1);"
 sed -i "$file_acpibuild" -e  '/create fw_cfg node/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/Helpful to speedup Windows guests/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
