@@ -804,7 +804,8 @@ sed -i "$file_acpibuild" -Ee "s/LNKH/${lnk}H/"
 echo "\"GSI                                              -> \"${gsi}"
 sed -i "$file_acpibuild" -Ee "s/\"GSI/\"${gsi}/g"
 echo "100000000                                         -> 41666666"
-sed -i "$file_acpibuild" -Ee "s/100000000/41666666/"
+sed -i "$file_acpibuild" -e  '/    if_ctx = aml_if(aml_lor(aml_equal(period, zero),/{n;d;}'
+sed -i "$file_acpibuild" -Ee "s/    if_ctx = aml_if\(aml_lor\(aml_equal\(period, zero\),/    if_ctx = aml_if(aml_equal(period, zero));/"
 
 echo "  $file_acpi_cpu"
 get_new_string $(shuf -i 5-7 -n 1) 3
