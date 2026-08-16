@@ -416,6 +416,7 @@ file_kvmcpu="$(pwd)/qemu/target/i386/kvm/kvm-cpu.c"
 header_x86="$(pwd)/qemu/include/hw/i386/x86.h"
 header_pchotplug="$(pwd)/qemu/include/hw/acpi/pc-hotplug.h"
 header_cpu="$(pwd)/qemu/target/i386/cpu.h"
+file_topology="$(pwd)/qemu/include/hw/i386/topology.h"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -495,6 +496,7 @@ if [[ -f "$file_kvmcpu" ]]; then rm "$file_kvmcpu"; fi
 if [[ -f "$header_x86" ]]; then rm "$header_x86"; fi
 if [[ -f "$header_pchotplug" ]]; then rm "$header_pchotplug"; fi
 if [[ -f "$header_cpu" ]]; then rm "$header_cpu"; fi
+if [[ -f "$file_topology" ]]; then rm "$file_topology"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -1976,6 +1978,65 @@ sed -i "$file_kvmcpu" -Ee "s/\"kvmclock-stable-bit\", \"on\"/\"kvmclock-stable-b
 echo "  $header_x86"
 echo "((1<<5) | (1<<9) | (1<<10) | (1<<11))             -> (1<<9)"
 sed -i "$header_x86" -Ee "s/\(\(1<<5\) \| \(1<<9\) \| \(1<<10\) \| \(1<<11\)\)/(1<<9)/"
+
+echo "  $file_topology"
+echo "    uint32_t eax, ebx, ecx, edx;"
+echo "    asm volatile(\"cpuid\""
+echo "    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
+echo "    : \"a\"(0x0B), \"c\"(0)"
+echo "    : \"memory\""
+echo "    );"
+echo "    if (eax & 0x1F) {"
+echo "        unsigned cores_per_pkg = nr_cores * nr_modules * nr_dies;"
+echo "        unsigned cpus_per_pkg = cores_per_pkg * nr_threads;"
+echo "        unsigned local_idx = cpu_index % cpus_per_pkg;"
+echo "        unsigned core_flat = local_idx % cores_per_pkg;"
+echo "        topo_ids->pkg_id = cpu_index / cpus_per_pkg;"
+echo "        topo_ids->die_id = core_flat / (nr_modules * nr_cores);"
+echo "        topo_ids->module_id = (core_flat / nr_cores) % nr_modules;"
+echo "        topo_ids->core_id = core_flat % nr_cores;"
+echo "        topo_ids->smt_id = local_idx / cores_per_pkg;"
+echo "        return;"
+echo "    }"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    topo_ids->pkg_id = cpu_index / (nr_dies * nr_modules *"
+##sed -i "$file_topology" -Ee "/    topo_ids->pkg_id = cpu_index \/ \(nr_dies \* nr_modules \*/i\    uint32_t eax, ebx, ecx, edx;\n\
+##    asm volatile(\"cpuid\"\n\
+##    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
+##    : \"a\"(0x0B), \"c\"(0)\n\
+##    : \"memory\"\n\
+##    );\n\
+##    if (eax & 0x1F) {\n\
+##        unsigned cores_per_pkg = nr_cores * nr_modules * nr_dies;\n\
+##        unsigned cpus_per_pkg = cores_per_pkg * nr_threads;\n\
+##        unsigned local_idx = cpu_index % cpus_per_pkg;\n\
+##        unsigned core_flat = local_idx % cores_per_pkg;\n\
+##        topo_ids->pkg_id = cpu_index / cpus_per_pkg;\n\
+##        topo_ids->die_id = core_flat / (nr_modules * nr_cores);\n\
+##        topo_ids->module_id = (core_flat / nr_cores) % nr_modules;\n\
+##        topo_ids->core_id = core_flat % nr_cores;\n\
+##        topo_ids->smt_id = local_idx / cores_per_pkg;\n\
+##        return;\n\
+##    }"
+echo "static inline unsigned apicid_smt_width(X86CPUTopoInfo *topo_info)"
+echo "{"
+echo "    v v v v v v v v v v v v v v"
+echo "    uint32_t eax, ebx, ecx, edx;"
+echo "    asm volatile(\"cpuid\""
+echo "    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
+echo "    : \"a\"(0x0B), \"c\"(0)"
+echo "    : \"memory\""
+echo "    );"
+echo "    if (topo_info->threads_per_core == 1) return eax & 0x1F;"
+sed -i "$file_topology" -e  '/static inline unsigned apicid_smt_width(X86CPUTopoInfo \*topo_info)/{n;d;}'
+sed -i "$file_topology" -Ee "/static inline unsigned apicid_smt_width\(X86CPUTopoInfo \*topo_info\)/a{\n\
+    uint32_t eax, ebx, ecx, edx;\n\
+    asm volatile(\"cpuid\"\n\
+    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
+    : \"a\"(0x0B), \"c\"(0)\n\
+    : \"memory\"\n\
+    );\n\
+    if (topo_info->threads_per_core == 1) return eax & 0x1F;"
 
 echo "  $header_pchotplug"
 echo "ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8                   -> ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )"
