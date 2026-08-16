@@ -347,7 +347,7 @@ sudo virsh net-autostart default
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="vmx"/>
-    <feature policy="disable" name="x2apic"/>
+    <feature policy="require" name="x2apic"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="spec-ctrl"/>
     <feature policy="require" name="stibp"/>
@@ -466,14 +466,14 @@ sudo virsh net-autostart default
 - Nested Virtualization for Intel:
 ```shell
 sudo su
-echo "options kvm_intel nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
 sudo su
-echo "options kvm_amd nested=0" > /etc/modprobe.d/kvm.conf
+echo "options kvm_amd nested=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
 ```
 
@@ -833,6 +833,34 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 - Make sure that `pc-q35-11.0` is specified in your XML:
 ```shell
 <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
+```
+
+- Pin `processor` (vcpu) to `apicid` (cpuset):
+```shell
+lspci -nn
+
+paste <(grep '^processor' /proc/cpuinfo) <(grep '^apicid' /proc/cpuinfo)
+processor       : 0     apicid          : 0
+processor       : 1     apicid          : 2
+processor       : 2     apicid          : 4
+processor       : 3     apicid          : 6
+processor       : 4     apicid          : 1
+processor       : 5     apicid          : 3
+processor       : 6     apicid          : 5
+processor       : 7     apicid          : 7
+
+
+  <vcpu placement="static">8</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="2"/>
+    <vcpupin vcpu="2" cpuset="4"/>
+    <vcpupin vcpu="3" cpuset="6"/>
+    <vcpupin vcpu="4" cpuset="1"/>
+    <vcpupin vcpu="5" cpuset="3"/>
+    <vcpupin vcpu="6" cpuset="5"/>
+    <vcpupin vcpu="7" cpuset="7"/>
+  </cputune>
 ```
 
 ### 7.1. Spoof OVMF (mandatory)
