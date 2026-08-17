@@ -155,7 +155,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-16 12:17:55.845709229 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-17 18:55:22.710583430 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -184,7 +184,19 @@
  
  	return flags;
  }
-@@ -2253,6 +2254,7 @@
+@@ -1372,6 +1373,11 @@
+ 	if (vmx->nested.need_vmcs12_to_shadow_sync)
+ 		nested_sync_vmcs12_to_shadow(vcpu);
+ 
++	u64 host_debugctl;  // NIKA added
++	rdmsrl(MSR_IA32_DEBUGCTLMSR, host_debugctl);  // NIKA added
++	/* Force the VMCS VM-Exit MSR-Load list to restore host_debugctl on exit */
++	/* Set entry_only = true so VM-entry does NOT force a stale guest value into the register */
++	add_atomic_switch_msr(vmx, MSR_IA32_DEBUGCTLMSR, 0, host_debugctl, true);  // NIKA added
+ 	if (vt->guest_state_loaded)
+ 		return;
+ 
+@@ -2253,6 +2259,7 @@
  u64 vmx_get_supported_debugctl(struct kvm_vcpu *vcpu, bool host_initiated)
  {
  	u64 debugctl = 0;
@@ -192,15 +204,16 @@
  
  	if (boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT) &&
  	    (host_initiated || guest_cpu_cap_has(vcpu, X86_FEATURE_BUS_LOCK_DETECT)))
-@@ -4236,6 +4238,7 @@
+@@ -4236,6 +4243,8 @@
  		return;
  
  	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_TSC, MSR_TYPE_R);
 +	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  // NIKA added
++	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_DEBUGCTLMSR, MSR_TYPE_R | MSR_TYPE_W);  // NIKA added
  #ifdef CONFIG_X86_64
  	vmx_disable_intercept_for_msr(vcpu, MSR_FS_BASE, MSR_TYPE_RW);
  	vmx_disable_intercept_for_msr(vcpu, MSR_GS_BASE, MSR_TYPE_RW);
-@@ -4250,10 +4253,10 @@
+@@ -4250,10 +4259,10 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -213,7 +226,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4581,7 @@
+@@ -4578,7 +4587,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -222,7 +235,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4605,7 @@
+@@ -4602,6 +4611,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -230,7 +243,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5731,8 @@
+@@ -5727,8 +5737,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -241,7 +254,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6238,66 @@
+@@ -6234,6 +6244,66 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -308,7 +321,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6311,8 @@
+@@ -6247,7 +6317,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -318,7 +331,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6320,8 @@
+@@ -6255,7 +6326,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -328,7 +341,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7445,9 @@
+@@ -7379,9 +7451,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -340,7 +353,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7460,7 @@
+@@ -7394,7 +7466,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -349,7 +362,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,7 +7557,7 @@
+@@ -7491,7 +7563,7 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -358,7 +371,7 @@
  
  	atomic_switch_perf_msrs(vmx);
  	if (intel_pmu_lbr_is_enabled(vcpu))
-@@ -7504,9 +7570,57 @@
+@@ -7504,9 +7576,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -400,7 +413,7 @@
 +		}
 +		else goto reenter_guest_slow;
 +
-+		__vmcs_writel(GUEST_RIP, __vmcs_readl(GUEST_RIP) + vmcs_read32(VM_EXIT_INSTRUCTION_LEN));  // Manually advance RIP past CPUID
++		vmcs_writel(GUEST_RIP, vmcs_readl(GUEST_RIP) + vmcs_read32(VM_EXIT_INSTRUCTION_LEN));  // Manually advance RIP past CPUID
  
 +#ifndef CONFIG_X86_64
 +		loadsegment(ds, __USER_DS);
@@ -416,7 +429,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7646,7 @@
+@@ -7532,7 +7652,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  

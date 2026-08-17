@@ -771,11 +771,8 @@ sed -i "$file_acpibuild" -Ee "/    \} else if \(q35\) \{/a\        sb_scope = am
 sed -i "$file_acpibuild" -e  '/create fw_cfg node/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/Helpful to speedup Windows guests/{n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
 sed -i "$file_acpibuild" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
-get_new_string 4 1
-sed -i "$file_acpibuild" -Ee "s/\"GPE0/\"$new_string/g"
-get_new_string 3 1
-sed -i "$file_acpibuild" -Ee "s/\"SMI/\"$new_string/g"
-sed -i "$file_acpibuild" -Ee "s/resources\"/interface\"/g"
+sed -i "$file_acpibuild" -Ee "s/aml_string\(\"GPE0 resources\"\)\)\);/aml_int(1)));/"
+sed -i "$file_acpibuild" -Ee "s/aml_string\(\"SMI resources\"\)\)\);/aml_int(2)));/"
 get_new_string 3 0
 lnk=$new_string
 get_new_string 3 0
@@ -2068,7 +2065,7 @@ if [[ "$chassis_type" != "Desktop" ]]; then
   sed -i "$file_ssdt1" -Ee "/        Device \(EC0\)/i\        Device (BAT0)\n\
         {\n\
             Name (_HID, EisaId (\"PNP0C0A\"))\n\
-            Name (_UID, Zero)\n\
+            Name (_UID, One)\n\
             Method (_STA, 0, NotSerialized)\n\
             {\n\
                 Return (0x1F)\n\
