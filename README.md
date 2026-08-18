@@ -835,41 +835,18 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
 ```
 
-- Pin `processor` (vcpu) to `apicid` (cpuset), example for 4 cores 8 threads host CPU:
+- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads host CPU:
 ```shell
-paste <(grep '^processor' /proc/cpuinfo) <(grep '^apicid' /proc/cpuinfo)
-
-processor       : 0     apicid          : 0
-processor       : 1     apicid          : 2
-processor       : 2     apicid          : 4
-processor       : 3     apicid          : 6
-processor       : 4     apicid          : 1
-processor       : 5     apicid          : 3
-processor       : 6     apicid          : 5
-processor       : 7     apicid          : 7
-
-
   <vcpu placement="static">8</vcpu>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="2"/>
-    <vcpupin vcpu="2" cpuset="4"/>
-    <vcpupin vcpu="3" cpuset="6"/>
-    <vcpupin vcpu="4" cpuset="1"/>
-    <vcpupin vcpu="5" cpuset="3"/>
-    <vcpupin vcpu="6" cpuset="5"/>
-    <vcpupin vcpu="7" cpuset="7"/>
-  </cputune>
-```
-
-- Pin `vcpu` to `cpuset`, only if threads="1":
-```shell
-  <vcpu placement="static">4</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
     <vcpupin vcpu="2" cpuset="2"/>
     <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="7" cpuset="7"/>
   </cputune>
 ```
 
