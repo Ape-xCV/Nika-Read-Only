@@ -1978,63 +1978,60 @@ echo "((1<<5) | (1<<9) | (1<<10) | (1<<11))             -> (1<<9)"
 sed -i "$header_x86" -Ee "s/\(\(1<<5\) \| \(1<<9\) \| \(1<<10\) \| \(1<<11\)\)/(1<<9)/"
 
 echo "  $file_topology"
-echo "    uint32_t eax, ebx, ecx, edx;"
-echo "    asm volatile(\"cpuid\""
-echo "    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
-echo "    : \"a\"(0x0B), \"c\"(0)"
-echo "    : \"memory\""
-echo "    );"
-echo "    if (eax & 0x1F) {"
-echo "        unsigned cores_per_pkg = nr_cores * nr_modules * nr_dies;"
-echo "        unsigned cpus_per_pkg = cores_per_pkg * nr_threads;"
-echo "        unsigned local_idx = cpu_index % cpus_per_pkg;"
-echo "        unsigned core_flat = local_idx % cores_per_pkg;"
-echo "        topo_ids->pkg_id = cpu_index / cpus_per_pkg;"
-echo "        topo_ids->die_id = core_flat / (nr_modules * nr_cores);"
-echo "        topo_ids->module_id = (core_flat / nr_cores) % nr_modules;"
-echo "        topo_ids->core_id = core_flat % nr_cores;"
-echo "        topo_ids->smt_id = local_idx / cores_per_pkg;"
-echo "        return;"
+echo "    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");"
+echo "    char line[128];"
+echo "    int current_processor = -1;"
+echo "    int found_apicid = -1;"
+echo "    bool matching_block = false;"
+echo "    if (fp) {"
+echo "        while (fgets(line, sizeof(line), fp)) {"
+echo "            if (strncmp(line, \"processor\", 9) == 0) {"
+echo "                char *colon = strchr(line, ':');"
+echo "                if (colon) {"
+echo "                    current_processor = atoi(colon + 1);"
+echo "                    matching_block = (current_processor == (int)cpu_index);"
+echo "                }"
+echo "                continue;"
+echo "            }"
+echo "            if (matching_block && strncmp(line, \"apicid\", 6) == 0) {"
+echo "                char *colon = strchr(line, ':');"
+echo "                if (colon) {"
+echo "                    found_apicid = atoi(colon + 1);"
+echo "                    break;"
+echo "                }"
+echo "            }"
+echo "        }"
+echo "        fclose(fp);"
 echo "    }"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "    topo_ids->pkg_id = cpu_index / (nr_dies * nr_modules *"
-##sed -i "$file_topology" -Ee "/    topo_ids->pkg_id = cpu_index \/ \(nr_dies \* nr_modules \*/i\    uint32_t eax, ebx, ecx, edx;\n\
-##    asm volatile(\"cpuid\"\n\
-##    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
-##    : \"a\"(0x0B), \"c\"(0)\n\
-##    : \"memory\"\n\
-##    );\n\
-##    if (eax & 0x1F) {\n\
-##        unsigned cores_per_pkg = nr_cores * nr_modules * nr_dies;\n\
-##        unsigned cpus_per_pkg = cores_per_pkg * nr_threads;\n\
-##        unsigned local_idx = cpu_index % cpus_per_pkg;\n\
-##        unsigned core_flat = local_idx % cores_per_pkg;\n\
-##        topo_ids->pkg_id = cpu_index / cpus_per_pkg;\n\
-##        topo_ids->die_id = core_flat / (nr_modules * nr_cores);\n\
-##        topo_ids->module_id = (core_flat / nr_cores) % nr_modules;\n\
-##        topo_ids->core_id = core_flat % nr_cores;\n\
-##        topo_ids->smt_id = local_idx / cores_per_pkg;\n\
-##        return;\n\
-##    }"
-echo "static inline unsigned apicid_smt_width(X86CPUTopoInfo *topo_info)"
-echo "{"
-echo "    v v v v v v v v v v v v v v"
-echo "    uint32_t eax, ebx, ecx, edx;"
-echo "    asm volatile(\"cpuid\""
-echo "    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
-echo "    : \"a\"(0x0B), \"c\"(0)"
-echo "    : \"memory\""
-echo "    );"
-echo "    if (topo_info->threads_per_core == 1) return eax & 0x1F;"
-sed -i "$file_topology" -e  '/static inline unsigned apicid_smt_width(X86CPUTopoInfo \*topo_info)/{n;d;}'
-sed -i "$file_topology" -Ee "/static inline unsigned apicid_smt_width\(X86CPUTopoInfo \*topo_info\)/a{\n\
-    uint32_t eax, ebx, ecx, edx;\n\
-    asm volatile(\"cpuid\"\n\
-    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
-    : \"a\"(0x0B), \"c\"(0)\n\
-    : \"memory\"\n\
-    );\n\
-    if (topo_info->threads_per_core == 1) return eax & 0x1F;"
+echo "    if (found_apicid >= 0) return (apic_id_t)found_apicid;"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    X86CPUTopoIDs topo_ids;"
+sed -i "$file_topology" -Ee "/    X86CPUTopoIDs topo_ids;/i\    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
+    char line[128];\n\
+    int current_processor = -1;\n\
+    int found_apicid = -1;\n\
+    bool matching_block = false;\n\
+    if (fp) {\n\
+        while (fgets(line, sizeof(line), fp)) {\n\
+            if (strncmp(line, \"processor\", 9) == 0) {\n\
+                char *colon = strchr(line, ':');\n\
+                if (colon) {\n\
+                    current_processor = atoi(colon + 1);\n\
+                    matching_block = (current_processor == (int)cpu_index);\n\
+                }\n\
+                continue;\n\
+            }\n\
+            if (matching_block && strncmp(line, \"apicid\", 6) == 0) {\n\
+                char *colon = strchr(line, ':');\n\
+                if (colon) {\n\
+                    found_apicid = atoi(colon + 1);\n\
+                    break;\n\
+                }\n\
+            }\n\
+        }\n\
+        fclose(fp);\n\
+    }\n\
+    if (found_apicid >= 0) return (apic_id_t)found_apicid;"
 
 echo "  $header_pchotplug"
 echo "ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8                   -> ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )"
