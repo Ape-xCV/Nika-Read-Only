@@ -155,8 +155,70 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-17 18:55:22.710583430 +0100
-@@ -927,7 +927,8 @@
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-18 05:14:15.748095827 +0100
+@@ -76,6 +76,61 @@
+ 
+ #include "mmu/spte.h"
+ 
++struct host_ds_area {  // NIKA begin
++	u64 bts_buffer_base;
++	u64 bts_index;
++	u64 bts_absolute_maximum;
++	u64 bts_interrupt_threshold;
++	u64 pebs_buffer_base;
++	u64 pebs_index;
++	u64 pebs_absolute_maximum;
++	u64 pebs_interrupt_threshold;
++	u64 pebs_counter_reset[4];
++} __attribute__((packed));  // NIKA end
++
++struct host_ds_env {  // NIKA begin
++	struct host_ds_area *ds_area;
++	void *bts_buffer;
++};  // NIKA end
++
++/* Allocates one instance of struct host_ds_env for every logical CPU core */
++static DEFINE_PER_CPU(struct host_ds_env, ds_env_on_cpu);  // NIKA added
++
++int create_dummy_ds_area(struct host_ds_env *ds_env)  // NIKA begin
++{
++	// 1. Allocate 1 page for the BTS trace records
++	ds_env->bts_buffer = (void *)__get_free_page(GFP_KERNEL | __GFP_ZERO);
++	if (!ds_env->bts_buffer)
++		return -ENOMEM;
++	// 2. Allocate the DS Save Area configuration structure
++	ds_env->ds_area = kzalloc(sizeof(struct host_ds_area), GFP_KERNEL);
++	if (!ds_env->ds_area) {
++		free_page((unsigned long)ds_env->bts_buffer);
++		return -ENOMEM;
++	}
++	// 3. Configure the bounds to create a silent, wrapping circular buffer
++	ds_env->ds_area->bts_buffer_base = (u64)ds_env->bts_buffer;
++	ds_env->ds_area->bts_index = (u64)ds_env->bts_buffer;
++	ds_env->ds_area->bts_absolute_maximum = (u64)ds_env->bts_buffer + PAGE_SIZE;
++	ds_env->ds_area->bts_interrupt_threshold = (u64)ds_env->bts_buffer + PAGE_SIZE + 1;
++	// 4. Write the linear address to the hardware MSR
++	wrmsrq(0x600, (u64)ds_env->ds_area);  // MSR_IA32_DS_AREA
++	return 0;
++}  // NIKA end
++
++void destroy_dummy_ds_area(struct host_ds_env *ds_env)  // NIKA begin
++{
++	wrmsrq(0x600, 0);  // MSR_IA32_DS_AREA
++	if (ds_env->ds_area) {
++		kfree(ds_env->ds_area);
++		ds_env->ds_area = NULL;
++	}
++	if (ds_env->bts_buffer) {
++		free_page((unsigned long)ds_env->bts_buffer);
++		ds_env->bts_buffer = NULL;
++	}
++}  // NIKA end
++
+ MODULE_AUTHOR("Qumranet");
+ MODULE_DESCRIPTION("KVM support for VMX (Intel VT-x) extensions");
+ MODULE_LICENSE("GPL");
+@@ -927,7 +982,8 @@
  	u32 eb;
  
  	eb = (1u << PF_VECTOR) | (1u << UD_VECTOR) | (1u << MC_VECTOR) |
@@ -166,7 +228,7 @@
  	/*
  	 * #VE isn't used for VMX.  To test against unexpected changes
  	 * related to #VE for VMX, intercept unexpected #VE and warn on it.
-@@ -1010,12 +1011,12 @@
+@@ -1010,12 +1066,12 @@
  	 * to change it directly without causing a vmexit.  In that case read
  	 * it after vmexit and store it in vmx->spec_ctrl.
  	 */
@@ -184,19 +246,19 @@
  
  	return flags;
  }
-@@ -1372,6 +1373,11 @@
+@@ -1372,6 +1428,11 @@
  	if (vmx->nested.need_vmcs12_to_shadow_sync)
  		nested_sync_vmcs12_to_shadow(vcpu);
  
-+	u64 host_debugctl;  // NIKA added
-+	rdmsrl(MSR_IA32_DEBUGCTLMSR, host_debugctl);  // NIKA added
++//	u64 host_debugctl;  // NIKA added
++//	rdmsrl(MSR_IA32_DEBUGCTLMSR, host_debugctl);  // NIKA added
 +	/* Force the VMCS VM-Exit MSR-Load list to restore host_debugctl on exit */
 +	/* Set entry_only = true so VM-entry does NOT force a stale guest value into the register */
-+	add_atomic_switch_msr(vmx, MSR_IA32_DEBUGCTLMSR, 0, host_debugctl, true);  // NIKA added
++//	add_atomic_switch_msr(vmx, MSR_IA32_DEBUGCTLMSR, 0, host_debugctl, true);  // NIKA added
  	if (vt->guest_state_loaded)
  		return;
  
-@@ -2253,6 +2259,7 @@
+@@ -2253,6 +2314,7 @@
  u64 vmx_get_supported_debugctl(struct kvm_vcpu *vcpu, bool host_initiated)
  {
  	u64 debugctl = 0;
@@ -204,16 +266,28 @@
  
  	if (boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT) &&
  	    (host_initiated || guest_cpu_cap_has(vcpu, X86_FEATURE_BUS_LOCK_DETECT)))
-@@ -4236,6 +4243,8 @@
- 		return;
+@@ -2965,9 +3027,11 @@
+ 		return -EFAULT;
  
- 	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_TSC, MSR_TYPE_R);
-+	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  // NIKA added
-+	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_DEBUGCTLMSR, MSR_TYPE_R | MSR_TYPE_W);  // NIKA added
- #ifdef CONFIG_X86_64
- 	vmx_disable_intercept_for_msr(vcpu, MSR_FS_BASE, MSR_TYPE_RW);
- 	vmx_disable_intercept_for_msr(vcpu, MSR_GS_BASE, MSR_TYPE_RW);
-@@ -4250,10 +4259,10 @@
+ 	intel_pt_handle_vmx(1);
++	create_dummy_ds_area(&per_cpu(ds_env_on_cpu, cpu));  // NIKA added
+ 
+ 	r = kvm_cpu_vmxon(phys_addr);
+ 	if (r) {
++		destroy_dummy_ds_area(&per_cpu(ds_env_on_cpu, cpu));  // NIKA added
+ 		intel_pt_handle_vmx(0);
+ 		return r;
+ 	}
+@@ -2994,6 +3058,8 @@
+ 
+ 	hv_reset_evmcs();
+ 
++	int cpu = raw_smp_processor_id();  // NIKA added
++	destroy_dummy_ds_area(&per_cpu(ds_env_on_cpu, cpu));  // NIKA added
+ 	intel_pt_handle_vmx(0);
+ }
+ 
+@@ -4250,10 +4316,12 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -223,10 +297,12 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
 -	}
 +//	}  // NIKA removed
++	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_DEBUGCTLMSR, MSR_TYPE_RW);  // NIKA added
++	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  // NIKA added
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4587,7 @@
+@@ -4578,7 +4646,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -235,7 +311,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4611,7 @@
+@@ -4602,6 +4670,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -243,7 +319,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5737,8 @@
+@@ -5727,8 +5796,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -254,7 +330,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6244,66 @@
+@@ -6234,6 +6303,66 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -321,7 +397,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6317,8 @@
+@@ -6247,7 +6376,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -331,7 +407,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6326,8 @@
+@@ -6255,7 +6385,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -341,7 +417,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7451,9 @@
+@@ -7379,9 +7510,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -353,7 +429,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7466,7 @@
+@@ -7394,7 +7525,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -362,7 +438,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,7 +7563,7 @@
+@@ -7491,7 +7622,7 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -371,7 +447,7 @@
  
  	atomic_switch_perf_msrs(vmx);
  	if (intel_pmu_lbr_is_enabled(vcpu))
-@@ -7504,9 +7576,57 @@
+@@ -7504,9 +7635,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -429,7 +505,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7652,7 @@
+@@ -7532,7 +7711,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
