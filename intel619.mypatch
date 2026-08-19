@@ -155,7 +155,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-18 05:14:15.748095827 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-19 17:34:22.864603786 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -287,7 +287,7 @@
  	intel_pt_handle_vmx(0);
  }
  
-@@ -4250,10 +4316,12 @@
+@@ -4250,10 +4316,26 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -297,12 +297,26 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
 -	}
 +//	}  // NIKA removed
-+	vmx_disable_intercept_for_msr(vcpu, MSR_IA32_DEBUGCTLMSR, MSR_TYPE_RW);  // NIKA added
-+	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  // NIKA added
++	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++	vmx_disable_intercept_for_msr(vcpu, 0xC80, MSR_TYPE_R);  /* MSR_IA32_DEBUG_INTERFACE */
++	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  /* MSR_IA32_THREAD_STALL */
++	vmx_disable_intercept_for_msr(vcpu,  0x34, MSR_TYPE_R);  /* MSR_SMI_COUNT */
++	vmx_disable_intercept_for_msr(vcpu,  0x3A, MSR_TYPE_R);  /* MSR_IA32_FEATURE_CONTROL */
++//	vmx_enable_intercept_for_msr(vcpu,   0x3B, MSR_TYPE_R);  /* MSR_IA32_TSC_ADJUST */
++	vmx_disable_intercept_for_msr(vcpu, 0x19A, MSR_TYPE_R);  /* MSR_IA32_CLOCK_MODULATION */
++//	vmx_enable_intercept_for_msr(vcpu,  0x1A0, MSR_TYPE_R);  /* MSR_IA32_MISC_ENABLE */
++	vmx_disable_intercept_for_msr(vcpu, 0x639, MSR_TYPE_R);  /* MSR_PP0_ENERGY_STATUS */
++	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
++	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
++	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
++	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
++	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
++//	for (u32 msr = 0x480; msr <= 0x491; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4646,7 @@
+@@ -4578,7 +4660,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -311,7 +325,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4670,7 @@
+@@ -4602,6 +4684,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -319,7 +333,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5796,8 @@
+@@ -5727,8 +5810,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -330,7 +344,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6303,66 @@
+@@ -6234,6 +6317,66 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -397,7 +411,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6376,8 @@
+@@ -6247,7 +6390,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -407,7 +421,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6385,8 @@
+@@ -6255,7 +6399,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -417,7 +431,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7510,9 @@
+@@ -7379,9 +7524,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -429,7 +443,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7525,7 @@
+@@ -7394,7 +7539,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -438,7 +452,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,7 +7622,7 @@
+@@ -7491,7 +7636,7 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -447,7 +461,7 @@
  
  	atomic_switch_perf_msrs(vmx);
  	if (intel_pmu_lbr_is_enabled(vcpu))
-@@ -7504,9 +7635,57 @@
+@@ -7504,9 +7649,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -505,7 +519,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7711,7 @@
+@@ -7532,7 +7725,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
@@ -537,7 +551,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-08-16 20:48:21.421919724 +0100
++++ b/arch/x86/kvm/x86.c	2026-08-19 16:37:08.843905751 +0100
 @@ -543,6 +543,9 @@
  		return 0;
  
@@ -558,6 +572,17 @@
  	if (xcr0 & ~valid_bits)
  		return 1;
  
+@@ -3568,8 +3572,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))  // NIKA removed
++//			return 1;  // NIKA removed
+ 		/* An attempt to write a 1 to a reserved bit raises #GP */
+ 		if (data & ~(MCI_CTL2_CMCI_EN | MCI_CTL2_CMCI_THRESHOLD_MASK))
+ 			return 1;
 @@ -3905,6 +3909,14 @@
  		return kvm_xen_write_hypercall_page(vcpu, data);
  
@@ -581,6 +606,17 @@
  		if (data & ~vcpu->arch.guest_supported_xss)
  			return 1;
  		if (vcpu->arch.ia32_xss == data)
+@@ -4318,8 +4331,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && !host)
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && !host)  // NIKA removed
++//			return 1;  // NIKA removed
+ 		offset = array_index_nospec(msr - MSR_IA32_MC0_CTL2,
+ 					    last_msr + 1 - MSR_IA32_MC0_CTL2);
+ 		data = vcpu->arch.mci_ctl2_banks[offset];
 @@ -4343,6 +4356,20 @@
  int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
