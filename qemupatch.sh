@@ -416,7 +416,9 @@ file_kvmcpu="$(pwd)/qemu/target/i386/kvm/kvm-cpu.c"
 header_x86="$(pwd)/qemu/include/hw/i386/x86.h"
 header_pchotplug="$(pwd)/qemu/include/hw/acpi/pc-hotplug.h"
 header_cpu="$(pwd)/qemu/target/i386/cpu.h"
-file_topology="$(pwd)/qemu/include/hw/i386/topology.h"
+header_topology="$(pwd)/qemu/include/hw/i386/topology.h"
+file_acpicommon="$(pwd)/qemu/hw/i386/acpi-common.c"
+file_x86common="$(pwd)/qemu/hw/i386/x86-common.c"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -496,7 +498,9 @@ if [[ -f "$file_kvmcpu" ]]; then rm "$file_kvmcpu"; fi
 if [[ -f "$header_x86" ]]; then rm "$header_x86"; fi
 if [[ -f "$header_pchotplug" ]]; then rm "$header_pchotplug"; fi
 if [[ -f "$header_cpu" ]]; then rm "$header_cpu"; fi
-if [[ -f "$file_topology" ]]; then rm "$file_topology"; fi
+if [[ -f "$header_topology" ]]; then rm "$header_topology"; fi
+if [[ -f "$file_acpicommon" ]]; then rm "$file_acpicommon"; fi
+if [[ -f "$file_x86common" ]]; then rm "$file_x86common"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -1130,7 +1134,7 @@ echo "    if (instance > 0)"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s%2x\", type4.sock_pfx, instance + 1);"
 echo "    else"
 echo "        snprintf(sock_str, sizeof(sock_str), \"%s\", type4.sock_pfx);"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    SMBIOS_TABLE_SET_STR(4, socket_designation_str, sock_str);"
 sed -i "$file_smbios" -e  '/type4.sock_pfx, instance);/{d;}'
 sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(4, socket_designation_str, sock_str\);/i\    if (instance > 0)\n\
@@ -1176,7 +1180,7 @@ echo "    else if (level == 0b001) SMBIOS_TABLE_SET_STR(7, socket_designation, t
 echo "    else if (level == 0b010) SMBIOS_TABLE_SET_STR(7, socket_designation, type7.socket_designation_l3);"
 echo "    SMBIOS_BUILD_TABLE_POST;"
 echo "}"
-echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "static void smbios_build_type_8_table(void)"
 sed -i "$file_smbios" -Ee "/static void smbios_build_type_8_table\(void\)/istatic void smbios_build_type_7_table(unsigned offset, uint8_t level, uint8_t system_cache_type, uint16_t installed_size, uint32_t installed_size_2)\n\
 {\n\
@@ -1329,7 +1333,7 @@ echo "    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 I
 echo "    smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB"
 echo "    smbios_build_type_7_table(2, 0b001, 0x05, 0x3000, 0x00003000); // L2 Unified      12 MiB"
 echo "    smbios_build_type_7_table(3, 0b010, 0x05, 0x8400, 0x80000400); // L3 Unified      64 MiB"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    smbios_build_type_8_table();"
 sed -i "$file_smbios" -Ee "/    smbios_build_type_8_table\(\);/i\    smbios_build_type_7_table(0, 0b000, 0x03, 0x0080, 0x00000080); // L1 Instruction 128 KiB\n\
     smbios_build_type_7_table(1, 0b000, 0x04, 0x0080, 0x00000080); // L1 Data        128 KiB\n\
@@ -1977,62 +1981,6 @@ echo "  $header_x86"
 echo "((1<<5) | (1<<9) | (1<<10) | (1<<11))             -> (1<<9)"
 sed -i "$header_x86" -Ee "s/\(\(1<<5\) \| \(1<<9\) \| \(1<<10\) \| \(1<<11\)\)/(1<<9)/"
 
-echo "  $file_topology"
-echo "    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");"
-echo "    char line[128];"
-echo "    int current_processor = -1;"
-echo "    int found_apicid = -1;"
-echo "    bool matching_block = false;"
-echo "    if (fp) {"
-echo "        while (fgets(line, sizeof(line), fp)) {"
-echo "            if (strncmp(line, \"processor\", 9) == 0) {"
-echo "                char *colon = strchr(line, ':');"
-echo "                if (colon) {"
-echo "                    current_processor = atoi(colon + 1);"
-echo "                    matching_block = (current_processor == (int)cpu_index);"
-echo "                }"
-echo "                continue;"
-echo "            }"
-echo "            if (matching_block && strncmp(line, \"apicid\", 6) == 0) {"
-echo "                char *colon = strchr(line, ':');"
-echo "                if (colon) {"
-echo "                    found_apicid = atoi(colon + 1);"
-echo "                    break;"
-echo "                }"
-echo "            }"
-echo "        }"
-echo "        fclose(fp);"
-echo "    }"
-echo "    if (found_apicid >= 0) return (apic_id_t)found_apicid;"
-echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
-echo "    X86CPUTopoIDs topo_ids;"
-sed -i "$file_topology" -Ee "/    X86CPUTopoIDs topo_ids;/i\    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
-    char line[128];\n\
-    int current_processor = -1;\n\
-    int found_apicid = -1;\n\
-    bool matching_block = false;\n\
-    if (fp) {\n\
-        while (fgets(line, sizeof(line), fp)) {\n\
-            if (strncmp(line, \"processor\", 9) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) {\n\
-                    current_processor = atoi(colon + 1);\n\
-                    matching_block = (current_processor == (int)cpu_index);\n\
-                }\n\
-                continue;\n\
-            }\n\
-            if (matching_block && strncmp(line, \"apicid\", 6) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) {\n\
-                    found_apicid = atoi(colon + 1);\n\
-                    break;\n\
-                }\n\
-            }\n\
-        }\n\
-        fclose(fp);\n\
-    }\n\
-    if (found_apicid >= 0) return (apic_id_t)found_apicid;"
-
 echo "  $header_pchotplug"
 echo "ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8                   -> ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )"
 sed -i "$header_pchotplug" -Ee "s/ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8/ICH9_CPU_HOTPLUG_IO_BASE 0x$( printf '%X' $cpu )/"
@@ -2040,6 +1988,88 @@ sed -i "$header_pchotplug" -Ee "s/ICH9_CPU_HOTPLUG_IO_BASE 0x0CD8/ICH9_CPU_HOTPL
 echo "  $header_cpu"
 echo "MCE_BANKS_DEF   10                                -> MCE_BANKS_DEF   32"
 sed -i "$header_cpu" -Ee "s/MCE_BANKS_DEF   10/MCE_BANKS_DEF   32/"
+
+echo "  $header_topology"
+echo "    uint32_t eax, ebx, ecx, edx;"
+echo "    asm volatile(\"cpuid\""
+echo "    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
+echo "    : \"a\"(0x0B), \"c\"(0x00)"
+echo "    : \"memory\""
+echo "    );"
+echo "    return eax & 0x1F;"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
+sed -i "$header_topology" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
+    asm volatile(\"cpuid\"\n\
+    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
+    : \"a\"(0x0B), \"c\"(0x00)\n\
+    : \"memory\"\n\
+    );\n\
+    return eax & 0x1F;"
+
+echo "  $file_acpicommon"
+echo "#define MAX_HOST_VCPUS 256"
+echo "static apic_id_t apicid_map[MAX_HOST_VCPUS];"
+echo "static bool apicid_map_init = false;"
+echo "static inline void init_apicid_map(void)"
+echo "{"
+echo "    if (apicid_map_init) return;"
+echo "    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;"
+echo "    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");"
+echo "    if (fp) {"
+echo "        char line[128];"
+echo "        int current_proc = -1;"
+echo "        while (fgets(line, sizeof(line), fp)) {"
+echo "            if (strncmp(line, \"processor\", 9) == 0) {"
+echo "                char *colon = strchr(line, ':');"
+echo "                if (colon) current_proc = atoi(colon + 1);"
+echo "            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {"
+echo "                char *colon = strchr(line, ':');"
+echo "                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);"
+echo "            }"
+echo "        }"
+echo "        fclose(fp);"
+echo "    }"
+echo "    apicid_map_init = true;"
+echo "}"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
+sed -i "$file_acpicommon" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
+static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
+static bool apicid_map_init = false;\n\
+static inline void init_apicid_map(void)\n\
+{\n\
+    if (apicid_map_init) return;\n\
+    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;\n\
+    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
+    if (fp) {\n\
+        char line[128];\n\
+        int current_proc = -1;\n\
+        while (fgets(line, sizeof(line), fp)) {\n\
+            if (strncmp(line, \"processor\", 9) == 0) {\n\
+                char *colon = strchr(line, ':');\n\
+                if (colon) current_proc = atoi(colon + 1);\n\
+            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {\n\
+                char *colon = strchr(line, ':');\n\
+                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);\n\
+            }\n\
+        }\n\
+        fclose(fp);\n\
+    }\n\
+    apicid_map_init = true;\n\
+}\n"
+echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    init_apicid_map();"
+echo "    apic_id = apicid_map[uid];"
+sed -i "$file_acpicommon" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
+    apic_id = apicid_map[uid];"
+
+echo "  $file_x86common"
+echo "    x86ms->apic_id_limit = x86_cpu_apic_id_from_index(x86ms,"
+echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "    x86ms->apic_id_limit *= 4;"
+#sed -i "$file_x86common" -Ee "/                                                      ms->smp.max_cpus - 1\) \+ 1;/a\    x86ms->apic_id_limit *= 4;"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
