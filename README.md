@@ -835,7 +835,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
 ```
 
-- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads host CPU:
+- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
 ```shell
   <vcpu placement="static">8</vcpu>
   <cputune>
@@ -848,6 +848,26 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
     <vcpupin vcpu="6" cpuset="6"/>
     <vcpupin vcpu="7" cpuset="7"/>
   </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
+    ...
+  </cpu>
+```
+
+- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
+```shell
+  <vcpu placement="static">24</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    ...
+    <vcpupin vcpu="22" cpuset="22"/>
+    <vcpupin vcpu="23" cpuset="23"/>
+  </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
+    ...
+  </cpu>
 ```
 
 ### 7.1. Spoof OVMF (mandatory)
