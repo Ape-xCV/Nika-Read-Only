@@ -1,17 +1,11 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-09 16:26:14.121060780 +0100
-@@ -237,6 +237,153 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-22 23:43:02.616793490 +0100
+@@ -237,6 +237,157 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
 +#if 1  // NIKA begin
-+	mov $0x4402, %esi                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
-+	vmread %_ASM_SI, %_ASM_DX
-+	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
-+	jnz .Lfastpath_slowpath
-+	cmpw $10, %dx                       /* EXIT_REASON_CPUID (10) == RDX 'w' lower 16 bits */
-+	jne .Lfastpath_slowpath
++	mov %_ASM_AX, %_ASM_DI              /* RDI = vcpu->arch.regs */
 +
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
 +	mov $0x4408, %esi                   /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
@@ -33,13 +27,23 @@
 +	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
 +	jnz .Lfastpath_slowpath
 +
-+	mov %_ASM_AX, %_ASM_DI                                  /* RDI = vcpu->arch.regs */
++	mov $0x4402, %esi                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
++	vmread %_ASM_SI, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
++	jnz .Lfastpath_slowpath
++	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) == RDX 'w' lower 16 bits */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) == RDX 'w' lower 16 bits */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
++	jne .Lfastpath_slowpath
++
++.Lcheck_leaf:
 +//	mov %_ASM_DI, %_ASM_SI                                  /* RSI = vcpu->arch.regs */
 +//	sub $OFFSET_KVM_VCPU_ARCH_REGS, %_ASM_SI                /* RSI = struct kvm_vcpu * (or struct vcpu_vmx *) */
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct kvm_vcpu * (or struct vcpu_vmx *) */
 +
-+
-+.Lcheck_leaf:
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_CX    /* RCX = in_eax */
 +	cmp $0x24, %ecx
 +	ja .Lcheck_ext_leaf
