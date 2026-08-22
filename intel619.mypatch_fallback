@@ -155,7 +155,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-22 02:27:38.523637055 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-22 03:29:47.474694269 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -273,7 +273,19 @@
  
  	hv_reset_evmcs();
  
-@@ -4250,10 +4310,33 @@
+@@ -3772,6 +3832,11 @@
+ 		var->type |= 0x1; /* Accessed */
+ 
+ 	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(var));
++
++	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xffff0000 && seg == VCPU_SREG_CS)) {  // VIRTFUNC begin
++		vcpu->last_exit_start = rdtsc();
++		vcpu->intercept_cpuid = true;
++	}  // VIRTFUNC end
+ }
+ 
+ void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
+@@ -4250,10 +4315,33 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -309,7 +321,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4661,7 @@
+@@ -4578,7 +4666,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -318,7 +330,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4685,7 @@
+@@ -4602,6 +4690,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -326,7 +338,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5811,8 @@
+@@ -5727,8 +5816,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -337,12 +349,16 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6318,66 @@
+@@ -6234,6 +6323,51 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
 +static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
 +{
++//	if (vcpu->intercept_cpuid && rdtsc() - vcpu->last_exit_start > 290304000000)  // Intel® Core™ processors >120 seconds
++	if (vcpu->intercept_cpuid && rdtsc() - vcpu->last_exit_start > 145152000000)  // Intel® Core™ processors >60 seconds
++		vcpu->intercept_cpuid = false;
++
 +	u32 eax, ebx, ecx, edx, in_eax, in_ecx;
 +//	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 +//		return 1;
@@ -350,26 +366,7 @@
 +	ecx = kvm_rcx_read(vcpu);
 +	in_eax = eax;
 +	in_ecx = ecx;
-+//	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
-+//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
-+//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
-+//		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
-+//		in_eax == 0x0B       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
-+//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
-+//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
-+//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
-+//		in_eax == 0x14       ||  // [Intel] Intel Processor Trace (Intel PT capabilities and buffer features)
-+//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
-+//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
-+//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
-+//		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
-+//	else {
-+		asm volatile("cpuid"
-+		: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-+		: "a"(in_eax), "c"(in_ecx)
-+		: "memory"
-+		);
-+//	}
++	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 +//	if (in_eax == 0x01) ecx |= 0x80000000;  // Hyper-V fix
 +//	if (in_eax == 0x07 && in_ecx == 0x00) edx &= 0x73FFFFFF;  // GRUB_CMDLINE_LINUX="mitigations=off" fix
 +	kvm_rax_write(vcpu, eax);
@@ -404,7 +401,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6391,8 @@
+@@ -6247,7 +6381,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -414,7 +411,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6400,8 @@
+@@ -6255,7 +6390,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -424,7 +421,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7525,9 @@
+@@ -7379,9 +7515,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -436,7 +433,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7540,7 @@
+@@ -7394,7 +7530,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -445,7 +442,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,11 +7637,11 @@
+@@ -7491,11 +7627,11 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -459,7 +456,7 @@
  
  	if (enable_preemption_timer)
  		vmx_update_hv_timer(vcpu, force_immediate_exit);
-@@ -7504,9 +7650,57 @@
+@@ -7504,9 +7640,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -517,7 +514,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7726,7 @@
+@@ -7532,7 +7716,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
@@ -673,7 +670,7 @@
  
  	vcpu_load(vcpu);
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-08-04 20:07:37.648435049 +0100
++++ b/include/linux/kvm_host.h	2026-08-22 02:56:59.894375498 +0100
 @@ -324,6 +324,14 @@
  	unsigned int len;
  };
@@ -689,17 +686,19 @@
  struct kvm_vcpu {
  	struct kvm *kvm;
  #ifdef CONFIG_PREEMPT_NOTIFIERS
-@@ -400,6 +408,9 @@
+@@ -400,6 +408,11 @@
  	 */
  	struct kvm_memory_slot *last_used_slot;
  	u64 last_used_slot_gen;
 +
 +	struct cpuid_cache_regs cpuid_cache[0x25][0x40];  // NIKA added
 +	struct cpuid_cache_regs ext_cpuid_cache[0x08][0x01];  // NIKA added
++	u64 last_exit_start;  // NIKA added
++	bool intercept_cpuid;  // NIKA added
  };
  
  /*
-@@ -883,11 +894,15 @@
+@@ -883,11 +896,15 @@
  	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
  #define kvm_info(fmt, ...) \
  	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
