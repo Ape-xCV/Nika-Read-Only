@@ -1,5 +1,5 @@
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-08-11 05:09:46.443305079 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-08-22 17:50:19.918832566 +0100
 @@ -217,8 +217,8 @@
  			svm_leave_nested(vcpu);
  			svm_set_gif(svm, true);
@@ -11,7 +11,7 @@
  
  			/*
  			 * Free the nested guest state, unless we are in SMM.
-@@ -779,10 +779,10 @@
+@@ -779,10 +779,24 @@
  	svm_set_intercept_for_msr(vcpu, MSR_IA32_SYSENTER_ESP, MSR_TYPE_RW,
  				  guest_cpuid_is_intel_compatible(vcpu));
  
@@ -20,11 +20,25 @@
  		svm_disable_intercept_for_msr(vcpu, MSR_IA32_APERF, MSR_TYPE_R);
  		svm_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
 -	}
++		svm_disable_intercept_for_msr(vcpu, 0xC00100E1, MSR_TYPE_R);  /* MSR_AMD64_APERF */
++		svm_disable_intercept_for_msr(vcpu, 0xC00100E0, MSR_TYPE_R);  /* MSR_AMD64_MPERF */
 +//	}  // NIKA removed
++	svm_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
++	svm_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++//	svm_enable_intercept_for_msr(vcpu,   0x1B, MSR_TYPE_R);  /* MSR_IA32_APIC_BASE */
++//	svm_enable_intercept_for_msr(vcpu,   0x3B, MSR_TYPE_R);  /* MSR_IA32_TSC_ADJUST */
++	// MSR_F15H_PERF_CTL0...5 CTR0...5
++	for (u32 msr = 0xC0010200; msr <= 0xC001020B; msr++) svm_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	// MSR_F19H_PERF_CTL0...5 CTR0...5
++	for (u32 msr = 0xC0010290; msr <= 0xC001029B; msr++) svm_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	svm_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
++	// MSR_AMD64_SMCA_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
++//	for (u32 msr = 0xC0002000; msr <= 0xC00021FF; msr++) svm_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	svm_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
  
  	if (kvm_cpu_cap_has(X86_FEATURE_SHSTK)) {
  		bool shstk_enabled = guest_cpu_cap_has(vcpu, X86_FEATURE_SHSTK);
-@@ -1037,7 +1037,8 @@
+@@ -1037,7 +1051,8 @@
  	set_dr_intercepts(svm);
  
  	set_exception_intercept(svm, PF_VECTOR);
@@ -34,7 +48,7 @@
  	set_exception_intercept(svm, MC_VECTOR);
  	set_exception_intercept(svm, AC_VECTOR);
  	set_exception_intercept(svm, DB_VECTOR);
-@@ -1047,7 +1048,7 @@
+@@ -1047,7 +1062,7 @@
  	 * We intercept those #GP and allow access to them anyway
  	 * as VMware does.
  	 */
@@ -43,56 +57,20 @@
  		set_exception_intercept(svm, GP_VECTOR);
  
  	svm_set_intercept(svm, INTERCEPT_INTR);
-@@ -1057,7 +1058,8 @@
+@@ -1057,8 +1072,10 @@
  		svm_set_intercept(svm, INTERCEPT_SMI);
  
  	svm_set_intercept(svm, INTERCEPT_SELECTIVE_CR0);
 -	svm_set_intercept(svm, INTERCEPT_RDPMC);
+-	svm_set_intercept(svm, INTERCEPT_CPUID);
 +//	svm_set_intercept(svm, INTERCEPT_RDPMC);  // NIKA removed
 +	svm_clr_intercept(svm, INTERCEPT_RDPMC);  // NIKA added
- 	svm_set_intercept(svm, INTERCEPT_CPUID);
++//	svm_set_intercept(svm, INTERCEPT_CPUID);  // NIKA removed
++	svm_clr_intercept(svm, INTERCEPT_CPUID);  // NIKA added
  	svm_set_intercept(svm, INTERCEPT_INVD);
  	svm_set_intercept(svm, INTERCEPT_INVLPG);
-@@ -1077,6 +1079,8 @@
- 	svm_set_intercept(svm, INTERCEPT_XSETBV);
- 	svm_set_intercept(svm, INTERCEPT_RDPRU);
- 	svm_set_intercept(svm, INTERCEPT_RSM);
-+	svm_clr_intercept(svm, INTERCEPT_RDTSC);  // NIKA added
-+	svm_clr_intercept(svm, INTERCEPT_RDTSCP);  // NIKA added
- 
- 	if (!kvm_mwait_in_guest(vcpu->kvm)) {
- 		svm_set_intercept(svm, INTERCEPT_MONITOR);
-@@ -1747,6 +1751,19 @@
- 		vcpu->arch.cpuid_dynamic_bits_dirty = true;
- }
- 
-+static void svm_set_cpuid_intercept_for_each_vcpu(struct kvm_vcpu *vcpu, bool b)  // NIKA begin
-+{
-+	unsigned long i;
-+	struct kvm_vcpu *tmp;
-+	u64 tsc = rdtsc();
-+	kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
-+		tmp->last_exit_start = tsc;
-+		tmp->intercept_cpuid = b;
-+		tmp->infer_intercept = true;
-+		kvm_vcpu_kick(tmp);
-+	}
-+}  // NIKA end
-+
- static void svm_set_segment(struct kvm_vcpu *vcpu,
- 			    struct kvm_segment *var, int seg)
- {
-@@ -1775,6 +1792,9 @@
- 		/* This is symmetric with svm_get_segment() */
- 		svm->vmcb->save.cpl = (var->dpl & 3);
- 
-+	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xffff0000 && seg == VCPU_SREG_CS))  // VIRTFUNC added
-+		svm_set_cpuid_intercept_for_each_vcpu(vcpu, true);  // VIRTFUNC added
-+
- 	vmcb_mark_dirty(svm->vmcb, VMCB_SEG);
- }
- 
-@@ -2201,6 +2221,7 @@
+ 	svm_set_intercept(svm, INTERCEPT_INVLPGA);
+@@ -2201,6 +2218,7 @@
  	/* Both #GP cases have zero error_code */
  	if (error_code)
  		goto reinject;
@@ -100,7 +78,7 @@
  
  	/* Decode the instruction for usage later */
  	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
-@@ -2997,10 +3018,10 @@
+@@ -2997,10 +3015,10 @@
  		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
  		 * way to communicate lack of support to the guest.
  		 */
@@ -115,22 +93,50 @@
  
  		if (data & DEBUGCTL_RESERVED_BITS)
  			return 1;
-@@ -3158,6 +3179,14 @@
+@@ -3158,6 +3176,42 @@
  	return 0;
  }
  
 +static int cpuid_interception(struct kvm_vcpu *vcpu)  // NIKA begin
 +{
-+//	if (rdtsc() - vcpu->last_exit_start > 290304000000)  // Intel® Core™ processors >120 seconds
-+	if (rdtsc() - vcpu->last_exit_start > 145152000000)  // Intel® Core™ processors >60 seconds
-+		svm_set_cpuid_intercept_for_each_vcpu(vcpu, false);
-+	return kvm_emulate_cpuid(vcpu);
++	u32 eax, ebx, ecx, edx, in_eax, in_ecx;
++//	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
++//		return 1;
++	eax = kvm_rax_read(vcpu);
++	ecx = kvm_rcx_read(vcpu);
++	in_eax = eax;
++	in_ecx = ecx;
++//	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
++//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
++//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
++//		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
++//		in_eax == 0x0B       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
++//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
++//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
++//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
++//		in_eax == 0x14       ||  // [Intel] Intel Processor Trace (Intel PT capabilities and buffer features)
++//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
++//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
++//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
++//		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++//	else {
++		asm volatile("cpuid"
++		: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
++		: "a"(in_eax), "c"(in_ecx)
++		: "memory"
++		);
++//	}
++	kvm_rax_write(vcpu, eax);
++	kvm_rbx_write(vcpu, ebx);
++	kvm_rcx_write(vcpu, ecx);
++	kvm_rdx_write(vcpu, edx);
++	return kvm_skip_emulated_instruction(vcpu);
 +}  // NIKA end
 +
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3196,7 +3225,8 @@
+@@ -3196,7 +3250,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
@@ -140,7 +146,7 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -3208,7 +3238,8 @@
+@@ -3208,7 +3263,8 @@
  	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
  	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
  	[SVM_EXIT_VMRUN]			= vmrun_interception,
@@ -150,20 +156,6 @@
  	[SVM_EXIT_VMLOAD]			= vmload_interception,
  	[SVM_EXIT_VMSAVE]			= vmsave_interception,
  	[SVM_EXIT_STGI]				= stgi_interception,
-@@ -4237,6 +4268,13 @@
- 
- 	sync_lapic_to_cr8(vcpu);
- 
-+	if (unlikely(vcpu->infer_intercept)) {  // VIRTFUNC begin
-+		vcpu->infer_intercept = false;
-+		if (vcpu->intercept_cpuid) svm_set_intercept(svm, INTERCEPT_CPUID);
-+		else svm_clr_intercept(svm, INTERCEPT_CPUID);
-+		vmcb_mark_dirty(svm->vmcb, VMCB_INTERCEPTS);
-+	}  // VIRTFUNC end
-+
- 	if (unlikely(svm->asid != svm->vmcb->control.asid)) {
- 		svm->vmcb->control.asid = svm->asid;
- 		vmcb_mark_dirty(svm->vmcb, VMCB_ASID);
 --- a/arch/x86/kvm/svm/svm.h	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/svm/svm.h	2026-07-24 15:47:20.773520065 +0100
 @@ -673,7 +673,8 @@
@@ -177,7 +169,7 @@
  /* svm.c */
  extern bool dump_invalid_vmcb;
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-08-02 16:56:07.046265802 +0100
++++ b/arch/x86/kvm/x86.c	2026-08-22 17:31:39.847667390 +0100
 @@ -543,6 +543,9 @@
  		return 0;
  
@@ -188,20 +180,93 @@
  		kvm_debug_ratelimited("unhandled %s: 0x%x data 0x%llx\n",
  				      op, msr, *data);
  		return ret;
---- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-08-02 14:55:53.253993254 +0100
-@@ -353,6 +353,10 @@
- 	unsigned int halt_poll_ns;
- 	bool valid_wakeup;
+@@ -1276,7 +1279,8 @@
+ 	 * saving.  However, xcr0 bit 0 is always set, even if the
+ 	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
+ 	 */
+-	valid_bits = vcpu->arch.guest_supported_xcr0 | XFEATURE_MASK_FP;
++//	valid_bits = vcpu->arch.guest_supported_xcr0 | XFEATURE_MASK_FP;  // NIKA removed
++	valid_bits = kvm_caps.supported_xcr0 | XFEATURE_MASK_FP;  // NIKA added
+ 	if (xcr0 & ~valid_bits)
+ 		return 1;
  
-+	u64 last_exit_start;  // NIKA added
-+	bool intercept_cpuid;  // NIKA added
-+	bool infer_intercept;  // NIKA added
-+
- #ifdef CONFIG_HAS_IOMEM
- 	int mmio_needed;
- 	int mmio_read_completed;
-@@ -883,11 +887,15 @@
+@@ -3568,8 +3572,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))  // NIKA removed
++//			return 1;  // NIKA removed
+ 		/* An attempt to write a 1 to a reserved bit raises #GP */
+ 		if (data & ~(MCI_CTL2_CMCI_EN | MCI_CTL2_CMCI_THRESHOLD_MASK))
+ 			return 1;
+@@ -3905,6 +3909,20 @@
+ 		return kvm_xen_write_hypercall_page(vcpu, data);
+ 
+ 	switch (msr) {
++	case 0xC001001A:                 /* MSR_K7_TOP_MEM */
++	case 0xC001001D:                 /* MSR_K7_TOP_MEM2 */
++	case 0xC0010061:                 /* MSR_AMD64_PSTATE_CUR_LIM */
++	case 0xC0010062:                 /* MSR_AMD64_PSTATE_CTL */
++	case 0xC0010063:                 /* MSR_AMD64_PSTATE_STAT */
++	case 0xC0010064 ... 0xC001006B:  /* MSR_AMD64_PSTATE_DEF_P0...7 */
++	case 0xC00100E0 ... 0xC00100E1:  /* MSR_AMD64_MPERF APERF */
++	case 0xC00100E5:                 /* MSR_AMD64_RAPL_POWER_UNIT */
++	case 0xC00100E6:                 /* MSR_AMD64_PKG_ENERGY_STAT */
++	case 0xC00100E7:                 /* MSR_AMD64_CORE_ENERGY_STAT */
++	case 0xC00100E8:                 /* MSR_AMD64_PWR_MONITOR_CAP */
++	case 0xC0010200 ... 0xC001020B:  /* MSR_F15H_PERF_CTL0...5 CTR0...5 */
++	case 0xC0010290 ... 0xC001029B:  /* MSR_F19H_PERF_CTL0...5 CTR0...5 */
++	case 0xC0002000 ... 0xC00021FF:  /* MSR_AMD64_SMCA_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC */
+ 	case MSR_AMD64_NB_CFG:
+ 	case MSR_IA32_UCODE_WRITE:
+ 	case MSR_VM_HSAVE_PA:
+@@ -4084,6 +4102,7 @@
+ 		if (!guest_cpuid_has(vcpu, X86_FEATURE_XSAVES))
+ 			return KVM_MSR_RET_UNSUPPORTED;
+ 
++		data &= vcpu->arch.guest_supported_xss;  // NIKA added
+ 		if (data & ~vcpu->arch.guest_supported_xss)
+ 			return 1;
+ 		if (vcpu->arch.ia32_xss == data)
+@@ -4318,8 +4337,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && !host)
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && !host)  // NIKA removed
++//			return 1;  // NIKA removed
+ 		offset = array_index_nospec(msr - MSR_IA32_MC0_CTL2,
+ 					    last_msr + 1 - MSR_IA32_MC0_CTL2);
+ 		data = vcpu->arch.mci_ctl2_banks[offset];
+@@ -4343,6 +4362,22 @@
+ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
+ 	switch (msr_info->index) {
++	case 0xC001001A:                 /* MSR_K7_TOP_MEM */
++	case 0xC001001D:                 /* MSR_K7_TOP_MEM2 */
++	case 0xC0010061:                 /* MSR_AMD64_PSTATE_CUR_LIM */
++	case 0xC0010062:                 /* MSR_AMD64_PSTATE_CTL */
++	case 0xC0010063:                 /* MSR_AMD64_PSTATE_STAT */
++	case 0xC0010064 ... 0xC001006B:  /* MSR_AMD64_PSTATE_DEF_P0...7 */
++	case 0xC00100E0 ... 0xC00100E1:  /* MSR_AMD64_MPERF APERF */
++	case 0xC00100E5:                 /* MSR_AMD64_RAPL_POWER_UNIT */
++	case 0xC00100E6:                 /* MSR_AMD64_PKG_ENERGY_STAT */
++	case 0xC00100E7:                 /* MSR_AMD64_CORE_ENERGY_STAT */
++	case 0xC00100E8:                 /* MSR_AMD64_PWR_MONITOR_CAP */
++	case 0xC0010200 ... 0xC001020B:  /* MSR_F15H_PERF_CTL0...5 CTR0...5 */
++	case 0xC0010290 ... 0xC001029B:  /* MSR_F19H_PERF_CTL0...5 CTR0...5 */
++	case 0xC0002000 ... 0xC00021FF:  /* MSR_AMD64_SMCA_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC */
++		msr_info->data = 0;
++		break;
+ 	case MSR_IA32_PLATFORM_ID:
+ 	case MSR_IA32_EBL_CR_POWERON:
+ 	case MSR_IA32_LASTBRANCHFROMIP:
+--- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
++++ b/include/linux/kvm_host.h	2026-08-22 17:22:29.337305193 +0100
+@@ -883,11 +883,15 @@
  	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
  #define kvm_info(fmt, ...) \
  	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
