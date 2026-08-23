@@ -1,11 +1,15 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-22 23:43:02.616793490 +0100
-@@ -237,6 +237,157 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-23 17:08:23.704136358 +0100
+@@ -237,6 +237,161 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
 +#if 1  // NIKA begin
-+	mov %_ASM_AX, %_ASM_DI              /* RDI = vcpu->arch.regs */
++	mov %_ASM_AX, %_ASM_DI              /* RDI = &vcpu->arch.regs */
++
++	/* CHECK: Bail if spec_ctrl management was requested in @flags */
++	testl $VMX_RUN_SAVE_SPEC_CTRL, 2*WORD_SIZE(%_ASM_SP)
++	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
 +	mov $0x4408, %esi                   /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
@@ -38,6 +42,7 @@
 +	je .Ladvance_rip_and_reenter
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
++
 +
 +.Lcheck_leaf:
 +//	mov %_ASM_DI, %_ASM_SI                                  /* RSI = vcpu->arch.regs */
@@ -113,7 +118,6 @@
 +	mov 16(%_ASM_SI),  %edx
 +	mov %_ASM_DX, VCPU_RDX(%_ASM_DI)
 +
-+
 +.Ladvance_rip_and_reenter:
 +	mov $0x440C, %esi                   /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
 +	vmread %_ASM_SI, %_ASM_CX
@@ -127,10 +131,10 @@
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
 +
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct vcpu_vmx * (or struct kvm_vcpu *) */
-+	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = struct loaded_vmcs * */
++	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = vmx->loaded_vmcs (struct loaded_vmcs *) */
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%_ASM_DX)          /* vmx->loaded_vmcs->launched = 1 */
 +
-+	/* Reload GPRs from vcpu->arch.regs (%_ASM_DI) */
++	/* Reload GPRs from &vcpu->arch.regs (%_ASM_DI) */
 +#ifdef CONFIG_X86_64
 +	mov VCPU_R8 (%_ASM_DI), %r8
 +	mov VCPU_R9 (%_ASM_DI), %r9
@@ -159,7 +163,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-22 02:27:38.523637055 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-23 17:07:56.642670678 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
