@@ -264,6 +264,11 @@ sudo virsh net-autostart default
   ```
   </details>
 
+- Set file permissions:
+```shell
+sudo chmod 777 /var/lib/libvirt/images/win10.img
+```
+
 ### 2.1. Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
