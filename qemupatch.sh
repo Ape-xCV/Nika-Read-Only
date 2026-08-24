@@ -357,6 +357,7 @@ file_acpi_cpu="$(pwd)/qemu/hw/acpi/cpu.c"
 file_pcihp="$(pwd)/qemu/hw/acpi/pcihp.c"
 file_piix="$(pwd)/qemu/hw/isa/piix.c"
 file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
+header_ich9="$(pwd)/qemu/include/hw/southbridge/ich9.h"
 file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
@@ -419,6 +420,7 @@ header_cpu="$(pwd)/qemu/target/i386/cpu.h"
 header_topology="$(pwd)/qemu/include/hw/i386/topology.h"
 file_acpicommon="$(pwd)/qemu/hw/i386/acpi-common.c"
 file_x86common="$(pwd)/qemu/hw/i386/x86-common.c"
+file_pc="$(pwd)/qemu/hw/i386/pc.c"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -439,6 +441,7 @@ if [[ -f "$file_acpi_cpu" ]]; then rm "$file_acpi_cpu"; fi
 if [[ -f "$file_pcihp" ]]; then rm "$file_pcihp"; fi
 if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
 if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
+if [[ -f "$header_ich9" ]]; then rm "$header_ich9"; fi
 if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
@@ -501,6 +504,7 @@ if [[ -f "$header_cpu" ]]; then rm "$header_cpu"; fi
 if [[ -f "$header_topology" ]]; then rm "$header_topology"; fi
 if [[ -f "$file_acpicommon" ]]; then rm "$file_acpicommon"; fi
 if [[ -f "$file_x86common" ]]; then rm "$file_x86common"; fi
+if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -842,15 +846,28 @@ echo "ICH9 LPC bridge                                   -> LPC Bridge"
 sed -i "$file_lpcich9" -Ee "s/.SF8./.LPCB./"
 sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
-  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
 else
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x068D;  // Comet Lake LPC Controller"
-  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x8086;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_8086;/"
+fi
+
+echo "  $header_ich9"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x14"
+  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x03"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x14/"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x03/"
+else
+  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x1F"
+  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x00"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x1F/"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x00/"
 fi
 
 echo "  $file_smbusich9"
@@ -2070,6 +2087,12 @@ echo "    x86ms->apic_id_limit = x86_cpu_apic_id_from_index(x86ms,"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    x86ms->apic_id_limit *= 4;"
 #sed -i "$file_x86common" -Ee "/                                                      ms->smp.max_cpus - 1\) \+ 1;/a\    x86ms->apic_id_limit *= 4;"
+
+echo "  $file_pc"
+echo "pcms->smbus_enabled = true;                       -> pcms->smbus_enabled = false;"
+echo "pcms->sata_enabled = true;                        -> pcms->sata_enabled = false;"
+sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
+sed -i "$file_pc" -Ee "s/pcms->sata_enabled = true;/pcms->sata_enabled = false;/"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
