@@ -1,6 +1,6 @@
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-23 17:08:23.704136358 +0100
-@@ -237,6 +237,161 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-23 23:40:43.001195748 +0100
+@@ -237,6 +237,187 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -36,10 +36,14 @@
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
 +	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
 +	jnz .Lfastpath_slowpath
-+	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) == RDX 'w' lower 16 bits */
++	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
 +	je .Ladvance_rip_and_reenter
-+	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) == RDX 'w' lower 16 bits */
++	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
 +	je .Ladvance_rip_and_reenter
++	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
++	je .Lcheck_msr_range
++	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
++	je .Lcheck_msr_range
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
 +
@@ -130,6 +134,7 @@
 +	vmwrite %_ASM_DX, %_ASM_SI          /* Write GUEST_RIP (VMCS %_ASM_SI) */
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
 +
++.Lreload_and_reenter:
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct vcpu_vmx * (or struct kvm_vcpu *) */
 +	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = vmx->loaded_vmcs (struct loaded_vmcs *) */
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%_ASM_DX)          /* vmx->loaded_vmcs->launched = 1 */
@@ -156,6 +161,27 @@
 +	/* Execute VMRESUME to return directly to guest execution loop */
 +	jmp .Lvmresume
 +
++.Linject_gp:
++	mov $0x4018, %esi                   /* Write VM_ENTRY_EXCEPTION_ERROR_CODE (VMCS 0x4018) */
++	xor %_ASM_DX, %_ASM_DX
++	vmwrite %_ASM_DX, %_ASM_SI
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++
++	mov $0x4016, %esi                   /* Write VM_ENTRY_INTR_INFO_FIELD (VMCS 0x4016) */
++	mov $0x80000B0D, %_ASM_DX           /* Set Vector 13 (#GP) | Interruption Type 3 (Hardware Exception) | Deliver Error Code (Bit 11) | Valid (Bit 31) */
++	vmwrite %_ASM_DX, %_ASM_SI
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++	jmp .Lreload_and_reenter
++
++.Lcheck_msr_range:
++	mov VCPU_RCX(%_ASM_DI), %_ASM_CX    /* RCX = guest ECX (MSR index) */
++	cmp $0x1FFF, %ecx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
++	jbe .Lfastpath_slowpath
++	cmp $0xC0000000, %ecx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
++	jb .Linject_gp
++	cmp $0xC0001FFF, %ecx               /* Check above High Range: 0xC0002000 - 0xFFFFFFFF */
++	ja .Linject_gp
++
 +.Lfastpath_slowpath:
 +#endif  // NIKA end
 +
@@ -163,7 +189,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-23 17:07:56.642670678 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-24 02:24:28.461255047 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -281,7 +307,7 @@
  
  	hv_reset_evmcs();
  
-@@ -4250,10 +4310,33 @@
+@@ -4250,10 +4310,36 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -291,12 +317,14 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
 -	}
 +//	}  // NIKA removed
-+	// VGK_IA32_PMC0 ... PMC7
++	// VGK_IA32_PMC0 ... VGK_IA32_PMC7
 +	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
-+	// VGK_IA32_PERFEVTSEL0 ... PERFEVTSEL7
++	// VGK_IA32_PERFEVTSEL0 ... VGK_IA32_PERFEVTSEL7
 +	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++	// VGK_LBR_CORE_FROM_0 ... VGK_LBR_CORE_FROM_31
++	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
 +	vmx_disable_intercept_for_msr(vcpu, 0xC80, MSR_TYPE_R);  /* MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  /* MSR_IA32_THREAD_STALL */
 +//	vmx_enable_intercept_for_msr(vcpu,   0x1B, MSR_TYPE_R);  /* MSR_IA32_APIC_BASE */
@@ -313,11 +341,12 @@
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
 +//	for (u32 msr = 0x480; msr <= 0x491; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	vmx_enable_intercept_for_msr(vcpu,  0xC0000082, MSR_TYPE_RW);  /* VGK_IA32_LSTAR */
 +	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4661,7 @@
+@@ -4578,7 +4664,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -326,7 +355,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4685,7 @@
+@@ -4602,6 +4688,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -334,7 +363,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5811,8 @@
+@@ -5727,8 +5814,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -345,7 +374,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6318,66 @@
+@@ -6234,6 +6321,66 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -412,7 +441,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6391,8 @@
+@@ -6247,7 +6394,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -422,7 +451,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6400,8 @@
+@@ -6255,7 +6403,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -432,7 +461,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7525,9 @@
+@@ -7379,9 +7528,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -444,7 +473,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7540,7 @@
+@@ -7394,7 +7543,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -453,7 +482,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,11 +7637,11 @@
+@@ -7491,11 +7640,11 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -467,7 +496,7 @@
  
  	if (enable_preemption_timer)
  		vmx_update_hv_timer(vcpu, force_immediate_exit);
-@@ -7504,9 +7650,57 @@
+@@ -7504,9 +7653,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -525,7 +554,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7726,7 @@
+@@ -7532,7 +7729,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
