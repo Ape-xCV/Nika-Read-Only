@@ -1,3 +1,39 @@
+--- a/arch/x86/include/uapi/asm/kvm.h	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/include/uapi/asm/kvm.h	2026-08-24 23:04:34.634905677 +0100
+@@ -79,7 +79,8 @@
+ 	__u8 elcr_mask;
+ };
+ 
+-#define KVM_IOAPIC_NUM_PINS  24
++//#define KVM_IOAPIC_NUM_PINS  24  /* NIKA removed */
++#define KVM_IOAPIC_NUM_PINS  32  /* NIKA added */
+ struct kvm_ioapic_state {
+ 	__u64 base_address;
+ 	__u32 ioregsel;
+--- a/arch/x86/kvm/ioapic.h	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/ioapic.h	2026-08-24 22:45:45.456852071 +0100
+@@ -11,7 +11,8 @@
+ 
+ #define IOAPIC_NUM_PINS  KVM_IOAPIC_NUM_PINS
+ #define MAX_NR_RESERVED_IOAPIC_PINS KVM_MAX_IRQ_ROUTES
+-#define IOAPIC_VERSION_ID 0x11	/* IOAPIC version */
++//#define IOAPIC_VERSION_ID 0x11	/* IOAPIC version */
++#define IOAPIC_VERSION_ID 0x20	/* IOAPIC version */
+ #define IOAPIC_EDGE_TRIG  0
+ #define IOAPIC_LEVEL_TRIG 1
+ 
+--- a/arch/x86/kvm/lapic.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/lapic.c	2026-08-24 23:10:04.904556772 +0100
+@@ -54,7 +54,8 @@
+ #endif
+ 
+ /* 14 is the version for Xeon and Pentium 8.4.8*/
+-#define APIC_VERSION			0x14UL
++//#define APIC_VERSION			0x14UL  /* NIKA removed */
++#define APIC_VERSION			0x15UL  /* NIKA added */
+ #define LAPIC_MMIO_LENGTH		(1 << 12)
+ 
+ /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-23 23:40:43.001195748 +0100
 @@ -237,6 +237,187 @@
