@@ -246,6 +246,24 @@ sudo virsh net-autostart default
   ```
   </details>
 
+
+- Replace `<domain type="kvm">` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
+    <qemu:commandline>
+      <qemu:arg value="-device"/>
+      <qemu:arg value="ahci,id=device-sata1,addr=07.0"/>
+      <qemu:arg value="-drive"/>
+      <qemu:arg value="file=/var/lib/libvirt/images/win10.img,format=raw,cache=none,discard=ignore,if=none,id=drive-sata1-0"/>
+      <qemu:arg value="-device"/>
+      <qemu:arg value="ide-hd,bus=device-sata1.0,drive=drive-sata1-0,id=sata1-0,serial=YOUR_SERIAL_HERE"/>
+    </qemu:commandline>
+  ```
+  </details>
+
 ### 2.1. Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
