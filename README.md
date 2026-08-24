@@ -227,9 +227,9 @@ sudo virsh net-autostart default
 
 - Virtual Machine Manager >> File >> New Virtual Machine
 
-- Local install media (ISO image or CDROM) >> `Windows10.iso` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
+- Manual install >> `win10` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
-  - [Add Hardware] >> Storage >> Device type: Disk device >> Bus type: SATA >> Create a disk image for the virtual machine: 240 GiB >> Advanced options >> Serial: `generate_your_serial` >> Cache mode: none >> Discard mode: ignore >> [Finish]
+  - [Add Hardware] >> Storage >> Select or create custom storage >> [Manage...] >> [+] >> `win10`.img >> Capacity: 240 GiB >> [Finish] >> [Cancel] >> [Cancel]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
