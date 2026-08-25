@@ -861,8 +861,8 @@ echo "  $header_ich9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x14"
   echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x03"
-  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x14/"
-  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x03/"
+##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x14/"
+##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x03/"
 else
   echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x1F"
   echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x00"
