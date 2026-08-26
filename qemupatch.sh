@@ -848,7 +848,7 @@ sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
-  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
 else
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
