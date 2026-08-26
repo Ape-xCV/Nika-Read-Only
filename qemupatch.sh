@@ -846,7 +846,7 @@ echo "ICH9 LPC bridge                                   -> LPC Bridge"
 sed -i "$file_lpcich9" -Ee "s/.SF8./.LPCB./"
 sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
   sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
@@ -859,15 +859,10 @@ fi
 
 echo "  $header_ich9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x14"
-  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x03"
-##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x14/"
-##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x03/"
-else
-  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            0x1F"
-  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           0x00"
-  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            0x1F/"
-  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           0x00/"
+  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            20"
+  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           3"
+##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            20/"
+##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           3/"
 fi
 
 echo "  $file_smbusich9"
@@ -894,8 +889,10 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_1022;/"
   sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_1022/"
 else
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
   echo "0x293e;                                           -> 0xA3F0;  // Comet Lake PCH-V cAVS"
   echo "Intel HD Audio Controller (ich9)                  -> Comet Lake PCH-V cAVS"
+  sed -i "$file_intelhda" -Ee "s/PCI_VENDOR_ID_INTEL;/0x8086;/"
   sed -i "$file_intelhda" -Ee "s/0x293e;/0x$hdaudio_8086;/"
   sed -i "$file_intelhda" -Ee "s/Intel HD Audio Controller \(ich9\)/$hdaname_8086/"
 fi
