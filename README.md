@@ -234,17 +234,9 @@ sudo virsh net-autostart default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> XML
+### 2.1. Configure VM
 
-
-- Generate your MAC (UAA) to replace `<mac address="52:54:00:xx:xx:xx"/>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <mac address="xx:xx:xx:xx:xx:xx"/>
-  ```
-  </details>
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
 
 - Replace `<domain type="kvm">` and [Apply]:
@@ -268,10 +260,6 @@ sudo virsh net-autostart default
 ```shell
 sudo chmod 777 /var/lib/libvirt/images/win10.img
 ```
-
-### 2.1. Configure VM
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
 
 
 - Replace `</qemu:commandline>` and [Apply]:
@@ -384,8 +372,6 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
   </clock>
   ```
   </details>
-
-  - For host @2468002000Hz, using `<timer name="tsc" frequency="1234001000"/>` will scale guest TSC down @2:1 ratio.
 
 
 - Replace from `<memballoon model="virtio">` to `</memballoon>` and [Apply]:
