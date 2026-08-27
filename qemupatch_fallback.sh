@@ -2011,13 +2011,13 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-sed -i "$header_topology" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
-    asm volatile(\"cpuid\"\n\
-    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
-    : \"a\"(0x0B), \"c\"(0x00)\n\
-    : \"memory\"\n\
-    );\n\
-    return eax & 0x1F;"
+##sed -i "$header_topology" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
+##    asm volatile(\"cpuid\"\n\
+##    : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
+##    : \"a\"(0x0B), \"c\"(0x00)\n\
+##    : \"memory\"\n\
+##    );\n\
+##    return eax & 0x1F;"
 
 echo "  $file_acpicommon"
 echo "#define MAX_HOST_VCPUS 256"
@@ -2046,36 +2046,36 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-sed -i "$file_acpicommon" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
-static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
-static bool apicid_map_init = false;\n\
-static inline void init_apicid_map(void)\n\
-{\n\
-    if (apicid_map_init) return;\n\
-    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;\n\
-    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
-    if (fp) {\n\
-        char line[128];\n\
-        int current_proc = -1;\n\
-        while (fgets(line, sizeof(line), fp)) {\n\
-            if (strncmp(line, \"processor\", 9) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) current_proc = atoi(colon + 1);\n\
-            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);\n\
-            }\n\
-        }\n\
-        fclose(fp);\n\
-    }\n\
-    apicid_map_init = true;\n\
-}\n"
+##sed -i "$file_acpicommon" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
+##static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
+##static bool apicid_map_init = false;\n\
+##static inline void init_apicid_map(void)\n\
+##{\n\
+##    if (apicid_map_init) return;\n\
+##    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;\n\
+##    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
+##    if (fp) {\n\
+##        char line[128];\n\
+##        int current_proc = -1;\n\
+##        while (fgets(line, sizeof(line), fp)) {\n\
+##            if (strncmp(line, \"processor\", 9) == 0) {\n\
+##                char *colon = strchr(line, ':');\n\
+##                if (colon) current_proc = atoi(colon + 1);\n\
+##            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {\n\
+##                char *colon = strchr(line, ':');\n\
+##                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);\n\
+##            }\n\
+##        }\n\
+##        fclose(fp);\n\
+##    }\n\
+##    apicid_map_init = true;\n\
+##}\n"
 echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-sed -i "$file_acpicommon" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
-    apic_id = apicid_map[uid];"
+##sed -i "$file_acpicommon" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
+##    apic_id = apicid_map[uid];"
 
 echo "  $file_pc"
 echo "pcms->smbus_enabled = true;                       -> pcms->smbus_enabled = false;"

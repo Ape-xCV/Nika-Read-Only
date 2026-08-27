@@ -1,17 +1,51 @@
+--- a/arch/x86/include/uapi/asm/kvm.h	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/include/uapi/asm/kvm.h	2026-08-24 23:04:34.634905677 +0100
+@@ -79,7 +79,8 @@
+ 	__u8 elcr_mask;
+ };
+ 
+-#define KVM_IOAPIC_NUM_PINS  24
++//#define KVM_IOAPIC_NUM_PINS  24  /* NIKA removed */
++#define KVM_IOAPIC_NUM_PINS  32  /* NIKA added */
+ struct kvm_ioapic_state {
+ 	__u64 base_address;
+ 	__u32 ioregsel;
+--- a/arch/x86/kvm/ioapic.h	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/ioapic.h	2026-08-24 22:45:45.456852071 +0100
+@@ -11,7 +11,8 @@
+ 
+ #define IOAPIC_NUM_PINS  KVM_IOAPIC_NUM_PINS
+ #define MAX_NR_RESERVED_IOAPIC_PINS KVM_MAX_IRQ_ROUTES
+-#define IOAPIC_VERSION_ID 0x11	/* IOAPIC version */
++//#define IOAPIC_VERSION_ID 0x11	/* IOAPIC version */
++#define IOAPIC_VERSION_ID 0x20	/* IOAPIC version */
+ #define IOAPIC_EDGE_TRIG  0
+ #define IOAPIC_LEVEL_TRIG 1
+ 
+--- a/arch/x86/kvm/lapic.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/lapic.c	2026-08-24 23:10:04.904556772 +0100
+@@ -54,7 +54,8 @@
+ #endif
+ 
+ /* 14 is the version for Xeon and Pentium 8.4.8*/
+-#define APIC_VERSION			0x14UL
++//#define APIC_VERSION			0x14UL  /* NIKA removed */
++#define APIC_VERSION			0x15UL  /* NIKA added */
+ #define LAPIC_MMIO_LENGTH		(1 << 12)
+ 
+ /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-09 16:26:14.121060780 +0100
-@@ -237,6 +237,153 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-27 00:59:26.841752987 +0100
+@@ -237,6 +237,188 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
 +#if 1  // NIKA begin
-+	mov $0x4402, %esi                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
-+	vmread %_ASM_SI, %_ASM_DX
-+	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
++	mov %_ASM_AX, %_ASM_DI              /* RDI = &vcpu->arch.regs */
++
++	/* CHECK: Bail if spec_ctrl management was requested in @flags */
++	testl $VMX_RUN_SAVE_SPEC_CTRL, 2*WORD_SIZE(%_ASM_SP)
 +	jnz .Lfastpath_slowpath
-+	cmpw $10, %dx                       /* EXIT_REASON_CPUID (10) == RDX 'w' lower 16 bits */
-+	jne .Lfastpath_slowpath
 +
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
 +	mov $0x4408, %esi                   /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
@@ -33,13 +67,28 @@
 +	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
 +	jnz .Lfastpath_slowpath
 +
-+	mov %_ASM_AX, %_ASM_DI                                  /* RDI = vcpu->arch.regs */
++	mov $0x4402, %esi                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
++	vmread %_ASM_SI, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
++	jnz .Lfastpath_slowpath
++	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
++	je .Lcheck_msr_range
++	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
++	je .Lcheck_msr_range
++	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
++	jne .Lfastpath_slowpath
++
++
++.Lcheck_leaf:
 +//	mov %_ASM_DI, %_ASM_SI                                  /* RSI = vcpu->arch.regs */
 +//	sub $OFFSET_KVM_VCPU_ARCH_REGS, %_ASM_SI                /* RSI = struct kvm_vcpu * (or struct vcpu_vmx *) */
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct kvm_vcpu * (or struct vcpu_vmx *) */
 +
-+
-+.Lcheck_leaf:
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_CX    /* RCX = in_eax */
 +	cmp $0x24, %ecx
 +	ja .Lcheck_ext_leaf
@@ -109,7 +158,6 @@
 +	mov 16(%_ASM_SI),  %edx
 +	mov %_ASM_DX, VCPU_RDX(%_ASM_DI)
 +
-+
 +.Ladvance_rip_and_reenter:
 +	mov $0x440C, %esi                   /* Read VM_EXIT_INSTRUCTION_LEN (VMCS 0x440C) */
 +	vmread %_ASM_SI, %_ASM_CX
@@ -121,12 +169,13 @@
 +	add %_ASM_CX, %_ASM_DX
 +	vmwrite %_ASM_DX, %_ASM_SI          /* Write GUEST_RIP (VMCS %_ASM_SI) */
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++.Lreload_and_reenter:
 +
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct vcpu_vmx * (or struct kvm_vcpu *) */
-+	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = struct loaded_vmcs * */
++	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = vmx->loaded_vmcs (struct loaded_vmcs *) */
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%_ASM_DX)          /* vmx->loaded_vmcs->launched = 1 */
 +
-+	/* Reload GPRs from vcpu->arch.regs (%_ASM_DI) */
++	/* Reload GPRs from &vcpu->arch.regs (%_ASM_DI) */
 +#ifdef CONFIG_X86_64
 +	mov VCPU_R8 (%_ASM_DI), %r8
 +	mov VCPU_R9 (%_ASM_DI), %r9
@@ -148,6 +197,28 @@
 +	/* Execute VMRESUME to return directly to guest execution loop */
 +	jmp .Lvmresume
 +
++.Lcheck_msr_range:
++	mov VCPU_RCX(%_ASM_DI), %_ASM_DX    /* RDX = guest ECX (MSR index) */
++	cmp $0x1FFF, %edx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
++	jbe .Lfastpath_slowpath
++	cmp $0xC0000000, %edx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
++	jb .Linject_gp
++	cmp $0xC0001FFF, %edx               /* Check High Range: 0xC0000000 - 0xC0001FFF */
++	jbe .Lfastpath_slowpath
++
++.Linject_gp:
++	mov $0x4018, %esi                   /* Write VM_ENTRY_EXCEPTION_ERROR_CODE (VMCS 0x4018) */
++	xor %_ASM_DX, %_ASM_DX
++	vmwrite %_ASM_DX, %_ASM_SI
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++
++	mov $0x4016, %esi                   /* Write VM_ENTRY_INTR_INFO_FIELD (VMCS 0x4016) */
++	mov $0x80000B0D, %_ASM_DX           /* Set Vector 13 (#GP) | Interruption Type 3 (Hardware Exception) | Deliver Error Code (Bit 11) | Valid (Bit 31) */
++	vmwrite %_ASM_DX, %_ASM_SI
++//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++//	jmp .Lreload_and_reenter
++	ja .Lreload_and_reenter             /* Branches if CF == 0 AND ZF == 0, VMWRITE success */
++
 +.Lfastpath_slowpath:
 +#endif  // NIKA end
 +
@@ -155,7 +226,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-22 13:27:48.426405007 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-08-27 14:02:09.347855527 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -273,23 +344,7 @@
  
  	hv_reset_evmcs();
  
-@@ -3772,6 +3832,15 @@
- 		var->type |= 0x1; /* Accessed */
- 
- 	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(var));
-+
-+	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xffff0000 && seg == VCPU_SREG_CS)) {  // VIRTFUNC begin
-+		unsigned long i;
-+		struct kvm_vcpu *tmp;
-+		kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
-+			memset(tmp->cpuid_cache, 0, sizeof(vcpu->cpuid_cache));
-+			memset(tmp->ext_cpuid_cache, 0, sizeof(vcpu->ext_cpuid_cache));
-+		}
-+	}  // VIRTFUNC end
- }
- 
- void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -4250,10 +4319,33 @@
+@@ -4250,10 +4310,36 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -299,12 +354,14 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
 -	}
 +//	}  // NIKA removed
-+	// VGK_IA32_PMC0 ... PMC7
++	// VGK_IA32_PMC0 ... VGK_IA32_PMC7
 +	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
-+	// VGK_IA32_PERFEVTSEL0 ... PERFEVTSEL7
++	// VGK_IA32_PERFEVTSEL0 ... VGK_IA32_PERFEVTSEL7
 +	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++	// VGK_LBR_CORE_FROM_0 ... VGK_LBR_CORE_FROM_31
++	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
 +	vmx_disable_intercept_for_msr(vcpu, 0xC80, MSR_TYPE_R);  /* MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  /* MSR_IA32_THREAD_STALL */
 +//	vmx_enable_intercept_for_msr(vcpu,   0x1B, MSR_TYPE_R);  /* MSR_IA32_APIC_BASE */
@@ -321,11 +378,12 @@
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
 +//	for (u32 msr = 0x480; msr <= 0x491; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	vmx_enable_intercept_for_msr(vcpu,  0xC0000082, MSR_TYPE_RW);  /* VGK_IA32_LSTAR */
 +	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -4578,7 +4670,7 @@
+@@ -4578,7 +4664,7 @@
  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
  			  CPU_BASED_NMI_WINDOW_EXITING);
  
@@ -334,7 +392,7 @@
  		exec_control &= ~CPU_BASED_MOV_DR_EXITING;
  
  	if (!cpu_need_tpr_shadow(&vmx->vcpu))
-@@ -4602,6 +4694,7 @@
+@@ -4602,6 +4688,7 @@
  				CPU_BASED_MONITOR_EXITING);
  	if (kvm_hlt_in_guest(vmx->vcpu.kvm))
  		exec_control &= ~CPU_BASED_HLT_EXITING;
@@ -342,7 +400,7 @@
  	return exec_control;
  }
  
-@@ -5727,8 +5820,8 @@
+@@ -5727,8 +5814,8 @@
  	get_debugreg(vcpu->arch.dr6, 6);
  	vcpu->arch.dr7 = vmcs_readl(GUEST_DR7);
  
@@ -353,7 +411,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6327,47 @@
+@@ -6234,6 +6321,66 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -366,7 +424,26 @@
 +	ecx = kvm_rcx_read(vcpu);
 +	in_eax = eax;
 +	in_ecx = ecx;
-+	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
++//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
++//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
++		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
++		in_eax == 0x0B)//       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
++//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
++//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
++//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
++//		in_eax == 0x14       ||  // [Intel] Intel Processor Trace (Intel PT capabilities and buffer features)
++//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
++//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
++//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
++		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++	else {
++		asm volatile("cpuid"
++		: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
++		: "a"(in_eax), "c"(in_ecx)
++		: "memory"
++		);
++	}
 +//	if (in_eax == 0x01) ecx |= 0x80000000;  // Hyper-V fix
 +//	if (in_eax == 0x07 && in_ecx == 0x00) edx &= 0x73FFFFFF;  // GRUB_CMDLINE_LINUX="mitigations=off" fix
 +	kvm_rax_write(vcpu, eax);
@@ -401,7 +478,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6381,8 @@
+@@ -6247,7 +6394,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -411,7 +488,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6390,8 @@
+@@ -6255,7 +6403,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -421,7 +498,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7515,9 @@
+@@ -7379,9 +7528,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -433,7 +510,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7530,7 @@
+@@ -7394,7 +7543,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -442,7 +519,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,11 +7627,11 @@
+@@ -7491,11 +7640,11 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -456,7 +533,7 @@
  
  	if (enable_preemption_timer)
  		vmx_update_hv_timer(vcpu, force_immediate_exit);
-@@ -7504,9 +7640,57 @@
+@@ -7504,9 +7653,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -514,7 +591,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7716,7 @@
+@@ -7532,7 +7729,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  
@@ -670,7 +747,7 @@
  
  	vcpu_load(vcpu);
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-08-22 13:28:20.057237420 +0100
++++ b/include/linux/kvm_host.h	2026-08-04 20:07:37.648435049 +0100
 @@ -324,6 +324,14 @@
  	unsigned int len;
  };
