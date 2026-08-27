@@ -2011,13 +2011,15 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-sed -i "$header_topology" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  sed -i "$header_topology" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
     asm volatile(\"cpuid\"\n\
     : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
     : \"a\"(0x0B), \"c\"(0x00)\n\
     : \"memory\"\n\
     );\n\
     return eax & 0x1F;"
+fi
 
 echo "  $file_acpicommon"
 echo "#define MAX_HOST_VCPUS 256"
@@ -2046,7 +2048,8 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-sed -i "$file_acpicommon" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  sed -i "$file_acpicommon" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
 static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
 static bool apicid_map_init = false;\n\
 static inline void init_apicid_map(void)\n\
@@ -2070,12 +2073,15 @@ static inline void init_apicid_map(void)\n\
     }\n\
     apicid_map_init = true;\n\
 }\n"
+fi
 echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-sed -i "$file_acpicommon" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  sed -i "$file_acpicommon" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
     apic_id = apicid_map[uid];"
+fi
 
 echo "  $file_pc"
 echo "pcms->smbus_enabled = true;                       -> pcms->smbus_enabled = false;"
