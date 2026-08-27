@@ -35,8 +35,8 @@
  
  /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-23 23:40:43.001195748 +0100
-@@ -237,6 +237,187 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-27 00:59:26.841752987 +0100
+@@ -237,6 +237,188 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -72,14 +72,14 @@
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
 +	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
 +	jnz .Lfastpath_slowpath
-+	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
-+	je .Ladvance_rip_and_reenter
-+	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
-+	je .Ladvance_rip_and_reenter
 +	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
 +	je .Lcheck_msr_range
 +	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
 +	je .Lcheck_msr_range
++	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
++	je .Ladvance_rip_and_reenter
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
 +
@@ -169,8 +169,8 @@
 +	add %_ASM_CX, %_ASM_DX
 +	vmwrite %_ASM_DX, %_ASM_SI          /* Write GUEST_RIP (VMCS %_ASM_SI) */
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
-+
 +.Lreload_and_reenter:
++
 +	lea -OFFSET_KVM_VCPU_ARCH_REGS(%_ASM_DI), %_ASM_SI      /* RSI = struct vcpu_vmx * (or struct kvm_vcpu *) */
 +	mov OFFSET_VCPU_VMX_LOADED_VMCS(%_ASM_SI), %_ASM_DX     /* RDX = vmx->loaded_vmcs (struct loaded_vmcs *) */
 +	movb $1, OFFSET_LOADED_VMCS_LAUNCHED(%_ASM_DX)          /* vmx->loaded_vmcs->launched = 1 */
@@ -197,6 +197,15 @@
 +	/* Execute VMRESUME to return directly to guest execution loop */
 +	jmp .Lvmresume
 +
++.Lcheck_msr_range:
++	mov VCPU_RCX(%_ASM_DI), %_ASM_DX    /* RDX = guest ECX (MSR index) */
++	cmp $0x1FFF, %edx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
++	jbe .Lfastpath_slowpath
++	cmp $0xC0000000, %edx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
++	jb .Linject_gp
++	cmp $0xC0001FFF, %edx               /* Check High Range: 0xC0000000 - 0xC0001FFF */
++	jbe .Lfastpath_slowpath
++
 +.Linject_gp:
 +	mov $0x4018, %esi                   /* Write VM_ENTRY_EXCEPTION_ERROR_CODE (VMCS 0x4018) */
 +	xor %_ASM_DX, %_ASM_DX
@@ -206,17 +215,9 @@
 +	mov $0x4016, %esi                   /* Write VM_ENTRY_INTR_INFO_FIELD (VMCS 0x4016) */
 +	mov $0x80000B0D, %_ASM_DX           /* Set Vector 13 (#GP) | Interruption Type 3 (Hardware Exception) | Deliver Error Code (Bit 11) | Valid (Bit 31) */
 +	vmwrite %_ASM_DX, %_ASM_SI
-+	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
-+	jmp .Lreload_and_reenter
-+
-+.Lcheck_msr_range:
-+	mov VCPU_RCX(%_ASM_DI), %_ASM_CX    /* RCX = guest ECX (MSR index) */
-+	cmp $0x1FFF, %ecx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
-+	jbe .Lfastpath_slowpath
-+	cmp $0xC0000000, %ecx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
-+	jb .Linject_gp
-+	cmp $0xC0001FFF, %ecx               /* Check above High Range: 0xC0002000 - 0xFFFFFFFF */
-+	ja .Linject_gp
++//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++//	jmp .Lreload_and_reenter
++	ja .Lreload_and_reenter             /* Branches if CF == 0 AND ZF == 0, VMWRITE success */
 +
 +.Lfastpath_slowpath:
 +#endif  // NIKA end
