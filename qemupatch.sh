@@ -353,11 +353,11 @@ file_escc="$(pwd)/qemu/hw/char/escc.c"
 #file_serialpci="$(pwd)/qemu/hw/char/serial-pci.c"
 file_edidgenerate="$(pwd)/qemu/hw/display/edid-generate.c"
 file_acpibuild="$(pwd)/qemu/hw/i386/acpi-build.c"
+header_ich9="$(pwd)/qemu/include/hw/southbridge/ich9.h"
 file_acpi_cpu="$(pwd)/qemu/hw/acpi/cpu.c"
 file_pcihp="$(pwd)/qemu/hw/acpi/pcihp.c"
 file_piix="$(pwd)/qemu/hw/isa/piix.c"
 file_lpcich9="$(pwd)/qemu/hw/isa/lpc_ich9.c"
-header_ich9="$(pwd)/qemu/include/hw/southbridge/ich9.h"
 file_smbusich9="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
 file_intelhda="$(pwd)/qemu/hw/audio/intel-hda.c"
 file_i386_fwcfg="$(pwd)/qemu/hw/i386/fw_cfg.c"
@@ -436,11 +436,11 @@ if [[ -f "$file_escc" ]]; then rm "$file_escc"; fi
 #if [[ -f "$file_serialpci" ]]; then rm "$file_serialpci"; fi
 if [[ -f "$file_edidgenerate" ]]; then rm "$file_edidgenerate"; fi
 if [[ -f "$file_acpibuild" ]]; then rm "$file_acpibuild"; fi
+if [[ -f "$header_ich9" ]]; then rm "$header_ich9"; fi
 if [[ -f "$file_acpi_cpu" ]]; then rm "$file_acpi_cpu"; fi
 if [[ -f "$file_pcihp" ]]; then rm "$file_pcihp"; fi
 if [[ -f "$file_piix" ]]; then rm "$file_piix"; fi
 if [[ -f "$file_lpcich9" ]]; then rm "$file_lpcich9"; fi
-if [[ -f "$header_ich9" ]]; then rm "$header_ich9"; fi
 if [[ -f "$file_smbusich9" ]]; then rm "$file_smbusich9"; fi
 if [[ -f "$file_intelhda" ]]; then rm "$file_intelhda"; fi
 if [[ -f "$file_i386_fwcfg" ]]; then rm "$file_i386_fwcfg"; fi
@@ -608,13 +608,40 @@ path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -
 echo "  $file_pcihp"
 echo "S%.02X                                            -> $path%.02X"
 #sed -i "$file_pcihp" -Ee "s/S%.02X/$path%.02X/"
-sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent_scope, const PCIBus \*bus\)/istatic void get_pci_name(char *cstr, int devfn)\n\
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent_scope, const PCIBus \*bus\)/istatic void get_pci_name(char *cstr, int devfn)\n\
+{\n\
+    int slot = PCI_SLOT(devfn);\n\
+    int func = PCI_FUNC(devfn);\n\
+    switch (slot) {\n\
+        case 20:\n\
+            if (func == 0) sprintf(cstr, \"SBUS\");\n\
+            else if (func == 3) sprintf(cstr, \"LPCB\");\n\
+            else sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+        case 27:\n\
+            if (func == 0) sprintf(cstr, \"AZAL\");\n\
+            else sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+        case 29:\n\
+            sprintf(cstr, \"EHC%X\", func);\n\
+            break;\n\
+        case 31:\n\
+            if (func == 2) sprintf(cstr, \"SAT%X\", func);\n\
+            else sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+        default:\n\
+            sprintf(cstr, \"$path%.02X\", devfn);\n\
+            break;\n\
+    }\n}\n"
+else
+  sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent_scope, const PCIBus \*bus\)/istatic void get_pci_name(char *cstr, int devfn)\n\
 {\n\
     int slot = PCI_SLOT(devfn);\n\
     int func = PCI_FUNC(devfn);\n\
     switch (slot) {\n\
         case 27:\n\
-            if (func == 0) sprintf(cstr, \"HDAS\");\n\
+            if (func == 0) sprintf(cstr, \"HDEF\");\n\
             else sprintf(cstr, \"$path%.02X\", devfn);\n\
             break;\n\
         case 29:\n\
@@ -623,13 +650,14 @@ sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent
         case 31:\n\
             if (func == 0) sprintf(cstr, \"LPCB\");\n\
             else if (func == 2) sprintf(cstr, \"SAT%X\", func);\n\
-            else if (func == 3) sprintf(cstr, \"SBUS\");\n\
+            else if (func == 4) sprintf(cstr, \"SBUS\");\n\
             else sprintf(cstr, \"$path%.02X\", devfn);\n\
             break;\n\
         default:\n\
             sprintf(cstr, \"$path%.02X\", devfn);\n\
             break;\n\
     }\n}\n"
+fi
 sed -i "$file_pcihp" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/{n;d;}"
 sed -i "$file_pcihp" -Ee "/    QLIST_FOREACH\(sec, &bus->child, sibling\) \{/a\        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, sec->parent_dev->devfn);\n\
@@ -809,6 +837,41 @@ sed -i "$file_acpibuild" -Ee "s/\"GSI/\"${gsi}/g"
 echo "100000000                                         -> 41666666"
 sed -i "$file_acpibuild" -e  '/    if_ctx = aml_if(aml_lor(aml_equal(period, zero),/{n;d;}'
 sed -i "$file_acpibuild" -Ee "s/    if_ctx = aml_if\(aml_lor\(aml_equal\(period, zero\),/    if_ctx = aml_if(aml_equal(period, zero));/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "for (i = 0; i < 0x18; i++) {                      -> for (i = 0; i < 0x14; i++) {"
+  sed -i "$file_acpibuild" -Ee "s/for \(i = 0; i < 0x18; i\+\+\) \{/for (i = 0; i < 0x14; i++) {/"
+  echo "            append_q35_prt_entry(pkg, i, name);"
+  echo "            v v v v v v v v v v v v v v v v v v"
+  echo "    }"
+  echo "    name[3] = 'A';"
+  echo "    append_q35_prt_entry(pkg, 0x14, name);"
+  echo "    for (i = 0x15; i < 0x18; i++) {"
+  echo "        name[3] = 'E' + (i & 0x3);"
+  echo "        append_q35_prt_entry(pkg, i, name);"
+  sed -i "$file_acpibuild" -Ee "/            append_q35_prt_entry\(pkg, i, name\);/a\    }\n\
+\n\
+    name[3] = 'A';\n\
+    append_q35_prt_entry(pkg, 0x14, name);\n\
+\n\
+    for (i = 0x15; i < 0x18; i++) {\n\
+        name[3] = 'E' + (i & 0x3);\n\
+        append_q35_prt_entry(pkg, i, name);"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_ich9"
+  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            20"
+  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           3"
+  echo "ICH9_SMB_DEV                            31        -> ICH9_SMB_DEV                            20"
+  echo "ICH9_SMB_FUNC                           3         -> ICH9_SMB_FUNC                           0"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            20/"
+  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           3/"
+  sed -i "$header_ich9" -Ee "s/ICH9_SMB_DEV                            31/ICH9_SMB_DEV                            20/"
+  sed -i "$header_ich9" -Ee "s/ICH9_SMB_FUNC                           3/ICH9_SMB_FUNC                           0/"
+else
+  echo "ICH9_SMB_FUNC                           3         -> ICH9_SMB_FUNC                           4"
+  sed -i "$header_ich9" -Ee "s/ICH9_SMB_FUNC                           3/ICH9_SMB_FUNC                           4/"
+fi
 
 echo "  $file_acpi_cpu"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -844,10 +907,16 @@ echo "ICH9 LPC bridge                                   -> LPC Bridge"
 sed -i "$file_lpcich9" -Ee "s/.SF8./.LPCB./"
 sed -i "$file_lpcich9" -Ee "s/ICH9 LPC bridge/LPC Bridge/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x790E;  // FCH LPC Bridge"
-  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_lpcich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_1022;/"
+  echo "        if (slot == 31) ich9_cc_update_ir(lpc->irr[20], pci_get_word(lpc->chip_config + *offset));"
+  echo "        else"
+  echo "        ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+  echo "        ich9_cc_update_ir(lpc->irr[slot],"
+  sed -i "$file_lpcich9" -Ee "/        ich9_cc_update_ir\(lpc->irr\[slot\],/i\        if (slot == 31) ich9_cc_update_ir(lpc->irr[20], pci_get_word(lpc->chip_config + *offset));\n\
+        else"
 else
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_8;                       -> 0x068D;  // Comet Lake LPC Controller"
@@ -855,24 +924,57 @@ else
   sed -i "$file_lpcich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_8;/0x$lpc_8086;/"
 fi
 
-echo "  $header_ich9"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "ICH9_LPC_DEV                            31        -> ICH9_LPC_DEV                            20"
-  echo "ICH9_LPC_FUNC                           0         -> ICH9_LPC_FUNC                           3"
-##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_DEV                            31/ICH9_LPC_DEV                            20/"
-##  sed -i "$header_ich9" -Ee "s/ICH9_LPC_FUNC                           0/ICH9_LPC_FUNC                           3/"
-fi
-
 echo "  $file_smbusich9"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0x790B;  // FCH SMBus Controller"
-  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_1022;/"
 else
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "    PMSMBus smb;"
+  echo "    v v v v v v v v v"
+  echo "    MemoryRegion mmio;"
+  sed -i "$file_smbusich9" -Ee "/    PMSMBus smb;/a\    MemoryRegion mmio;"
+  echo "static const MemoryRegionOps ich9_smb_mmio_ops = {"
+  echo "    .read = ich9_smb_mmio_read,"
+  echo "    .write = ich9_smb_mmio_write,"
+  echo "    .endianness = DEVICE_LITTLE_ENDIAN,"
+  echo "    .valid = {"
+  echo "        .min_access_size = 1,"
+  echo "        .max_access_size = 4,"
+  echo "    },"
+  echo "};"
+  echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+  echo "static void ich9_smbus_realize(PCIDevice *d, Error **errp)"
+  sed -i "$file_smbusich9" -Ee "/static void ich9_smbus_realize\(PCIDevice \*d, Error \*\*errp\)/istatic uint64_t ich9_smb_mmio_read(void *opaque, hwaddr addr, unsigned size)\n\
+{\n\
+    return 0;\n\
+}\n\
+\n\
+static void ich9_smb_mmio_write(void *opaque, hwaddr addr, uint64_t val, unsigned size)\n\
+{\n\
+}\n\
+\n\
+static const MemoryRegionOps ich9_smb_mmio_ops = {\n\
+    .read = ich9_smb_mmio_read,\n\
+    .write = ich9_smb_mmio_write,\n\
+    .endianness = DEVICE_LITTLE_ENDIAN,\n\
+    .valid = {\n\
+        .min_access_size = 1,\n\
+        .max_access_size = 4,\n\
+    },\n\
+};\n"
+  echo "    memory_region_init_io(&s->io, OBJECT(s), &pm_smb_ops, &s->smb, \"ich9-smb-io\", ICH9_SMB_SMB_BASE_SIZE);"
+  echo "    pci_register_bar(d, ICH9_SMB_SMB_BASE_BAR, PCI_BASE_ADDRESS_SPACE_IO, &s->io);"
+  echo "    memory_region_init_io(&s->mmio, OBJECT(s), &ich9_smb_mmio_ops, &s->smb, \"ich9-smb-mmio\", ICH9_SMB_SMBM_SIZE);"
+  echo "    pci_register_bar(d, ICH9_SMB_SMBM_BAR, PCI_BASE_ADDRESS_SPACE_MEMORY, &s->mmio);"
+  echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+  echo "    s->smb.set_irq = ich9_smb_set_irq;"
+  sed -i "$file_smbusich9" -Ee "/    s->smb.set_irq = ich9_smb_set_irq;/i\    memory_region_init_io(&s->mmio, OBJECT(s), &ich9_smb_mmio_ops, &s->smb, \"ich9-smb-mmio\", ICH9_SMB_SMBM_SIZE);\n\
+    pci_register_bar(d, ICH9_SMB_SMBM_BAR, PCI_BASE_ADDRESS_SPACE_MEMORY, &s->mmio);\n"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
   echo "PCI_DEVICE_ID_INTEL_ICH9_6;                       -> 0xA3A3;  // Comet Lake PCH-V SMBus Host Controller"
-  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_smbusich9" -Ee "s/PCI_VENDOR_ID_INTEL;/0x8086;/"
   sed -i "$file_smbusich9" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_8086;/"
 fi
 echo "ICH9 SMBUS Bridge                                 -> SMBus Bridge"
@@ -2086,7 +2188,7 @@ fi
 echo "  $file_pc"
 echo "pcms->smbus_enabled = true;                       -> pcms->smbus_enabled = false;"
 echo "pcms->sata_enabled = true;                        -> pcms->sata_enabled = false;"
-sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
+##sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
 sed -i "$file_pc" -Ee "s/pcms->sata_enabled = true;/pcms->sata_enabled = false;/"
 
 design_capacity=$((RANDOM % 20000 + 41000))

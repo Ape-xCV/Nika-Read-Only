@@ -88,6 +88,10 @@ file_ShellPkg="$(pwd)/edk2/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/edk2/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 file_AuthServiceInternal="$(pwd)/edk2/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
 file_Q35MchIch9="$(pwd)/edk2/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
+file_PBML_BdsPlatform="$(pwd)/edk2/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.c"
+file_PBMLB_BdsPlatform="$(pwd)/edk2/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.c"
+header_PBML_BdsPlatform="$(pwd)/edk2/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.h"
+header_PBMLB_BdsPlatform="$(pwd)/edk2/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.h"
 file_BhyveDefines="$(pwd)/edk2/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
 file_OvmfPkgDefines="$(pwd)/edk2/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
 
@@ -112,6 +116,10 @@ if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
 if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
+if [[ -f "$file_PBML_BdsPlatform" ]]; then rm "$file_PBML_BdsPlatform"; fi
+if [[ -f "$file_PBMLB_BdsPlatform" ]]; then rm "$file_PBMLB_BdsPlatform"; fi
+if [[ -f "$header_PBML_BdsPlatform" ]]; then rm "$header_PBML_BdsPlatform"; fi
+if [[ -f "$header_PBMLB_BdsPlatform" ]]; then rm "$header_PBMLB_BdsPlatform"; fi
 if [[ -f "$file_BhyveDefines" ]]; then rm "$file_BhyveDefines"; fi
 if [[ -f "$file_OvmfPkgDefines" ]]; then rm "$file_OvmfPkgDefines"; fi
 mkdir -p edk2
@@ -132,6 +140,10 @@ echo "\"BHYVE\"                                           -> \"ALASKA\""
 echo "\"BVDSDT\"                                          -> \"A M I   \""
 sed -i "$file_Dsdt" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 sed -i "$file_Dsdt" -Ee "s/\"BVDSDT\"/\"A M I   \"/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "Name (_ADR, 0x001F0000                            -> Name (_ADR, 0x00140003"
+  sed -i "$file_Dsdt" -Ee "s/Name \(_ADR, 0x001F0000/Name (_ADR, 0x00140003/"
+fi
 
 echo "  $file_Facp"
 echo "'B','V','F','A','C','P',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
@@ -368,6 +380,36 @@ else
 fi
 echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
 sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  echo "EFI_PCI_ADDRESS (0, 0x1f, 0                       -> EFI_PCI_ADDRESS (0, 0x14, 3"
+  sed -i "$file_Q35MchIch9" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/"
+  sed -i "$file_Q35MchIch9" -Ee "s/EFI_PCI_ADDRESS \(0, 0x1f, 0/EFI_PCI_ADDRESS (0, 0x14, 3/"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $file_PBML_BdsPlatform"
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBML_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $file_PBMLB_BdsPlatform"
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBMLB_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBML_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBML_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBMLB_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBMLB_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
 
 echo "  $file_BhyveDefines"
 echo "0x800000                                          -> 0x810000"
