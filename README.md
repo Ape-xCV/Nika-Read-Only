@@ -1025,7 +1025,10 @@ edidpatch.cmd edidfile.bin
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
 
-### 7.6. Spoof GPU (tested from 51x to 57x)
+### 7.6. Spoof GPU (tested from 51x to 58x)
+
+- Disable ROM BAR for each PCI Host Device:
+  - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
 
 - Check old UUID with `nvidia-smi -L`.
 - Run the cheat BEFORE the game at least once.
