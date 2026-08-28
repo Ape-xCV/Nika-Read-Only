@@ -34,83 +34,8 @@
  #define LAPIC_MMIO_LENGTH		(1 << 12)
  
  /*
---- a/arch/x86/kvm/svm/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/vmenter.S	2026-08-25 18:52:13.841230893 +0100
-@@ -224,6 +224,61 @@
- 
- 	/* @svm can stay in RDI from now on.  */
- 	mov %_ASM_AX, %_ASM_DI
-+#if 1  // NIKA begin
-+	mov SVM_current_vmcb(%_ASM_DI), %_ASM_SI                /* RSI = svm->current_vmcb (struct kvm_vmcb_info *) */
-+	mov KVM_VMCB_ptr(%_ASM_SI), %_ASM_CX                    /* RCX = current_vmcb->ptr (struct vmcb *) == &vmcb->control */
-+
-+	/* CHECK: IDT_VECTORING_INFO_FIELD (svm_complete_interrupts guard) */
-+	movl VMCB_CONTROL_exit_int_info(%_ASM_CX), %edx         /* RDX = control->exit_int_info */
-+	test $0x80000000, %edx                                  /* Test VALID (bit 31) */
-+	jnz .Lfastpath_slowpath
-+
-+	/* CHECK: GUEST_INTERRUPTIBILITY_INFO for STI or MOV SS blocking */
-+	movl VMCB_CONTROL_int_state(%_ASM_CX), %edx             /* RDX = control->int_state */
-+	test $0x03, %edx                                        /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
-+	jnz .Lfastpath_slowpath
-+
-+	mov VMCB_SAVE_rflags + VMCB_save(%_ASM_CX), %_ASM_DX    /* Read GUEST_RFLAGS */
-+	test $0x100, %_ASM_DX                                   /* Test X86_EFLAGS_TF (bit 8) */
-+	jnz .Lfastpath_slowpath
-+
-+	movl VMCB_CONTROL_exit_code(%_ASM_CX), %edx   /* RDX = control->exit_code */
-+	cmp $0x08A, %edx                              /* SVM_EXIT_MONITOR (0x08A) == RDX 'w' lower 16 bits */
-+	je .Ladvance_rip_and_reenter
-+	cmp $0x08B, %edx                              /* SVM_EXIT_MWAIT (0x08B) == RDX 'w' lower 16 bits */
-+	jne .Lfastpath_slowpath
-+
-+.Ladvance_rip_and_reenter:
-+	mov VMCB_CONTROL_next_rip(%_ASM_CX), %_ASM_DX           /* RDX = control->next_rip */
-+	mov %_ASM_DX, VMCB_SAVE_rip + VMCB_save(%_ASM_CX)       /* Write save->rip */
-+
-+	/* Reload GPRs from &vcpu->arch.regs (%_ASM_DI) */
-+#ifdef CONFIG_X86_64
-+	mov VCPU_R8 (%_ASM_DI), %r8
-+	mov VCPU_R9 (%_ASM_DI), %r9
-+	mov VCPU_R10(%_ASM_DI), %r10
-+	mov VCPU_R11(%_ASM_DI), %r11
-+	mov VCPU_R12(%_ASM_DI), %r12
-+	mov VCPU_R13(%_ASM_DI), %r13
-+	mov VCPU_R14(%_ASM_DI), %r14
-+	mov VCPU_R15(%_ASM_DI), %r15
-+#endif
-+	mov VCPU_RCX(%_ASM_DI), %_ASM_CX
-+	mov VCPU_RDX(%_ASM_DI), %_ASM_DX
-+	mov VCPU_RBX(%_ASM_DI), %_ASM_BX
-+	mov VCPU_RBP(%_ASM_DI), %_ASM_BP
-+
-+	mov KVM_VMCB_pa(%_ASM_SI), %_ASM_AX           /* Load current VMCB physical address into RAX as required by VMRUN */
-+	mov VCPU_RSI(%_ASM_DI), %_ASM_SI
-+
-+	push %_ASM_DI                       /* Push @svm back to balance pop %_ASM_AX after exit */
-+	mov VCPU_RDI(%_ASM_DI), %_ASM_DI    /* MUST BE LAST: Reload guest RDI from memory (overwriting our @regs pointer) */
-+
-+	/* Execute VMRUN to return directly to guest execution loop */
-+	jmp 3b
-+
-+.Lfastpath_slowpath:
-+#endif  // NIKA end
- 
- 	mov SVM_vmcb01_pa(%_ASM_DI), %_ASM_AX
- 5:	vmsave %_ASM_AX
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-08-22 17:50:19.918832566 +0100
-@@ -217,8 +217,8 @@
- 			svm_leave_nested(vcpu);
- 			svm_set_gif(svm, true);
- 			/* #GP intercept is still needed for vmware backdoor */
--			if (!enable_vmware_backdoor)
--				clr_exception_intercept(svm, GP_VECTOR);
-+//			if (!enable_vmware_backdoor)  // NIKA removed
-+//				clr_exception_intercept(svm, GP_VECTOR);  // NIKA removed
- 
- 			/*
- 			 * Free the nested guest state, unless we are in SMM.
++++ b/arch/x86/kvm/svm/svm.c	2026-08-28 15:26:08.839021588 +0100
 @@ -779,10 +779,24 @@
  	svm_set_intercept_for_msr(vcpu, MSR_IA32_SYSENTER_ESP, MSR_TYPE_RW,
  				  guest_cpuid_is_intel_compatible(vcpu));
@@ -148,15 +73,6 @@
  	set_exception_intercept(svm, MC_VECTOR);
  	set_exception_intercept(svm, AC_VECTOR);
  	set_exception_intercept(svm, DB_VECTOR);
-@@ -1047,7 +1062,7 @@
- 	 * We intercept those #GP and allow access to them anyway
- 	 * as VMware does.
- 	 */
--	if (enable_vmware_backdoor)
-+//	if (enable_vmware_backdoor)  // NIKA removed
- 		set_exception_intercept(svm, GP_VECTOR);
- 
- 	svm_set_intercept(svm, INTERCEPT_INTR);
 @@ -1057,8 +1072,10 @@
  		svm_set_intercept(svm, INTERCEPT_SMI);
  
@@ -170,14 +86,16 @@
  	svm_set_intercept(svm, INTERCEPT_INVD);
  	svm_set_intercept(svm, INTERCEPT_INVLPG);
  	svm_set_intercept(svm, INTERCEPT_INVLPGA);
-@@ -2201,6 +2218,7 @@
- 	/* Both #GP cases have zero error_code */
- 	if (error_code)
- 		goto reinject;
-+	else if (svm_get_cpl(vcpu) == 3) { kvm_queue_exception(vcpu, UD_VECTOR); return 1; }  // NIKA added
+@@ -1075,7 +1092,8 @@
+ 	svm_set_intercept(svm, INTERCEPT_SKINIT);
+ 	svm_set_intercept(svm, INTERCEPT_WBINVD);
+ 	svm_set_intercept(svm, INTERCEPT_XSETBV);
+-	svm_set_intercept(svm, INTERCEPT_RDPRU);
++//	svm_set_intercept(svm, INTERCEPT_RDPRU);  // NIKA removed
++	svm_clr_intercept(svm, INTERCEPT_RDPRU);  // NIKA added
+ 	svm_set_intercept(svm, INTERCEPT_RSM);
  
- 	/* Decode the instruction for usage later */
- 	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
+ 	if (!kvm_mwait_in_guest(vcpu->kvm)) {
 @@ -2997,10 +3015,10 @@
  		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
  		 * way to communicate lack of support to the guest.
@@ -268,23 +186,6 @@
  
  /* svm.c */
  extern bool dump_invalid_vmcb;
---- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-08-23 16:24:30.238914894 +0100
-@@ -20,6 +20,14 @@
- 		OFFSET(SVM_vmcb01, vcpu_svm, vmcb01);
- 		OFFSET(KVM_VMCB_pa, kvm_vmcb_info, pa);
- 		OFFSET(SD_save_area_pa, svm_cpu_data, save_area_pa);
-+		OFFSET(KVM_VMCB_ptr, kvm_vmcb_info, ptr);  // NIKA added
-+		OFFSET(VMCB_CONTROL_exit_int_info, vmcb_control_area, exit_int_info);  // NIKA added
-+		OFFSET(VMCB_CONTROL_int_state, vmcb_control_area, int_state);  // NIKA added
-+		OFFSET(VMCB_save, vmcb, save);  // NIKA added
-+		OFFSET(VMCB_SAVE_rflags, vmcb_save_area, rflags);  // NIKA added
-+		OFFSET(VMCB_CONTROL_exit_code, vmcb_control_area, exit_code);  // NIKA added
-+		OFFSET(VMCB_CONTROL_next_rip, vmcb_control_area, next_rip);  // NIKA added
-+		OFFSET(VMCB_SAVE_rip, vmcb_save_area, rip);  // NIKA added
- 	}
- 
- 	if (IS_ENABLED(CONFIG_KVM_INTEL)) {
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/x86.c	2026-08-22 17:31:39.847667390 +0100
 @@ -543,6 +543,9 @@
