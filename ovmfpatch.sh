@@ -78,6 +78,10 @@ file_ShellPkg="$(pwd)/ovmf/ShellPkg/ShellPkg.dec"
 file_QemuBootOrderLib="$(pwd)/ovmf/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
 file_AuthServiceInternal="$(pwd)/ovmf/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
 file_Q35MchIch9="$(pwd)/ovmf/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
+file_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.c"
+file_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.c"
+header_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.h"
+header_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.h"
 file_BhyveDefines="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
 file_OvmfPkgDefines="$(pwd)/ovmf/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
 
@@ -102,6 +106,10 @@ if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
 if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
 if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
+if [[ -f "$file_PBML_BdsPlatform" ]]; then rm "$file_PBML_BdsPlatform"; fi
+if [[ -f "$file_PBMLB_BdsPlatform" ]]; then rm "$file_PBMLB_BdsPlatform"; fi
+if [[ -f "$header_PBML_BdsPlatform" ]]; then rm "$header_PBML_BdsPlatform"; fi
+if [[ -f "$header_PBMLB_BdsPlatform" ]]; then rm "$header_PBMLB_BdsPlatform"; fi
 if [[ -f "$file_BhyveDefines" ]]; then rm "$file_BhyveDefines"; fi
 if [[ -f "$file_OvmfPkgDefines" ]]; then rm "$file_OvmfPkgDefines"; fi
 mkdir -p ovmf
@@ -122,6 +130,13 @@ echo "\"BHYVE\"                                           -> \"ALASKA\""
 echo "\"BVDSDT\"                                          -> \"A M I   \""
 sed -i "$file_Dsdt" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 sed -i "$file_Dsdt" -Ee "s/\"BVDSDT\"/\"A M I   \"/"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "Name (_ADR, 0x001F0000                            -> Name (_ADR, 0x00140003"
+  sed -i "$file_Dsdt" -Ee "s/Name \(_ADR, 0x001F0000/Name (_ADR, 0x00140003/"
+fi
 
 echo "  $file_Facp"
 echo "'B','V','F','A','C','P',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
@@ -307,9 +322,6 @@ echo "  $file_Driver"
 #get_new_string 4 1
 echo "L\"QEMU                                            -> L\"$new_string"
 sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
-IFS=':'
-cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "0x1234                                            -> 0x1022"
   echo "0x1b36                                            -> 0x1022"
@@ -358,6 +370,36 @@ else
 fi
 echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
 sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  echo "EFI_PCI_ADDRESS (0, 0x1f, 0                       -> EFI_PCI_ADDRESS (0, 0x14, 3"
+  sed -i "$file_Q35MchIch9" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/"
+  sed -i "$file_Q35MchIch9" -Ee "s/EFI_PCI_ADDRESS \(0, 0x1f, 0/EFI_PCI_ADDRESS (0, 0x14, 3/"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $file_PBML_BdsPlatform"
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBML_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $file_PBMLB_BdsPlatform"
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBMLB_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBML_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBML_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBMLB_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBMLB_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
 
 echo "  $file_BhyveDefines"
 echo "0x800000                                          -> 0x810000"
@@ -388,7 +430,7 @@ build_firmware() {
     -D SECURE_BOOT_ENABLE \
     -D SMM_REQUIRE -D TPM1_ENABLE -D TPM2_ENABLE \
     -a X64 -p OvmfPkg/OvmfPkgX64.dsc \
-    -b RELEASE -t GCC5 -n 0 \
+    -b RELEASE -t GCC -n 0 \
     -s -q
 }
 
@@ -406,8 +448,8 @@ else
 fi
 
 sudo mkdir -p "$EDK2_DEST"
-qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd $CODE_DEST
-qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd $VARS_DEST
+qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC/FV/OVMF_CODE.fd $CODE_DEST
+qemu-img convert -f raw -O qcow2 Build/OvmfX64/RELEASE_GCC/FV/OVMF_VARS.fd $VARS_DEST
 echo "$CODE_DEST"
 echo "$VARS_DEST"
 

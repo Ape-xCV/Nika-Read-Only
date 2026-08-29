@@ -440,7 +440,7 @@ build_firmware() {
     -D SECURE_BOOT_ENABLE \
     -D SMM_REQUIRE -D TPM1_ENABLE -D TPM2_ENABLE \
     -a X64 -p OvmfPkg/OvmfPkgX64.dsc \
-    -b RELEASE -t GCC5 -n 0 \
+    -b RELEASE -t GCC -n 0 \
     -s -q
 }
 
