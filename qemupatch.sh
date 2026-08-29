@@ -542,9 +542,11 @@ else
 fi
 sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
 echo "    if (f->rev <= 4) {"
-echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
-##sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+echo "        v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "        build_append_gas_from_struct(tbl, &f->sleep_ctl);"
+echo "        build_append_gas_from_struct(tbl, &f->sleep_sts);"
+sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_gas_from_struct(tbl, &f->sleep_ctl);\n\
+        build_append_gas_from_struct(tbl, &f->sleep_sts);"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -599,8 +601,8 @@ sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 echo "  $file_acpibuild"
 c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
 c3=$(shuf -i 4-6 -n 1)$(get_random_hex 2)
-echo ".rev = 3,                                         -> .rev = 5,"
-sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 5,/"
+echo ".rev = 3,                                         -> .rev = 4,"
+sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
@@ -608,6 +610,11 @@ path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -
 echo "  $file_pcihp"
 echo "S%.02X                                            -> $path%.02X"
 #sed -i "$file_pcihp" -Ee "s/S%.02X/$path%.02X/"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
+cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
+cpu_name="${cpu_name[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_pcihp" -Ee "/bool build_append_notification_callback\(Aml \*parent_scope, const PCIBus \*bus\)/istatic void get_pci_name(char *cstr, int devfn)\n\
 {\n\
@@ -895,11 +902,6 @@ echo ".S08.                                             -> .${path}08."
 sed -i "$file_piix" -Ee "s/.S08./.${path}08./"
 
 echo "  $file_lpcich9"
-IFS=':'
-cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-cpu_vendor="${cpu_vendor[1]}"
-cpu_name=( $(cat /proc/cpuinfo | grep 'model name' | uniq) )
-cpu_name="${cpu_name[1]}"
 #echo ".SF8.                                             -> .${path}F8."
 #sed -i "$file_lpcich9" -Ee "s/.SF8./.${path}F8./"
 echo ".SF8.                                             -> .LPCB."
