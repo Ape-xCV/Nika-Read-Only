@@ -35,7 +35,18 @@
  
  /*
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-08-28 15:26:08.839021588 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-08-29 20:51:56.946176731 +0100
+@@ -217,8 +217,8 @@
+ 			svm_leave_nested(vcpu);
+ 			svm_set_gif(svm, true);
+ 			/* #GP intercept is still needed for vmware backdoor */
+-			if (!enable_vmware_backdoor)
+-				clr_exception_intercept(svm, GP_VECTOR);
++//			if (!enable_vmware_backdoor)  // NIKA removed
++//				clr_exception_intercept(svm, GP_VECTOR);  // NIKA removed
+ 
+ 			/*
+ 			 * Free the nested guest state, unless we are in SMM.
 @@ -779,10 +779,24 @@
  	svm_set_intercept_for_msr(vcpu, MSR_IA32_SYSENTER_ESP, MSR_TYPE_RW,
  				  guest_cpuid_is_intel_compatible(vcpu));
@@ -73,6 +84,15 @@
  	set_exception_intercept(svm, MC_VECTOR);
  	set_exception_intercept(svm, AC_VECTOR);
  	set_exception_intercept(svm, DB_VECTOR);
+@@ -1047,7 +1062,7 @@
+ 	 * We intercept those #GP and allow access to them anyway
+ 	 * as VMware does.
+ 	 */
+-	if (enable_vmware_backdoor)
++//	if (enable_vmware_backdoor)  // NIKA removed
+ 		set_exception_intercept(svm, GP_VECTOR);
+ 
+ 	svm_set_intercept(svm, INTERCEPT_INTR);
 @@ -1057,8 +1072,10 @@
  		svm_set_intercept(svm, INTERCEPT_SMI);
  
@@ -96,7 +116,15 @@
  	svm_set_intercept(svm, INTERCEPT_RSM);
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
-@@ -2997,10 +3015,10 @@
+@@ -2201,6 +2219,7 @@
+ 	/* Both #GP cases have zero error_code */
+ 	if (error_code)
+ 		goto reinject;
++	else if (svm_get_cpl(vcpu) == 3) { kvm_queue_exception(vcpu, UD_VECTOR); return 1; }  // NIKA added
+ 
+ 	/* Decode the instruction for usage later */
+ 	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
+@@ -2997,10 +3016,10 @@
  		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
  		 * way to communicate lack of support to the guest.
  		 */
@@ -111,7 +139,7 @@
  
  		if (data & DEBUGCTL_RESERVED_BITS)
  			return 1;
-@@ -3158,6 +3176,42 @@
+@@ -3158,6 +3177,42 @@
  	return 0;
  }
  
@@ -154,7 +182,7 @@
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3196,7 +3250,8 @@
+@@ -3196,7 +3251,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
@@ -164,7 +192,7 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -3208,7 +3263,8 @@
+@@ -3208,7 +3264,8 @@
  	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
  	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
  	[SVM_EXIT_VMRUN]			= vmrun_interception,
