@@ -140,6 +140,9 @@ echo "\"BHYVE\"                                           -> \"ALASKA\""
 echo "\"BVDSDT\"                                          -> \"A M I   \""
 sed -i "$file_Dsdt" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 sed -i "$file_Dsdt" -Ee "s/\"BVDSDT\"/\"A M I   \"/"
+IFS=':'
+cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
+cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "Name (_ADR, 0x001F0000                            -> Name (_ADR, 0x00140003"
   sed -i "$file_Dsdt" -Ee "s/Name \(_ADR, 0x001F0000/Name (_ADR, 0x00140003/"
@@ -329,9 +332,6 @@ echo "  $file_Driver"
 #get_new_string 4 1
 echo "L\"QEMU                                            -> L\"$new_string"
 sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
-IFS=':'
-cpu_vendor=( $(cat /proc/cpuinfo | grep 'vendor_id' | uniq) )
-cpu_vendor="${cpu_vendor[1]}"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "0x1234                                            -> 0x1022"
   echo "0x1b36                                            -> 0x1022"
