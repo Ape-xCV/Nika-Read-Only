@@ -544,7 +544,7 @@ sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified
 echo "    if (f->rev <= 4) {"
 echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
-sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+##sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -599,8 +599,8 @@ sed -i "$file_edidgenerate" -Ee "s/edid\[17\] = 2014 - 1990/edid\[17\] = $year/"
 echo "  $file_acpibuild"
 c2=$(shuf -i 7-9 -n 1)$(get_random_hex 1)
 c3=$(shuf -i 4-6 -n 1)$(get_random_hex 2)
-echo ".rev = 3,                                         -> .rev = 4,"
-sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 4,/"
+echo ".rev = 3,                                         -> .rev = 5,"
+sed -i "$file_acpibuild" -Ee "s/.rev = 3,/.rev = 5,/"
 sed -i "$file_acpibuild" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x00$c2/"
 sed -i "$file_acpibuild" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x0$c3/"
 path=$(head /dev/urandom | tr -dc 'AEIOU' | head -c 1)$(head /dev/urandom | tr -dc 'B-DF-HJ-NP-RTV-Z' | head -c 1)
