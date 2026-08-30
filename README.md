@@ -495,7 +495,7 @@ echo "softdep nvidia pre: vfio-pci" >> /etc/modprobe.d/kvm.conf
 
 - Update initramfs:
 ```shell
-<Fedora> sudo dracut --force
+<Fedora> sudo dracut -f
 <Debian> sudo update-initramfs -c -k $(uname -r)
 ```
 
@@ -704,23 +704,6 @@ gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=108
 
 ### 5.3. Steam Remote Play
 
-- Take note of **guest local IP**:
-```shell
-C:\>ipconfig
-
-Windows IP Configuration
-
-
-Ethernet adapter Ethernet:
-
-   Connection-specific DNS Suffix  . :
-   IPv4 Address. . . . . . . . . . . : 192.168.122.221
-   Subnet Mask . . . . . . . . . . . : 255.255.255.0
-   Default Gateway . . . . . . . . . : 192.168.122.1
-
-C:\>
-```
-
 
   <details>
     <summary>Install `Steam` on <b>Fedora Linux</b>:</summary>
@@ -730,14 +713,18 @@ C:\>
     sudo ln -s /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt
   </details>
 
-- Start `Steam` on host with:
+- Linux PC `hostname` and `MAC address` will show in guest ARP table.
+
+- Set `hostname` on Linux PC:
 ```shell
-steam -console
+sudo hostnamectl set-hostname YOUR_SERIAL_HERE
 ```
 
-- Steam >> Console >> `connect_remote 192.168.122.221:27036` >> [KEY_ENTER]
-  - You need to manually specify **guest local IP** for direct connection.
-  - This will lower stream delay to 10 ms.
+- Change `MAC address` on Linux PC **every reboot**:
+```shell
+ip addr
+sudo macchanger -r YOUR_DEVICE_HERE
+```
 
 - Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
 
