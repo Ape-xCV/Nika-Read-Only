@@ -946,21 +946,6 @@ GRUB_CMDLINE_LINUX="mitigations=auto ..."
 <Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-- If using `amd619.mypatch` or `intel619.mypatch_homo`:
-  - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace `</qemu:commandline>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-      <qemu:arg value="-overcommit"/>
-      <qemu:arg value="cpu-pm=on"/>
-    </qemu:commandline>
-  ```
-  </details>
-
 ### 7.4. memflow-kvm (not required, install if memflow-win32 error)
 
 - Boot `kernel-6.19.14_tkg_eevdf+-1.x86_64`.
