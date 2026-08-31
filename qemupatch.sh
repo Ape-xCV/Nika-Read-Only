@@ -544,7 +544,7 @@ sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified
 echo "    if (f->rev <= 4) {"
 echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
-sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+##sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
@@ -2188,8 +2188,10 @@ fi
 echo "  $file_pc"
 echo "pcms->smbus_enabled = true;                       -> pcms->smbus_enabled = false;"
 echo "pcms->sata_enabled = true;                        -> pcms->sata_enabled = false;"
+echo "pcms->i8042_enabled = true;                       -> pcms->i8042_enabled = false;"
 ##sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
 sed -i "$file_pc" -Ee "s/pcms->sata_enabled = true;/pcms->sata_enabled = false;/"
+sed -i "$file_pc" -Ee "s/pcms->i8042_enabled = true;/pcms->i8042_enabled = false;/"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
