@@ -404,6 +404,22 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
 
+- Remove PS/2 input (do this in one go) and [Apply]:
+```shell
+    <ps2 state="on"/>  -->>  <ps2 state="off"/>
+  </features>
+
+    <input type="mouse" bus="ps2"/>  **delete**
+    <input type="keyboard" bus="ps2"/>  **delete**
+    <graphics type="spice" autoport="yes">
+    ...
+  </devices>
+```
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Input >> Type: USB Mouse >> [Finish]
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Input >> Type: USB Keyboard >> [Finish]
+
 ### 2.2. Remove excess PCI
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
