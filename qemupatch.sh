@@ -542,11 +542,9 @@ else
 fi
 sed -i "$file_amlbuild" -e  's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//'
 echo "    if (f->rev <= 4) {"
-echo "        v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "        build_append_gas_from_struct(tbl, &f->sleep_ctl);"
-echo "        build_append_gas_from_struct(tbl, &f->sleep_sts);"
-sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_gas_from_struct(tbl, &f->sleep_ctl);\n\
-        build_append_gas_from_struct(tbl, &f->sleep_sts);"
+echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
+echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
+sed -i "$file_amlbuild" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 get_new_string 4 1
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_amlbuild" -Ee "s/\"QEMU\"/\"$new_string\"/"
