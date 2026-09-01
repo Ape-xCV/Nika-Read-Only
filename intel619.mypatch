@@ -35,17 +35,13 @@
  
  /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-08-29 02:19:44.888142648 +0100
-@@ -237,6 +237,188 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-09-01 22:32:04.481061329 +0100
+@@ -237,6 +237,180 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
 +#if 1  // NIKA begin
 +	mov %_ASM_AX, %_ASM_DI              /* RDI = &vcpu->arch.regs */
-+
-+	/* CHECK: Bail if spec_ctrl management was requested in @flags */
-+	testl $VMX_RUN_SAVE_SPEC_CTRL, 2*WORD_SIZE(%_ASM_SP)
-+	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: IDT_VECTORING_INFO_FIELD (vmx_complete_interrupts guard) */
 +	mov $0x4408, %esi                   /* Read IDT_VECTORING_INFO_FIELD (VMCS 0x4408) */
@@ -76,10 +72,6 @@
 +	je .Lcheck_msr_range
 +	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
 +	je .Lcheck_msr_range
-+//	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
-+//	je .Ladvance_rip_and_reenter
-+//	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
-+//	je .Ladvance_rip_and_reenter
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
 +
@@ -226,7 +218,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-08-27 14:02:09.347855527 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-01 22:38:28.221540880 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -379,7 +371,7 @@
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
 +//	for (u32 msr = 0x480; msr <= 0x491; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
 +//	vmx_enable_intercept_for_msr(vcpu,  0xC0000082, MSR_TYPE_RW);  /* VGK_IA32_LSTAR */
-+	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
++//	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
@@ -411,7 +403,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6321,66 @@
+@@ -6234,6 +6321,65 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -424,11 +416,11 @@
 +	ecx = kvm_rcx_read(vcpu);
 +	in_eax = eax;
 +	in_ecx = ecx;
-+	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
++//	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
 +//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
 +//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
-+		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
-+		in_eax == 0x0B)//       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
++//		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
++//		in_eax == 0x0B       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
 +//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
 +//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
 +//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
@@ -436,24 +428,23 @@
 +//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
 +//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
 +//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
-+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
-+	else {
++//		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++//	else {
 +		asm volatile("cpuid"
 +		: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
 +		: "a"(in_eax), "c"(in_ecx)
 +		: "memory"
 +		);
-+	}
-+//	if (in_eax == 0x01) ecx |= 0x80000000;  // Hyper-V fix
-+//	if (in_eax == 0x07 && in_ecx == 0x00) edx &= 0x73FFFFFF;  // GRUB_CMDLINE_LINUX="mitigations=off" fix
++//	}
++	if (in_eax == 0x01) ecx &= ~(1U << 3);  // Clear MONITOR MWAIT flag
 +	kvm_rax_write(vcpu, eax);
 +	kvm_rbx_write(vcpu, ebx);
 +	kvm_rcx_write(vcpu, ecx);
 +	kvm_rdx_write(vcpu, edx);
 +	if (in_eax <= 0x24) {
-+		if ((in_eax == 0x01 || in_eax == 0x07)
-+			&& ((vcpu->arch.cr4 & X86_CR4_OSXSAVE) == 0 || (vcpu->arch.xcr0 & 0x06) != 0x06))
-+			return kvm_skip_emulated_instruction(vcpu);
++//		if ((in_eax == 0x01 || in_eax == 0x07)
++//			&& ((vcpu->arch.cr4 & X86_CR4_OSXSAVE) == 0 || (vcpu->arch.xcr0 & 0x06) != 0x06))
++//			return kvm_skip_emulated_instruction(vcpu);
 +		// Mask representing CPUID leaves 0x00–0x24 that rely on ECX subleaves
 +		if (((0x00000019E154A990ULL >> in_eax) & 1ULL) == 0) in_ecx = 0;
 +		else in_ecx = min(in_ecx, 0x3FU);
@@ -478,7 +469,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6394,8 @@
+@@ -6247,7 +6393,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -488,7 +479,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6403,8 @@
+@@ -6255,7 +6402,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -498,7 +489,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7379,9 +7528,9 @@
+@@ -7379,9 +7527,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -510,7 +501,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7543,7 @@
+@@ -7394,7 +7542,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -519,7 +510,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7491,11 +7640,11 @@
+@@ -7491,11 +7639,11 @@
  	if (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)
  		vmx_set_interrupt_shadow(vcpu, 0);
  
@@ -533,7 +524,7 @@
  
  	if (enable_preemption_timer)
  		vmx_update_hv_timer(vcpu, force_immediate_exit);
-@@ -7504,9 +7653,57 @@
+@@ -7504,9 +7652,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
@@ -591,7 +582,7 @@
  	/* All fields are clean at this point */
  	if (kvm_is_using_evmcs()) {
  		current_evmcs->hv_clean_fields |=
-@@ -7532,7 +7729,7 @@
+@@ -7532,7 +7728,7 @@
  	loadsegment(es, __USER_DS);
  #endif
  

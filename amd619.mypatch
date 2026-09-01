@@ -35,7 +35,7 @@
  
  /*
 --- a/arch/x86/kvm/svm/svm.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.c	2026-08-31 21:11:51.651450128 +0100
++++ b/arch/x86/kvm/svm/svm.c	2026-09-01 12:29:02.522505821 +0100
 @@ -217,8 +217,8 @@
  			svm_leave_nested(vcpu);
  			svm_set_gif(svm, true);
@@ -47,7 +47,7 @@
  
  			/*
  			 * Free the nested guest state, unless we are in SMM.
-@@ -779,10 +779,23 @@
+@@ -779,10 +779,24 @@
  	svm_set_intercept_for_msr(vcpu, MSR_IA32_SYSENTER_ESP, MSR_TYPE_RW,
  				  guest_cpuid_is_intel_compatible(vcpu));
  
@@ -70,10 +70,11 @@
 +//	svm_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
 +	// MSR_AMD64_SMCA_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
 +//	for (u32 msr = 0xC0002000; msr <= 0xC00021FF; msr++) svm_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	svm_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
  
  	if (kvm_cpu_cap_has(X86_FEATURE_SHSTK)) {
  		bool shstk_enabled = guest_cpu_cap_has(vcpu, X86_FEATURE_SHSTK);
-@@ -1037,7 +1050,8 @@
+@@ -1037,7 +1051,8 @@
  	set_dr_intercepts(svm);
  
  	set_exception_intercept(svm, PF_VECTOR);
@@ -83,7 +84,7 @@
  	set_exception_intercept(svm, MC_VECTOR);
  	set_exception_intercept(svm, AC_VECTOR);
  	set_exception_intercept(svm, DB_VECTOR);
-@@ -1047,7 +1061,7 @@
+@@ -1047,7 +1062,7 @@
  	 * We intercept those #GP and allow access to them anyway
  	 * as VMware does.
  	 */
@@ -92,7 +93,7 @@
  		set_exception_intercept(svm, GP_VECTOR);
  
  	svm_set_intercept(svm, INTERCEPT_INTR);
-@@ -1057,7 +1071,8 @@
+@@ -1057,7 +1072,8 @@
  		svm_set_intercept(svm, INTERCEPT_SMI);
  
  	svm_set_intercept(svm, INTERCEPT_SELECTIVE_CR0);
@@ -102,7 +103,7 @@
  	svm_set_intercept(svm, INTERCEPT_CPUID);
  	svm_set_intercept(svm, INTERCEPT_INVD);
  	svm_set_intercept(svm, INTERCEPT_INVLPG);
-@@ -1075,7 +1090,8 @@
+@@ -1075,7 +1091,8 @@
  	svm_set_intercept(svm, INTERCEPT_SKINIT);
  	svm_set_intercept(svm, INTERCEPT_WBINVD);
  	svm_set_intercept(svm, INTERCEPT_XSETBV);
@@ -112,7 +113,7 @@
  	svm_set_intercept(svm, INTERCEPT_RSM);
  
  	if (!kvm_mwait_in_guest(vcpu->kvm)) {
-@@ -1747,6 +1763,17 @@
+@@ -1747,6 +1764,17 @@
  		vcpu->arch.cpuid_dynamic_bits_dirty = true;
  }
  
@@ -130,7 +131,7 @@
  static void svm_set_segment(struct kvm_vcpu *vcpu,
  			    struct kvm_segment *var, int seg)
  {
-@@ -1775,6 +1802,9 @@
+@@ -1775,6 +1803,9 @@
  		/* This is symmetric with svm_get_segment() */
  		svm->vmcb->save.cpl = (var->dpl & 3);
  
@@ -140,7 +141,7 @@
  	vmcb_mark_dirty(svm->vmcb, VMCB_SEG);
  }
  
-@@ -2201,6 +2231,7 @@
+@@ -2201,6 +2232,7 @@
  	/* Both #GP cases have zero error_code */
  	if (error_code)
  		goto reinject;
@@ -148,7 +149,7 @@
  
  	/* Decode the instruction for usage later */
  	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
-@@ -2997,10 +3028,10 @@
+@@ -2997,10 +3029,10 @@
  		 * Suppress BTF as KVM doesn't virtualize BTF, but there's no
  		 * way to communicate lack of support to the guest.
  		 */
@@ -163,7 +164,7 @@
  
  		if (data & DEBUGCTL_RESERVED_BITS)
  			return 1;
-@@ -3158,6 +3189,49 @@
+@@ -3158,6 +3190,49 @@
  	return 0;
  }
  
@@ -213,7 +214,7 @@
  static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
  	[SVM_EXIT_READ_CR0]			= cr_interception,
  	[SVM_EXIT_READ_CR3]			= cr_interception,
-@@ -3196,7 +3270,8 @@
+@@ -3196,7 +3271,8 @@
  	[SVM_EXIT_SMI]				= smi_interception,
  	[SVM_EXIT_VINTR]			= interrupt_window_interception,
  	[SVM_EXIT_RDPMC]			= kvm_emulate_rdpmc,
@@ -223,7 +224,7 @@
  	[SVM_EXIT_IRET]                         = iret_interception,
  	[SVM_EXIT_INVD]                         = kvm_emulate_invd,
  	[SVM_EXIT_PAUSE]			= pause_interception,
-@@ -3208,7 +3283,8 @@
+@@ -3208,7 +3284,8 @@
  	[SVM_EXIT_TASK_SWITCH]			= task_switch_interception,
  	[SVM_EXIT_SHUTDOWN]			= shutdown_interception,
  	[SVM_EXIT_VMRUN]			= vmrun_interception,
@@ -233,7 +234,7 @@
  	[SVM_EXIT_VMLOAD]			= vmload_interception,
  	[SVM_EXIT_VMSAVE]			= vmsave_interception,
  	[SVM_EXIT_STGI]				= stgi_interception,
-@@ -4237,6 +4313,13 @@
+@@ -4237,6 +4314,13 @@
  
  	sync_lapic_to_cr8(vcpu);
  
@@ -248,13 +249,13 @@
  		svm->vmcb->control.asid = svm->asid;
  		vmcb_mark_dirty(svm->vmcb, VMCB_ASID);
 --- a/arch/x86/kvm/svm/svm.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/svm/svm.h	2026-07-24 15:47:20.773520065 +0100
++++ b/arch/x86/kvm/svm/svm.h	2026-09-01 12:27:06.792379793 +0100
 @@ -673,7 +673,8 @@
  BUILD_SVM_MSR_BITMAP_HELPERS(void, clear, __clear)
  BUILD_SVM_MSR_BITMAP_HELPERS(void, set, __set)
  
 -#define DEBUGCTL_RESERVED_BITS (~DEBUGCTLMSR_LBR)
-+//#define DEBUGCTL_RESERVED_BITS (~DEBUGCTLMSR_LBR)  // NIKA removed
++//#define DEBUGCTL_RESERVED_BITS (~DEBUGCTLMSR_LBR)  /* NIKA removed */
 +#define DEBUGCTL_RESERVED_BITS (~(DEBUGCTLMSR_LBR | DEBUGCTLMSR_BTF))  /* NIKA added */
  
  /* svm.c */
