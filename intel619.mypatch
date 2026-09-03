@@ -222,7 +222,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-09-01 22:38:28.221540880 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-04 00:24:02.541385457 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -420,11 +420,11 @@
 +	ecx = kvm_rcx_read(vcpu);
 +	in_eax = eax;
 +	in_ecx = ecx;
-+//	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
++	if (//in_eax == 0x01       ||  // Basic CPU info, feature flags (SSE, AVX, etc.), and processor model/family
 +//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
 +//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
-+//		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
-+//		in_eax == 0x0B       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
++		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
++		in_eax == 0x0B)//    ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
 +//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
 +//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
 +//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
@@ -432,14 +432,14 @@
 +//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
 +//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
 +//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
-+//		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
-+//	else {
++		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++	else {
 +		asm volatile("cpuid"
 +		: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
 +		: "a"(in_eax), "c"(in_ecx)
 +		: "memory"
 +		);
-+//	}
++	}
 +	if (in_eax == 0x01) ecx &= ~(1U << 3);  // Clear MONITOR MWAIT flag
 +	kvm_rax_write(vcpu, eax);
 +	kvm_rbx_write(vcpu, ebx);
