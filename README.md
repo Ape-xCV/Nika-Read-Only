@@ -127,7 +127,7 @@ chmod +x headless.sh
 <details>
   <summary>Hardware decoder with <b>Nvidia</b>:</summary>
 
-    sudo dnf install nvidia-vaapi-driver
+    sudo dnf install libva-nvidia-driver
 </details>
 
 
