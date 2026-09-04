@@ -35,7 +35,7 @@
  
  /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-09-03 22:59:40.843301083 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-09-04 07:15:20.085632907 +0100
 @@ -237,6 +237,184 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -68,14 +68,14 @@
 +	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
 +	test $0x80000000, %edx              /* Test VMENTRY failure (bit 31) */
 +	jnz .Lfastpath_slowpath
-+	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
-+	je .Lcheck_msr_range
-+	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
-+	je .Lcheck_msr_range
-+//	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
-+//	je .Ladvance_rip_and_reenter
-+//	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
-+//	je .Ladvance_rip_and_reenter
++//	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
++//	je .Lcheck_msr_range
++//	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
++//	je .Lcheck_msr_range
++	cmpw $0x27, %dx                     /* EXIT_REASON_MONITOR (0x27) */
++	je .Ladvance_rip_and_reenter
++	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
++	je .Ladvance_rip_and_reenter
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) == RDX 'w' lower 16 bits */
 +	jne .Lfastpath_slowpath
 +
