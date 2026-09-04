@@ -880,14 +880,16 @@ fi
 
 echo "  $file_acpi_cpu"
 get_new_string $(shuf -i 5-7 -n 1) 3
-echo "CPU hotplug                                       -> CPU $prefix$suffix"
-sed -i "$file_acpi_cpu" -Ee "s/CPU Hotplug/CPU $prefix$suffix/gI"
-sed -i "$file_acpi_cpu" -Ee "s/resources\"/interface\"/g"
+echo "CPU Hotplug resources                             -> CPU $prefix$suffix"
+sed -i "$file_acpi_cpu" -Ee "s/CPU Hotplug resources/CPU $prefix$suffix/"
 
 echo "  $file_pcihp"
-echo "PCI hotplug                                       -> PCI $prefix$suffix"
-sed -i "$file_pcihp" -Ee "s/PCI Hotplug/PCI $prefix$suffix/gI"
-sed -i "$file_pcihp" -Ee "s/resources\"/interface\"/g"
+get_new_string 4 1
+echo "PHPR                                              -> $new_string"
+sed -i "$file_pcihp" -Ee "s/PHPR/$new_string/"
+get_new_string $(shuf -i 5-7 -n 1) 3
+echo "PCI Hotplug resources                             -> PCI $prefix$suffix"
+sed -i "$file_pcihp" -Ee "s/PCI Hotplug resources/PCI $prefix$suffix/"
 #sed -i "$file_pcihp" -e  '/static Aml \*aml_pci_device_dsm(void)/,/^}/d'
 #sed -i "$file_pcihp" -e  '/aml_pci_device_dsm());/{d;}'
 sed -i "$file_pcihp" -e  '/        \/\* add _EJ0 to make slot hotpluggable/{n;N;N;N;N;d;}'
