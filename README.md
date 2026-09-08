@@ -848,6 +848,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 - Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
 ```shell
   <vcpu placement="static">8</vcpu>
+  <iothreads>1</iothreads>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
@@ -857,6 +858,8 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
     <vcpupin vcpu="5" cpuset="5"/>
     <vcpupin vcpu="6" cpuset="6"/>
     <vcpupin vcpu="7" cpuset="7"/>
+    <emulatorpin cpuset="0"/>
+    <iothreadpin iothread="1" cpuset="1"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
@@ -867,12 +870,15 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 - Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
 ```shell
   <vcpu placement="static">24</vcpu>
+  <iothreads>1</iothreads>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
     ...
     <vcpupin vcpu="22" cpuset="22"/>
     <vcpupin vcpu="23" cpuset="23"/>
+    <emulatorpin cpuset="0"/>
+    <iothreadpin iothread="1" cpuset="1"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
