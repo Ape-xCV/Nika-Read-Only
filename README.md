@@ -957,7 +957,7 @@ cd "linux-tkg/RPMs"
 sudo dnf install kernel-6.19.14_tkg_eevdf+-1.x86_64.rpm
 ```
 
-- Edit `/etc/default/grub`, add **mitigations=auto**:
+- Edit `/etc/default/grub`, add **cpuset.sched_load_balance=0 processor.max_cstate=1 mitigations=auto**:
 ```shell
 GRUB_CMDLINE_LINUX="mitigations=auto ..."
 ```
