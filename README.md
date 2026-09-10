@@ -922,7 +922,46 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device
 
+### 7.2.1a. USB
+
 - Plug an USB Network Interface Card into USB 3.x xHCI Host Controller port.
+
+### 7.2.1b. virtio
+
+- Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
+
+
+- Replace `</qemu:commandline>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+    <qemu:arg value="-drive"/>
+    <qemu:arg value="file=/home/fedora/Downloads/virtio-win.iso,format=raw,read-only=on,if=none,id=drive-sata1-1"/>
+    <qemu:arg value="-device"/>
+    <qemu:arg value="ide-cd,bus=device-sata1.1,drive=drive-sata1-1,id=sata1-1"/>
+  </qemu:commandline>
+  ```
+  </details>
+
+- Delete `vars.sh`, run `qemupatch.sh` and `ovmfpatch.sh`.
+
+- Download `virtio.cmd` to `network` folder in Desktop (on Windows VM).
+
+- Run `virtio.cmd`, it will copy necessary files from CDROM device.
+
+- Stop VM.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Network >> MAC address: YOUR_MAC_HERE >> Device model: virtio >> [Finish]
+
+- Start VM.
+
+- Install virtio ethernet from `network` folder (use Device Manager).
+
+- Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
+```shell
+bcdedit /set testsigning off
+```
 
 ### 7.3. Build custom Linux kernel (mandatory)
 
