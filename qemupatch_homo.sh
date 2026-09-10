@@ -2193,7 +2193,7 @@ echo "pcms->sata_enabled = true;                        -> pcms->sata_enabled = 
 echo "pcms->i8042_enabled = true;                       -> pcms->i8042_enabled = false;"
 ##sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
 sed -i "$file_pc" -Ee "s/pcms->sata_enabled = true;/pcms->sata_enabled = false;/"
-sed -i "$file_pc" -Ee "s/pcms->i8042_enabled = true;/pcms->i8042_enabled = false;/"
+##sed -i "$file_pc" -Ee "s/pcms->i8042_enabled = true;/pcms->i8042_enabled = false;/"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
