@@ -111,6 +111,7 @@ chmod +x headless.sh
 
 <details>
   <summary>Hardware decoder with <b>Intel Skylake</b> and newer:</summary>
+
     sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     sudo dnf install intel-media-driver
 </details>
