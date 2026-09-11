@@ -422,6 +422,7 @@ file_acpicommon="$(pwd)/qemu/hw/i386/acpi-common.c"
 file_pc="$(pwd)/qemu/hw/i386/pc.c"
 file_Kconfig="$(pwd)/qemu/hw/net/Kconfig"
 file_mesonbuild="$(pwd)/qemu/hw/net/meson.build"
+file_ivshmempci="$(pwd)/qemu/hw/misc/ivshmem-pci.c"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -507,6 +508,7 @@ if [[ -f "$file_acpicommon" ]]; then rm "$file_acpicommon"; fi
 if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
 if [[ -f "$file_Kconfig" ]]; then rm "$file_Kconfig"; fi
 if [[ -f "$file_mesonbuild" ]]; then rm "$file_mesonbuild"; fi
+if [[ -f "$file_ivshmempci" ]]; then rm "$file_ivshmempci"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
@@ -2218,6 +2220,17 @@ echo "system_ss.add(when: 'CONFIG_RTL8125_PCI_EXPRESS', if_true: files('rtl8125.
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "system_ss.add(when: 'CONFIG_RTL8139_PCI', if_true: files('rtl8139.c'))"
 sed -i "$file_mesonbuild" -Ee "/system_ss.add\(when: 'CONFIG_RTL8139_PCI', if_true: files\('rtl8139.c'\)\)/isystem_ss.add(when: 'CONFIG_RTL8125_PCI_EXPRESS', if_true: files('rtl8125.c', 'net_tx_pkt.c'))"
+
+echo "  $file_ivshmempci"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "VENDOR_ID_IVSHMEM   PCI_VENDOR_ID_REDHAT_QUMRANET -> VENDOR_ID_IVSHMEM   0x1022"
+  sed -i "$file_ivshmempci" -Ee "s/VENDOR_ID_IVSHMEM   PCI_VENDOR_ID_REDHAT_QUMRANET/VENDOR_ID_IVSHMEM   0x1022/"
+else
+  echo "VENDOR_ID_IVSHMEM   PCI_VENDOR_ID_REDHAT_QUMRANET -> VENDOR_ID_IVSHMEM   0x8086"
+  sed -i "$file_ivshmempci" -Ee "s/VENDOR_ID_IVSHMEM   PCI_VENDOR_ID_REDHAT_QUMRANET/VENDOR_ID_IVSHMEM   0x8086/"
+fi
+echo "DEVICE_ID_IVSHMEM   0x1110                        -> DEVICE_ID_IVSHMEM   0x$device"
+sed -i "$file_ivshmempci" -Ee "s/DEVICE_ID_IVSHMEM   0x1110/DEVICE_ID_IVSHMEM   0x$device/"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
