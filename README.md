@@ -617,6 +617,7 @@ cgroup_device_acl = [
         "/dev/input/event7",
         "/dev/input/event8",
         "/dev/input/event9",
+        "/dev/kvmfr0",
         "/dev/userfaultfd"
 ]
 ```
@@ -1008,7 +1009,7 @@ GRUB_CMDLINE_LINUX="mitigations=auto ..."
 cd "linux-tkg/RPMs"
 sudo dnf install kernel-devel-6.19.14_tkg_eevdf+-1.x86_64.rpm
 sudo dnf download dkms
-sudo rpm -i --nodeps dkms-3.4.1-1.fc44.noarch.rpm
+sudo rpm -i --nodeps dkms-3.4.3-2.fc44.noarch.rpm
 sudo wget https://github.com/memflow/memflow-kvm/releases/download/bin-kernel-6.19/memflow-source-only.dkms.tar.gz
 sudo dkms install --archive=memflow-source-only.dkms.tar.gz
 ```
