@@ -420,6 +420,8 @@ header_cpu="$(pwd)/qemu/target/i386/cpu.h"
 header_topology="$(pwd)/qemu/include/hw/i386/topology.h"
 file_acpicommon="$(pwd)/qemu/hw/i386/acpi-common.c"
 file_pc="$(pwd)/qemu/hw/i386/pc.c"
+file_Kconfig="$(pwd)/qemu/hw/net/Kconfig"
+file_mesonbuild="$(pwd)/qemu/hw/net/meson.build"
 file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
 file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
 
@@ -503,12 +505,16 @@ if [[ -f "$header_cpu" ]]; then rm "$header_cpu"; fi
 if [[ -f "$header_topology" ]]; then rm "$header_topology"; fi
 if [[ -f "$file_acpicommon" ]]; then rm "$file_acpicommon"; fi
 if [[ -f "$file_pc" ]]; then rm "$file_pc"; fi
+if [[ -f "$file_Kconfig" ]]; then rm "$file_Kconfig"; fi
+if [[ -f "$file_mesonbuild" ]]; then rm "$file_mesonbuild"; fi
 if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
 if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu
 cp -f *.dsl qemu
 #cp -f *.aml qemu
+mkdir -p qemu/hw/net
+cp -f rtl8125.c qemu/hw/net/rtl8125.c
 
 echo "  $file_vhdx"
 get_new_string $(shuf -i 5-7 -n 1) 3
@@ -2194,6 +2200,24 @@ echo "pcms->i8042_enabled = true;                       -> pcms->i8042_enabled =
 ##sed -i "$file_pc" -Ee "s/pcms->smbus_enabled = true;/pcms->smbus_enabled = false;/"
 sed -i "$file_pc" -Ee "s/pcms->sata_enabled = true;/pcms->sata_enabled = false;/"
 ##sed -i "$file_pc" -Ee "s/pcms->i8042_enabled = true;/pcms->i8042_enabled = false;/"
+
+echo "  $file_Kconfig"
+echo "config RTL8125_PCI_EXPRESS"
+echo "    bool"
+echo "    default y if PCI_DEVICES || PCIE_DEVICES"
+echo "    depends on PCI_EXPRESS && MSI_NONBROKEN"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "config RTL8139_PCI"
+sed -i "$file_Kconfig" -Ee "/config RTL8139_PCI/iconfig RTL8125_PCI_EXPRESS\n\
+    bool\n\
+    default y if PCI_DEVICES || PCIE_DEVICES\n\
+    depends on PCI_EXPRESS && MSI_NONBROKEN\n"
+
+echo "  $file_mesonbuild"
+echo "system_ss.add(when: 'CONFIG_RTL8125_PCI_EXPRESS', if_true: files('rtl8125.c', 'net_tx_pkt.c'))"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "system_ss.add(when: 'CONFIG_RTL8139_PCI', if_true: files('rtl8139.c'))"
+sed -i "$file_mesonbuild" -Ee "/system_ss.add\(when: 'CONFIG_RTL8139_PCI', if_true: files\('rtl8139.c'\)\)/isystem_ss.add(when: 'CONFIG_RTL8125_PCI_EXPRESS', if_true: files('rtl8125.c', 'net_tx_pkt.c'))"
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
