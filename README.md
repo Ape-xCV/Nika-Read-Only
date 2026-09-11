@@ -744,7 +744,7 @@ sudo -E ./nika
 
 ### 7. Spoof QEMU (mandatory)
 
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
+- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
 
   <details>
@@ -866,7 +866,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 ### 7.1. Spoof OVMF (mandatory)
 
-- This script is based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
+- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
 
 
   <details>
@@ -926,7 +926,13 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Plug an USB Network Interface Card into USB 3.x xHCI Host Controller port.
 
-### 7.2.1b. virtio
+### 7.2.1b. rtl8125
+
+- Credit to: [HazedHV/AutoVirt](https://github.com/HazedHV/AutoVirt).
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Network >> MAC address: YOUR_MAC_HERE >> Device model: rtl8125 >> **(type it in)** >> [Finish]
+
+### 7.2.1c. virtio
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
