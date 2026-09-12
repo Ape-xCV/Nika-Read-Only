@@ -235,6 +235,8 @@ sudo virsh net-autostart default
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: rtl8125 >> **(type it in)** >> MAC address: YOUR_MAC_HERE >> [Apply]
+
 ### 2.1. Configure VM
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
