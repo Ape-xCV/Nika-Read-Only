@@ -224,12 +224,205 @@ sudo virsh net-start default
 sudo virsh net-autostart default
 ```
 
+### 1.3. Spoof QEMU (mandatory)
+
+- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
+
+
+  <details>
+    <summary>Build on <b>Fedora 44</b>:</summary>
+
+  ```shell
+  sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Debian 13</b>:</summary>
+
+  ```shell
+  sudo apt install acpica-tools
+  sudo apt build-dep qemu
+  ```
+  </details>
+
+- Edit `qemupatch.sh`, use your own `lspci -nn` data:
+```shell
+lspci -nn
+
+00:1f.0 ISA bridge [0601]: Intel Corporation Tiger Lake-LP LPC Controller [8086:a082] (rev 20)
+00:1f.4 SMBus [0c05]: Intel Corporation Tiger Lake-LP SMBus Controller [8086:a0a3] (rev 20)
+00:1f.3 Multimedia audio controller [0401]: Intel Corporation Tiger Lake-LP Smart Sound Technology Audio Controller [8086:a0c8] (rev 20)
+02:00.0 Non-Volatile memory controller [0108]: Intel Corporation SSD 660P Series [8086:f1a8] (rev 03)
+00:1c.0 PCI bridge [0604]: Intel Corporation Tiger Lake-LP PCI Express Root Port #8 [8086:a0bf] (rev 20)
+00:14.0 USB controller [0c03]: Intel Corporation Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller [8086:a0ed] (rev 20)
+00:00.0 Host bridge [0600]: Intel Corporation Tiger Lake-UP3/H35 4 cores Host Bridge/DRAM Registers [8086:9a14] (rev 01)
+00:14.2 RAM memory [0500]: Intel Corporation Tiger Lake-LP Shared SRAM [8086:a0ef] (rev 20)
+
+
+lpc_8086="a082"         # Tiger Lake-LP LPC Controller
+smbus_8086="a0a3"       # Tiger Lake-LP SMBus Controller
+hdaudio_8086="a0c8"     # Tiger Lake-LP Smart Sound Technology Audio Controller
+hdaname_8086="Tiger Lake-LP Smart Sound Technology Audio Controller"
+sata_8086="f1a8"        # SSD 660P Series
+#rootport_8086="a0bf"    # Tiger Lake-LP PCI Express Root Port #8
+rootport_8086="a0b8"    # 8-7=1, a0bf-7=a0b8, Tiger Lake-LP PCI Express Root Port #1
+xhci_8086="a0ed"        # Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller
+hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
+pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
+```
+
+- Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace from `<pm>` to `</emulator>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <pm>
+    <suspend-to-mem enabled="yes"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+  ```
+  </details>
+
+
+- Replace `</qemu:commandline>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+  </qemu:commandline>
+  ```
+  </details>
+
+- Make sure that `pc-q35-11.0` is specified in your XML:
+```shell
+<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
+```
+
+- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
+```shell
+  <vcpu placement="static">8</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    <vcpupin vcpu="2" cpuset="2"/>
+    <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="7" cpuset="7"/>
+  </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
+    ...
+  </cpu>
+```
+
+- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
+```shell
+  <vcpu placement="static">24</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    ...
+    <vcpupin vcpu="22" cpuset="22"/>
+    <vcpupin vcpu="23" cpuset="23"/>
+  </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
+    ...
+  </cpu>
+```
+
+### 1.4. Spoof OVMF (mandatory)
+
+- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install g++ nasm python3-virt-firmware
+  ```
+  </details>
+
+
+  <details>
+    <summary>Build on <b>Debian Linux</b>:</summary>
+
+  ```shell
+  sudo apt install g++ nasm python3-virt-firmware
+  ```
+  </details>
+
+- Run `ovmfpatch.sh` to clone, patch, and build OVMF with generated data.
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <os>
+    <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
+    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
+    <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
+    <bootmenu enable="yes"/>
+  </os>
+  ```
+  </details>
+
+### 1.5. Build custom Linux kernel (mandatory)
+
+
+  <details>
+    <summary>Build on <b>Fedora Linux</b>:</summary>
+
+  ```shell
+  sudo dnf install util-linux-script
+  ```
+  </details>
+
+- Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
+
+- Install `kernel-6.19.14_tkg_eevdf+-1.x86_64`:
+```shell
+cd "linux-tkg/RPMs"
+sudo dnf install kernel-6.19.14_tkg_eevdf+-1.x86_64.rpm
+```
+
+- Edit `/etc/default/grub`, add **mitigations=auto**:
+```shell
+GRUB_CMDLINE_LINUX="mitigations=auto ..."
+```
+
+- Update GRUB and restart Linux PC:
+```shell
+<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
 ### 2. New VM set up in QEMU/KVM
 
 - Virtual Machine Manager >> File >> New Virtual Machine
 
 - Manual install >> `win10` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
-  - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
+  - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.patched >> [Apply]
   - NIC :xx:xx:xx >> Device model: rtl8125 >> **(type it in)** >> MAC address: YOUR_MAC_HERE >> [Apply]
   - Video QXL >> Model: VGA >> [Apply]
   - [Add Hardware] >> Storage >> Select or create custom storage >> [Manage...] >> [+] >> `win10`.img >> Capacity: 240 GiB >> [Finish] >> [Cancel] >> [Cancel]
@@ -285,21 +478,6 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
       <qemu:arg value="-smbios"/>
       <qemu:arg value="type=9,slot_designation=J6C1,slot_type=0xAA,slot_data_bus_width=0x0D,current_usage=0x04,slot_length=0x04,slot_id=0x01,slot_characteristics1=0x04,slot_characteristics2=0x03"/>
     </qemu:commandline>
-  ```
-  </details>
-
-
-- Replace `</metadata>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <vmware xmlns="http://www.vmware.com/schema/vmware.config">
-      <config>
-        <entry name="hypervisor.cpuid.v0" value="FALSE"/>
-      </config>
-    </vmware>
-  </metadata>
   ```
   </details>
 
@@ -744,176 +922,19 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 7. Spoof QEMU (mandatory)
-
-- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
-
-
-  <details>
-    <summary>Build on <b>Fedora 44</b>:</summary>
-
-  ```shell
-  sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
-  ```
-  </details>
-
-
-  <details>
-    <summary>Build on <b>Debian 13</b>:</summary>
-
-  ```shell
-  sudo apt install acpica-tools
-  sudo apt build-dep qemu
-  ```
-  </details>
-
-- Edit `qemupatch.sh`, use your own `lspci -nn` data:
-```shell
-lspci -nn
-
-00:1f.0 ISA bridge [0601]: Intel Corporation Tiger Lake-LP LPC Controller [8086:a082] (rev 20)
-00:1f.4 SMBus [0c05]: Intel Corporation Tiger Lake-LP SMBus Controller [8086:a0a3] (rev 20)
-00:1f.3 Multimedia audio controller [0401]: Intel Corporation Tiger Lake-LP Smart Sound Technology Audio Controller [8086:a0c8] (rev 20)
-02:00.0 Non-Volatile memory controller [0108]: Intel Corporation SSD 660P Series [8086:f1a8] (rev 03)
-00:1c.0 PCI bridge [0604]: Intel Corporation Tiger Lake-LP PCI Express Root Port #8 [8086:a0bf] (rev 20)
-00:14.0 USB controller [0c03]: Intel Corporation Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller [8086:a0ed] (rev 20)
-00:00.0 Host bridge [0600]: Intel Corporation Tiger Lake-UP3/H35 4 cores Host Bridge/DRAM Registers [8086:9a14] (rev 01)
-00:14.2 RAM memory [0500]: Intel Corporation Tiger Lake-LP Shared SRAM [8086:a0ef] (rev 20)
-
-
-lpc_8086="a082"         # Tiger Lake-LP LPC Controller
-smbus_8086="a0a3"       # Tiger Lake-LP SMBus Controller
-hdaudio_8086="a0c8"     # Tiger Lake-LP Smart Sound Technology Audio Controller
-hdaname_8086="Tiger Lake-LP Smart Sound Technology Audio Controller"
-sata_8086="f1a8"        # SSD 660P Series
-#rootport_8086="a0bf"    # Tiger Lake-LP PCI Express Root Port #8
-rootport_8086="a0b8"    # 8-7=1, a0bf-7=a0b8, Tiger Lake-LP PCI Express Root Port #1
-xhci_8086="a0ed"        # Tiger Lake-LP USB 3.2 Gen 2x1 xHCI Host Controller
-hostbridge_8086="9a14"  # 11th Gen Core Processor Host Bridge/DRAM Registers
-pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
-```
-
-- Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<pm>` to `</emulator>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <pm>
-    <suspend-to-mem enabled="yes"/>
-    <suspend-to-disk enabled="no"/>
-  </pm>
-  <devices>
-    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
-  ```
-  </details>
-
-
-- Replace `</qemu:commandline>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
-  </qemu:commandline>
-  ```
-  </details>
-
-- Make sure that `pc-q35-11.0` is specified in your XML:
-```shell
-<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
-```
-
-- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
-```shell
-  <vcpu placement="static">8</vcpu>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="1"/>
-    <vcpupin vcpu="2" cpuset="2"/>
-    <vcpupin vcpu="3" cpuset="3"/>
-    <vcpupin vcpu="4" cpuset="4"/>
-    <vcpupin vcpu="5" cpuset="5"/>
-    <vcpupin vcpu="6" cpuset="6"/>
-    <vcpupin vcpu="7" cpuset="7"/>
-  </cputune>
-  <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
-    ...
-  </cpu>
-```
-
-- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
-```shell
-  <vcpu placement="static">24</vcpu>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="1"/>
-    ...
-    <vcpupin vcpu="22" cpuset="22"/>
-    <vcpupin vcpu="23" cpuset="23"/>
-  </cputune>
-  <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
-    ...
-  </cpu>
-```
-
-### 7.1. Spoof OVMF (mandatory)
-
-- Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
-
-
-  <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
-
-  ```shell
-  sudo dnf install g++ nasm python3-virt-firmware
-  ```
-  </details>
-
-
-  <details>
-    <summary>Build on <b>Debian Linux</b>:</summary>
-
-  ```shell
-  sudo apt install g++ nasm python3-virt-firmware
-  ```
-  </details>
-
-- Run `ovmfpatch.sh` to clone, patch, and build OVMF with generated data.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <os>
-    <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
-    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
-    <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
-    <bootmenu enable="yes"/>
-  </os>
-  ```
-  </details>
-
-### 7.2. Replace network (mandatory)
+### 7. Replace network (mandatory)
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> USB Redirector 2 >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> USB Redirector 1 >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller USB 0 >> Model: none >> **(type it in)** >> [Apply]
+
+### 7.1a. rtl8125
+
+- Credit to: [HazedHV/AutoVirt](https://github.com/HazedHV/AutoVirt).
+
+### 7.1b. USB
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - USB 3.x xHCI Host Controller >> **[Finish]**
@@ -924,17 +945,9 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device
 
-### 7.2.1a. USB
-
 - Plug an USB Network Interface Card into USB 3.x xHCI Host Controller port.
 
-### 7.2.1b. rtl8125
-
-- Credit to: [HazedHV/AutoVirt](https://github.com/HazedHV/AutoVirt).
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Network >> MAC address: YOUR_MAC_HERE >> Device model: rtl8125 >> **(type it in)** >> [Finish]
-
-### 7.2.1c. virtio
+### 7.1c. virtio
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
@@ -960,9 +973,11 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Stop VM.
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> Network >> MAC address: YOUR_MAC_HERE >> Device model: virtio >> [Finish]
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: virtio >> [Apply]
 
 - Start VM.
+
+- Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device
 
 - Install virtio ethernet from `network` folder (use Device Manager).
 
@@ -971,37 +986,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 bcdedit /set testsigning off
 ```
 
-### 7.3. Build custom Linux kernel (mandatory)
-
-
-  <details>
-    <summary>Build on <b>Fedora Linux</b>:</summary>
-
-  ```shell
-  sudo dnf install util-linux-script
-  ```
-  </details>
-
-- Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
-
-- Install `kernel-6.19.14_tkg_eevdf+-1.x86_64`:
-```shell
-cd "linux-tkg/RPMs"
-sudo dnf install kernel-6.19.14_tkg_eevdf+-1.x86_64.rpm
-```
-
-- Edit `/etc/default/grub`, add **mitigations=auto**:
-```shell
-GRUB_CMDLINE_LINUX="mitigations=auto ..."
-```
-
-- Update GRUB and restart Linux PC:
-```shell
-<Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-<Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-### 7.4. memflow-kvm (not required, install if memflow-win32 error)
+### 7.2. memflow-kvm (not required, install if memflow-win32 error)
 
 - Boot `kernel-6.19.14_tkg_eevdf+-1.x86_64`.
 
@@ -1033,7 +1018,7 @@ cd path/to/extracted/repository
 sudo -E ./nika
 ```
 
-### 7.5. Spoof EDID
+### 7.3. Spoof EDID
 
 - Pinnacle of HWID ban (EAC case).
 
@@ -1067,7 +1052,7 @@ edidpatch.cmd edidfile.bin
 | Game Capture 4K X          |                   |
 | Game Capture 4K Pro        |                   |
 
-### 7.6. Spoof GPU (tested from 51x to 58x)
+### 7.4. Spoof GPU (tested from 51x to 58x)
 
 - Disable ROM BAR for each PCI Host Device:
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
