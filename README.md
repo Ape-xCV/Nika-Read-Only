@@ -860,7 +860,6 @@ sudo usermod -aG input $USER
 | ---------------------------- | --------- | ------------ | ---------------------------- |
 | Cable                        | 0 ms      | Glow         | Overlay on 2nd monitor       |
 | Capture card                 | 30-300 ms | Overlay+Glow | Investment for faster device |
-| Steam Remote Play            | 10 ms     | Overlay+Glow | Encoded video                |
 
 ### 5.1. Cable
 
@@ -881,32 +880,6 @@ sudo usermod -aG input $USER
 ```shell
 gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=60/1 ! videoconvert ! autovideosink
 ```
-
-### 5.3. Steam Remote Play
-
-
-  <details>
-    <summary>Install `Steam` on <b>Fedora Linux</b>:</summary>
-
-    sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    sudo dnf install steam
-    sudo ln -s /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt
-  </details>
-
-- Linux PC `hostname` and `MAC address` will show in guest ARP table.
-
-- Set `hostname` on Linux PC:
-```shell
-sudo hostnamectl set-hostname YOUR_SERIAL_HERE
-```
-
-- Change `MAC address` on Linux PC **every reboot**:
-```shell
-ip addr
-sudo macchanger -r YOUR_DEVICE_HERE
-```
-
-- Steam >> Settings >> Remote Play >> Computers & Devices >> DESKTOP-XXXXXX >> [Connect]
 
 ### 6. Nika Read Only (on Linux PC)
 
