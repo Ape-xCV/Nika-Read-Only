@@ -230,12 +230,10 @@ sudo virsh net-autostart default
 
 - Manual install >> `win10` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.secboot >> [Apply]
+  - NIC :xx:xx:xx >> Device model: rtl8125 >> **(type it in)** >> MAC address: YOUR_MAC_HERE >> [Apply]
+  - Video QXL >> Model: VGA >> [Apply]
   - [Add Hardware] >> Storage >> Select or create custom storage >> [Manage...] >> [+] >> `win10`.img >> Capacity: 240 GiB >> [Finish] >> [Cancel] >> [Cancel]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Video QXL >> Model: VGA >> [Apply]
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: rtl8125 >> **(type it in)** >> MAC address: YOUR_MAC_HERE >> [Apply]
 
 ### 2.1. Configure VM
 
