@@ -533,15 +533,28 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
 
 - Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
 ```shell
+  paste <(grep "initial apicid" /proc/cpuinfo) <(grep "processor" /proc/cpuinfo)
+
+  initial apicid  : 0     processor       : 0
+  initial apicid  : 2     processor       : 1
+  initial apicid  : 4     processor       : 2
+  initial apicid  : 6     processor       : 3
+  initial apicid  : 1     processor       : 4
+  initial apicid  : 3     processor       : 5
+  initial apicid  : 5     processor       : 6
+  initial apicid  : 7     processor       : 7
+```
+
+```shell
   <vcpu placement="static">8</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="1"/>
-    <vcpupin vcpu="2" cpuset="2"/>
-    <vcpupin vcpu="3" cpuset="3"/>
-    <vcpupin vcpu="4" cpuset="4"/>
-    <vcpupin vcpu="5" cpuset="5"/>
-    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="2" cpuset="1"/>
+    <vcpupin vcpu="4" cpuset="2"/>
+    <vcpupin vcpu="6" cpuset="3"/>
+    <vcpupin vcpu="1" cpuset="4"/>
+    <vcpupin vcpu="3" cpuset="5"/>
+    <vcpupin vcpu="5" cpuset="6"/>
     <vcpupin vcpu="7" cpuset="7"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
