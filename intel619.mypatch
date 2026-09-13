@@ -208,7 +208,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-09-10 15:26:16.242609524 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-13 00:55:23.267155650 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -319,13 +319,13 @@
 -	}
 +//	}  // NIKA removed
 +	// VGK_IA32_PMC0 ... VGK_IA32_PMC7
-+//	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++//!	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	// VGK_IA32_PERFEVTSEL0 ... VGK_IA32_PERFEVTSEL7
-+//	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
-+//	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
-+//	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++//!	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++//!	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
++//!	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
 +	// VGK_LBR_CORE_FROM_0 ... VGK_LBR_CORE_FROM_31
-+	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//!	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
 +	vmx_disable_intercept_for_msr(vcpu, 0xC80, MSR_TYPE_R);  /* MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  /* MSR_IA32_THREAD_STALL */
 +/*	vmx_enable_intercept_for_msr(vcpu,   0x1B, MSR_TYPE_R);  // MSR_IA32_APIC_BASE */
@@ -335,9 +335,9 @@
 +	vmx_disable_intercept_for_msr(vcpu, 0x19A, MSR_TYPE_R);  /* MSR_IA32_CLOCK_MODULATION */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0, MSR_TYPE_R);  // MSR_IA32_MISC_ENABLE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639, MSR_TYPE_R);  /* MSR_PP0_ENERGY_STATUS */
-+	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
++//!	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
 +	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
-+	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//!	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
 +	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
