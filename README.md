@@ -275,77 +275,6 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Run `qemupatch.sh` to clone, patch, and build QEMU with generated data.
 
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<pm>` to `</emulator>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <pm>
-    <suspend-to-mem enabled="yes"/>
-    <suspend-to-disk enabled="no"/>
-  </pm>
-  <devices>
-    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
-  ```
-  </details>
-
-
-- Replace `</qemu:commandline>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
-  </qemu:commandline>
-  ```
-  </details>
-
-- Make sure that `pc-q35-11.0` is specified in your XML:
-```shell
-<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
-```
-
-- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
-```shell
-  <vcpu placement="static">8</vcpu>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="1"/>
-    <vcpupin vcpu="2" cpuset="2"/>
-    <vcpupin vcpu="3" cpuset="3"/>
-    <vcpupin vcpu="4" cpuset="4"/>
-    <vcpupin vcpu="5" cpuset="5"/>
-    <vcpupin vcpu="6" cpuset="6"/>
-    <vcpupin vcpu="7" cpuset="7"/>
-  </cputune>
-  <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
-    ...
-  </cpu>
-```
-
-- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
-```shell
-  <vcpu placement="static">24</vcpu>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="1"/>
-    ...
-    <vcpupin vcpu="22" cpuset="22"/>
-    <vcpupin vcpu="23" cpuset="23"/>
-  </cputune>
-  <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
-    ...
-  </cpu>
-```
-
 ### 1.4. Spoof OVMF (mandatory)
 
 - Based on: [Scrut1ny/Hypervisor-Phantom](https://github.com/Scrut1ny/Hypervisor-Phantom).
@@ -369,23 +298,6 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   </details>
 
 - Run `ovmfpatch.sh` to clone, patch, and build OVMF with generated data.
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
-
-
-- Replace from `<os firmware="efi">` to `</os>` and [Apply]:
-  <details>
-    <summary>Spoiler</summary>
-
-  ```shell
-  <os>
-    <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
-    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/ovmf/OVMF_CODE_4M.patched.qcow2</loader>
-    <nvram format="qcow2">/usr/share/edk2/ovmf/OVMF_VARS_4M.patched.qcow2</nvram>
-    <bootmenu enable="yes"/>
-  </os>
-  ```
-  </details>
 
 ### 1.5. Build custom Linux kernel (mandatory)
 
@@ -582,6 +494,77 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
 - Virtual Machine Manager >> [Open] >> View >> Details >> Channel (spice) >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller VirtIO Serial 0 >> [Remove]
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> Overview >> XML
+
+
+- Replace from `<pm>` to `</emulator>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+  <pm>
+    <suspend-to-mem enabled="yes"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+  ```
+  </details>
+
+
+- Replace `</qemu:commandline>` and [Apply]:
+  <details>
+    <summary>Spoiler</summary>
+
+  ```shell
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+  </qemu:commandline>
+  ```
+  </details>
+
+- Make sure that `pc-q35-11.0` is specified in your XML:
+```shell
+<type arch="x86_64" machine="pc-q35-11.0">hvm</type>
+```
+
+- Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
+```shell
+  <vcpu placement="static">8</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    <vcpupin vcpu="2" cpuset="2"/>
+    <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="7" cpuset="7"/>
+  </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="1" cores="4" threads="2"/>
+    ...
+  </cpu>
+```
+
+- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
+```shell
+  <vcpu placement="static">24</vcpu>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    ...
+    <vcpupin vcpu="22" cpuset="22"/>
+    <vcpupin vcpu="23" cpuset="23"/>
+  </cputune>
+  <cpu mode="host-passthrough" check="none" migratable="off">
+    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
+    ...
+  </cpu>
+```
 
 ### 2.2. Remove excess PCI
 
