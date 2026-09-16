@@ -35,8 +35,8 @@
  
  /*
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-09-08 01:29:41.681801323 +0100
-@@ -237,6 +237,170 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-09-14 19:19:04.165265266 +0100
+@@ -237,6 +237,196 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -81,6 +81,10 @@
 +	je .Ladvance_rip_and_reenter
 +	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
 +	je .Ladvance_rip_and_reenter
++	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
++	je .Lcheck_msr_range
++	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
++	je .Lcheck_msr_range
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) */
 +	jne .Lfastpath_slowpath
 +
@@ -201,6 +205,28 @@
 +	/* Execute VMRESUME to return directly to guest execution loop */
 +	jmp .Lvmresume
 +
++.Lcheck_msr_range:
++	mov VCPU_RCX(%_ASM_DI), %_ASM_DX    /* RDX = guest ECX (MSR index) */
++	cmp $0x1FFF, %edx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
++	jbe .Lfastpath_slowpath
++	cmp $0xC0000000, %edx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
++	jb .Linject_gp
++	cmp $0xC0001FFF, %edx               /* Check High Range: 0xC0000000 - 0xC0001FFF */
++	jbe .Lfastpath_slowpath
++
++.Linject_gp:
++	mov $0x4018, %esi                   /* Write VM_ENTRY_EXCEPTION_ERROR_CODE (VMCS 0x4018) */
++	xor %_ASM_DX, %_ASM_DX
++	vmwrite %_ASM_DX, %_ASM_SI
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++
++	mov $0x4016, %esi                   /* Write VM_ENTRY_INTR_INFO_FIELD (VMCS 0x4016) */
++	mov $0x80000B0D, %_ASM_DX           /* Set Vector 13 (#GP) | Interruption Type 3 (Hardware Exception) | Deliver Error Code (Bit 11) | Valid (Bit 31) */
++	vmwrite %_ASM_DX, %_ASM_SI
++//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMWRITE failure */
++//	jmp .Lreload_and_reenter
++	ja .Lreload_and_reenter             /* Branches if CF == 0 AND ZF == 0, VMWRITE success */
++
 +.Lfastpath_slowpath:
 +#endif  // NIKA end
 +
@@ -208,7 +234,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-09-13 00:55:23.267155650 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-16 13:38:41.693576152 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -319,13 +345,13 @@
 -	}
 +//	}  // NIKA removed
 +	// VGK_IA32_PMC0 ... VGK_IA32_PMC7
-+//!	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++	for (u32 msr = 0xC1; msr <= 0xC8; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW); //!
 +	// VGK_IA32_PERFEVTSEL0 ... VGK_IA32_PERFEVTSEL7
-+//!	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
-+//!	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */
-+//!	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */
++	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW); //!
++	vmx_disable_intercept_for_msr(vcpu, 0x1C9, MSR_TYPE_RW);  /* VGK_LASTBRANCH_TOS */ //!
++	vmx_disable_intercept_for_msr(vcpu, 0x1D9, MSR_TYPE_RW);  /* MSR_IA32_DEBUGCTL */ //!
 +	// VGK_LBR_CORE_FROM_0 ... VGK_LBR_CORE_FROM_31
-+//!	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R); //!
 +	vmx_disable_intercept_for_msr(vcpu, 0xC80, MSR_TYPE_R);  /* MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0xDB2, MSR_TYPE_R);  /* MSR_IA32_THREAD_STALL */
 +/*	vmx_enable_intercept_for_msr(vcpu,   0x1B, MSR_TYPE_R);  // MSR_IA32_APIC_BASE */
@@ -335,9 +361,9 @@
 +	vmx_disable_intercept_for_msr(vcpu, 0x19A, MSR_TYPE_R);  /* MSR_IA32_CLOCK_MODULATION */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0, MSR_TYPE_R);  // MSR_IA32_MISC_ENABLE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639, MSR_TYPE_R);  /* MSR_PP0_ENERGY_STATUS */
-+//!	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */
++	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */ //!
 +	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
-+//!	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R); //!
 +	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
