@@ -106,7 +106,7 @@ chmod +x headless.sh
 
 - Use VNC from smartphone, tablet, or laptop to connect.
 
-### 1.1. Install hardware decoder prior to libvirt and Steam
+### 1.1. Install hardware decoder prior to libvirt and Steam (not required, Steam removed)
 
 
 <details>
