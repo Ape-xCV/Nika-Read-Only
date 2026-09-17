@@ -234,7 +234,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-09-14 18:55:14.178605234 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-17 15:05:25.857303045 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -362,7 +362,7 @@
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0, MSR_TYPE_R);  // MSR_IA32_MISC_ENABLE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639, MSR_TYPE_R);  /* MSR_PP0_ENERGY_STATUS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x179, MSR_TYPE_R);  /* MSR_IA32_MCG_CAP */ //!
-+	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
++	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MSR_IA32_MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
 +	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R); //!
 +	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
