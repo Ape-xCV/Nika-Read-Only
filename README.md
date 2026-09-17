@@ -121,8 +121,12 @@ chmod +x headless.sh
   <summary>Hardware decoder with <b>AMD</b>:</summary>
 
     sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld --allowerasing
 </details>
+
+- If your screen goes black press `Ctrl+Alt+F3` and use your login:
+  - KDE: sudo systemctl start plasmalogin (or sddm)
+  - XFCE: sudo systemctl start lightdm
 
 
 <details>
