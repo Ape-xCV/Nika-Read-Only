@@ -357,7 +357,7 @@ GRUB_CMDLINE_LINUX="mitigations=auto ..."
       <qemu:arg value="-drive"/>
       <qemu:arg value="file=/var/lib/libvirt/images/win10.img,format=raw,cache=none,discard=ignore,if=none,id=drive-sata1-0"/>
       <qemu:arg value="-device"/>
-      <qemu:arg value="ide-hd,bus=device-sata1.0,drive=drive-sata1-0,id=sata1-0,serial=YOUR_SERIAL_HERE"/>
+      <qemu:arg value="ide-hd,bus=device-sata1.0,drive=drive-sata1-0,id=sata1-0,rotation_rate=1,serial=YOUR_SERIAL_HERE"/>
     </qemu:commandline>
   ```
   </details>
