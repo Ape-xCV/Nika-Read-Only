@@ -125,8 +125,8 @@ chmod +x headless.sh
 </details>
 
 - If your screen goes black press `Ctrl+Alt+F3` and use your login:
-  - KDE: sudo systemctl start plasmalogin (or sddm)
-  - XFCE: sudo systemctl start lightdm
+  - KDE: sudo systemctl enable plasmalogin && sudo systemctl start plasmalogin
+  - XFCE: sudo systemctl enable lightdm && sudo systemctl start lightdm
 
 
 <details>
