@@ -124,7 +124,7 @@ chmod +x headless.sh
     sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld --allowerasing
 </details>
 
-- If your screen goes black press `Ctrl+Alt+F3` and use your login:
+- If your screen goes black, press `Ctrl+Alt+F3` and use your login:
   - KDE: sudo systemctl enable plasmalogin && sudo systemctl start plasmalogin
   - XFCE: sudo systemctl enable lightdm && sudo systemctl start lightdm
 
