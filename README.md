@@ -567,18 +567,25 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
   </cpu>
 ```
 
-- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
+- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU with **SMT Control Disabled** in host BIOS:
 ```shell
-  <vcpu placement="static">24</vcpu>
+  <vcpu placement="static">12</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
-    ...
-    <vcpupin vcpu="22" cpuset="22"/>
-    <vcpupin vcpu="23" cpuset="23"/>
+    <vcpupin vcpu="2" cpuset="2"/>
+    <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="7" cpuset="7"/>
+    <vcpupin vcpu="8" cpuset="8"/>
+    <vcpupin vcpu="9" cpuset="9"/>
+    <vcpupin vcpu="10" cpuset="10"/>
+    <vcpupin vcpu="11" cpuset="11"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
+    <topology sockets="1" clusters="1" dies="2" cores="6" threads="1"/>
     ...
   </cpu>
 ```
