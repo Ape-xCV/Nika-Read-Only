@@ -234,7 +234,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-09-17 15:06:07.413193195 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-09-22 13:31:26.216487431 +0100
 @@ -76,6 +76,61 @@
  
  #include "mmu/spte.h"
@@ -401,7 +401,7 @@
  
  	/*
  	 * exc_debug expects dr6 to be cleared after it runs, avoid that it sees
-@@ -6234,6 +6321,65 @@
+@@ -6234,6 +6321,68 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -418,14 +418,17 @@
 +//		in_eax == 0x80000001 ||  // Extended CPU feature flags (64-bit/AMD64, NX bit, etc.)
 +//		in_eax == 0x07       ||  // Structured Extended Feature Flags (AVX2, AVX-512, SHA, etc.)
 +		in_eax == 0x1F       ||  // [Intel] V2 Extended Topology Enumeration (modern x86 CPU core/thread hierarchy)
-+		in_eax == 0x0B)//    ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
++		in_eax == 0x0B       ||  // Extended Topology Enumeration (legacy x86 core/thread hierarchy)
 +//		in_eax == 0x04       ||  // [Intel] Deterministic Cache Parameters (L1/L2/L3 cache sizes, ways, and sharing)
 +//		in_eax == 0x0D       ||  // Processor Extended State Enumeration (XSAVE / XRSTOR feature state sizes)
 +//		in_eax == 0x0A       ||  // [Intel] Architectural Performance Monitoring (PMU features and counter availability)
 +//		in_eax == 0x14       ||  // [Intel] Intel Processor Trace (Intel PT capabilities and buffer features)
 +//		in_eax == 0x80000026 ||  // [AMD] Extended CPU Topology Enumeration (AMD-specific topology details)
 +//		in_eax == 0x8000001E ||  // [AMD] Processor Topology / Core Identifiers (AMD APIC ID and Compute Unit info)
-+//		in_eax == 0x8000001D)    // [AMD] Cache Topology Information (AMD-specific cache properties)
++//		in_eax == 0x8000001D ||  // [AMD] Cache Topology Information (AMD-specific cache properties)
++		in_eax == 0x80000002 ||
++		in_eax == 0x80000003 ||
++		in_eax == 0x80000004)
 +		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 +	else {
 +		asm volatile("cpuid"
@@ -467,7 +470,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6393,8 @@
+@@ -6247,7 +6396,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -477,7 +480,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6255,7 +6402,8 @@
+@@ -6255,7 +6405,8 @@
  	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
  	[EXIT_REASON_INVLPG]		      = handle_invlpg,
  	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
@@ -487,7 +490,7 @@
  	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
  	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
-@@ -7504,9 +7652,57 @@
+@@ -7504,9 +7655,57 @@
  
  	kvm_wait_lapic_expire(vcpu);
  
