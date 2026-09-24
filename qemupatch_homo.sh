@@ -2140,22 +2140,26 @@ echo "static bool apicid_map_init = false;"
 echo "static inline void init_apicid_map(void)"
 echo "{"
 echo "    if (apicid_map_init) return;"
-echo "    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;"
-echo "    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");"
-echo "    if (fp) {"
-echo "        char line[128];"
-echo "        int current_proc = -1;"
-echo "        while (fgets(line, sizeof(line), fp)) {"
-echo "            if (strncmp(line, \"processor\", 9) == 0) {"
-echo "                char *colon = strchr(line, ':');"
-echo "                if (colon) current_proc = atoi(colon + 1);"
-echo "            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {"
-echo "                char *colon = strchr(line, ':');"
-echo "                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);"
-echo "            }"
+echo "    cpu_set_t orig_mask;"
+echo "    long max_cpus = sysconf(_SC_NPROCESSORS_CONF);"
+echo "    int fallback = 0;"
+echo "    if (sched_getaffinity(0, sizeof(cpu_set_t), &orig_mask) != 0 || max_cpus <= 0 || max_cpus > MAX_HOST_VCPUS) fallback = 2;"
+echo "    if (fallback == 0) for (int i = 0; i < max_cpus; i++) {"
+echo "        cpu_set_t target_mask;"
+echo "        CPU_ZERO(&target_mask);"
+echo "        CPU_SET(i, &target_mask);"
+echo "        if (sched_setaffinity(0, sizeof(cpu_set_t), &target_mask) != 0) { fallback = 1; break; }"
+echo "        else {"
+echo "            unsigned eax, ebx, ecx, edx;"
+echo "            asm volatile(\"cpuid\""
+echo "            : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)"
+echo "            : \"a\"(1)"
+echo "            );"
+echo "            apicid_map[i] = (apic_id_t)((ebx >> 24) & 0xFF);"
 echo "        }"
-echo "        fclose(fp);"
 echo "    }"
+echo "    if (fallback >= 1) for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;"
+echo "    if (fallback <= 1) sched_setaffinity(0, sizeof(cpu_set_t), &orig_mask);"
 echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
@@ -2167,22 +2171,26 @@ static bool apicid_map_init = false;\n\
 static inline void init_apicid_map(void)\n\
 {\n\
     if (apicid_map_init) return;\n\
-    for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;\n\
-    FILE *fp = fopen(\"/proc/cpuinfo\", \"r\");\n\
-    if (fp) {\n\
-        char line[128];\n\
-        int current_proc = -1;\n\
-        while (fgets(line, sizeof(line), fp)) {\n\
-            if (strncmp(line, \"processor\", 9) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) current_proc = atoi(colon + 1);\n\
-            } else if (current_proc >= 0 && current_proc < MAX_HOST_VCPUS && strncmp(line, \"apicid\", 6) == 0) {\n\
-                char *colon = strchr(line, ':');\n\
-                if (colon) apicid_map[current_proc] = (apic_id_t)atoi(colon + 1);\n\
-            }\n\
+    cpu_set_t orig_mask;\n\
+    long max_cpus = sysconf(_SC_NPROCESSORS_CONF);\n\
+    int fallback = 0;\n\
+    if (sched_getaffinity(0, sizeof(cpu_set_t), &orig_mask) != 0 || max_cpus <= 0 || max_cpus > MAX_HOST_VCPUS) fallback = 2;\n\
+    if (fallback == 0) for (int i = 0; i < max_cpus; i++) {\n\
+        cpu_set_t target_mask;\n\
+        CPU_ZERO(&target_mask);\n\
+        CPU_SET(i, &target_mask);\n\
+        if (sched_setaffinity(0, sizeof(cpu_set_t), &target_mask) != 0) { fallback = 1; break; }\n\
+        else {\n\
+            unsigned eax, ebx, ecx, edx;\n\
+            asm volatile(\"cpuid\"\n\
+            : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
+            : \"a\"(1)\n\
+            );\n\
+            apicid_map[i] = (apic_id_t)((ebx >> 24) & 0xFF);\n\
         }\n\
-        fclose(fp);\n\
     }\n\
+    if (fallback >= 1) for (int i = 0; i < MAX_HOST_VCPUS; i++) apicid_map[i] = (apic_id_t)i;\n\
+    if (fallback <= 1) sched_setaffinity(0, sizeof(cpu_set_t), &orig_mask);\n\
     apicid_map_init = true;\n\
 }\n"
 ##fi
