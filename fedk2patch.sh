@@ -548,9 +548,9 @@ else
   echo "$TEMP_JSON"
 fi
 
+#  --set-false SecureBootEnable \
 virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --set-false CustomMode \
-  --set-false SecureBootEnable \
   --set-json "$DEFAULTS_JSON"
 
 cp -f /usr/share/qemu/firmware/?0-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json "/usr/share/qemu/firmware/10-edk2-ovmf-4m-qcow2-x64-fedk.json"
