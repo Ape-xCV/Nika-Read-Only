@@ -1051,6 +1051,8 @@ edidpatch.cmd edidfile.bin
   - Run `tpm.msc` and use `Clear TPM...`.
   - Reboot and confirm with TPM-INFO-TOOL: [ArrowGamingCode/TPM-INFO-TOOL](https://github.com/ArrowGamingCode/TPM-INFO-TOOL).
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> TPM >> Type: Passthrough >> Model: CRB >> [Finish]
+
 ### 9. Spoof network (if rtl8125/virtio, not required)
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
