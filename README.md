@@ -21,7 +21,7 @@
 
 * [x] Apex Legends (Easy Anti-Cheat)
 * [x] PUBG (BattlEye)
-* [x] Call of Duty: Black Ops 7 | Warzone S01 (RICOCHET Anti-Cheat + TPM 2.0 + Secure Boot)
+* [x] Call of Duty: Black Ops 7 | Warzone S06 (RICOCHET Anti-Cheat + TPM 2.0 + Secure Boot + Microsoft Azure Attestation)
 
 ## Features
 
