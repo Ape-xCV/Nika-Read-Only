@@ -301,7 +301,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   ```
   </details>
 
-- Run `ovmfpatch.sh` to clone, patch, and build OVMF with generated data.
+- Run `fedk2patch.sh` to clone, patch, and build OVMF with generated data.
 
 ### 1.5. Build custom Linux kernel (mandatory)
 
@@ -316,10 +316,10 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Run `kernelpatch.sh` to clone, patch, and build custom Linux kernel.
 
-- Install `kernel-6.19.14_tkg_eevdf+-1.x86_64`:
+- Install `kernel-6.19.14_tkg_eevdf-1.x86_64`:
 ```shell
 cd "linux-tkg/RPMs"
-sudo dnf install kernel-6.19.14_tkg_eevdf+-1.x86_64.rpm
+sudo dnf install kernel-6.19.14_tkg_eevdf-1.x86_64.rpm
 ```
 
 - Edit `/etc/default/grub`, add **mitigations=auto**:
@@ -968,12 +968,12 @@ bcdedit /set testsigning off
 
 ### 7.2. memflow-kvm (not required, install if memflow-win32 error)
 
-- Boot `kernel-6.19.14_tkg_eevdf+-1.x86_64`.
+- Boot `kernel-6.19.14_tkg_eevdf-1.x86_64`.
 
 - Install `dkms`:
 ```shell
 cd "linux-tkg/RPMs"
-sudo dnf install kernel-devel-6.19.14_tkg_eevdf+-1.x86_64.rpm
+sudo dnf install kernel-devel-6.19.14_tkg_eevdf-1.x86_64.rpm
 sudo dnf download dkms
 sudo rpm -i --nodeps dkms-3.4.3-2.fc44.noarch.rpm
 sudo wget https://github.com/memflow/memflow-kvm/releases/download/bin-kernel-6.19/memflow-source-only.dkms.tar.gz
