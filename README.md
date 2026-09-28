@@ -1047,9 +1047,15 @@ edidpatch.cmd edidfile.bin
 - You need a provisioned TPM, onboard fTPM/PTT come unprovisioned; example for unprovisioned PTT on Intel Skylake and newer:
   - You need to boot Windows on the host and install Management Engine Interface.
   - Task Scheduler >> Microsoft >> Windows >> TPM >> Tpm-HASCertRetr: should be OK after MEI install.
-  - Run `Windows PowerShell` as Administrator and enter: Start-ScheduledTask -TaskPath "\Microsoft\Windows\TPM\" -TaskName "Tpm-Maintenance"
-  - Run `tpm.msc` and use `Clear TPM...`.
-  - Reboot and confirm with TPM-INFO-TOOL: [ArrowGamingCode/TPM-INFO-TOOL](https://github.com/ArrowGamingCode/TPM-INFO-TOOL).
+
+- Run `Windows PowerShell` as Administrator and enter:
+```shell
+Start-ScheduledTask -TaskPath "\Microsoft\Windows\TPM\" -TaskName "Tpm-Maintenance"
+```
+
+- Run `tpm.msc` and use `Clear TPM...`.
+
+- Reboot and confirm with TPM-INFO-TOOL: [ArrowGamingCode/TPM-INFO-TOOL](https://github.com/ArrowGamingCode/TPM-INFO-TOOL).
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> TPM >> Type: Passthrough >> Model: CRB >> [Finish]
 
