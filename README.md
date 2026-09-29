@@ -1049,7 +1049,7 @@ edidpatch.cmd edidfile.bin
 
 - You need a provisioned TPM, onboard fTPM/PTT come unprovisioned; example for unprovisioned PTT on Intel Skylake and newer:
   - You need to boot Windows on the host and install Management Engine Interface.
-  - Task Scheduler >> Microsoft >> Windows >> TPM >> Tpm-HASCertRetr; should have no error after MEI install.
+  - You need Internet.
 
 - Run `Windows PowerShell` as Administrator and enter:
 ```shell
@@ -1062,6 +1062,22 @@ Start-ScheduledTask -TaskPath "\Microsoft\Windows\TPM\" -TaskName "Tpm-Maintenan
 - If it's a fail, run `tpm.msc` and use `Clear TPM...`.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> TPM >> Type: Passthrough >> Model: CRB >> [Finish]
+
+### 8.1. Sign custom Linux kernel for Secure Boot
+
+- Generate and enroll your MOK:
+```shell
+openssl req -new -x509 -newkey rsa:2048 -keyout my_mok.priv -out my_mok.cer -days 3650 -subj "/CN=my_mok/" -noenc
+openssl x509 -in my_mok.cer -outform DER -out my_mok.der
+sudo mokutil --import my_mok.der
+```
+
+- Rename and sign your custom Linux kernel:
+```shell
+sudo dnf install sbsigntools
+sudo mv /boot/vmlinuz-6.19.14_tkg_eevdf /boot/vmlinuz-6.19.14_tkg_eevdf_unsigned
+sudo sbsign --key my_mok.priv --cert my_mok.cer --output /boot/vmlinuz-6.19.14_tkg_eevdf /boot/vmlinuz-6.19.14_tkg_eevdf_unsigned
+```
 
 ### 9. Spoof network (if rtl8125/virtio, not required)
 
