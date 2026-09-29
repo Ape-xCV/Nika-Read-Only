@@ -1038,24 +1038,28 @@ edidpatch.cmd edidfile.bin
   - Virtual Machine Manager >> [Open] >> View >> Details >> PCI 0000:xx:xx.x >> ROM BAR: [ ] _uncheck_ >> [Apply]
 
 - Check old UUID with `nvidia-smi -L`.
+
 - Run the cheat BEFORE the game at least once.
+
 - Check new UUID with `nvidia-smi -L`.
 
 ### 8. Microsoft Azure Attestation
 
 - There isn't any tampering, you use your discrete TPM (dTPM) or firmware TPM (fTPM/PTT).
+
 - You need a provisioned TPM, onboard fTPM/PTT come unprovisioned; example for unprovisioned PTT on Intel Skylake and newer:
   - You need to boot Windows on the host and install Management Engine Interface.
-  - Task Scheduler >> Microsoft >> Windows >> TPM >> Tpm-HASCertRetr: should be OK after MEI install.
+  - Task Scheduler >> Microsoft >> Windows >> TPM >> Tpm-HASCertRetr; should have no error after MEI install.
 
 - Run `Windows PowerShell` as Administrator and enter:
 ```shell
+Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\TPM\WMI\Endorsement" -Recurse -Force
 Start-ScheduledTask -TaskPath "\Microsoft\Windows\TPM\" -TaskName "Tpm-Maintenance"
 ```
 
-- Run `tpm.msc` and use `Clear TPM...`.
-
 - Reboot and confirm with TPM-INFO-TOOL: [ArrowGamingCode/TPM-INFO-TOOL](https://github.com/ArrowGamingCode/TPM-INFO-TOOL).
+
+- If it's a fail, run `tpm.msc` and use `Clear TPM...`.
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> TPM >> Type: Passthrough >> Model: CRB >> [Finish]
 
