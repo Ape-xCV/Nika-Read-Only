@@ -192,16 +192,18 @@ echo "\"BHYVE\"                                           -> \"ALASKA\""
 sed -i "$file_BhyveX64" -Ee "s/\"BHYVE\"/\"ALASKA\"/"
 
 echo "  $file_BhyveSmbiosPlatformDxe"
-version_major="$(shuf -i 1-9 -n 1)"
+version_major="$(shuf -i 10-15 -n 1)"
 version_minor="$(shuf -i 11-99 -n 1)"
+printf -v hex_val '%x' $((55 + version_major))
+printf -v version_string "\x$hex_val.$version_minor"
 day="$(get_random_element "${numbers[@]}")"
 month="$(get_random_element "${numbers[@]}")"
 year="$(shuf -i 2015-2025 -n 1)"
 echo "\"EFI Development Kit II / OVMF\\0\"                           -> \"American Megatrends Inc.\\0\""
-echo "\"0.0.0\\0\"                                                   -> \"$version_major$version_minor\\0\""
+echo "\"0.0.0\\0\"                                                   -> \"$version_string\\0\""
 echo "\"02/06/2015\\0\"                                              -> \"$day/$month/$year\\0\""
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"EFI Development Kit II \/ OVMF\\\\0\"/\"American Megatrends Inc.\\\\0\"/"
-sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version_major$version_minor\\\\0\"/"
+sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"0.0.0\\\\0\"/\"$version_string\\\\0\"/"
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/\"02\/06\/2015\\\\0\"/\"$day\/$month\/$year\\\\0\"/"
 echo "0xE800, // UINT16                    BiosSegment            -> 0xE000, // UINT16                    BiosSegment"
 echo "0,      // UINT8                     BiosSize               -> 0xFF,   // UINT8                     BiosSize"
@@ -298,10 +300,10 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/0x1C \/\/ SystemReserved/0x0D \/\/ Syste
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMajorRelease/$version_major,     \/\/ UINT8                     SystemBiosMajorRelease/"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMinorRelease/$version_minor,    \/\/ UINT8                     SystemBiosMinorRelease/"
 echo "VendStr = L\"unknown\";                                       -> VendStr = L\"American Megatrends Inc.\";"
-echo "VersStr = L\"unknown\";                                       -> VersStr = L\"$version_major$version_minor\";"
+echo "VersStr = L\"unknown\";                                       -> VersStr = L\"$version_string\";"
 echo "DateStr = L\"02/02/2022\";                                    -> DateStr = L\"$day/$month/$year\";"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/VendStr = L\"unknown\";/VendStr = L\"American Megatrends Inc.\";/"
-sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_major$version_minor\";/"
+sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_string\";/"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/DateStr = L\"02\/02\/2022\";/DateStr = L\"$day\/$month\/$year\";/"
 
 echo "  $file_QemuFwCfgCacheInit"
@@ -451,14 +453,14 @@ if [[ -f "$VARS_DEST" ]]; then
     echo ""
 #    build_firmware
     sed '/^\[build\./a tgts = RELEASE' edk2-build.fedora > edk2-build.fedora-rls
-    ./edk2-build.py --config edk2-build.fedora-rls --version-override "edk2-stable202605" -m ovmf.4m.sb.smm
+    ./edk2-build.py --config edk2-build.fedora-rls --version-override "$version_string" -m ovmf.4m.sb.smm
   else
     echo ""
   fi
 else
 #  build_firmware
   sed '/^\[build\./a tgts = RELEASE' edk2-build.fedora > edk2-build.fedora-rls
-  ./edk2-build.py --config edk2-build.fedora-rls --version-override "edk2-stable202605" -m ovmf.4m.sb.smm
+  ./edk2-build.py --config edk2-build.fedora-rls --version-override "$version_string" -m ovmf.4m.sb.smm
 fi
 
 sudo mkdir -p "$EDK2_DEST"
