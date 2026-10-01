@@ -32,25 +32,22 @@ fi
 if [[ ! -f vars.sh ]]; then
   echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
   device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-  vendor=$((         device + ((RANDOM%768)+256) ))
   xhci=$((   49152 - device - ((RANDOM%768)+256) ))
+  virtio=$(( 49152 + device                      ))
   cpu=$((    16384          + ((RANDOM%1024)*16) ))
-  virtio=$(( 49152 + device ))
   echo "device=\"$device\""                  >  vars.sh
-  echo "vendor=\"$vendor\""                  >> vars.sh
   echo "xhci=\"$xhci\""                      >> vars.sh
-  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 else
   echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
   source vars.sh
   echo "device=\"$device\""                  >  vars.sh
-  echo "vendor=\"$vendor\""                  >> vars.sh
   echo "xhci=\"$xhci\""                      >> vars.sh
-  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
   echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 fi
@@ -1057,14 +1054,14 @@ sed -i "$file_core" -Ee "s/QEMU HARDDISK/$new_default_model/"
 
 echo "  $file_ich"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
   echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x7901;  // FCH SATA Controller [AHCI mode]"
-  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x1022;/"
   sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_1022;/"
 else
-  echo "PCI_VENDOR_ID_INTEL;                              -> 0x$vendor;"
+  echo "PCI_VENDOR_ID_INTEL;                              -> 0x8086;"
   echo "PCI_DEVICE_ID_INTEL_82801IR;                      -> 0x06D2;  // Comet Lake SATA AHCI Controller"
-  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x$vendor;/"
+  sed -i "$file_ich" -Ee "s/PCI_VENDOR_ID_INTEL;/0x8086;/"
   sed -i "$file_ich" -Ee "s/PCI_DEVICE_ID_INTEL_82801IR;/0x$sata_8086;/"
 fi
 
