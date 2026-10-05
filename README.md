@@ -1079,6 +1079,10 @@ sudo mv /boot/vmlinuz-6.19.14_tkg_eevdf /boot/vmlinuz-6.19.14_tkg_eevdf_unsigned
 sudo sbsign --key my_mok.priv --cert my_mok.cer --output /boot/vmlinuz-6.19.14_tkg_eevdf /boot/vmlinuz-6.19.14_tkg_eevdf_unsigned
 ```
 
+### 8.2 Install Hyper-V (mandatory)
+
+- Settings >> Apps >> Programs and Features >> Turn Windows features on or off >> _check_ [x] Hyper-V >> [OK]
+
 ### 9. Spoof network (if rtl8125/virtio, not required)
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
