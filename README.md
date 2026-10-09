@@ -427,7 +427,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
       <synic state="off"/>
       <stimer state="off"/>
       <reset state="off"/>
-      <vendor_id state="off"/>
+      <vendor_id state="on" value="Microsoft Hv"/>
       <frequencies state="off"/>
       <reenlightenment state="off"/>
       <tlbflush state="off"/>
@@ -451,7 +451,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="vmx"/>
-    <feature policy="require" name="x2apic"/>
+    <feature policy="disable" name="x2apic"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="spec-ctrl"/>
     <feature policy="require" name="stibp"/>
@@ -459,11 +459,11 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
   </cpu>
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
-    <timer name="hpet" present="yes"/>
     <timer name="rtc" present="yes"/>
     <timer name="pit" present="yes"/>
-    <timer name="kvmclock" present="no"/>
+    <timer name="hpet" present="no"/>
     <timer name="hypervclock" present="no"/>
+    <timer name="kvmclock" present="no"/>
   </clock>
   ```
   </details>
