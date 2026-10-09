@@ -1,6 +1,6 @@
 --- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-04 16:51:46.092688895 +0100
-@@ -6,12 +6,23 @@
++++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-08 19:30:09.346785995 +0100
+@@ -6,12 +6,24 @@
   */
  #define COMPILE_OFFSETS
  
@@ -18,6 +18,7 @@
 +	OFFSET(OFFSET_KVM_last_exit_start, kvm, last_exit_start);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_cpuid_cache, kvm_vcpu, cpuid_cache);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_ext_cpuid_cache, kvm_vcpu, ext_cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_hv_cpuid_cache, kvm_vcpu, hv_cpuid_cache);  // NIKA added
 +	OFFSET(OFFSET_VCPU_VMX_loaded_vmcs, vcpu_vmx, loaded_vmcs);  // NIKA added
 +	OFFSET(OFFSET_LOADED_VMCS_launched, loaded_vmcs, launched);  // NIKA added
 +
@@ -25,8 +26,8 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-04 17:29:10.521213672 +0100
-@@ -237,6 +237,204 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-08 19:43:35.570642285 +0100
+@@ -237,6 +237,222 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -89,8 +90,12 @@
 +
 +.Lcheck_leaf:
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_CX    /* RCX = in_eax */
++	cmp $0x80000000, %ecx
++	jae .Lcheck_ext_leaf
++	cmp $0x40000000, %ecx
++	jae .Lcheck_hv_leaf
 +	cmp $0x24, %ecx
-+	ja .Lcheck_ext_leaf
++	ja .Lfastpath_slowpath
 +
 +	/* CPUID leaves 0x00–0x24 that rely on ECX subleaves: (0x00000011E195A890ULL >> in_eax) & 1 */
 +	cmp $0x1F, %ecx
@@ -127,8 +132,6 @@
 +
 +.Lcheck_ext_leaf:
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_DX    /* RDX = in_eax */
-+	cmp $0x80000000, %edx
-+	jb .Lfastpath_slowpath
 +	cmp $0x80000007, %edx
 +	ja .Lfastpath_slowpath
 +
@@ -140,6 +143,22 @@
 +	add %ecx, %edx
 +	imul $20, %edx, %edx
 +	lea OFFSET_KVM_VCPU_ext_cpuid_cache(%_ASM_SI, %_ASM_DX, 1), %_ASM_SI
++	jmp .Lverify_and_write
++
++
++.Lcheck_hv_leaf:
++	mov VCPU_RAX(%_ASM_DI), %_ASM_DX    /* RDX = in_eax */
++	cmp $0x40000002, %edx
++	ja .Lfastpath_slowpath
++
++	xor %_ASM_CX, %_ASM_CX              /* in_ecx = 0 */
++
++	/* Index = (in_eax * 64 + in_ecx) * 20 */
++	sub $0x40000000, %edx               /* RDX = in_eax - 0x80000000 */
++	shl $6, %edx
++	add %ecx, %edx
++	imul $20, %edx, %edx
++	lea OFFSET_KVM_VCPU_hv_cpuid_cache(%_ASM_SI, %_ASM_DX, 1), %_ASM_SI
 +
 +
 +.Lverify_and_write:
@@ -232,7 +251,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-04 18:15:20.053074529 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-08 22:12:49.900675197 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -438,8 +457,49 @@
  
  	if (is_guest_mode(vcpu)) {
  		/*
+@@ -7574,6 +7671,12 @@
+ 	free_page((unsigned long)vmx->ve_info);
+ }
+ 
++static const struct cpuid_cache_regs hv_cpuid_cache_template[0x03][0x01] = {  // NIKA begin
++	{ { 1, 0x40000005, 0x7263694d, 0x666f736f, 0x76482074 } },  // '....'  'rciM'  'foso'  'vH t'
++	{ { 1, 0x31237648, 0x00000000, 0x00000000, 0x00000000 } },  // '1#vH'  '....'  '....'  '....'
++	{ { 1, 0x00004A61, 0x000A0000, 0x00000000, 0x00000000 } }   // Build:19041  Major/Minor:10/0  Service:0  Branch:0
++};  // NIKA end
++
+ int vmx_vcpu_create(struct kvm_vcpu *vcpu)
+ {
+ 	struct vmx_uret_msr *tsx_ctrl;
+@@ -7663,6 +7766,8 @@
+ 		WRITE_ONCE(to_kvm_vmx(vcpu->kvm)->pid_table[vcpu->vcpu_id],
+ 			   __pa(&vmx->vt.pi_desc) | PID_TABLE_ENTRY_VALID);
+ 
++	memcpy(vcpu->hv_cpuid_cache, hv_cpuid_cache_template, sizeof(vcpu->hv_cpuid_cache));  // NIKA added
++
+ 	return 0;
+ 
+ free_vmcs:
+--- a/include/asm-generic/mshyperv.h	2026-04-22 12:30:53.000000000 +0100
++++ b/include/asm-generic/mshyperv.h	2026-10-08 22:49:16.616069651 +0100
+@@ -170,8 +170,14 @@
+ {
+ 	u64 guest_id;
+ 
+-	guest_id = (((u64)HV_LINUX_VENDOR_ID) << 48);
+-	guest_id |= (kernel_version << 16);
++//	guest_id = (((u64)HV_LINUX_VENDOR_ID) << 48);  // NIKA removed
++	guest_id = (((u64)0x0001) << 48);  // Vendor:Microsoft
++	guest_id |= (((u64)0x04) << 40);  // OS:WindowsNT
++	guest_id |= (((u64)0x0A) << 32);  // Major:10
++	guest_id |= (((u64)0x00) << 24);  // Minor:0
++//	guest_id |= (kernel_version << 16);  // NIKA removed
++	guest_id |= (((u64)0x00) << 16);  // Service:0
++	guest_id |= 0x4A61;  // Build:19041
+ 
+ 	return guest_id;
+ }
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-10-04 17:44:21.481862366 +0100
++++ b/include/linux/kvm_host.h	2026-10-08 19:29:19.194209324 +0100
 @@ -324,6 +324,14 @@
  	unsigned int len;
  };
@@ -455,17 +515,18 @@
  struct kvm_vcpu {
  	struct kvm *kvm;
  #ifdef CONFIG_PREEMPT_NOTIFIERS
-@@ -400,6 +408,9 @@
+@@ -400,6 +408,10 @@
  	 */
  	struct kvm_memory_slot *last_used_slot;
  	u64 last_used_slot_gen;
 +
 +	struct cpuid_cache_regs cpuid_cache[0x25][0x40];  // NIKA added
 +	struct cpuid_cache_regs ext_cpuid_cache[0x08][0x01];  // NIKA added
++	struct cpuid_cache_regs hv_cpuid_cache[0x03][0x01];  // NIKA added
  };
  
  /*
-@@ -877,17 +888,24 @@
+@@ -877,17 +889,24 @@
  	struct xarray mem_attr_array;
  #endif
  	char stats_id[KVM_STATS_NAME_SIZE];
