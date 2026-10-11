@@ -976,6 +976,7 @@ cd "linux-tkg/RPMs"
 sudo dnf install kernel-devel-6.19.14_tkg_eevdf-1.x86_64.rpm
 sudo dnf download dkms
 sudo rpm -i --nodeps dkms-3.4.3-2.fc44.noarch.rpm
+echo "compress_modules=no" | sudo tee /etc/dkms/framework.conf.d/nocompress.conf
 sudo wget https://github.com/memflow/memflow-kvm/releases/download/bin-kernel-6.19/memflow-source-only.dkms.tar.gz
 sudo dkms install --archive=memflow-source-only.dkms.tar.gz
 ```
