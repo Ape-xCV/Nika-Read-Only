@@ -16,9 +16,9 @@ fi
 
 SCRIPT_DIR="$(pwd)"
 EDK2_DEST="/usr/share/edk2/ovmf"
-CODE_FILE="OVMF_CODE_4M.patched.qcow2"
+CODE_FILE="OVMF_CODE_4M.fedk2.qcow2"
 VARS_FILE="OVMF_VARS_4M.empty.qcow2"
-VARS_FILE_2="OVMF_VARS_4M.patched.qcow2"
+VARS_FILE_2="OVMF_VARS_4M.fedk2.qcow2"
 CODE_DEST="${EDK2_DEST}/${CODE_FILE}"
 VARS_DEST="${EDK2_DEST}/${VARS_FILE}"
 VARS_DEST_2="${EDK2_DEST}/${VARS_FILE_2}"
@@ -555,5 +555,5 @@ virt-fw-vars --input "$VARS_DEST" --output "$VARS_DEST_2" \
   --set-false CustomMode \
   --set-json "$DEFAULTS_JSON"
 
-cp -f /usr/share/qemu/firmware/?0-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json "/usr/share/qemu/firmware/10-edk2-ovmf-4m-qcow2-x64-fedk.json"
-sed -i "/usr/share/qemu/firmware/10-edk2-ovmf-4m-qcow2-x64-fedk.json" -Ee "s/.secboot./.patched./"
+cp -f /usr/share/qemu/firmware/?0-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json "/usr/share/qemu/firmware/10-edk2-ovmf-4m-qcow2-x64-fedk2.json"
+sed -i "/usr/share/qemu/firmware/10-edk2-ovmf-4m-qcow2-x64-fedk2.json" -Ee "s/.secboot./.fedk2./"
