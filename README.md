@@ -301,7 +301,8 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   ```
   </details>
 
-- Run `fedk2patch.sh` to clone, patch, and build OVMF with generated data.
+- Run `ovmfpatch.sh` to clone and build `OVMF_CODE_4M.patched.qcow2` firmware for Apex Legends.
+- Do NOT run `fedk2patch.sh` and do NOT use `OVMF_CODE_4M.fedk2.qcow2` firmware with Apex Legends.
 
 ### 1.5. Build custom Linux kernel (mandatory)
 
@@ -427,7 +428,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
       <synic state="off"/>
       <stimer state="off"/>
       <reset state="off"/>
-      <vendor_id state="on" value="Microsoft Hv"/>
+      <vendor_id state="off"/>
       <frequencies state="off"/>
       <reenlightenment state="off"/>
       <tlbflush state="off"/>
@@ -449,10 +450,6 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
     <topology sockets="1" cores="4" threads="2"/>
     <cache mode="passthrough"/>
     <feature policy="disable" name="hypervisor"/>
-    <feature policy="require" name="svm"/>
-    <feature policy="require" name="vmx"/>
-    <feature policy="disable" name="x2apic"/>
-    <feature policy="require" name="topoext"/>
     <feature policy="require" name="spec-ctrl"/>
     <feature policy="require" name="stibp"/>
     <feature policy="require" name="ssbd"/>
@@ -567,25 +564,18 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
   </cpu>
 ```
 
-- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU with **SMT Control Disabled** in host BIOS:
+- Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
 ```shell
   <vcpu placement="static">12</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
-    <vcpupin vcpu="2" cpuset="2"/>
-    <vcpupin vcpu="3" cpuset="3"/>
-    <vcpupin vcpu="4" cpuset="4"/>
-    <vcpupin vcpu="5" cpuset="5"/>
-    <vcpupin vcpu="6" cpuset="6"/>
-    <vcpupin vcpu="7" cpuset="7"/>
-    <vcpupin vcpu="8" cpuset="8"/>
-    <vcpupin vcpu="9" cpuset="9"/>
-    <vcpupin vcpu="10" cpuset="10"/>
-    <vcpupin vcpu="11" cpuset="11"/>
+    ...
+    <vcpupin vcpu="22" cpuset="22"/>
+    <vcpupin vcpu="23" cpuset="23"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
-    <topology sockets="1" clusters="1" dies="2" cores="6" threads="1"/>
+    <topology sockets="1" clusters="1" dies="2" cores="6" threads="2"/>
     ...
   </cpu>
 ```
