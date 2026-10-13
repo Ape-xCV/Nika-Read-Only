@@ -2103,7 +2103,7 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
 static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
 static bool apicid_map_init = false;\n\
@@ -2137,7 +2137,7 @@ echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
     apic_id = apicid_map[uid];"
 fi
@@ -2152,7 +2152,7 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_topology_h" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
     asm volatile(\"cpuid\"\n\
     : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
