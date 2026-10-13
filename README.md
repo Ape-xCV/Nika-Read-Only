@@ -458,7 +458,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="yes"/>
     <timer name="pit" present="yes"/>
-    <timer name="hpet" present="no"/>
+    <timer name="hpet" present="yes"/>
     <timer name="hypervclock" present="no"/>
     <timer name="kvmclock" present="no"/>
   </clock>
