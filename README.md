@@ -649,7 +649,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
 - Nested Virtualization for Intel:
 ```shell
 sudo su
-echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
+echo "options kvm_intel nested=0 pt_mode=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
 ```
 
