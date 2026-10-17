@@ -1056,6 +1056,13 @@ Start-ScheduledTask -TaskPath "\Microsoft\Windows\TPM\" -TaskName "Tpm-Maintenan
 
 ### 8.1. Sign custom Linux kernel for Secure Boot
 
+- NOTE: You will pass attestation in guest with Secure Boot enabled even on host with Secure Boot disabled and unsigned kernel.
+
+- On host set BIOS option:
+  - Set SHA-1 (SHA-256 banks remain available for guest)
+  - Set TCG/TPM 1.2 (same as above)
+  - Fully or partially set Measured Boot disabled
+
 - Generate and enroll your MOK:
 ```shell
 openssl req -new -x509 -newkey rsa:2048 -keyout my_mok.priv -out my_mok.cer -days 3650 -subj "/CN=my_mok/" -noenc
