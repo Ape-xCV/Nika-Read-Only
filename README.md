@@ -302,7 +302,6 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
   </details>
 
 - Run `ovmfpatch.sh` to clone and build `OVMF_CODE_4M.patched.qcow2` firmware for Apex Legends.
-- Do NOT run `fedk2patch.sh` and do NOT use `OVMF_CODE_4M.fedk2.qcow2` firmware with Apex Legends.
 
 ### 1.5. Build custom Linux kernel (mandatory)
 
@@ -369,7 +368,7 @@ GRUB_CMDLINE_LINUX="mitigations=auto ..."
 
 - Set file permissions:
 ```shell
-sudo chmod 777 /var/lib/libvirt/images/win10.img
+sudo chmod 666 /var/lib/libvirt/images/win10.img
 ```
 
 
@@ -649,7 +648,7 @@ sudo chmod 777 /var/lib/libvirt/images/win10.img
 - Nested Virtualization for Intel:
 ```shell
 sudo su
-echo "options kvm_intel nested=0 pt_mode=1" > /etc/modprobe.d/kvm.conf
+echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
 echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
 ```
 
