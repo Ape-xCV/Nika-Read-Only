@@ -25,7 +25,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-20 01:29:54.940103988 +0100
++++ b/arch/x86/kvm/x86.c	2026-10-20 14:13:32.612770663 +0100
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -42,7 +42,17 @@
  		if (data & ~vcpu->arch.guest_supported_xss)
  			return 1;
  		if (vcpu->arch.ia32_xss == data)
-@@ -12522,7 +12524,7 @@
+@@ -4343,6 +4345,9 @@
+ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
+ 	switch (msr_info->index) {
++//	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
++//		msr_info->data = 1ULL << 30;  /* Set LOCK (bit 30) */
++//		break;  // NIKA warning: 0xC80 is exclusive to server CPUs, unavailable on consumer CPUs
+ 	case MSR_IA32_PLATFORM_ID:
+ 	case MSR_IA32_EBL_CR_POWERON:
+ 	case MSR_IA32_LASTBRANCHFROMIP:
+@@ -12522,7 +12527,7 @@
  	unsigned long rflags;
  	int i, r;
  
