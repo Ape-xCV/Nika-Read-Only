@@ -25,7 +25,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-20 14:13:32.612770663 +0100
++++ b/arch/x86/kvm/x86.c	2026-10-20 17:51:59.445377388 +0100
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -46,9 +46,9 @@
  int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
  	switch (msr_info->index) {
-+//	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
-+//		msr_info->data = 1ULL << 30;  /* Set LOCK (bit 30) */
-+//		break;  // NIKA warning: 0xC80 is exclusive to server CPUs, unavailable on consumer CPUs
++	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
++		msr_info->data = 1ULL << 30;  /* Set LOCK (bit 30) */
++		break;
  	case MSR_IA32_PLATFORM_ID:
  	case MSR_IA32_EBL_CR_POWERON:
  	case MSR_IA32_LASTBRANCHFROMIP:
@@ -62,7 +62,7 @@
  
  	vcpu_load(vcpu);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-19 21:43:09.978197891 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-20 17:51:32.350513152 +0100
 @@ -237,6 +237,257 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -83,18 +83,18 @@
 +	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_INTERRUPTIBILITY_INFO for STI or MOV SS blocking */
-+//	mov $0x4824, %ecx                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
-+//	vmread %_ASM_CX, %_ASM_DX
-+//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+//	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
-+//	jnz .Lfastpath_slowpath
++	mov $0x4824, %ecx                   /* Read GUEST_INTERRUPTIBILITY_INFO (VMCS 0x4824) */
++	vmread %_ASM_CX, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++	test $0x03, %edx                    /* Test GUEST_INTR_STATE_STI (bit 0) | GUEST_INTR_STATE_MOV_SS (bit 1) */
++	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_RFLAGS for TF (single-stepping) */
-+//	mov $0x6820, %ecx                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
-+//	vmread %_ASM_CX, %_ASM_DX
-+//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+//	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
-+//	jnz .Lfastpath_slowpath
++	mov $0x6820, %ecx                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
++	vmread %_ASM_CX, %_ASM_DX
++	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
++	jnz .Lfastpath_slowpath
 +
 +	mov $0x4402, %ecx                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
 +	vmread %_ASM_CX, %_ASM_DX
