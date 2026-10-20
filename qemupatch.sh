@@ -61,6 +61,14 @@ default_models=(
   "Patriot Burst Elite 240GB" "SanDisk SSD PLUS 240GB"
 )
 
+default_vendors=(
+  "Acer"                      "ASRock"
+  "ASUS"                      "BIOSTAR"
+  "COLORFUL"                  "FUJITSU"
+  "GIGABYTE"                  "INTEL"
+  "Lenovo"                    "MAXSUN"
+)
+
 ide_cd_models=(
   "HL-DT-ST BD-RE BH16NS40"   "HL-DT-ST BD-RE WH16NS60"
   "HL-DT-ST DVDRAM GH22NS50"  "HL-DT-ST DVDRAM GH24NSC0"
@@ -319,6 +327,16 @@ get_new_string() {
   suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
 }
 
+get_new_string_57() {
+#  get_new_string "$(shuf -i 5-7 -n 1)" "$(shuf -i 1-4 -n 1)"
+  new_string=$(get_random_element "${default_vendors[@]}")
+  prefix=$(echo $new_string | head -c 1)
+  suffix=$(echo $new_string | tail -c ${#new_string})
+}
+get_new_string_4() {
+  get_new_string 4 "$(shuf -i 1-3 -n 1)"
+}
+
 get_type_4_data() {
   local data=$(sudo hexdump -v -e '1/1 "%02X" ' "/sys/firmware/dmi/entries/4-0/raw")
   t4_processor_family="${data:12:2}"
@@ -345,6 +363,7 @@ fi
           file_amlbuild_c="$(pwd)/qemu/hw/acpi/aml-build.c"
          file_acpi_core_c="$(pwd)/qemu/hw/acpi/core.c"
           file_acpi_cpu_c="$(pwd)/qemu/hw/acpi/cpu.c"
+         file_pcibridge_c="$(pwd)/qemu/hw/acpi/pci-bridge.c"
              file_pcihp_c="$(pwd)/qemu/hw/acpi/pcihp.c"
           file_hdacodec_c="$(pwd)/qemu/hw/audio/hda-codec.c"
     file_hdacodeccommon_h="$(pwd)/qemu/hw/audio/hda-codec-common.h"
@@ -431,6 +450,7 @@ if [[ -f "$file_vhostusergpu_c" ]]; then rm "$file_vhostusergpu_c"; fi
 if [[ -f "$file_amlbuild_c" ]]; then rm "$file_amlbuild_c"; fi
 if [[ -f "$file_acpi_core_c" ]]; then rm "$file_acpi_core_c"; fi
 if [[ -f "$file_acpi_cpu_c" ]]; then rm "$file_acpi_cpu_c"; fi
+if [[ -f "$file_pcibridge_c" ]]; then rm "$file_pcibridge_c"; fi
 if [[ -f "$file_pcihp_c" ]]; then rm "$file_pcihp_c"; fi
 if [[ -f "$file_hdacodec_c" ]]; then rm "$file_hdacodec_c"; fi
 if [[ -f "$file_hdacodeccommon_h" ]]; then rm "$file_hdacodeccommon_h"; fi
@@ -516,7 +536,7 @@ mkdir -p qemu/hw/net
 cp -f rtl8125.c qemu/hw/net/rtl8125.c
 
 echo "  $file_vhdx_c"
-get_new_string 4 1
+get_new_string_4
 echo "QEMU v                                            -> $new_string v"
 sed -i "$file_vhdx_c" -Ee "s/QEMU v/$new_string v/"
 
@@ -562,7 +582,7 @@ echo "    if (f->rev <= 4) {"
 echo "        v v v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
 ##sed -i "$file_amlbuild_c" -Ee "/    if \(f->rev <= 4\) \{/a\        build_append_int_noprefix(tbl, 0, 1); /* Reserved */"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 sed -i "$file_amlbuild_c" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
 
@@ -612,17 +632,27 @@ echo "\"QEMUQEQEMUQEMU\1\0\0\0\"                          -> \"$dsdt_oem_id$dsdt
 sed -i "$file_acpi_core_c" -Ee "s/\"QEMUQEQEMUQEMU\\\\1\\\\0\\\\0\\\\0\"/\"$dsdt_oem_id$dsdt_oem_table\" \"\\\\x${dsdt_oem_rev:6:2}\" \"\\\\x${dsdt_oem_rev:4:2}\" \"\\\\x${dsdt_oem_rev:2:2}\" \"\\\\x${dsdt_oem_rev:0:2}\"/"
 echo "\"QEMU\1\0\0\0\"                                    -> \"$dsdt_asl_id\" \"\x${dsdt_asl_rev:6:2}\" \"\x${dsdt_asl_rev:4:2}\" \"\x${dsdt_asl_rev:2:2}\" \"\x${dsdt_asl_rev:0:2}\""
 sed -i "$file_acpi_core_c" -Ee "s/\"QEMU\\\\1\\\\0\\\\0\\\\0\"/\"$dsdt_asl_id\" \"\\\\x${dsdt_asl_rev:6:2}\" \"\\\\x${dsdt_asl_rev:4:2}\" \"\\\\x${dsdt_asl_rev:2:2}\" \"\\\\x${dsdt_asl_rev:0:2}\"/"
+echo "        case 0: /* soft power off */"
+echo "        v v v v v v v v v v v v v v"
+echo "        case 7:"
+sed -i "$file_acpi_core_c" -Ee "/        case 0: \/\* soft power off \*\//a\        case 7:"
 
 echo "  $file_acpi_cpu_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "CPU Hotplug resources                             -> CPU $prefix$suffix"
 sed -i "$file_acpi_cpu_c" -Ee "s/CPU Hotplug resources/CPU $prefix$suffix/"
 
+echo "  $file_pcibridge_c"
+get_new_string_4
+edsm=$new_string
+echo "\"EDSM                                             -> \"${edsm}"
+sed -i "$file_pcibridge_c" -Ee "s/\"EDSM/\"${edsm}/"
+
 echo "  $file_pcihp_c"
-get_new_string 4 1
+get_new_string_4
 echo "PHPR                                              -> $new_string"
 sed -i "$file_pcihp_c" -Ee "s/PHPR/$new_string/"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "PCI Hotplug resources                             -> PCI $prefix$suffix"
 sed -i "$file_pcihp_c" -Ee "s/PCI Hotplug resources/PCI $prefix$suffix/"
 sed -i "$file_pcihp_c" -e  '/        \/\* add _EJ0 to make slot hotpluggable/{n;N;N;N;N;d;}'
@@ -699,6 +729,8 @@ sed -i "$file_pcihp_c" -Ee "/        if \(bus->devices\[devfn\]\) \{/{ n;n;n; s/
 sed -i "$file_pcihp_c" -Ee "s/        dev = aml_device\(\"S%.02X\", devfn\);/        char pci_name[5] = {0};\n\
         get_pci_name(pci_name, devfn);\n\
         dev = aml_device(\"%s\", pci_name);/"
+echo "\"EDSM                                             -> \"${edsm}"
+sed -i "$file_pcihp_c" -Ee "s/\"EDSM/\"${edsm}/"
 
 echo "  $file_hdacodec_c"
 echo "0x1af4                                            -> 0x10EC"
@@ -735,7 +767,7 @@ echo "  $file_edidgenerate_c"
 get_new_string 3 0
 echo "RHT                                               -> $new_string"
 sed -i "$file_edidgenerate_c" -Ee "s/RHT/$new_string/"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 word=$(get_random_hex 4)
 week=$(shuf -i 1-52 -n 1)
 year=$(shuf -i 15-35 -n 1)
@@ -769,6 +801,9 @@ echo ".plvl3_lat = 0xfff                                -> .plvl3_lat = 0x$fadt_
 sed -i "$file_acpibuild_c" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild_c" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x$fadt_plvl2_lat/"
 sed -i "$file_acpibuild_c" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x$fadt_plvl3_lat/"
+echo "100000000                                         -> 41666666"
+sed -i "$file_acpibuild_c" -e  '/    if_ctx = aml_if(aml_lor(aml_equal(period, zero),/{n;d;}'
+sed -i "$file_acpibuild_c" -Ee "s/    if_ctx = aml_if\(aml_lor\(aml_equal\(period, zero\),/    if_ctx = aml_if(aml_equal(period, zero));/"
 get_new_string 2 0
 echo "\"VMBS\"                                            -> \"${new_string}BS\""
 echo "\"VMBus\"                                           -> \"${new_string}BUS\""
@@ -777,6 +812,8 @@ sed -i "$file_acpibuild_c" -Ee "s/\"VMBS\"/\"${new_string}BS\"/"
 sed -i "$file_acpibuild_c" -Ee "s/\"VMBus\"/\"${new_string}BUS\"/"
 sed -i "$file_acpibuild_c" -Ee "s/\"VMBUS\"/\"${new_string}BUS\"/"
 sed -i "$file_acpibuild_c" -e  '/static void build_dbg_aml(Aml \*table)/{N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
+echo "uint32_t irqs[] = {5, 10, 11};                    -> uint32_t irqs[] = {3, 5, 9};"
+sed -i "$file_acpibuild_c" -Ee "s/uint32_t irqs\[\] = \{5, 10, 11\};/uint32_t irqs[] = {3, 5, 9};/"
 get_new_string 3 0
 prt=$new_string
 get_new_string 3 0
@@ -791,6 +828,20 @@ sed -i "$file_acpibuild_c" -Ee "s/PRTA\", build_q35_routing_table\(\"GSI/${prt}A
 sed -i "$file_acpibuild_c" -Ee "s/aml_return\(aml_name\(\"PRT/aml_return(aml_name(\"${prt}/g"
 echo "LNKD\", \"LNKA\", \"LNKB\", \"LNKC                      -> ${lnk}D\", \"${lnk}A\", \"${lnk}B\", \"${lnk}C"
 sed -i "$file_acpibuild_c" -Ee "s/LNKD\", \"LNKA\", \"LNKB\", \"LNKC/${lnk}D\", \"${lnk}A\", \"${lnk}B\", \"${lnk}C/"
+get_new_string 4 0
+iqst=$new_string
+get_new_string 4 0
+iqcr=$new_string
+get_new_string 3 0
+prr=$prr
+echo "\"IQST                                              -> \"${iqst}"
+echo "\"IQCR                                              -> \"${iqcr}"
+echo "\"PRRI                                              -> \"${prr}I"
+echo "\"PRR0                                              -> \"${prr}0"
+sed -i "$file_acpibuild_c" -Ee "s/\"IQST/\"${iqst}/g"
+sed -i "$file_acpibuild_c" -Ee "s/\"IQCR/\"${iqcr}/g"
+sed -i "$file_acpibuild_c" -Ee "s/\"PRRI/\"${prr}I/g"
+sed -i "$file_acpibuild_c" -Ee "s/\"PRR0/\"${prr}0/g"
 echo "build_link_dev(\"LNK                               -> build_link_dev(\"${lnk}"
 echo "build_gsi_link_dev(\"GSI                           -> build_gsi_link_dev(\"${gsi}"
 echo "DRAC                                              -> MEMC"
@@ -801,14 +852,11 @@ sed -i "$file_acpibuild_c" -e  '/build_dbg_aml(dsdt);/{d;}'
 echo "aml_string(\"SMI resources\")));                    -> aml_int(1)));"
 echo "aml_string(\"GPE0 resources\")));                   -> aml_int(2)));"
 sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"SMI resources\"\)\)\);/aml_int(1)));/"
+sed -i "$file_acpibuild_c" -e  '/ACPI0006/{d;}'
 sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"GPE0 resources\"\)\)\);/aml_int(2)));/"
 sed -i "$file_acpibuild_c" -e  '/create fw_cfg node, unconditionally/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild_c" -e  '/Windows ACPI Emulated Devices Table/{n;n;n;n;n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
 sed -i "$file_acpibuild_c" -e  '/x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);/{n;n;N;N;d;}'
-
-echo "100000000                                         -> 41666666"
-sed -i "$file_acpibuild_c" -e  '/    if_ctx = aml_if(aml_lor(aml_equal(period, zero),/{n;d;}'
-sed -i "$file_acpibuild_c" -Ee "s/    if_ctx = aml_if\(aml_lor\(aml_equal\(period, zero\),/    if_ctx = aml_if(aml_equal(period, zero));/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "for (i = 0; i < 0x18; i++) {                      -> for (i = 0; i < 0x14; i++) {"
   sed -i "$file_acpibuild_c" -Ee "s/for \(i = 0; i < 0x18; i\+\+\) \{/for (i = 0; i < 0x14; i++) {/"
@@ -829,12 +877,14 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
         name[3] = 'E' + (i & 0x3);\n\
         append_q35_prt_entry(pkg, i, name);"
 fi
+echo "aml_int(0)); /* PM1a_CNT.SLP_TYP */               -> aml_int(0x07)); /* PM1a_CNT.SLP_TYP */"
+sed -i "$file_acpibuild_c" -Ee "s/aml_int\(0\)\); \/\* PM1a_CNT.SLP_TYP \*\//aml_int(0x07)); \/* PM1a_CNT.SLP_TYP *\//"
 
 echo "  $file_i386_fwcfg_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 sed -i "$file_i386_fwcfg_c" -Ee "s/\"QEMU\"/\"$prefix$suffix\"/"
-get_new_string 4 1
+get_new_string_4
 fwcf=$new_string
 echo "\"FWCF\"                                            -> \"$fwcf\""
 echo "\"QEMU0002\"                                        -> \"UEFI0002\""
@@ -918,20 +968,20 @@ static const MemoryRegionOps ich9_smb_mmio_ops = {\n\
   sed -i "$file_smbusich9_c" -Ee "s/PCI_VENDOR_ID_INTEL;/0x8086;/"
   sed -i "$file_smbusich9_c" -Ee "s/PCI_DEVICE_ID_INTEL_ICH9_6;/0x$smbus_8086;/"
 fi
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "ICH9 SMBUS Bridge                                 -> $prefix$suffix SMBus"
 sed -i "$file_smbusich9_c" -Ee "s/ICH9 SMBUS Bridge/$prefix$suffix SMBus/"
 
 echo "  $file_atapi_c"
-get_new_string 4 1
+get_new_string_4
 echo "\"QEMU\"                                            -> \"$new_string\""
 sed -i "$file_atapi_c" -Ee "s/\"QEMU\"/\"$new_string\"/"
-get_new_string 4 1
+get_new_string_4
 echo "QEMU DVD-ROM                                      -> $new_string DVD-ROM"
 sed -i "$file_atapi_c" -Ee "s/QEMU DVD-ROM/$new_string DVD-ROM/"
 
 echo "  $file_ide_core_c"
-get_new_string 4 1
+get_new_string_4
 echo "\"QM%05d\"                                          -> \"${new_string}%05d\""
 echo "QEMU DVD-ROM                                      -> $new_ide_cd_model"
 echo "QEMU MICRODRIVE                                   -> $new_ide_cfata_model"
@@ -955,21 +1005,21 @@ else
 fi
 
 echo "  $file_adbkbd_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU ADB Keyboard                                 -> $prefix$suffix ADB Keyboard"
 sed -i "$file_adbkbd_c" -Ee "s/QEMU ADB Keyboard/$prefix$suffix ADB Keyboard/"
 
 echo "  $file_adbmouse_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU ADB Mouse                                    -> $prefix$suffix ADB Mouse"
 sed -i "$file_adbmouse_c" -Ee "s/QEMU ADB Mouse/$prefix$suffix ADB Mouse/"
 
 #echo "  $file_ads7846_c"
-#get_new_string $(shuf -i 5-7 -n 1) 3
+#get_new_string_57
 #echo "QEMU ADS7846-driven Touchscreen                  -> $prefix$suffix ADS7846-driven Touchscreen"
 
 echo "  $file_hid_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU HID Keyboard                                 -> $prefix$suffix HID Keyboard"
 echo "QEMU HID Mouse                                    -> $prefix$suffix HID Mouse"
 echo "QEMU HID Tablet                                   -> $prefix$suffix HID Tablet"
@@ -978,23 +1028,23 @@ sed -i "$file_hid_c" -Ee "s/QEMU HID Mouse/$prefix$suffix HID Mouse/"
 sed -i "$file_hid_c" -Ee "s/QEMU HID Tablet/$prefix$suffix HID Tablet/"
 
 echo "  $file_ps2_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU PS/2 Keyboard                                -> $prefix$suffix PS/2 Keyboard"
 echo "QEMU PS/2 Mouse                                   -> $prefix$suffix PS/2 Mouse"
 sed -i "$file_ps2_c" -Ee "s/QEMU PS\/2 Keyboard/$prefix$suffix PS\/2 Keyboard/"
 sed -i "$file_ps2_c" -Ee "s/QEMU PS\/2 Mouse/$prefix$suffix PS\/2 Mouse/"
 
 #echo "  $file_tsc2005_c"
-#get_new_string $(shuf -i 5-7 -n 1) 3
+#get_new_string_57
 #echo "QEMU TSC2005-driven Touchscreen                  -> $prefix$suffix TSC2005-driven Touchscreen"
 
 #echo "  $file_tsc210x_c"
-#get_new_string $(shuf -i 5-7 -n 1) 3
+#get_new_string_57
 #echo "QEMU TSC2102-driven Touchscreen                  -> $prefix$suffix TSC2102-driven Touchscreen"
 #echo "QEMU TSC2301-driven Touchscreen                  -> $prefix$suffix TSC2301-driven Touchscreen"
 
 echo "  $file_virtioinputhid_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU Virtio Keyboard                              -> $prefix$suffix Keyboard"
 echo "QEMU Virtio Mouse                                 -> $prefix$suffix Mouse"
 echo "QEMU Virtio Tablet                                -> $prefix$suffix Tablet"
@@ -1073,7 +1123,7 @@ echo "system_ss.add(when: 'CONFIG_RTL8139_PCI', if_true: files('rtl8139.c'))"
 sed -i "$file_mesonbuild" -Ee "/system_ss.add\(when: 'CONFIG_RTL8139_PCI', if_true: files\('rtl8139.c'\)\)/isystem_ss.add(when: 'CONFIG_RTL8125_PCI_EXPRESS', if_true: files('rtl8125.c', 'net_tx_pkt.c'))"
 
 echo "  $file_ctrl_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU NVMe Ctrl                                    -> $prefix$suffix NVMe Ctrl"
 sed -i "$file_ctrl_c" -Ee "s/QEMU NVMe Ctrl/$prefix$suffix NVMe Ctrl/"
 
@@ -1082,7 +1132,7 @@ echo "  $file_nvram_fwcfg_c"
 signature="41204D2049202020"
 echo "0x51454d5520434647ULL                             -> 0x${signature}ULL"
 sed -i "$file_nvram_fwcfg_c" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
-#get_new_string 4 1
+#get_new_string_4
 #echo "\"QEMU\"                                            -> \"$new_string\""
 #sed -i "$file_nvram_fwcfg_c" -Ee "s/\"QEMU\"/\"$new_string\"/"
 
@@ -1105,12 +1155,12 @@ sed -i "$file_pci_c" -Ee "/    PCIDeviceClass \*pc = PCI_DEVICE_GET_CLASS\(pci_d
         pc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_RP + ++index;"
 
 echo "  $file_gpex_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "QEMU generic PCIe host bridge                     -> $prefix$suffix PCIe host bridge"
 sed -i "$file_gpex_c" -Ee "s/QEMU generic PCIe host bridge/$prefix$suffix PCIe host bridge/"
 
 echo "  $file_mptconfig_c"
-get_new_string 4 1
+get_new_string_4
 serial=$(get_random_serial 16)
 echo "QEMU MPT Fusion                                   -> $new_string MPT Fusion"
 echo "\"QEMU\"                                            -> \"$new_string\""
@@ -1120,14 +1170,14 @@ sed -i "$file_mptconfig_c" -Ee "s/\"QEMU\"/\"$new_string\"/"
 sed -i "$file_mptconfig_c" -Ee "s/0000111122223333/$serial/"
 
 echo "  $file_scsibus_c"
-get_new_string 4 1
+get_new_string_4
 echo "\"QEMU    \"                                        -> \"$new_string    \""
 echo "\"QEMU TARGET     \"                                -> \"$new_string TARGET     \""
 sed -i "$file_scsibus_c" -Ee "s/\"QEMU    \"/\"$new_string    \"/"
 sed -i "$file_scsibus_c" -Ee "s/\"QEMU TARGET     \"/\"$new_string TARGET     \"/"
 
 echo "  $file_scsidisk_c"
-get_new_string 4 1
+get_new_string_4
 echo "\"QEMU\"                                            -> \"$new_string\""
 echo "\"QEMU HARDDISK\"                                   -> \"$new_string HDD\""
 echo "\"QEMU CD-ROM\"                                     -> \"$new_string CD-ROM\""
@@ -1136,7 +1186,7 @@ sed -i "$file_scsidisk_c" -Ee "s/\"QEMU HARDDISK\"/\"$new_string HDD\"/"
 sed -i "$file_scsidisk_c" -Ee "s/\"QEMU CD-ROM\"/\"$new_string CD-ROM\"/"
 
 echo "  $file_spaprvscsi_c"
-get_new_string 4 1
+get_new_string_4
 nocaps=$(echo $new_string | tr '[A-Z]' '[a-z]')
 echo "\"QEMU EMPTY      \"                                -> \"$new_string EMPTY      \""
 echo "\"QEMU    \"                                        -> \"$new_string    \""
@@ -1537,14 +1587,14 @@ sed -i "$file_smbios" -Ee "/    size_mb = QEMU_ALIGN_UP\(size, MiB\) \/ MiB;/i\ 
     t->data_width = cpu_to_le16(64); /* 64-bit no ECC */"
 
 echo "  $file_lu_c"
-get_new_string 4 1
+get_new_string_4
 echo "\"QEMU\"                                            -> \"$new_string\""
 echo "\"QEMU UFS\"                                        -> \"$new_string UFS\""
 sed -i "$file_lu_c" -Ee "s/\"QEMU\"/\"$new_string\"/"
 sed -i "$file_lu_c" -Ee "s/\"QEMU UFS\"/\"$new_string UFS\"/"
 
 echo "  $file_devaudio_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "\"QEMU\",                                           -> \"$prefix$suffix\","
 echo "\"QEMU USB Audio\"                                  -> \"$prefix$suffix USB Audio\""
@@ -1570,7 +1620,7 @@ sed -i "$file_devaudio_c" -Ee "s/\"Audio Output - 48 kHz Stereo\"/\"USB Audio Re
 sed -i "$file_devaudio_c" -Ee "s/QEMU USB Audio Interface/$prefix$suffix USB Audio/"
 
 echo "  $file_devhid_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 echo "_MOUSE]    = \"QEMU USB Mouse\"                     -> _MOUSE]    = \"$prefix$suffix USB Mouse\""
 echo "_TABLET]   = \"QEMU USB Tablet\"                    -> _TABLET]   = \"$prefix$suffix USB Tablet\""
@@ -1598,7 +1648,7 @@ echo "0x0627                                            -> 0x045e"
 sed -i "$file_devhid_c" -Ee "s/0x0627/0x045e/"
 
 echo "  $file_devhub_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 echo "_PRODUCT]      = \"QEMU USB Hub\"                   -> _PRODUCT]      = \"$prefix$suffix USB Hub\""
@@ -1610,7 +1660,7 @@ sed -i "$file_devhub_c" -Ee "s/\"314159\"/\"$number\"/"
 sed -i "$file_devhub_c" -Ee "s/_desc   = \"QEMU USB Hub\"/_desc   = \"$prefix$suffix USB Hub\"/"
 
 echo "  $file_devmtp_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "MTP_MANUFACTURER  \"QEMU\"                          -> MTP_MANUFACTURER  \"$prefix$suffix\""
 echo "QEMU filesharing                                  -> $prefix$suffix USB MTP"
@@ -1622,7 +1672,7 @@ sed -i "$file_devmtp_c" -Ee "s/\"34617\"/\"$number\"/"
 sed -i "$file_devmtp_c" -Ee "s/_desc   = \"QEMU USB MTP\"/_desc   = \"$prefix$suffix USB MTP\"/"
 
 echo "  $file_devnetwork_c"
-get_new_string 4 1
+get_new_string_4
 word=$(get_random_hex 12)
 number=$(get_random_dec 10)
 echo "\"QEMU\"                                            -> \"$new_string\""
@@ -1651,7 +1701,7 @@ sed -i "$file_devnetwork_c" -Ee "s/QEMU USB RNDIS Net/$new_string RNDIS USB Net/
 sed -i "$file_devnetwork_c" -Ee "s/QEMU USB Network Interface/$new_string RNDIS USB Network Adapter/"
 
 echo "  $file_devserial_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "\"QEMU\"                                            -> \"$prefix$suffix\""
 echo "_SERIAL]  = \"QEMU USB SERIAL\"                     -> $prefix$suffix USB Serial"
@@ -1667,7 +1717,7 @@ sed -i "$file_devserial_c" -Ee "s/_desc   = \"QEMU USB Serial\"/_desc   = \"$pre
 sed -i "$file_devserial_c" -Ee "s/_desc   = \"QEMU USB Braille\"/_desc   = \"$prefix$suffix USB Braille\"/"
 
 echo "  $file_devsmartcardreader_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "_MANUFACTURER]  = \"QEMU\"                          -> _MANUFACTURER]  = \"$prefix$suffix\""
 echo "_PRODUCT]       = \"QEMU USB CCID\"                 -> _PRODUCT]       = \"$prefix$suffix USB CCID\""
@@ -1679,7 +1729,7 @@ sed -i "$file_devsmartcardreader_c" -Ee "s/_SERIALNUMBER]  = \"1\"/_SERIALNUMBER
 sed -i "$file_devsmartcardreader_c" -Ee "s/_desc   = \"QEMU USB CCID\"/_desc   = \"$prefix$suffix USB CCID\"/"
 
 echo "  $file_devstorage_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 serial=$(get_random_serial 16)
 echo "\"QEMU\",                                           -> \"$new_string\","
 echo "QEMU USB HARDDRIVE                                -> $new_string USB HDD"
@@ -1691,7 +1741,7 @@ sed -i "$file_devstorage_c" -Ee "s/\"1\"/\"$serial\"/"
 sed -i "$file_devstorage_c" -Ee "s/_desc   = \"QEMU USB MSD\"/_desc   = \"$new_string USB HDD\"/"
 
 echo "  $file_devuas_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "\"QEMU\",                                           -> \"$prefix$suffix\","
 echo "USB Attached SCSI HBA                             -> $prefix$suffix USB Attached SCSI HBA"
@@ -1720,7 +1770,7 @@ sed -i "$file_devwacom_c" -Ee "s/desc = \"QEMU PenPartner Tablet\"/desc = \"Waco
 #echo "  $file_hcdehcipci_c"
 
 echo "  $file_u2f_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 number=$(get_random_dec 10)
 echo "\"QEMU\",                                           -> \"$prefix$suffix\","
 echo "\"U2F USB key\"                                     -> \"$prefix$suffix U2F USB key\""
@@ -1734,12 +1784,12 @@ sed -i "$file_u2f_c" -Ee "s/_desc   = \"QEMU U2F USB key\"/_desc   = \"$prefix$s
 sed -i "$file_u2f_c" -Ee "s/desc           = \"QEMU U2F key\"/desc           = \"$prefix$suffix U2F USB key\"/"
 
 echo "  $file_u2femulated_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "desc = \"QEMU U2F emulated key\"                    -> desc = \"$prefix$suffix U2F emulated key\""
 sed -i "$file_u2femulated_c" -Ee "s/desc = \"QEMU U2F emulated key\"/desc = \"$prefix$suffix U2F emulated key\"/"
 
 echo "  $file_u2fpassthru_c"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "desc = \"QEMU U2F passthrough key\"                 -> desc = \"$prefix$suffix U2F passthrough key\""
 sed -i "$file_u2fpassthru_c" -Ee "s/desc = \"QEMU U2F passthrough key\"/desc = \"$prefix$suffix U2F passthrough key\"/"
 
@@ -2103,7 +2153,7 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
 static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
 static bool apicid_map_init = false;\n\
@@ -2132,15 +2182,15 @@ static inline void init_apicid_map(void)\n\
     if (fallback <= 1) sched_setaffinity(0, sizeof(cpu_set_t), &orig_mask);\n\
     apicid_map_init = true;\n\
 }\n"
-fi
+##fi
 echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
     apic_id = apicid_map[uid];"
-fi
+##fi
 
 echo "  $file_topology_h"
 echo "    uint32_t eax, ebx, ecx, edx;"
@@ -2152,7 +2202,7 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   sed -i "$file_topology_h" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
     asm volatile(\"cpuid\"\n\
     : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
@@ -2160,7 +2210,7 @@ if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
     : \"memory\"\n\
     );\n\
     return eax & 0x1F;"
-fi
+##fi
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
