@@ -25,7 +25,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-20 17:51:59.445377388 +0100
++++ b/arch/x86/kvm/x86.c	2026-10-20 21:19:49.010828402 +0100
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -34,7 +34,18 @@
  	if (xcr0 & ~valid_bits)
  		return 1;
  
-@@ -4084,6 +4085,7 @@
+@@ -3905,6 +3906,10 @@
+ 		return kvm_xen_write_hypercall_page(vcpu, data);
+ 
+ 	switch (msr) {
++	case 0x19A:  /* MSR_IA32_THERM_CONTROL */
++	case 0x19B:  /* MSR_IA32_THERM_INTERRUPT */
++	case 0x19C:  /* MSR_IA32_THERM_STATUS */
++	case 0x19D:  /* MSR_THERM2_CTL */
+ 	case MSR_AMD64_NB_CFG:
+ 	case MSR_IA32_UCODE_WRITE:
+ 	case MSR_VM_HSAVE_PA:
+@@ -4084,6 +4089,7 @@
  		if (!guest_cpuid_has(vcpu, X86_FEATURE_XSAVES))
  			return KVM_MSR_RET_UNSUPPORTED;
  
@@ -42,17 +53,21 @@
  		if (data & ~vcpu->arch.guest_supported_xss)
  			return 1;
  		if (vcpu->arch.ia32_xss == data)
-@@ -4343,6 +4345,9 @@
+@@ -4343,6 +4349,13 @@
  int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
  	switch (msr_info->index) {
 +	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
 +		msr_info->data = 1ULL << 30;  /* Set LOCK (bit 30) */
 +		break;
++	case 0x19A:  /* MSR_IA32_THERM_CONTROL */
++	case 0x19B:  /* MSR_IA32_THERM_INTERRUPT */
++	case 0x19C:  /* MSR_IA32_THERM_STATUS */
++	case 0x19D:  /* MSR_THERM2_CTL */
  	case MSR_IA32_PLATFORM_ID:
  	case MSR_IA32_EBL_CR_POWERON:
  	case MSR_IA32_LASTBRANCHFROMIP:
-@@ -12522,7 +12527,7 @@
+@@ -12522,7 +12535,7 @@
  	unsigned long rflags;
  	int i, r;
  
@@ -322,7 +337,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-19 23:39:08.027128401 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-20 23:01:03.149880552 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -338,8 +353,8 @@
  	 */
  	if (is_guest_mode(vcpu))
 -		eb |= get_vmcs12(vcpu)->exception_bitmap;
-+//		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
-+		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
++		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
++//		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
  	else {
  		int mask = 0, match = 0;
  
@@ -373,7 +388,47 @@
  }
  
  void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -6234,6 +6241,79 @@
+@@ -4250,10 +4257,37 @@
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
+ 	}
+-	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {
++//	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {  // NIKA removed
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_APERF, MSR_TYPE_R);
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
+-	}
++//	}  NIKA removed
++
++/*	vmx_enable_intercept_for_msr(vcpu,   0x1B,      MSR_TYPE_R );  // MSR_IA32_APIC_BASE */
++	vmx_disable_intercept_for_msr(vcpu,  0x34,      MSR_TYPE_R );  /* MSR_SMI_COUNT */
++	if (nested) vmx_disable_intercept_for_msr(vcpu, 0x3A, MSR_TYPE_R);  /* MSR_IA32_FEATURE_CONTROL */
++/*	vmx_enable_intercept_for_msr(vcpu,   0x3B,      MSR_TYPE_R );  // MSR_IA32_TSC_ADJUST */
++	// MSR_IA32_PERFCTR0 ... MSR_IA32_PERFCTR7
++	for (u32 msr = 0xC1;  msr <= 0xC8;  msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++	// MSR_IA32_PERFEVTSEL0 ... MSR_IA32_PERFEVTSEL7
++	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++	vmx_disable_intercept_for_msr(vcpu, 0xC80,      MSR_TYPE_R );  /* MSR_IA32_DEBUG_INTERFACE */
++	vmx_disable_intercept_for_msr(vcpu, 0x19A,      MSR_TYPE_RW);  /* MSR_IA32_THERM_CONTROL */
++	vmx_disable_intercept_for_msr(vcpu, 0x19B,      MSR_TYPE_RW);  /* MSR_IA32_THERM_INTERRUPT */
++	vmx_disable_intercept_for_msr(vcpu, 0x19C,      MSR_TYPE_RW);  /* MSR_IA32_THERM_STATUS */
++	vmx_disable_intercept_for_msr(vcpu, 0x19D,      MSR_TYPE_RW);  /* MSR_THERM2_CTL */
++/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0,      MSR_TYPE_R );  // MSR_IA32_MISC_ENABLE */
++	vmx_disable_intercept_for_msr(vcpu, 0x38F,      MSR_TYPE_W );  /* MSR_CORE_PERF_GLOBAL_CTRL */
++	vmx_disable_intercept_for_msr(vcpu, 0x639,      MSR_TYPE_R );  /* MSR_PP0_ENERGY_STATUS */
++/*	vmx_enable_intercept_for_msr(vcpu,  0xC0000082, MSR_TYPE_W );  // MSR_IA32_LSTAR */
++//	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
++	vmx_disable_intercept_for_msr(vcpu, 0x179,      MSR_TYPE_R );  /* MSR_IA32_MCG_CAP */
++	vmx_disable_intercept_for_msr(vcpu, 0x17A,      MSR_TYPE_R );  /* MSR_IA32_MCG_STATUS */
++	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MSR_IA32_MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
++	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
++	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
++	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
++	if (!nested) for (u32 msr = 0x480; msr <= 0x491; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
+ 
+ 	/* PT MSRs can be passed through iff PT is exposed to the guest. */
+ 	if (vmx_pt_mode_is_host_guest())
+@@ -6234,6 +6268,79 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -453,7 +508,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6327,8 @@
+@@ -6247,7 +6354,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -463,7 +518,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -7379,9 +7460,9 @@
+@@ -7379,9 +7487,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -475,7 +530,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7475,7 @@
+@@ -7394,7 +7502,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
