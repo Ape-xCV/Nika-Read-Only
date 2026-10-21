@@ -358,7 +358,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-21 09:40:58.104556211 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-21 19:13:14.152937689 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -409,7 +409,7 @@
  }
  
  void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -4250,10 +4257,37 @@
+@@ -4250,10 +4257,38 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -433,6 +433,7 @@
 +	vmx_disable_intercept_for_msr(vcpu, 0x19B,      MSR_TYPE_RW);  /* MSR_IA32_THERM_INTERRUPT */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19C,      MSR_TYPE_RW);  /* MSR_IA32_THERM_STATUS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19D,      MSR_TYPE_RW);  /* MSR_THERM2_CTL */
++	vmx_disable_intercept_for_msr(vcpu, 0x982,      MSR_TYPE_RW);  /* MSR_IA32_TME_ACTIVATE */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0,      MSR_TYPE_R );  // MSR_IA32_MISC_ENABLE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x38F,      MSR_TYPE_W );  /* MSR_CORE_PERF_GLOBAL_CTRL */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639,      MSR_TYPE_R );  /* MSR_PP0_ENERGY_STATUS */
@@ -449,7 +450,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -6234,6 +6268,79 @@
+@@ -6234,6 +6269,79 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -529,7 +530,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6354,8 @@
+@@ -6247,7 +6355,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -539,7 +540,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -7379,9 +7487,9 @@
+@@ -7379,9 +7488,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -551,7 +552,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7502,7 @@
+@@ -7394,7 +7503,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
