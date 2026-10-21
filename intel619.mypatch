@@ -77,8 +77,8 @@
  
  	vcpu_load(vcpu);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-20 17:51:32.350513152 +0100
-@@ -237,6 +237,257 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-21 11:39:15.381750946 +0100
+@@ -237,6 +237,256 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -124,10 +124,10 @@
 +//	je .Ladvance_rip_and_reenter
 +//	cmpw $0x24, %dx                     /* EXIT_REASON_MWAIT (0x24) */
 +//	je .Ladvance_rip_and_reenter
-+//	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
-+//	je .Lcheck_msr_range
-+//	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
-+//	je .Lcheck_msr_range
++	cmpw $0x1F, %dx                     /* EXIT_REASON_RDMSR (0x1F) */
++	je .Lcheck_msr_range
++	cmpw $0x20, %dx                     /* EXIT_REASON_WRMSR (0x20) */
++	je .Lcheck_msr_range
 +	cmpw $0x0A, %dx                     /* EXIT_REASON_CPUID (0x0A) */
 +	jne .Lfastpath_slowpath
 +
@@ -299,14 +299,13 @@
 +.Lcheck_msr_range:
 +	mov VCPU_RCX(%_ASM_DI), %_ASM_DX    /* RDX = guest ECX (MSR index) */
 +
-+	mov %_ASM_DX, %_ASM_AX
-+	and $0xFFFFFF00, %eax
-+	cmp $0x40000000, %eax
-+	je .Lfastpath_slowpath              /* Branches if RDX >= 0x40000000 && RDX <= 0x400000FF */
-+
 +	cmp $0x1FFF, %edx                   /* Check Low Range: 0x00000000 - 0x00001FFF */
 +	jbe .Lfastpath_slowpath
-+	cmp $0xC0000000, %edx               /* Check below High Range: 0x00002000 - 0xBFFFFFFF */
++	cmp $0x40000000, %edx               /* Check below High Range: 0x00002000 - 0x3FFFFFFF */
++	jb .Linject_gp
++	cmp $0x40001FFF, %edx               /* Check below High Range: 0x40000000 - 0x40001FFF */
++	jbe .Lfastpath_slowpath
++	cmp $0xC0000000, %edx               /* Check below High Range: 0x40002000 - 0xBFFFFFFF */
 +	jb .Linject_gp
 +	cmp $0xC0001FFF, %edx               /* Check High Range: 0xC0000000 - 0xC0001FFF */
 +	jbe .Lfastpath_slowpath
@@ -337,7 +336,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-20 23:01:03.149880552 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-21 09:40:58.104556211 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -353,8 +352,8 @@
  	 */
  	if (is_guest_mode(vcpu))
 -		eb |= get_vmcs12(vcpu)->exception_bitmap;
-+		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
-+//		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
++//		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
++		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
  	else {
  		int mask = 0, match = 0;
  
