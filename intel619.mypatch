@@ -25,7 +25,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-20 21:19:49.010828402 +0100
++++ b/arch/x86/kvm/x86.c	2026-10-21 15:23:52.484178692 +0100
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -34,6 +34,17 @@
  	if (xcr0 & ~valid_bits)
  		return 1;
  
+@@ -3568,8 +3569,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && (data || !msr_info->host_initiated))  // NIKA removed
++//			return 1;  // NIKA removed
+ 		/* An attempt to write a 1 to a reserved bit raises #GP */
+ 		if (data & ~(MCI_CTL2_CMCI_EN | MCI_CTL2_CMCI_THRESHOLD_MASK))
+ 			return 1;
 @@ -3905,6 +3906,10 @@
  		return kvm_xen_write_hypercall_page(vcpu, data);
  
@@ -53,6 +64,17 @@
  		if (data & ~vcpu->arch.guest_supported_xss)
  			return 1;
  		if (vcpu->arch.ia32_xss == data)
+@@ -4318,8 +4324,8 @@
+ 		if (msr > last_msr)
+ 			return 1;
+ 
+-		if (!(mcg_cap & MCG_CMCI_P) && !host)
+-			return 1;
++//		if (!(mcg_cap & MCG_CMCI_P) && !host)  // NIKA removed
++//			return 1;  // NIKA removed
+ 		offset = array_index_nospec(msr - MSR_IA32_MC0_CTL2,
+ 					    last_msr + 1 - MSR_IA32_MC0_CTL2);
+ 		data = vcpu->arch.mci_ctl2_banks[offset];
 @@ -4343,6 +4349,13 @@
  int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
