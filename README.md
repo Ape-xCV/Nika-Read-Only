@@ -303,7 +303,7 @@ pcibridge_8086="a0ef"   # Tiger Lake-LP Shared SRAM
 
 - Run `ovmfpatch.sh` to clone and build `OVMF_CODE_4M.patched.qcow2` firmware for Apex Legends.
 
-### 1.5. Build custom Linux kernel (mandatory)
+### 1.5. Build custom Linux kernel (not required)
 
 
   <details>
