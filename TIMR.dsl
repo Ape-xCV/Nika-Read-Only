@@ -13,12 +13,7 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
                 IO (Decode16, 0x0050, 0x0050, 0x10, 0x04)
                 IRQNoFlags () { 0 }
             })
-
-            Method (_STA, 0, NotSerialized)  // _STA: Status
-            {
-                Return (0x0F)
-            }
         }  // end of TIMR device
-    }  // end of _SB.PCI0 scope
+    }  // end of _SB.PCI0.LPCB scope
 }
 
