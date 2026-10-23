@@ -54,11 +54,12 @@ fi
 
 QEMU_DEST="/usr/local/bin"
 
-default_models=(
-  "Acer SSD SA100 240GB"      "CT240BX500SSD1"
-  "EMTCE X150 240GB"          "KINGSTON SA400S37240G"
-  "Lexar SSD NQ100 240GB"     "MSI S270 240GB"
-  "Patriot Burst Elite 240GB" "SanDisk SSD PLUS 240GB"
+acpi_tables=(
+  "DBG2"                      "DBGP"
+  "DMAR"                      "FIDT"
+  "FPDT"                      "HPET"
+  "LPIT"                      "MCFG"
+  "WSMT"
 )
 
 default_vendors=(
@@ -67,6 +68,13 @@ default_vendors=(
   "COLORFUL"                  "FUJITSU"
   "GIGABYTE"                  "INTEL"
   "Lenovo"                    "MAXSUN"
+)
+
+default_models=(
+  "Acer SSD SA100 240GB"      "CT240BX500SSD1"
+  "EMTCE X150 240GB"          "KINGSTON SA400S37240G"
+  "Lexar SSD NQ100 240GB"     "MSI S270 240GB"
+  "Patriot Burst Elite 240GB" "SanDisk SSD PLUS 240GB"
 )
 
 ide_cd_models=(
@@ -307,7 +315,13 @@ get_random_element() {
 
 new_ide_cd_model=$(get_random_element "${ide_cd_models[@]}")
 new_ide_cfata_model=$(get_random_element "${ide_cfata_models[@]}")
-new_default_model=$(get_random_element "${default_models[@]}")
+##new_default_model=$(get_random_element "${default_models[@]}")
+for dev in /dev/nvme0n1 /dev/nvme1n1 /dev/sda /dev/sdb; do
+  if [[ -b "$dev" ]]; then
+    new_default_model=$(lsblk -dno MODEL "$dev")
+    break
+  fi
+done
 
 get_random_string() { head /dev/urandom | tr -dc 'A-Z'    | head -c "$1"; }
 get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
@@ -439,8 +453,10 @@ file_devsmartcardreader_c="$(pwd)/qemu/hw/usb/dev-smartcard-reader.c"
                file_cpu_h="$(pwd)/qemu/target/i386/cpu.h"
                file_kvm_c="$(pwd)/qemu/target/i386/kvm/kvm.c"
             file_kvmcpu_c="$(pwd)/qemu/target/i386/kvm/kvm-cpu.c"
-               file_ssdt1="$(pwd)/qemu/ssdt1.dsl"
-               file_ssdt2="$(pwd)/qemu/ssdt2.dsl"
+           file_misc_base="MISC"
+                file_misc="$(pwd)/qemu/${file_misc_base}.dsl"
+           file_timr_base="TIMR"
+                file_timr="$(pwd)/qemu/${file_timr_base}.dsl"
 
 if [[ -f "$file_vhdx_c" ]]; then rm "$file_vhdx_c"; fi
 if [[ -f "$file_vvfat_c" ]]; then rm "$file_vvfat_c"; fi
@@ -526,8 +542,8 @@ if [[ -f "$file_cpu_c" ]]; then rm "$file_cpu_c"; fi
 if [[ -f "$file_cpu_h" ]]; then rm "$file_cpu_h"; fi
 if [[ -f "$file_kvm_c" ]]; then rm "$file_kvm_c"; fi
 if [[ -f "$file_kvmcpu_c" ]]; then rm "$file_kvmcpu_c"; fi
-if [[ -f "$file_ssdt1" ]]; then rm "$file_ssdt1"; fi
-if [[ -f "$file_ssdt2" ]]; then rm "$file_ssdt2"; fi
+if [[ -f "$file_misc" ]]; then rm "$file_misc"; fi
+if [[ -f "$file_timr" ]]; then rm "$file_timr"; fi
 mkdir -p qemu
 cp -fr qemubackup/. qemu
 cp -f *.dsl qemu
@@ -2153,7 +2169,7 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
 static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
 static bool apicid_map_init = false;\n\
@@ -2182,15 +2198,15 @@ static inline void init_apicid_map(void)\n\
     if (fallback <= 1) sched_setaffinity(0, sizeof(cpu_set_t), &orig_mask);\n\
     apicid_map_init = true;\n\
 }\n"
-##fi
+fi
 echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
     apic_id = apicid_map[uid];"
-##fi
+fi
 
 echo "  $file_topology_h"
 echo "    uint32_t eax, ebx, ecx, edx;"
@@ -2202,7 +2218,7 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-##if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_topology_h" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
     asm volatile(\"cpuid\"\n\
     : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
@@ -2210,7 +2226,7 @@ echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
     : \"memory\"\n\
     );\n\
     return eax & 0x1F;"
-##fi
+fi
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
@@ -2226,11 +2242,11 @@ else
 fi
 random=$(shuf -i 1-5 -n 1)
 if [[ "$chassis_type" != "Desktop" ]]; then
-  echo "  $file_ssdt1"
+  echo "  $file_misc"
   echo "        Device (BAT0)"
   echo "        ^ ^ ^ ^ ^ ^ ^"
   echo "        Device (EC0)"
-  sed -i "$file_ssdt1" -Ee "/        Device \(EC0\)/i\        Device (BAT0)\n\
+  sed -i "$file_misc" -Ee "/        Device \(EC0\)/i\        Device (BAT0)\n\
         {\n\
             Name (_HID, EisaId (\"PNP0C0A\"))\n\
             Name (_UID, One)\n\
@@ -2285,15 +2301,27 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make -j
-iasl "$file_ssdt1"
-iasl "$file_ssdt2"
+iasl "$file_misc"
+iasl "$file_timr"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt1.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../ssdt2.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-echo "$QEMU_DEST/ssdt1.aml"
-echo "$QEMU_DEST/ssdt2.aml"
+echo "$QEMU_DEST/${file_misc_base}.aml"
+echo "$QEMU_DEST/${file_timr_base}.aml"
+
+for file in "${acpi_tables[@]}"; do
+  sudo cp -f "/sys/firmware/acpi/tables/${file}" "$QEMU_DEST/${file}.dat"
+  sudo chmod 666 "$QEMU_DEST/${file}.dat"
+done
+
+find "/sys/firmware/acpi/tables" -type f -iname "SSDT*" | while read -r file; do
+  filename=$(basename "$file")
+  sudo cp -f "$file" "$QEMU_DEST/${filename}.dat"
+  sudo chmod 666 "$QEMU_DEST/${filename}.dat"
+  echo "$QEMU_DEST/${filename}.dat"
+done
 
 sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
