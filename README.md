@@ -519,9 +519,47 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
 
   ```shell
     <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt1.aml"/>
+    <qemu:arg value="file=/usr/local/bin/DBG2.dat"/>
     <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/ssdt2.aml"/>
+    <qemu:arg value="file=/usr/local/bin/DBGP.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/DMAR.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/FIDT.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/FPDT.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/HPET.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/LPIT.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/MCFG.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/WSMT.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/MISC.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/TIMR.aml"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT1.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT2.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT3.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT4.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT5.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT6.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT7.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT8.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT9.dat"/>
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="file=/usr/local/bin/SSDT10.dat"/>
   </qemu:commandline>
   ```
   </details>
