@@ -817,6 +817,26 @@ echo ".plvl3_lat = 0xfff                                -> .plvl3_lat = 0x$fadt_
 sed -i "$file_acpibuild_c" -Ee "s/.rev = 3,/.rev = 4,/"
 sed -i "$file_acpibuild_c" -Ee "s/.plvl2_lat = 0xfff/.plvl2_lat = 0x$fadt_plvl2_lat/"
 sed -i "$file_acpibuild_c" -Ee "s/.plvl3_lat = 0xfff/.plvl3_lat = 0x$fadt_plvl3_lat/"
+echo "static void build_timr_aml(Aml *table)"
+echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "static void build_hpet_aml(Aml *table)"
+sed -i "$file_acpibuild_c" -Ee "/static void build_hpet_aml\(Aml \*table\)/istatic void build_timr_aml(Aml *table)\n\
+{\n\
+    Aml *crs;\n\
+    Aml *scope = aml_scope(\"_SB\");\n\
+    Aml *dev = aml_device(\"TIMR\");\n\
+\n\
+    aml_append(dev, aml_name_decl(\"_HID\", aml_eisaid(\"PNP0100\")));\n\
+\n\
+    crs = aml_resource_template();\n\
+    aml_append(crs, aml_io(AML_DECODE16, 0x0040, 0x0040, 0x01, 0x04));\n\
+    aml_append(crs, aml_io(AML_DECODE16, 0x0050, 0x0050, 0x10, 0x04));\n\
+    aml_append(crs, aml_irq_no_flags(0));\n\
+    aml_append(dev, aml_name_decl(\"_CRS\", crs));\n\
+\n\
+    aml_append(scope, dev);\n\
+    aml_append(table, scope);\n\
+}\n"
 echo "100000000                                         -> 41666666"
 sed -i "$file_acpibuild_c" -e  '/    if_ctx = aml_if(aml_lor(aml_equal(period, zero),/{n;d;}'
 sed -i "$file_acpibuild_c" -Ee "s/    if_ctx = aml_if\(aml_lor\(aml_equal\(period, zero\),/    if_ctx = aml_if(aml_equal(period, zero));/"
@@ -866,9 +886,13 @@ sed -i "$file_acpibuild_c" -Ee "s/build_gsi_link_dev\(\"GSI/build_gsi_link_dev(\
 sed -i "$file_acpibuild_c" -Ee "s/DRAC/MEMC/"
 sed -i "$file_acpibuild_c" -e  '/build_dbg_aml(dsdt);/{d;}'
 echo "aml_string(\"SMI resources\")));                    -> aml_int(1)));"
-echo "aml_string(\"GPE0 resources\")));                   -> aml_int(2)));"
 sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"SMI resources\"\)\)\);/aml_int(1)));/"
+echo "    build_timr_aml(dsdt);"
+echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
+echo "    if (misc->has_hpet) {"
+sed -i "$file_acpibuild_c" -Ee "/    if \(misc->has_hpet\) \{/i\    build_timr_aml(dsdt);\n"
 sed -i "$file_acpibuild_c" -e  '/ACPI0006/{d;}'
+echo "aml_string(\"GPE0 resources\")));                   -> aml_int(2)));"
 sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"GPE0 resources\"\)\)\);/aml_int(2)));/"
 sed -i "$file_acpibuild_c" -e  '/create fw_cfg node, unconditionally/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild_c" -e  '/Windows ACPI Emulated Devices Table/{n;n;n;n;n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'

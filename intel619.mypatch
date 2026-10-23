@@ -99,7 +99,7 @@
  
  	vcpu_load(vcpu);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-21 11:39:15.381750946 +0100
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-23 20:50:04.048160689 +0100
 @@ -237,6 +237,256 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -165,7 +165,7 @@
 +	movabs $145152000000, %rax
 +	cmp %rax, %rdx
 +	jbe .Lfastpath_slowpath                                 /* Branches if RDX <= 145152000000 */
-+	movb $0, OFFSET_KVM_intercept_cpuid(%_ASM_CX)           /* kvm->intercept_cpuid == false */
++	movb $0, OFFSET_KVM_intercept_cpuid(%_ASM_CX)           /* kvm->intercept_cpuid = false */
 +
 +
 +.Lcheck_leaf:
@@ -358,7 +358,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-21 20:20:57.224139465 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-23 21:00:38.816448770 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -409,7 +409,7 @@
  }
  
  void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -4250,10 +4257,39 @@
+@@ -4250,10 +4257,38 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -434,7 +434,6 @@
 +	vmx_disable_intercept_for_msr(vcpu, 0x19C,      MSR_TYPE_RW);  /* MSR_IA32_THERM_STATUS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19D,      MSR_TYPE_RW);  /* MSR_THERM2_CTL */
 +	vmx_disable_intercept_for_msr(vcpu, 0x390,      MSR_TYPE_RW);  /* MSR_IA32_PERF_GLOBAL_OVF_CTRL */
-+	vmx_disable_intercept_for_msr(vcpu, 0x982,      MSR_TYPE_RW);  /* MSR_IA32_TME_ACTIVATE */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0,      MSR_TYPE_R );  // MSR_IA32_MISC_ENABLE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x38F,      MSR_TYPE_W );  /* MSR_CORE_PERF_GLOBAL_CTRL */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639,      MSR_TYPE_R );  /* MSR_PP0_ENERGY_STATUS */
@@ -451,7 +450,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -6234,6 +6270,79 @@
+@@ -6234,6 +6269,80 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -498,6 +497,7 @@
 +		ecx &= ~(1U << 3);  // Clear MONITOR_MWAIT (bit 3)
 +		if (nested) ecx |= 1U << 31;  // Hyper-V fix
 +	}
++	if (in_eax == 0x07 && in_ecx == 0x00) ecx &= ~(1U << 13);  // Clear TME (bit 13)
 +	kvm_rax_write(vcpu, eax);
 +	kvm_rbx_write(vcpu, ebx);
 +	kvm_rcx_write(vcpu, ecx);
@@ -563,7 +563,7 @@
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-10-19 22:06:47.954695956 +0100
++++ b/include/linux/kvm_host.h	2026-10-23 12:17:20.349129154 +0100
 @@ -324,6 +324,14 @@
  	unsigned int len;
  };
@@ -589,7 +589,7 @@
  };
  
  /*
-@@ -877,17 +888,24 @@
+@@ -877,16 +888,24 @@
  	struct xarray mem_attr_array;
  #endif
  	char stats_id[KVM_STATS_NAME_SIZE];
@@ -602,18 +602,17 @@
  	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
  #define kvm_info(fmt, ...) \
  	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
-+/*#define kvm_debug(fmt, ...) \  */
-+/*	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)  */
++//#define kvm_debug(fmt, ...) \
++//	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
  #define kvm_debug(fmt, ...) \
 -	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
 +	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
-+/*#define kvm_debug_ratelimited(fmt, ...) \  */
-+/*	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \  */
-+/*			     ## __VA_ARGS__)  */
++//#define kvm_debug_ratelimited(fmt, ...) \
++//	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
++//			     ## __VA_ARGS__)
  #define kvm_debug_ratelimited(fmt, ...) \
 -	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
--			     ## __VA_ARGS__)
-+	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), \
+ 			     ## __VA_ARGS__)
  #define kvm_pr_unimpl(fmt, ...) \
  	pr_err_ratelimited("kvm [%i]: " fmt, \
- 			   task_tgid_nr(current), ## __VA_ARGS__)
