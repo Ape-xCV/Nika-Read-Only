@@ -564,6 +564,8 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   ```
   </details>
 
+- Add `SSDTx.dat` one at a time, skip faulting ones, and add any extra from `/usr/local/bin/`.
+
 - Make sure that `pc-q35-11.0` is specified in your XML:
 ```shell
 <type arch="x86_64" machine="pc-q35-11.0">hvm</type>
