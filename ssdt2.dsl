@@ -9,9 +9,8 @@ DefinitionBlock ("", "SSDT", 2, "ALASKA", "A M I ", 0x00000001)
             Name (_HID, EisaId ("PNP0100") /* PC-class System Timer */)  // _HID: Hardware ID
             Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
-                // Standard 8254 PIT I/O Range (0x40 - 0x43)
                 IO (Decode16, 0x0040, 0x0040, 0x01, 0x04)
-                // Legacy System Timer IRQ
+                IO (Decode16, 0x0050, 0x0050, 0x10, 0x04)
                 IRQNoFlags () { 0 }
             })
 
