@@ -1,6 +1,6 @@
 --- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-19 21:54:42.293117768 +0100
-@@ -6,12 +6,23 @@
++++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-23 22:42:41.235825678 +0100
+@@ -6,12 +6,24 @@
   */
  #define COMPILE_OFFSETS
  
@@ -18,6 +18,7 @@
 +	OFFSET(OFFSET_KVM_last_exit_start, kvm, last_exit_start);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_cpuid_cache, kvm_vcpu, cpuid_cache);  // NIKA added
 +	OFFSET(OFFSET_KVM_VCPU_ext_cpuid_cache, kvm_vcpu, ext_cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_hv_cpuid_cache, kvm_vcpu, hv_cpuid_cache);  // NIKA added
 +	OFFSET(OFFSET_VCPU_VMX_loaded_vmcs, vcpu_vmx, loaded_vmcs);  // NIKA added
 +	OFFSET(OFFSET_LOADED_VMCS_launched, loaded_vmcs, launched);  // NIKA added
 +
@@ -99,8 +100,8 @@
  
  	vcpu_load(vcpu);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-23 20:50:04.048160689 +0100
-@@ -237,6 +237,256 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-24 10:01:32.365041264 +0100
+@@ -237,6 +237,270 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -172,20 +173,20 @@
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_CX    /* RCX = in_eax */
 +	cmp $0x80000000, %ecx
 +	jae .Lcheck_ext_leaf                /* Branches if in_eax >= 0x80000000 */
++	cmp $0x4000000B, %ecx
++	ja .Lsync_cache_rax                 /* Branches if in_eax > 0x4000000B */
++	cmp $0x40000000, %ecx
++	jae .Lcheck_hv_leaf                 /* Branches if in_eax >= 0x40000000 */
 +
-+	mov %_ASM_CX, %_ASM_AX
-+	and $0xFFFFFF00, %eax
-+	cmp $0x40000000, %eax
-+	je .Lfastpath_slowpath              /* Branches if in_eax >= 0x40000000 && in_eax <= 0x400000FF */
-+
++.Lsync_cache_rax:
 +	cmpl $1, 0+OFFSET_KVM_VCPU_cpuid_cache(%_ASM_SI)
 +	jne .Lfastpath_slowpath                                 /* Branches if rdy != 1 */
 +	cmp 4+OFFSET_KVM_VCPU_cpuid_cache(%_ASM_SI), %ecx
 +	jbe .Lcache_rax_synced                                  /* Branches if in_eax <= 0x0000_MAX */
 +	mov 4+OFFSET_KVM_VCPU_cpuid_cache(%_ASM_SI), %ecx
 +	mov %ecx, VCPU_RAX(%_ASM_DI)
-+
 +.Lcache_rax_synced:
++
 +	cmp $0x24, %ecx
 +	ja .Lfastpath_slowpath
 +
@@ -224,21 +225,20 @@
 +.Lcheck_ext_leaf:
 +	mov VCPU_RAX(%_ASM_DI), %_ASM_DX    /* RDX = in_eax */
 +
++.Lsync_ext_cache_rax:
 +	cmpl $1, 0+OFFSET_KVM_VCPU_ext_cpuid_cache(%_ASM_SI)
 +	jne .Lfastpath_slowpath                                 /* Branches if rdy != 1 */
 +	cmp 4+OFFSET_KVM_VCPU_ext_cpuid_cache(%_ASM_SI), %edx
 +	jbe .Lext_cache_rax_synced                              /* Branches if in_eax <= 0x8000_MAX */
 +	mov 4+OFFSET_KVM_VCPU_ext_cpuid_cache(%_ASM_SI), %edx
 +	mov %edx, VCPU_RAX(%_ASM_DI)
-+
 +.Lext_cache_rax_synced:
++
 +	cmp $0x80000026, %edx
 +	ja .Lfastpath_slowpath              /* Branches if in_eax > 0x80000026 */
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x80000026 */
 +	cmp $0x8000001D, %edx
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x8000001D */
-+	cmp $0x80000008, %edx
-+	je .Lfastpath_slowpath              /* Branches if in_eax == 0x80000008 */
 +
 +	xor %_ASM_CX, %_ASM_CX              /* in_ecx = 0 */
 +	jmp .Lfetch_ext_cache_entry
@@ -255,6 +255,21 @@
 +	add %ecx, %edx
 +	imul $20, %edx, %edx
 +	lea OFFSET_KVM_VCPU_ext_cpuid_cache(%_ASM_SI, %_ASM_DX, 1), %_ASM_SI
++	jmp .Lverify_and_write
++
++
++.Lcheck_hv_leaf:
++	mov VCPU_RAX(%_ASM_DI), %_ASM_DX    /* RDX = in_eax */
++
++	xor %_ASM_CX, %_ASM_CX              /* in_ecx = 0 */
++
++.Lfetch_hv_cache_entry:
++	/* Index = (in_eax * 1 + in_ecx) * 20 */
++	sub $0x40000000, %edx               /* RDX = in_eax - 0x40000000 */
++//	shl $6, %edx
++	add %ecx, %edx
++	imul $20, %edx, %edx
++	lea OFFSET_KVM_VCPU_hv_cpuid_cache(%_ASM_SI, %_ASM_DX, 1), %_ASM_SI
 +
 +
 +.Lverify_and_write:
@@ -358,7 +373,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-23 21:00:38.816448770 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-24 10:10:29.687864137 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -450,7 +465,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -6234,6 +6269,80 @@
+@@ -6234,6 +6269,81 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -498,6 +513,7 @@
 +		if (nested) ecx |= 1U << 31;  // Hyper-V fix
 +	}
 +	if (in_eax == 0x07 && in_ecx == 0x00) ecx &= ~(1U << 13);  // Clear TME (bit 13)
++	if (in_eax == 0x07 && in_ecx == 0x01) eax &= ~(1U << 22);  // Clear HRESET (bit 22)
 +	kvm_rax_write(vcpu, eax);
 +	kvm_rbx_write(vcpu, ebx);
 +	kvm_rcx_write(vcpu, ecx);
@@ -531,7 +547,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6356,8 @@
+@@ -6247,7 +6357,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -541,7 +557,88 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -7379,9 +7489,9 @@
+@@ -6673,6 +6784,80 @@
+ 			return 1;
+ 		}
+ 
++		if (vcpu->kvm->intercept_cpuid  // NIKA begin
++//			&& rdtsc() - vcpu->kvm->last_exit_start > 435456000000)  // Intel® Core™ processors >180 seconds
++//			&& rdtsc() - vcpu->kvm->last_exit_start > 290304000000)  // Intel® Core™ processors >120 seconds
++			&& rdtsc() - vcpu->kvm->last_exit_start > 145152000000)  // Intel® Core™ processors >60 seconds
++			vcpu->kvm->intercept_cpuid = false;
++
++		if (exit_reason.basic == EXIT_REASON_CPUID && !vcpu->kvm->intercept_cpuid) {
++			// If we are here, vcpu->cpuid_cache[in_eax][in_ecx].rdy != 1
++			u32 eax, ebx, ecx, edx, in_eax, in_ecx;
++			eax = kvm_rax_read(vcpu);
++			ecx = kvm_rcx_read(vcpu);
++			in_eax = eax;
++			in_ecx = ecx;
++			if (//in_eax != 0x00       &&  // Maximum Basic Leaf / CPU Vendor ID String
++//				in_eax != 0x80000000 &&  // Maximum Extended Leaf
++//				in_eax != 0x01       &&  // Basic Processor Info / Signature / Feature Flags
++//				in_eax != 0x80000001 &&  // Extended Processor Info / Feature Flags
++//				in_eax != 0x02       &&  // Legacy Cache and TLB Descriptor Information
++//				in_eax != 0x04       &&  // [Intel] Deterministic Cache Parameters
++//				in_eax != 0x8000001D &&  // [AMD] Cache Properties / Deterministic Cache Parameters
++				in_eax != 0x06       &&  // Thermal and Power Management Features
++//				in_eax != 0x07       &&  // Structured Extended Feature Flags (subleafs: AVX2, AVX-512, etc.)
++//				in_eax != 0x0A       &&  // Architectural Performance Monitoring (PMU)
++				in_eax != 0x0B       &&  // Extended Topology Enumeration (logical processors, SMT, and x2APIC IDs)
++				in_eax != 0x1F       &&  // [Intel] V2 Extended Topology Enumeration
++				in_eax != 0x8000001E &&  // [AMD] Processor Topology / Extended APIC and Node IDs
++				in_eax != 0x80000026 &&  // [AMD] Extended CPU Topology Enumeration
++//				in_eax != 0x0D       &&  // Processor Extended State Enumeration (XSAVE / XRSTOR)
++//				in_eax != 0x12       &&  // [Intel] Software Guard Extensions (SGX) Capabilities
++//				in_eax != 0x14       &&  // [Intel] Processor Trace (Intel PT) Capabilities
++//				in_eax != 0x1D       &&  // [Intel] AMX Tile Information (tile palettes and dimensions)
++//				in_eax != 0x1E       &&  // [Intel] AMX TMUL Information (tile matrix multiplication)
++//				in_eax != 0x24       &&  // [Intel] AVX10 Feature Enumeration
++				in_eax != 0x80000008 &&  // Extended Processor Info / Address Sizes (physical and linear address widths)
++				in_eax != 0x80000002 &&  // Extended Brand String (bytes  0-15)
++				in_eax != 0x80000003 &&  // Extended Brand String (bytes 16-31)
++				in_eax != 0x80000004)    // Extended Brand String (bytes 32-47)
++				asm volatile("cpuid"
++				: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
++				: "a"(in_eax), "c"(in_ecx)
++//				: "memory"
++				);
++			else
++				kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++			if (in_eax <= 0x24) {
++				// Mask representing CPUID leaves 0x00–0x24 that rely on ECX subleaves
++				if (((0x00000019E995A890ULL >> in_eax) & 1ULL) == 0) in_ecx = 0;
++				if (in_ecx <= 0x3F) {
++					if (in_eax == 0x01) {
++						ecx &= ~(1U << 3);  // Clear MONITOR_MWAIT (bit 3)
++						if (nested) ecx |= 1U << 31;  // Hyper-V fix
++					}
++					if (in_eax == 0x07 && in_ecx == 0x00) ecx &= ~(1U << 13);  // Clear TME (bit 13)
++					if (in_eax == 0x07 && in_ecx == 0x01) eax &= ~(1U << 22);  // Clear HRESET (bit 22)
++					vcpu->cpuid_cache[in_eax][in_ecx].rdy = 1;
++					vcpu->cpuid_cache[in_eax][in_ecx].eax = eax;
++					vcpu->cpuid_cache[in_eax][in_ecx].ebx = ebx;
++					vcpu->cpuid_cache[in_eax][in_ecx].ecx = ecx;
++					vcpu->cpuid_cache[in_eax][in_ecx].edx = edx;
++				}
++			}
++			else if (in_eax >= 0x80000000 && in_eax <= 0x80000026) {
++				if (in_eax != 0x8000001D && in_eax != 0x80000026) in_ecx = 0;
++				if (in_ecx <= 0x04) {
++					in_eax -= 0x80000000;
++					vcpu->ext_cpuid_cache[in_eax][in_ecx].rdy = 1;
++					vcpu->ext_cpuid_cache[in_eax][in_ecx].eax = eax;
++					vcpu->ext_cpuid_cache[in_eax][in_ecx].ebx = ebx;
++					vcpu->ext_cpuid_cache[in_eax][in_ecx].ecx = ecx;
++					vcpu->ext_cpuid_cache[in_eax][in_ecx].edx = edx;
++				}
++			}
++		}  // NIKA end
++
+ 		if (nested_vmx_reflect_vmexit(vcpu))
+ 			return 1;
+ 	}
+@@ -7379,9 +7564,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -553,7 +650,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7504,7 @@
+@@ -7394,7 +7579,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -562,15 +659,46 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
+@@ -7574,6 +7759,21 @@
+ 	free_page((unsigned long)vmx->ve_info);
+ }
+ 
++static const struct cpuid_cache_regs hv_cpuid_cache_template[0x0C][0x01] = {  // NIKA begin
++	{ { 1, 0x4000000B, 0x7263694D, 0x666F736F, 0x76482074 } },  // '....'  'rciM'  'foso'  'vH t'
++	{ { 1, 0x31237648, 0x00000000, 0x00000000, 0x00000000 } },  // '1#vH'  '....'  '....'  '....'
++	{ { 1, 0x00004A61, 0x000A0000, 0x00000000, 0x00000108 } },  // Build:19041  Major/Minor:10/0  Service:0  Branch:0
++	{ { 1, 0x00003FFF, 0x002BB9FF, 0x00000002, 0x14FFFBF2 } },
++	{ { 1, 0x00062D1C, 0x00000000, 0x0000002E, 0x00000000 } },
++	{ { 1, 0x00000400, 0x00000400, 0x00000324, 0x00000000 } },
++	{ { 1, 0x0022000E, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x80000007, 0x00000001, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } }
++};  // NIKA end
++
+ int vmx_vcpu_create(struct kvm_vcpu *vcpu)
+ {
+ 	struct vmx_uret_msr *tsx_ctrl;
+@@ -7663,6 +7863,8 @@
+ 		WRITE_ONCE(to_kvm_vmx(vcpu->kvm)->pid_table[vcpu->vcpu_id],
+ 			   __pa(&vmx->vt.pi_desc) | PID_TABLE_ENTRY_VALID);
+ 
++	memcpy(vcpu->hv_cpuid_cache, hv_cpuid_cache_template, sizeof(vcpu->hv_cpuid_cache));  // NIKA added
++
+ 	return 0;
+ 
+ free_vmcs:
 --- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-10-23 12:17:20.349129154 +0100
++++ b/include/linux/kvm_host.h	2026-10-23 22:41:17.563195621 +0100
 @@ -324,6 +324,14 @@
  	unsigned int len;
  };
  
 +struct cpuid_cache_regs {  // NIKA begin
-+	u32 rdy;  //     vcpu->cpuid_cache[0x24][0x3F].rdy
-+	u32 eax;  // vcpu->ext_cpuid_cache[0x26][0x04].rdy
++	u32 rdy;
++	u32 eax;
 +	u32 ebx;
 +	u32 ecx;
 +	u32 edx;
@@ -579,17 +707,18 @@
  struct kvm_vcpu {
  	struct kvm *kvm;
  #ifdef CONFIG_PREEMPT_NOTIFIERS
-@@ -400,6 +408,9 @@
+@@ -400,6 +408,10 @@
  	 */
  	struct kvm_memory_slot *last_used_slot;
  	u64 last_used_slot_gen;
 +
 +	struct cpuid_cache_regs     cpuid_cache[0x25][0x40];  // NIKA added
 +	struct cpuid_cache_regs ext_cpuid_cache[0x27][0x05];  // NIKA added
++	struct cpuid_cache_regs  hv_cpuid_cache[0x0C][0x01];  // NIKA added
  };
  
  /*
-@@ -877,16 +888,24 @@
+@@ -877,16 +889,24 @@
  	struct xarray mem_attr_array;
  #endif
  	char stats_id[KVM_STATS_NAME_SIZE];
