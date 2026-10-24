@@ -52,6 +52,7 @@ else
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 fi
 
+SCRIPT_DIR="$(pwd)"
 QEMU_DEST="/usr/local/bin"
 
 acpi_tables=(
@@ -2325,27 +2326,28 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make -j
-iasl "$file_misc"
-iasl "$file_timr"
+#iasl "$file_misc"
+#iasl "$file_timr"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
-sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
+#sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
+#sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-echo "$QEMU_DEST/${file_misc_base}.aml"
-echo "$QEMU_DEST/${file_timr_base}.aml"
+#echo "$QEMU_DEST/${file_misc_base}.aml"
+#echo "$QEMU_DEST/${file_timr_base}.aml"
 
 for file in "${acpi_tables[@]}"; do
   sudo cp -f "/sys/firmware/acpi/tables/${file}" "$QEMU_DEST/${file}.dat"
   sudo chmod 666 "$QEMU_DEST/${file}.dat"
 done
-
 find "/sys/firmware/acpi/tables" -type f -iname "SSDT*" | while read -r file; do
   filename=$(basename "$file")
   sudo cp -f "$file" "$QEMU_DEST/${filename}.dat"
   sudo chmod 666 "$QEMU_DEST/${filename}.dat"
   echo "$QEMU_DEST/${filename}.dat"
 done
+
+sudo python3 "$SCRIPT_DIR/SMBIOS.py" -o "$QEMU_DEST/smbios.bin"
 
 sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
