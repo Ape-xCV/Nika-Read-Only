@@ -523,10 +523,6 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/WSMT.dat"/>
     <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/MISC.aml"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/TIMR.aml"/>
-    <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/SSDT1.dat"/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/SSDT2.dat"/>
