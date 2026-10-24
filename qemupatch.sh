@@ -2348,6 +2348,7 @@ find "/sys/firmware/acpi/tables" -type f -iname "SSDT*" | while read -r file; do
 done
 
 sudo python3 "$SCRIPT_DIR/SMBIOS.py" -o "$QEMU_DEST/smbios.bin"
+echo "$QEMU_DEST/smbios.bin"
 
 sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
