@@ -404,23 +404,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   <features>
     <acpi/>
     <apic/>
-    <hyperv mode="custom">
-      <relaxed state="off"/>
-      <vapic state="off"/>
-      <spinlocks state="off"/>
-      <vpindex state="off"/>
-      <runtime state="off"/>
-      <synic state="off"/>
-      <stimer state="off"/>
-      <reset state="off"/>
-      <vendor_id state="off"/>
-      <frequencies state="off"/>
-      <reenlightenment state="off"/>
-      <tlbflush state="off"/>
-      <ipi state="off"/>
-      <evmcs state="off"/>
-      <avic state="off"/>
-    </hyperv>
+    <hyperv mode="passthrough"/>
     <kvm>
       <hidden state="on"/>
     </kvm>
@@ -443,7 +427,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="yes"/>
     <timer name="pit" present="yes"/>
-    <timer name="hpet" present="yes"/>
+    <timer name="hpet" present="no"/>
     <timer name="hypervclock" present="no"/>
     <timer name="kvmclock" present="no"/>
   </clock>
