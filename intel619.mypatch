@@ -100,8 +100,8 @@
  
  	vcpu_load(vcpu);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-24 10:01:32.365041264 +0100
-@@ -237,6 +237,270 @@
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-24 13:40:17.383023227 +0100
+@@ -237,6 +237,272 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
  
@@ -239,6 +239,8 @@
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x80000026 */
 +	cmp $0x8000001D, %edx
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x8000001D */
++	cmp $0x80000008, %edx
++	je .Lfastpath_slowpath              /* Branches if in_eax == 0x80000008 */
 +
 +	xor %_ASM_CX, %_ASM_CX              /* in_ecx = 0 */
 +	jmp .Lfetch_ext_cache_entry
@@ -373,7 +375,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-24 10:10:29.687864137 +0100
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-24 13:39:59.480725581 +0100
 @@ -927,7 +927,8 @@
  	u32 eb;
  
