@@ -52,7 +52,6 @@ else
   echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
 fi
 
-SCRIPT_DIR="$(pwd)"
 QEMU_DEST="/usr/local/bin"
 
 acpi_tables=(
@@ -2194,7 +2193,7 @@ echo "    apicid_map_init = true;"
 echo "}"
 echo "^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "void pc_madt_cpu_entry(int uid, const CPUArchIdList *apic_ids,"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+##if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/void pc_madt_cpu_entry\(int uid, const CPUArchIdList \*apic_ids,/i\#define MAX_HOST_VCPUS 256\n\
 static apic_id_t apicid_map[MAX_HOST_VCPUS];\n\
 static bool apicid_map_init = false;\n\
@@ -2223,15 +2222,15 @@ static inline void init_apicid_map(void)\n\
     if (fallback <= 1) sched_setaffinity(0, sizeof(cpu_set_t), &orig_mask);\n\
     apicid_map_init = true;\n\
 }\n"
-fi
+##fi
 echo "    uint32_t apic_id = apic_ids->cpus[uid].arch_id;"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v"
 echo "    init_apicid_map();"
 echo "    apic_id = apicid_map[uid];"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+##if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_acpicommon_c" -Ee "/    uint32_t apic_id = apic_ids->cpus\[uid\].arch_id;/a\    init_apicid_map();\n\
     apic_id = apicid_map[uid];"
-fi
+##fi
 
 echo "  $file_topology_h"
 echo "    uint32_t eax, ebx, ecx, edx;"
@@ -2243,7 +2242,7 @@ echo "    );"
 echo "    return eax & 0x1F;"
 echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    return apicid_bitwidth_for_count(topo_info->threads_per_core);"
-if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
+##if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
   sed -i "$file_topology_h" -Ee "/    return apicid_bitwidth_for_count\(topo_info->threads_per_core\);/i\    uint32_t eax, ebx, ecx, edx;\n\
     asm volatile(\"cpuid\"\n\
     : \"=a\"(eax), \"=b\"(ebx), \"=c\"(ecx), \"=d\"(edx)\n\
@@ -2251,7 +2250,7 @@ if [[ "${cpu_vendor:1}" == "CyrixInstead" ]]; then
     : \"memory\"\n\
     );\n\
     return eax & 0x1F;"
-fi
+##fi
 
 design_capacity=$((RANDOM % 20000 + 41000))
 design_voltage=$((RANDOM % 300 + 12500))
@@ -2326,29 +2325,27 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make -j
-#iasl "$file_misc"
-#iasl "$file_timr"
+iasl "$file_misc"
+iasl "$file_timr"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-#sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
-#sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-#echo "$QEMU_DEST/${file_misc_base}.aml"
-#echo "$QEMU_DEST/${file_timr_base}.aml"
+echo "$QEMU_DEST/${file_misc_base}.aml"
+echo "$QEMU_DEST/${file_timr_base}.aml"
 
 for file in "${acpi_tables[@]}"; do
   sudo cp -f "/sys/firmware/acpi/tables/${file}" "$QEMU_DEST/${file}.dat"
   sudo chmod 666 "$QEMU_DEST/${file}.dat"
 done
+
 find "/sys/firmware/acpi/tables" -type f -iname "SSDT*" | while read -r file; do
   filename=$(basename "$file")
   sudo cp -f "$file" "$QEMU_DEST/${filename}.dat"
   sudo chmod 666 "$QEMU_DEST/${filename}.dat"
   echo "$QEMU_DEST/${filename}.dat"
 done
-
-sudo python3 "$SCRIPT_DIR/SMBIOS.py" -o "$QEMU_DEST/smbios.bin"
-echo "$QEMU_DEST/smbios.bin"
 
 sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
