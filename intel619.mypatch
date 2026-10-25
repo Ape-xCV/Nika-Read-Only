@@ -1,30 +1,58 @@
---- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-23 22:42:41.235825678 +0100
-@@ -6,12 +6,24 @@
-  */
- #define COMPILE_OFFSETS
+--- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
++++ b/include/linux/kvm_host.h	2026-10-23 22:41:17.563195621 +0100
+@@ -324,6 +324,14 @@
+ 	unsigned int len;
+ };
  
-+#include <linux/kvm_host.h>  // NIKA added
- #include <linux/kbuild.h>
- #include "vmx/vmx.h"
- #include "svm/svm.h"
- 
- static void __used common(void)
- {
-+	OFFSET(OFFSET_KVM_VCPU_arch_regs, kvm_vcpu, arch.regs);  // NIKA added
-+	OFFSET(OFFSET_KVM_VCPU_arch_cr2, kvm_vcpu, arch.cr2);  // NIKA added
-+	OFFSET(OFFSET_KVM_VCPU_kvm, kvm_vcpu, kvm);  // NIKA added
-+	OFFSET(OFFSET_KVM_intercept_cpuid, kvm, intercept_cpuid);  // NIKA added
-+	OFFSET(OFFSET_KVM_last_exit_start, kvm, last_exit_start);  // NIKA added
-+	OFFSET(OFFSET_KVM_VCPU_cpuid_cache, kvm_vcpu, cpuid_cache);  // NIKA added
-+	OFFSET(OFFSET_KVM_VCPU_ext_cpuid_cache, kvm_vcpu, ext_cpuid_cache);  // NIKA added
-+	OFFSET(OFFSET_KVM_VCPU_hv_cpuid_cache, kvm_vcpu, hv_cpuid_cache);  // NIKA added
-+	OFFSET(OFFSET_VCPU_VMX_loaded_vmcs, vcpu_vmx, loaded_vmcs);  // NIKA added
-+	OFFSET(OFFSET_LOADED_VMCS_launched, loaded_vmcs, launched);  // NIKA added
++struct cpuid_cache_regs {  // NIKA begin
++	u32 rdy;
++	u32 eax;
++	u32 ebx;
++	u32 ecx;
++	u32 edx;
++};  // NIKA end
 +
- 	if (IS_ENABLED(CONFIG_KVM_AMD)) {
- 		BLANK();
- 		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
+ struct kvm_vcpu {
+ 	struct kvm *kvm;
+ #ifdef CONFIG_PREEMPT_NOTIFIERS
+@@ -400,6 +408,10 @@
+ 	 */
+ 	struct kvm_memory_slot *last_used_slot;
+ 	u64 last_used_slot_gen;
++
++	struct cpuid_cache_regs     cpuid_cache[0x25][0x40];  // NIKA added
++	struct cpuid_cache_regs ext_cpuid_cache[0x27][0x05];  // NIKA added
++	struct cpuid_cache_regs  hv_cpuid_cache[0x0C][0x01];  // NIKA added
+ };
+ 
+ /*
+@@ -877,16 +889,24 @@
+ 	struct xarray mem_attr_array;
+ #endif
+ 	char stats_id[KVM_STATS_NAME_SIZE];
++
++	bool intercept_cpuid;  // NIKA added
++	u64 last_exit_start;  // NIKA added
+ };
+ 
+ #define kvm_err(fmt, ...) \
+ 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_info(fmt, ...) \
+ 	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++//#define kvm_debug(fmt, ...) \
++//	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_debug(fmt, ...) \
+-	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++//#define kvm_debug_ratelimited(fmt, ...) \
++//	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
++//			     ## __VA_ARGS__)
+ #define kvm_debug_ratelimited(fmt, ...) \
+-	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
++	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), \
+ 			     ## __VA_ARGS__)
+ #define kvm_pr_unimpl(fmt, ...) \
+ 	pr_err_ratelimited("kvm [%i]: " fmt, \
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/x86.c	2026-10-21 15:23:52.484178692 +0100
 @@ -1277,6 +1277,7 @@
@@ -99,6 +127,33 @@
  		return -EINVAL;
  
  	vcpu_load(vcpu);
+--- a/arch/x86/kvm/kvm-asm-offsets.c	2026-04-22 12:30:53.000000000 +0100
++++ b/arch/x86/kvm/kvm-asm-offsets.c	2026-10-23 22:42:41.235825678 +0100
+@@ -6,12 +6,24 @@
+  */
+ #define COMPILE_OFFSETS
+ 
++#include <linux/kvm_host.h>  // NIKA added
+ #include <linux/kbuild.h>
+ #include "vmx/vmx.h"
+ #include "svm/svm.h"
+ 
+ static void __used common(void)
+ {
++	OFFSET(OFFSET_KVM_VCPU_arch_regs, kvm_vcpu, arch.regs);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_arch_cr2, kvm_vcpu, arch.cr2);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_kvm, kvm_vcpu, kvm);  // NIKA added
++	OFFSET(OFFSET_KVM_intercept_cpuid, kvm, intercept_cpuid);  // NIKA added
++	OFFSET(OFFSET_KVM_last_exit_start, kvm, last_exit_start);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_cpuid_cache, kvm_vcpu, cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_ext_cpuid_cache, kvm_vcpu, ext_cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_KVM_VCPU_hv_cpuid_cache, kvm_vcpu, hv_cpuid_cache);  // NIKA added
++	OFFSET(OFFSET_VCPU_VMX_loaded_vmcs, vcpu_vmx, loaded_vmcs);  // NIKA added
++	OFFSET(OFFSET_LOADED_VMCS_launched, loaded_vmcs, launched);  // NIKA added
++
+ 	if (IS_ENABLED(CONFIG_KVM_AMD)) {
+ 		BLANK();
+ 		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
 +++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-25 22:07:11.196899753 +0000
 @@ -237,6 +237,270 @@
@@ -681,58 +736,3 @@
  	return 0;
  
  free_vmcs:
---- a/include/linux/kvm_host.h	2026-04-22 12:30:53.000000000 +0100
-+++ b/include/linux/kvm_host.h	2026-10-23 22:41:17.563195621 +0100
-@@ -324,6 +324,14 @@
- 	unsigned int len;
- };
- 
-+struct cpuid_cache_regs {  // NIKA begin
-+	u32 rdy;
-+	u32 eax;
-+	u32 ebx;
-+	u32 ecx;
-+	u32 edx;
-+};  // NIKA end
-+
- struct kvm_vcpu {
- 	struct kvm *kvm;
- #ifdef CONFIG_PREEMPT_NOTIFIERS
-@@ -400,6 +408,10 @@
- 	 */
- 	struct kvm_memory_slot *last_used_slot;
- 	u64 last_used_slot_gen;
-+
-+	struct cpuid_cache_regs     cpuid_cache[0x25][0x40];  // NIKA added
-+	struct cpuid_cache_regs ext_cpuid_cache[0x27][0x05];  // NIKA added
-+	struct cpuid_cache_regs  hv_cpuid_cache[0x0C][0x01];  // NIKA added
- };
- 
- /*
-@@ -877,16 +889,24 @@
- 	struct xarray mem_attr_array;
- #endif
- 	char stats_id[KVM_STATS_NAME_SIZE];
-+
-+	bool intercept_cpuid;  // NIKA added
-+	u64 last_exit_start;  // NIKA added
- };
- 
- #define kvm_err(fmt, ...) \
- 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
- #define kvm_info(fmt, ...) \
- 	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
-+//#define kvm_debug(fmt, ...) \
-+//	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
- #define kvm_debug(fmt, ...) \
--	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
-+	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
-+//#define kvm_debug_ratelimited(fmt, ...) \
-+//	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
-+//			     ## __VA_ARGS__)
- #define kvm_debug_ratelimited(fmt, ...) \
--	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
-+	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), \
- 			     ## __VA_ARGS__)
- #define kvm_pr_unimpl(fmt, ...) \
- 	pr_err_ratelimited("kvm [%i]: " fmt, \
