@@ -571,7 +571,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
 
 - Pin `vcpu` to `cpuset`, example for 12 cores 24 threads (dies=2) host CPU:
 ```shell
-  <vcpu placement="static">12</vcpu>
+  <vcpu placement="static">24</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
