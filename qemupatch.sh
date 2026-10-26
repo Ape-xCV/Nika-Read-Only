@@ -2326,14 +2326,14 @@ cd qemu
 ./configure --target-list=x86_64-softmmu
 cd build
 make -j
-#iasl "$file_misc"
+iasl "$file_misc"
 #iasl "$file_timr"
 
 sudo cp -f "$(pwd)/qemu-system-x86_64" "$QEMU_DEST"
-#sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
+sudo cp -f "$(pwd)/../${file_misc_base}.aml" "$QEMU_DEST"
 #sudo cp -f "$(pwd)/../${file_timr_base}.aml" "$QEMU_DEST"
 echo "$QEMU_DEST/qemu-system-x86_64"
-#echo "$QEMU_DEST/${file_misc_base}.aml"
+echo "$QEMU_DEST/${file_misc_base}.aml"
 #echo "$QEMU_DEST/${file_timr_base}.aml"
 
 for file in "${acpi_tables[@]}"; do
