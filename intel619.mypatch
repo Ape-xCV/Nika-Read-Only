@@ -54,7 +54,7 @@
  #define kvm_pr_unimpl(fmt, ...) \
  	pr_err_ratelimited("kvm [%i]: " fmt, \
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-21 15:23:52.484178692 +0100
++++ b/arch/x86/kvm/x86.c	2026-10-26 16:00:29.841174745 +0000
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -155,7 +155,7 @@
  		BLANK();
  		OFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);
 --- a/arch/x86/kvm/vmx/vmenter.S	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-25 22:07:11.196899753 +0000
++++ b/arch/x86/kvm/vmx/vmenter.S	2026-10-26 13:53:08.426209532 +0000
 @@ -237,6 +237,270 @@
  	mov %r15, VCPU_R15(%_ASM_AX)
  #endif
@@ -181,11 +181,11 @@
 +	jnz .Lfastpath_slowpath
 +
 +	/* CHECK: GUEST_RFLAGS for TF (single-stepping) */
-+	mov $0x6820, %ecx                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
-+	vmread %_ASM_CX, %_ASM_DX
-+	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
-+	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
-+	jnz .Lfastpath_slowpath
++//	mov $0x6820, %ecx                   /* Read GUEST_RFLAGS (VMCS 0x6820) */
++//	vmread %_ASM_CX, %_ASM_DX
++//	jbe .Lfastpath_slowpath             /* Branches if CF == 1 OR ZF == 1, VMREAD failure */
++//	test $0x100, %edx                   /* Test X86_EFLAGS_TF (bit 8) */
++//	jnz .Lfastpath_slowpath
 +
 +	mov $0x4402, %ecx                   /* Read VM_EXIT_REASON (VMCS 0x4402) */
 +	vmread %_ASM_CX, %_ASM_DX
@@ -292,8 +292,8 @@
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x80000026 */
 +	cmp $0x8000001D, %edx
 +	je .Lext_subleaf_indexed            /* Branches if in_eax == 0x8000001D */
-+	cmp $0x80000008, %edx
-+	je .Lfastpath_slowpath              /* Branches if in_eax == 0x80000008 */
++//	cmp $0x80000008, %edx
++//	je .Lfastpath_slowpath              /* Branches if in_eax == 0x80000008 */
 +
 +	xor %_ASM_CX, %_ASM_CX              /* in_ecx = 0 */
 +	jmp .Lfetch_ext_cache_entry
@@ -428,7 +428,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-25 21:46:50.585153257 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-26 15:19:13.510031153 +0000
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -491,28 +491,28 @@
 +//	}  NIKA removed
 +
 +/*	vmx_enable_intercept_for_msr(vcpu,   0x1B,      MSR_TYPE_R );  // MSR_IA32_APIC_BASE */
-+	vmx_disable_intercept_for_msr(vcpu,  0x34,      MSR_TYPE_R );  /* MSR_SMI_COUNT */
-+	if (nested) vmx_disable_intercept_for_msr(vcpu, 0x3A, MSR_TYPE_R);  /* MSR_IA32_FEATURE_CONTROL */
++//	vmx_disable_intercept_for_msr(vcpu,  0x34,      MSR_TYPE_R );  /* MSR_SMI_COUNT */
 +/*	vmx_enable_intercept_for_msr(vcpu,   0x3B,      MSR_TYPE_R );  // MSR_IA32_TSC_ADJUST */
 +	// MSR_IA32_PERFCTR0 ... MSR_IA32_PERFCTR7
-+	for (u32 msr = 0xC1;  msr <= 0xC8;  msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++//	for (u32 msr = 0xC1;  msr <= 0xC8;  msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	// MSR_IA32_PERFEVTSEL0 ... MSR_IA32_PERFEVTSEL7
-+	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
-+	vmx_disable_intercept_for_msr(vcpu, 0xC80,      MSR_TYPE_R );  /* MSR_IA32_DEBUG_INTERFACE */
++//	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
++//	vmx_disable_intercept_for_msr(vcpu, 0xC80,      MSR_TYPE_R );  /* MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19A,      MSR_TYPE_RW);  /* MSR_IA32_THERM_CONTROL */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19B,      MSR_TYPE_RW);  /* MSR_IA32_THERM_INTERRUPT */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19C,      MSR_TYPE_RW);  /* MSR_IA32_THERM_STATUS */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19D,      MSR_TYPE_RW);  /* MSR_THERM2_CTL */
-+	vmx_disable_intercept_for_msr(vcpu, 0x390,      MSR_TYPE_RW);  /* MSR_IA32_PERF_GLOBAL_OVF_CTRL */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0x1A0,      MSR_TYPE_R );  // MSR_IA32_MISC_ENABLE */
-+	vmx_disable_intercept_for_msr(vcpu, 0x38F,      MSR_TYPE_W );  /* MSR_CORE_PERF_GLOBAL_CTRL */
++//	vmx_disable_intercept_for_msr(vcpu, 0x38F,      MSR_TYPE_W );  /* MSR_IA32_PERF_GLOBAL_CTRL */
++//	vmx_disable_intercept_for_msr(vcpu, 0x390,      MSR_TYPE_RW);  /* MSR_IA32_PERF_GLOBAL_OVF_CTRL */
 +	vmx_disable_intercept_for_msr(vcpu, 0x639,      MSR_TYPE_R );  /* MSR_PP0_ENERGY_STATUS */
 +/*	vmx_enable_intercept_for_msr(vcpu,  0xC0000082, MSR_TYPE_W );  // MSR_IA32_LSTAR */
 +//	vmx_disable_intercept_for_msr(vcpu, 0xC0000103, MSR_TYPE_RW);  /* MSR_IA32_TSC_AUX */
-+	vmx_disable_intercept_for_msr(vcpu, 0x179,      MSR_TYPE_R );  /* MSR_IA32_MCG_CAP */
-+	vmx_disable_intercept_for_msr(vcpu, 0x17A,      MSR_TYPE_R );  /* MSR_IA32_MCG_STATUS */
++//	vmx_disable_intercept_for_msr(vcpu, 0x179,      MSR_TYPE_R );  /* MSR_IA32_MCG_CAP */
++//	vmx_disable_intercept_for_msr(vcpu, 0x17A,      MSR_TYPE_R );  /* MSR_IA32_MCG_STATUS */
 +	// MSR_IA32_MC0_CTL MC0_STATUS MC0_ADDR MC0_MISC ... MSR_IA32_MC31_CTL MC31_STATUS MC31_ADDR MC31_MISC
-+	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	for (u32 msr = 0x400; msr <= 0x47F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++//	if (nested) vmx_disable_intercept_for_msr(vcpu, 0x3A, MSR_TYPE_R);  /* MSR_IA32_FEATURE_CONTROL */
 +	// MSR_IA32_VMX_BASIC PINBASED_CTLS PROCBASED_CTLS EXIT_CTLS ENTRY_CTLS MISC
 +	// CR0_FIXED0 CR0_FIXED1 CR4_FIXED0 CR4_FIXED1 VMCS_ENUM PROCBASED_CTLS2 EPT_VPID_CAP
 +	// TRUE_PINBASED_CTLS TRUE_PROCBASED_CTLS TRUE_EXIT_CTLS TRUE_ENTRY_CTLS VMFUNC
@@ -549,7 +549,7 @@
 +	//		  in_eax != 0x80000008 &&  // Extended Processor Info / Address Sizes (physical and linear address widths)
 +			  in_eax != 0x80000002 &&  // Extended Brand String (bytes  0-15)
 +			  in_eax != 0x80000003 &&  // Extended Brand String (bytes 16-31)
-+			  in_eax != 0x80000004);    // Extended Brand String (bytes 32-47)
++			  in_eax != 0x80000004);   // Extended Brand String (bytes 32-47)
 +}
 +
 +static int handle_cpuid(struct kvm_vcpu *vcpu)  // NIKA begin
