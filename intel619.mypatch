@@ -54,7 +54,7 @@
  #define kvm_pr_unimpl(fmt, ...) \
  	pr_err_ratelimited("kvm [%i]: " fmt, \
 --- a/arch/x86/kvm/x86.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/x86.c	2026-10-26 16:00:29.841174745 +0000
++++ b/arch/x86/kvm/x86.c	2026-10-26 16:42:19.582554264 +0000
 @@ -1277,6 +1277,7 @@
  	 * emulated CPU does not support XSAVE (see kvm_vcpu_reset()).
  	 */
@@ -123,7 +123,7 @@
  	int i, r;
  
 -	if (vcpu->arch.guest_state_protected)
-+//	if (vcpu->arch.guest_state_protected)  // NIKA exclude for #DB
++	if (vcpu->arch.guest_state_protected)  // NIKA exclude for #DB
  		return -EINVAL;
  
  	vcpu_load(vcpu);
@@ -428,14 +428,14 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-26 15:19:13.510031153 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-26 16:42:07.170837637 +0000
 @@ -927,7 +927,8 @@
  	u32 eb;
  
  	eb = (1u << PF_VECTOR) | (1u << UD_VECTOR) | (1u << MC_VECTOR) |
 -	     (1u << DB_VECTOR) | (1u << AC_VECTOR);
-+//	     (1u << DB_VECTOR) | (1u << AC_VECTOR);  // NIKA exclude for #DB
-+	     (1u << AC_VECTOR);  // NIKA include for #DB
++	     (1u << DB_VECTOR) | (1u << AC_VECTOR);  // NIKA exclude for #DB
++//	     (1u << AC_VECTOR);  // NIKA include for #DB
  	/*
  	 * #VE isn't used for VMX.  To test against unexpected changes
  	 * related to #VE for VMX, intercept unexpected #VE and warn on it.
@@ -444,8 +444,8 @@
  	 */
  	if (is_guest_mode(vcpu))
 -		eb |= get_vmcs12(vcpu)->exception_bitmap;
-+//		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
-+		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
++		eb |= get_vmcs12(vcpu)->exception_bitmap;  // NIKA exclude for #DB
++//		eb |= get_vmcs12(vcpu)->exception_bitmap & ~(1u << DB_VECTOR);  // NIKA include for #DB
  	else {
  		int mask = 0, match = 0;
  
