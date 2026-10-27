@@ -6,6 +6,8 @@
 #include <iterator>
 #include <map>
 #include <vector>
+#include <unistd.h>
+#include <fcntl.h>
 
 std::string FILE_NAME;
 std::vector<std::string>* lines = new std::vector<std::string>;
@@ -14,6 +16,132 @@ std::map<std::string, uint32_t> mapOffsets;
 std::map<std::string, uint32_t> mapButtons;
 char* memoryBytes;
 size_t memoryBytesSize;
+
+void do_cpuid(uint32_t &eax, uint32_t &ebx, uint32_t &ecx, uint32_t &edx) {
+    asm volatile("cpuid"
+    : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+    : "a"(eax), "c"(ecx)
+    : "memory"
+    );
+}
+
+uint64_t read_rdtsc() {
+    uint32_t low, high;
+    asm volatile("lfence" : : : "memory");
+    asm volatile ("rdtsc"
+    : "=a"(low), "=d"(high)
+    );
+    return ((uint64_t)high << 32) | low;
+}
+
+void do_rdtsc(uint32_t eax, uint32_t ecx) {
+    uint32_t ebx, edx, in_eax, in_ecx;
+    in_eax = eax;
+    in_ecx = ecx;
+    uint64_t start = read_rdtsc();
+    for (int i = 0; i < 10000; ++i) {
+        eax = in_eax;
+        ecx = in_ecx;
+        do_cpuid(eax, ebx, ecx, edx);
+    }
+    uint64_t end = read_rdtsc();
+    printf("Leaf %02Xh:%02Xh cycles: %d\n", in_eax, in_ecx, end - start);
+}
+
+void test_cpuid() {
+    uint32_t eax, ebx, ecx, edx, in_eax, in_ecx;
+
+    eax = 0;
+    ecx = 0;
+    do_cpuid(eax, ebx, ecx, edx);
+    char vendor[13];
+    *((uint32_t *)(vendor + 0)) = ebx;
+    *((uint32_t *)(vendor + 4)) = edx;
+    *((uint32_t *)(vendor + 8)) = ecx;
+    vendor[12] = '\0';
+    printf("Vendor           : %s\n", vendor);
+    printf("Max basic leaf   : 0x%X\n", eax);
+
+    eax = 0x80000000;
+    ecx = 0;
+    in_eax = eax;
+    in_ecx = ecx;
+    do_cpuid(eax, ebx, ecx, edx);
+    printf("Max extended leaf: 0x%X\n", eax);
+    do_rdtsc(in_eax, in_ecx);
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+    eax = 0x80000026;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+    eax = 0x80000027;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+
+    eax = 0;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+    eax = 0x24;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+    eax = 0x25;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+
+    eax = 0x40000000;
+    ecx = 0;
+    in_eax = eax;
+    in_ecx = ecx;
+    do_cpuid(eax, ebx, ecx, edx);
+    char hv_vendor[13];
+    *((uint32_t *)(hv_vendor + 0)) = ebx;
+    *((uint32_t *)(hv_vendor + 4)) = ecx;
+    *((uint32_t *)(hv_vendor + 8)) = edx;
+    vendor[12] = '\0';
+    printf("Vendor             : %s\n", hv_vendor);
+    printf("Max hypervisor leaf: 0x%X\n", eax);
+    do_rdtsc(in_eax, in_ecx);
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+    eax = 0x4000000C;
+    ecx = 0;
+    do_rdtsc(eax, ecx);
+}
+
+uint64_t read_msr(uint32_t msr_addr) {
+    int fd = open("/dev/cpu/0/msr", O_RDONLY);
+    if (fd < 0) {
+        perror("Open /dev/cpu/0/msr");
+        printf("usage: sudo modprobe msr\n");
+        exit(EXIT_FAILURE);
+    }
+
+    uint64_t start = read_rdtsc();
+    uint64_t data = 0;
+    if (pread(fd, &data, sizeof(data), msr_addr) != sizeof(data)) {
+        fprintf(stderr, "Read MSR 0x%X: %s\n", msr_addr, strerror(errno));
+        close(fd);
+    }
+    close(fd);
+    uint64_t end = read_rdtsc();
+    printf("MSR %02Xh cycles: %d", msr_addr, end - start);
+    return data;
+}
+
+void test_msr() {
+    uint64_t value;
+    printf(" -> 0x%X\n", read_msr(0xFFFFFFFF));
+    printf(" -> 0x%X\n", read_msr(0x4B564D00));  // "KVM "
+    printf(" -> 0x%X\n", read_msr(0x3FFFFFFF));
+    printf(" -> 0x%X\n", read_msr(0x572));
+    printf(" -> 0x%X\n", read_msr(0x571));
+    printf(" -> 0x%X\n", read_msr(0x570));
+    printf(" -> 0x%X\n", read_msr(0x561));
+    printf(" -> 0x%X\n", read_msr(0x560));
+    printf(" -> 0x%X\n", read_msr(0x1D9));
+    printf(" -> 0x%X\n", read_msr(0x1C9));
+    printf(" -> 0x%X\n", read_msr(0x10));
+}
 
 void trimLeft(std::string& s) {
     s.erase(s.begin(),
@@ -244,8 +372,16 @@ int main(int argc, char* argv[])
     if (argv[1]) {
         targetFile = std::string(argv[1]);
     } else {
-        std::cout << "usage: ./r5dumper dumpfile.bin [\"? 48 8B 05 \\${???????? '} 488D0D???? 4488????? 4C89\"]\n";
-        return 0;
+        if (getuid()) {
+            std::cout << "usage: ./r5dumper dumpfile.bin [\"? 48 8B 05 \\${???????? '} 488D0D???? 4488????? 4C89\"]\n";
+            std::cout << "usage: sudo ./r5dumper\n";
+            return -1;
+        }
+        else {
+            test_cpuid();
+            test_msr();
+            return 0;
+        }
     }
     memoryBytesSize = std::filesystem::file_size(targetFile);
     memoryBytes = (char*)std::malloc(memoryBytesSize);
@@ -716,9 +852,12 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //2026Jan14        580FCC59 CA580FD8 0FD9580F 00809B11 89480000    2A73A11D    B58B4906    0011A350    589D8B49    E80011A3    FFFF348E    50B58949 @ a4bad6
                         {"ViewMatrix",                "?  ?  ?  0F 11 9F ?  ?  ?  ?  48 89 3D ?  ?  ?  ?  ?  ?  ?  u4"},
 //2026Feb10        00C0C60F 0FC5590F 580FCC59 CA580FD8 0FD9580F    00809F11    89480000    0404DC3D    B58B4906    0011A350    58BD8B49    E80011A3 @ a5f8b3
-                        {"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF ?  ?  48 85 C0 74 ?  48 63 4E 38"},
+                      //{"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 85 C0 74 ?  48 63 4E 38"},
 //2025Aug26        059C3DEA 247C8948 DB9E3840 74000041 0D8B4863    059C5DF6    74C98548    018B4857    483050FF    4C74C085    384E6348    C8048D48 @ 8213ea
 //2026Feb10        05BE4C5A 247C8948 939E3840 74000041 0D8B485C    05BE6C66    74C98548    018B4850    483050FF    4574C085    384E6348    64C8848B @ 8672ea
+                        {"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 8B 05 D3 ? "},
+//2026Sep29        46058B48 4801C9E1 E13F0D8D 50FF01C9 0D8B4808    07AA2A65    74C98548    018B4820    481850FF    A7D3058B    8D4801C6    C6A7CC0D @ 8aae73
+
                       //{"m_gameTimescale",           "?  C8 48 05 u4          ?  ?  ?  ?  83 F8 ?  ? "},
 //2025Aug26        50FF018B C0854830 63484C74 8D48384E 0548C804    00000954    008B2074    74FFF883    F8B70F19    05E7C148    74FD0348    10E8C10D @ 821408
                         {"m_gameTimescale",           "?  8B 84 C8 u4          83 F8 ?  ? "},
