@@ -47,8 +47,8 @@
 
 ### 1a. Standard dual GPU: iGPU (for Linux) + dGPU (for Windows)
 
-- Note for Fedora 44 KDE (or XFCE) set up:
-  - Install Fedora 44 KDE (or XFCE) from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/).
+- Note for Fedora 45 Beta KDE (or XFCE) set up:
+  - Install Fedora 45 Beta KDE (or XFCE) from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/).
   - Disconnect from Internet before installing and avoid updating after.
   - Disconnect cable from dGPU before installing.
   - Without this your taskbar is assigned to your dGPU, which should never happen.
@@ -57,7 +57,7 @@
 ### 1b. Alternative single GPU: VNC (for Linux) + dGPU (for Windows)
 
 - You can use VNC if you don't have iGPU:
-  - Install Fedora 44 XFCE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Spins/x86_64/iso/).
+  - Install Fedora 45 Beta XFCE from: [`Fedora website`](https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Spins/x86_64/iso/).
   - Disconnect from Internet before installing and avoid updating after.
 
 - Install headless VNC and switch to terminal mode:
@@ -234,7 +234,7 @@ sudo virsh net-autostart default
 
 
   <details>
-    <summary>Build on <b>Fedora 44</b>:</summary>
+    <summary>Build on <b>Fedora 45 Beta</b>:</summary>
 
   ```shell
   sudo dnf install acpica-tools bzip2-devel gcc git glib2-devel libfdt-devel libusb1-devel libuuid-devel ninja-build pipewire-devel pixman-devel SDL2_image-devel spice-server-devel usbredir-devel zlib-ng-compat-devel
