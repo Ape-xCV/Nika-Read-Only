@@ -6,8 +6,8 @@
 #include <iterator>
 #include <map>
 #include <vector>
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 std::string FILE_NAME;
 std::vector<std::string>* lines = new std::vector<std::string>;
@@ -394,7 +394,7 @@ int main(int argc, char* argv[])
 
     if (argv[2]) {
         printf("%s\n", argv[2]);
-        maxStep = 0x2000000;
+        maxStep = memoryBytesSize;
         for (size_t step = 0; step < maxStep;) {
             resume = step;
             saveAddr[0] = 0;
@@ -831,6 +831,13 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //2026Jan14        290FD88B 8B48D878 290F44F2 8B48C840 290F44E9    058BB848    019C1B10    74FFF883    F8B70F24    E1058D48    48060485    4805E7C1 @ 65602c
 //2026Feb10        290FF88B 8B48D878 290F44F2 8B48C840 290F44E9    058BB848    01FEEA18    74FFF883    D8B70F24    71058D48    4805DD5B    4805E3C1 @ 6763ac
                         {"cl_entitylist",             "81 F9 ? ? ? ? 7C % 85 C9 79 % 48 63 C1 48 8D 0D ${'}"},          //81F9u4 7C% 85C9 79% 4863C1 488D0D${'}
+                      //{"cl_entitylist",    "? ? ? 8B 01 83 F8 FF 74 ?  0F B7 C8 48 8D 15 ${'}"
+//                            mov eax, [ecx]  . . . 8B 01
+//                            cmp eax, -1                 83 F8 FF
+//                            je %                                 74 %
+//                            movzx ecx, ax                              0F B7 C8
+//                            lea rdx, [rip + ${'}]                               48 8D 15 ${'}
+//26Sep29 83480093 CCC328C4 CCCCCCCC CCCCCCCC 8BCCCCCC FFF88301    B70F1F74    158D48C8    055A09C7    05E1C148    74CA0348    10E8C10C             @ 1e1353d
                         {"NameList",                  "? 48 63 43 38 48 8D 0D ${'} 48 8D 04 40 48 8B 44 C1 E8 ? ? ?"},  //48634338 488D0D${'} 488D0440 488B44C1E8
                         {"camera_origin",             "?  ?  48 8B F9 0F 2E 89 u4          7A ?  ?  ? "},               //488BF9 0F2E89u4 7A
                         {"ViewAngles",                "F2 0F 10 B6 u4          F3 41 0F 58 D3 ?  ?  ? "},
@@ -852,12 +859,11 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //2026Jan14        580FCC59 CA580FD8 0FD9580F 00809B11 89480000    2A73A11D    B58B4906    0011A350    589D8B49    E80011A3    FFFF348E    50B58949 @ a4bad6
                         {"ViewMatrix",                "?  ?  ?  0F 11 9F ?  ?  ?  ?  48 89 3D ?  ?  ?  ?  ?  ?  ?  u4"},
 //2026Feb10        00C0C60F 0FC5590F 580FCC59 CA580FD8 0FD9580F    00809F11    89480000    0404DC3D    B58B4906    0011A350    58BD8B49    E80011A3 @ a5f8b3
-                      //{"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 85 C0 74 ?  48 63 4E 38"},
+                      //{"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 85 C0 74 ?  48 63 ?  ? "},
 //2025Aug26        059C3DEA 247C8948 DB9E3840 74000041 0D8B4863    059C5DF6    74C98548    018B4857    483050FF    4C74C085    384E6348    C8048D48 @ 8213ea
 //2026Feb10        05BE4C5A 247C8948 939E3840 74000041 0D8B485C    05BE6C66    74C98548    018B4850    483050FF    4574C085    384E6348    64C8848B @ 8672ea
-                        {"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 8B 05 D3 ? "},
-//2026Sep29        46058B48 4801C9E1 E13F0D8D 50FF01C9 0D8B4808    07AA2A65    74C98548    018B4820    481850FF    A7D3058B    8D4801C6    C6A7CC0D @ 8aae73
-
+                        {"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 ?  ?  ?  85 C0 74 ?  48 63 ?  ?  ? "},
+//2026Sep29        0534B36A 247C8948 DB9E3840 74000041 0D8B4867    0534D376    74C98548    018B485B    483050FF    8548C88B    484D74C0    48384663 @ 2068bba
                       //{"m_gameTimescale",           "?  C8 48 05 u4          ?  ?  ?  ?  83 F8 ?  ? "},
 //2025Aug26        50FF018B C0854830 63484C74 8D48384E 0548C804    00000954    008B2074    74FFF883    F8B70F19    05E7C148    74FD0348    10E8C10D @ 821408
                         {"m_gameTimescale",           "?  8B 84 C8 u4          83 F8 ?  ? "},
