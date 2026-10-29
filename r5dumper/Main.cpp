@@ -864,6 +864,11 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //2026Feb10        05BE4C5A 247C8948 939E3840 74000041 0D8B485C    05BE6C66    74C98548    018B4850    483050FF    4574C085    384E6348    64C8848B @ 8672ea
                         {"ObserverList",              "?  48 8B 0D ${'}        48 85 C9 74 ?  48 8B 01 FF 50 ?  48 ?  ?  ?  85 C0 74 ?  48 63 ?  ?  ? "},
 //2026Sep29        0534B36A 247C8948 DB9E3840 74000041 0D8B4867    0534D376    74C98548    018B485B    483050FF    8548C88B    484D74C0    48384663 @ 2068bba
+                        {"ObserverIndex",             "?  ?  48 05 u4          48 03 C0 48 8B 04 C1 ? "},
+//                                      add rax, 0x94  .. .. 48 05 94 00 00 00                         -> Add 0x94 offset to index
+//                                      add rax, rax                           48 03 C0                -> Double the index (* 2)
+//                                      mov rax, [rcx + rax*8]                          48 8B 04 C1 ?  -> Access array entry (* 8, combined = index * 0x10 = 0x940)
+//2026Sep29        FF018B48 8B483050 C08548C8 63484D74 05483846    00000094    48C00348    8BC1048B    FFF98308    B70F1974    E7C148F9    FD034805 @ 2068bd7
                       //{"m_gameTimescale",           "?  C8 48 05 u4          ?  ?  ?  ?  83 F8 ?  ? "},
 //2025Aug26        50FF018B C0854830 63484C74 8D48384E 0548C804    00000954    008B2074    74FFF883    F8B70F19    05E7C148    74FD0348    10E8C10D @ 821408
                         {"m_gameTimescale",           "?  8B 84 C8 u4          83 F8 ?  ? "},
@@ -946,6 +951,7 @@ std::cout << "\n[WeaponSettingsMeta]\n";
                 *(uint32_t*)(24 + memoryBytes + resume) + saveAddr[0] + 4, *(uint32_t*)(28 + memoryBytes + resume) + saveAddr[0] + 4);
             printf("%s\n", signatures[i][1].c_str());
             //if (signatures[i][0] == "LocalPlayer") save[0] += 8;
+            if (signatures[i][0] == "ObserverIndex") save[0] *= 0x10;
             std::cout << signatures[i][0] << "=0x" << std::hex << save[0] << "\n";
             std::string fullName = formStr("[.Miscellaneous]" + std::string(signatures[i][0]));
             if (mapOffsets[fullName] == 0)
