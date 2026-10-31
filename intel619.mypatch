@@ -364,7 +364,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-10-30 16:33:29.909505173 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-10-30 17:26:37.264229565 +0000
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -403,19 +403,21 @@
  
  	return flags;
  }
-@@ -3772,6 +3774,11 @@
+@@ -3772,6 +3774,13 @@
  		var->type |= 0x1; /* Accessed */
  
  	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(var));
 +
 +	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xFFFF0000 && seg == VCPU_SREG_CS)) {  // VIRTFUNC begin
++		memset(vcpu->cpuid_cache, 0, sizeof(vcpu->cpuid_cache));
++		memset(vcpu->ext_cpuid_cache, 0, sizeof(vcpu->ext_cpuid_cache));
 +		vcpu->kvm->intercept_cpuid = true;
 +		vcpu->kvm->last_exit_start = rdtsc();
 +	}  // VIRTFUNC end
  }
  
  void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
-@@ -4250,10 +4257,38 @@
+@@ -4250,10 +4259,38 @@
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
  		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
  	}
@@ -456,7 +458,7 @@
  
  	/* PT MSRs can be passed through iff PT is exposed to the guest. */
  	if (vmx_pt_mode_is_host_guest())
-@@ -6234,6 +6269,99 @@
+@@ -6234,6 +6271,99 @@
  				     vmx_get_msr_imm_reg(vcpu));
  }
  
@@ -556,7 +558,7 @@
  /*
   * The exit handlers return 1 if the exit was handled fully and guest execution
   * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
-@@ -6247,7 +6375,8 @@
+@@ -6247,7 +6377,8 @@
  	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
  	[EXIT_REASON_CR_ACCESS]               = handle_cr,
  	[EXIT_REASON_DR_ACCESS]               = handle_dr,
@@ -566,7 +568,7 @@
  	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
  	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
  	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
-@@ -6673,6 +6802,63 @@
+@@ -6673,6 +6804,63 @@
  			return 1;
  		}
  
@@ -630,7 +632,7 @@
  		if (nested_vmx_reflect_vmexit(vcpu))
  			return 1;
  	}
-@@ -7379,9 +7565,9 @@
+@@ -7379,9 +7567,9 @@
  
  	guest_state_enter_irqoff();
  
@@ -642,7 +644,7 @@
  
  	if (vcpu->arch.cr2 != native_read_cr2())
  		native_write_cr2(vcpu->arch.cr2);
-@@ -7394,7 +7580,7 @@
+@@ -7394,7 +7582,7 @@
  
  	vmx->idt_vectoring_info = 0;
  
@@ -651,7 +653,7 @@
  
  	if (unlikely(vmx->fail)) {
  		vmx->vt.exit_reason.full = 0xdead;
-@@ -7574,6 +7760,21 @@
+@@ -7574,6 +7762,21 @@
  	free_page((unsigned long)vmx->ve_info);
  }
  
@@ -673,7 +675,7 @@
  int vmx_vcpu_create(struct kvm_vcpu *vcpu)
  {
  	struct vmx_uret_msr *tsx_ctrl;
-@@ -7663,6 +7864,8 @@
+@@ -7663,6 +7866,8 @@
  		WRITE_ONCE(to_kvm_vmx(vcpu->kvm)->pid_table[vcpu->vcpu_id],
  			   __pa(&vmx->vt.pi_desc) | PID_TABLE_ENTRY_VALID);
  
