@@ -392,7 +392,6 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   <memory unit="GiB">24</memory>
   <currentMemory unit="GiB">24</currentMemory>
   <memoryBacking>
-    <hugepages/>
     <locked/>
     <allocation mode="immediate"/>
   </memoryBacking>
