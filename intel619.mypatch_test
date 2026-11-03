@@ -364,7 +364,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-11-03 11:54:34.862902395 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-11-03 12:04:19.075321514 +0000
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -436,9 +436,9 @@
 +	// VGK_IA32_PERFEVTSEL0 ... VGK_IA32_PERFEVTSEL7
 +	for (u32 msr = 0x186; msr <= 0x18D; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	// VGK_LBR_NHM_FROM_0 ... VGK_LBR_NHM_FROM_31
-+	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	for (u32 msr = 0x680; msr <= 0x69F; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	// VGK_LBR_NHM_TO_0 ... VGK_LBR_NHM_TO_31
-+	for (u32 msr = 0x6C0; msr <= 0x6DF; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_R);
++	for (u32 msr = 0x6C0; msr <= 0x6DF; msr++) vmx_disable_intercept_for_msr(vcpu, msr, MSR_TYPE_RW);
 +	vmx_disable_intercept_for_msr(vcpu, 0x1C9,      MSR_TYPE_RW);  /* VGK_LBR_TOS */
 +/*	vmx_disable_intercept_for_msr(vcpu, 0xC80,      MSR_TYPE_R );  // MSR_IA32_DEBUG_INTERFACE */
 +	vmx_disable_intercept_for_msr(vcpu, 0x19A,      MSR_TYPE_RW);  /* MSR_IA32_THERM_CONTROL */
