@@ -412,7 +412,7 @@
  	xor %ebx, %ebx
  
 --- a/arch/x86/kvm/vmx/vmx.c	2026-04-22 12:30:53.000000000 +0100
-+++ b/arch/x86/kvm/vmx/vmx.c	2026-11-04 18:43:41.695821627 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-11-04 19:31:07.335609798 +0000
 @@ -927,7 +927,8 @@
  	u32 eb;
  
@@ -574,15 +574,15 @@
 +			edx &= ~(1U << 15);  // Clear HYBRID (bit 15)
 +		}
 +		if (in_eax == 0x07 && in_ecx == 0x01) eax &= ~(1U << 22);  // Clear HRESET (bit 22)
-+		if ((in_eax == 0x01 || in_eax == 0x07 || in_eax == 0x0D)
-+			&& ((vcpu->arch.cr4 & X86_CR4_OSXSAVE) == 0 || (vcpu->arch.xcr0 & 0x06) != 0x06)) {
-+			kvm_rax_write(vcpu, eax);
-+			kvm_rbx_write(vcpu, ebx);
-+			kvm_rcx_write(vcpu, ecx);
-+			kvm_rdx_write(vcpu, edx);
-+			return kvm_skip_emulated_instruction(vcpu);
-+		}
-+//		vcpu->cpuid_cache[in_eax][in_ecx].rdy = 1;
++	//	if ((in_eax == 0x01 || in_eax == 0x07 || in_eax == 0x0D)
++	//		&& (0 == (vcpu->arch.cr4 & X86_CR4_OSXSAVE) || (vcpu->arch.xcr0 & 0x06) != 0x06)) {
++	//		kvm_rax_write(vcpu, eax);
++	//		kvm_rbx_write(vcpu, ebx);
++	//		kvm_rcx_write(vcpu, ecx);
++	//		kvm_rdx_write(vcpu, edx);
++	//		return kvm_skip_emulated_instruction(vcpu);
++	//	}
++		if (!nested) vcpu->cpuid_cache[in_eax][in_ecx].rdy = 1;
 +		vcpu->cpuid_cache[in_eax][in_ecx].eax = eax;
 +		vcpu->cpuid_cache[in_eax][in_ecx].ebx = ebx;
 +		vcpu->cpuid_cache[in_eax][in_ecx].ecx = ecx;
@@ -600,7 +600,7 @@
 +			: "a"(in_eax), "c"(in_ecx)
 +			);
 +		in_eax -= 0x80000000;
-+//		vcpu->ext_cpuid_cache[in_eax][in_ecx].rdy = 1;
++		if (!nested) vcpu->ext_cpuid_cache[in_eax][in_ecx].rdy = 1;
 +		vcpu->ext_cpuid_cache[in_eax][in_ecx].eax = eax;
 +		vcpu->ext_cpuid_cache[in_eax][in_ecx].ebx = ebx;
 +		vcpu->ext_cpuid_cache[in_eax][in_ecx].ecx = ecx;
