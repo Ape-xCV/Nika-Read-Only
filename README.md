@@ -327,7 +327,7 @@ sudo dnf install kernel-6.19.14_tkg_eevdf-1.x86_64.rpm
 GRUB_CMDLINE_LINUX="mitigations=auto ..."
 ```
 
-- Update GRUB and restart Linux PC:
+- Update GRUB configuration and restart Linux PC:
 ```shell
 <Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 <Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -1022,7 +1022,7 @@ sudo dkms install --archive=memflow-source-only.dkms.tar.gz
 GRUB_CMDLINE_LINUX="ibt=off ..."
 ```
 
-- Update GRUB and restart Linux PC:
+- Update GRUB configuration and restart Linux PC:
 ```shell
 <Fedora> sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 <Debian> sudo grub-mkconfig -o /boot/grub/grub.cfg
