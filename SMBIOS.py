@@ -20,9 +20,11 @@ if raw := get_bytes("/sys/class/dmi/id/product_uuid").strip():
 	data = data.replace(UUID(raw.decode()).bytes_le, os.urandom(16))
 
 # 3. Overwrite SN strings
-for attr in ("board_serial", "chassis_serial", "product_serial"):
+if val := get_bytes("/sys/class/dmi/id/board_serial").strip():
+	data = data.replace(val, b"BOARD_SERIAL")
+for attr in ("chassis_serial", "product_serial"):
 	if val := get_bytes(f"/sys/class/dmi/id/{attr}").strip():
-		data = data.replace(val, b"To Be Filled By O.E.M.")
+		data = data.replace(val, b"PRODUCT_SERIAL")
 
 for entry in Path("/sys/firmware/dmi/entries/").glob("17-*/raw"):
 	for token in get_bytes(entry)[2:].split(b'\x00'):
