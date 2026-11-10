@@ -339,7 +339,7 @@ GRUB_CMDLINE_LINUX="mitigations=auto ..."
 
 - Manual install >> `win10` >> Choose Memory and CPU settings >> _uncheck_ [ ] Enable storage for this virtual machine >> _check_ [x] Customize configuration before install >> [Finish]
   - Overview >> Chipset: Q35, **Firmware**: OVMF_CODE_4M.patched >> [Apply]
-  - NIC :xx:xx:xx >> Device model: rtl8125 >> **(type it in)** >> MAC address: YOUR_MAC_HERE >> [Apply]
+  - NIC :xx:xx:xx >> Device model: e1000e >> MAC address: YOUR_MAC_HERE >> [Apply]
   - Video QXL >> Model: VGA >> [Apply]
   - [Add Hardware] >> Storage >> Select or create custom storage >> [Manage...] >> [+] >> `win10`.img >> Capacity: 240 GiB >> [Finish] >> [Cancel] >> [Cancel]
   - [Begin Installation] >> Virtual Machine >> Shut Down >> Force Off
@@ -946,16 +946,12 @@ sudo -E ./nika
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Controller USB 0 >> Model: none >> **(type it in)** >> [Apply]
 
-### 7.1a. rtl8125
+### 7.1a. USB
 
-- Credit to: [HazedHV/AutoVirt](https://github.com/HazedHV/AutoVirt).
-
-### 7.1b. USB
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> [Add Hardware] >> PCI Host Device:
   - USB 3.x xHCI Host Controller >> **[Finish]**
-
-- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> [Remove]
 
 - Start VM.
 
@@ -963,7 +959,7 @@ sudo -E ./nika
 
 - Plug an USB Network Interface Card into USB 3.x xHCI Host Controller port.
 
-### 7.1c. virtio
+### 7.1b. virtio (not safe)
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
