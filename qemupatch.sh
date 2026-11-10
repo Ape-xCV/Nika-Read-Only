@@ -58,9 +58,10 @@ QEMU_DEST="/usr/local/bin"
 acpi_tables=(
   "DBG2"                      "DBGP"
   "DMAR"                      "FIDT"
-  "FPDT"                      "HPET"
-  "LPIT"                      "MCFG"
-  "WSMT"
+  "FPDT"                      "LPIT"
+  "MCFG"                      "WSMT"
+  "IVRS"                      "VFCT"
+  "WDRT"                      "WPBT"
 )
 
 default_vendors=(
@@ -316,13 +317,13 @@ get_random_element() {
 
 new_ide_cd_model=$(get_random_element "${ide_cd_models[@]}")
 new_ide_cfata_model=$(get_random_element "${ide_cfata_models[@]}")
-##new_default_model=$(get_random_element "${default_models[@]}")
-for dev in /dev/nvme0n1 /dev/nvme1n1 /dev/sda /dev/sdb; do
-  if [[ -b "$dev" ]]; then
-    new_default_model=$(lsblk -dno MODEL "$dev")
-    break
-  fi
-done
+new_default_model=$(get_random_element "${default_models[@]}")
+##for dev in /dev/nvme0n1 /dev/nvme1n1 /dev/sda /dev/sdb; do
+##  if [[ -b "$dev" ]]; then
+##    new_default_model=$(lsblk -dno MODEL "$dev")
+##    break
+##  fi
+##done
 
 get_random_string() { head /dev/urandom | tr -dc 'A-Z'    | head -c "$1"; }
 get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
@@ -343,10 +344,10 @@ get_new_string() {
 }
 
 get_new_string_57() {
-#  get_new_string "$(shuf -i 5-7 -n 1)" "$(shuf -i 1-4 -n 1)"
-  new_string=$(get_random_element "${default_vendors[@]}")
-  prefix=$(echo $new_string | head -c 1)
-  suffix=$(echo $new_string | tail -c ${#new_string})
+  get_new_string "$(shuf -i 5-7 -n 1)" "$(shuf -i 1-4 -n 1)"
+##  new_string=$(get_random_element "${default_vendors[@]}")
+##  prefix=$(echo $new_string | head -c 1)
+##  suffix=$(echo $new_string | tail -c ${#new_string})
 }
 get_new_string_4() {
   get_new_string 4 "$(shuf -i 1-3 -n 1)"
@@ -1578,8 +1579,10 @@ sed -i "$file_smbios" -Ee "s/memory_type = 0x07; \/\* RAM \*\//memory_type = 0x1
 sed -i "$file_smbios" -Ee "s/type_detail = cpu_to_le16\(0x02\); \/\* Other \*\//type_detail = cpu_to_le16\(0x80\); \/* Synchronous *\//"
 echo "    SMBIOS_TABLE_SET_STR(17, manufacturer_str, type17.manufacturer);"
 echo "    v v v v v v v v v v v v v v v v v v v v v v v v v v v v"
-echo "    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
-sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, manufacturer_str, type17.manufacturer\);/a\    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
+##echo "    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
+echo "    snprintf(serial_str, 11, \"%s%d\", type17.serial, instance);"
+##sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, manufacturer_str, type17.manufacturer\);/a\    snprintf(serial_str, 11, \"%s%d\", type17.serial, rand());"
+sed -i "$file_smbios" -Ee "/    SMBIOS_TABLE_SET_STR\(17, manufacturer_str, type17.manufacturer\);/a\    snprintf(serial_str, 11, \"%s%d\", type17.serial, instance);"
 echo "serial_number_str, type17.serial);                -> serial_number_str, serial_str);"
 echo "attributes = 0; /* Unknown */                     -> attributes = 0x01; /* Single rank */"
 echo "minimum_voltage = cpu_to_le16(0); /* Unknown */   -> minimum_voltage = cpu_to_le16(1200);"
