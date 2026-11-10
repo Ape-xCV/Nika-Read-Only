@@ -431,7 +431,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="yes"/>
     <timer name="pit" present="yes"/>
-    <timer name="hpet" present="no"/>
+    <timer name="hpet" present="yes"/>
     <timer name="hypervclock" present="no"/>
     <timer name="kvmclock" present="no"/>
   </clock>
@@ -502,8 +502,6 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
     <qemu:arg value="file=/usr/local/bin/FIDT.dat"/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/FPDT.dat"/>
-    <qemu:arg value="-acpitable"/>
-    <qemu:arg value="file=/usr/local/bin/HPET.dat"/>
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/usr/local/bin/LPIT.dat"/>
     <qemu:arg value="-acpitable"/>
