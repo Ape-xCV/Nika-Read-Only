@@ -475,6 +475,8 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   ```
   </details>
 
+- Virtual Machine Manager >> [Open] >> View >> Details >> Sound ich9 >> [Remove]
+
 - Virtual Machine Manager >> [Open] >> View >> Details >> Tablet >> [Remove]
 
 - Virtual Machine Manager >> [Open] >> View >> Details >> Serial 1 >> [Remove]
