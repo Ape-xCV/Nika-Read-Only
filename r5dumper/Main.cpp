@@ -869,15 +869,6 @@ std::cout << "\n[WeaponSettingsMeta]\n";
 //                                      add rax, rax                           48 03 C0                -> Double the index (* 2)
 //                                      mov rax, [rcx + rax*8]                          48 8B 04 C1 ?  -> Access array entry (* 8, combined = index * 0x10 = 0x940)
 //2026Sep29        FF018B48 8B483050 C08548C8 63484D74 05483846    00000094    48C00348    8BC1048B    FFF98308    B70F1974    E7C148F9    FD034805 @ 2068bd7
-                      //{"m_gameTimescale",           "?  C8 48 05 u4          ?  ?  ?  ?  83 F8 ?  ? "},
-//2025Aug26        50FF018B C0854830 63484C74 8D48384E 0548C804    00000954    008B2074    74FFF883    F8B70F19    05E7C148    74FD0348    10E8C10D @ 821408
-                      //{"m_gameTimescale",           "?  8B 84 C8 u4          83 F8 ?  ? "},
-//2025Sep16        8B485074 3050FF01 74C08548 4E634845 C8848B38    00000954    74FFF883    F8B70F19    05E7C148    74FD0348    10E8C10D    75084739 @ 82d3d5
-                        {"m_gameTimescale",           "?  ?  48 15 u4          30 01 8D 83 ?  ?  ?  ? "},
-//                                     adc rax, 0x944  .. .. 48 15 u4
-//                                     xor byte ptr [rcx], al                  30 01
-//                                     lea eax, [rbx - 0x1F837251]                   8D 83 ?  ?  ?  ?
-//2025Sep29        8E2C00A9 C70436CF A394A558 00150C42 15483700    00000944    838D0130    E07C8DAF    FFE01400    0000FBFF    64000000    3C3DF236 @ 91507c
                         {"m_flProjectileSpeed",       "?  0F 10 87 u2 00 00    45 0F 57 ?  F3 ?  ?  ? "},
 //2025Aug26        7D110FF3 0F44F384 E8884511 FF9463DD 87100FF3    000027F0    D2570F45    100F44F3    45702474    F3DB570F    7C100F44    0F457424 @ bf3c03
 //2026Feb10        F354247C 44110F44 F8E85824 F3FF91A2 87100F44    00002860    DB570F45    87100FF3    00002870    F0280F45    C0058B48    4501C26E @ c58509
@@ -957,10 +948,10 @@ std::cout << "\n[WeaponSettingsMeta]\n";
             printf("%s\n", signatures[i][1].c_str());
             //if (signatures[i][0] == "LocalPlayer") save[0] += 8;
             if (signatures[i][0] == "ObserverIndex") save[0] *= 0x10;
-            std::cout << signatures[i][0] << "=0x" << std::hex << save[0] << "\n";
             std::string fullName = formStr("[.Miscellaneous]" + std::string(signatures[i][0]));
             if (mapOffsets[fullName] == 0)
                 mapOffsets[fullName] = save[0];
+            std::cout << signatures[i][0] << "=0x" << std::hex << save[0] << "\n";
         } else
             std::cout << signatures[i][0] << "=0x........\n";
     }
