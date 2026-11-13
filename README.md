@@ -374,25 +374,11 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
 
 - Replace `</qemu:commandline>` and [Apply]:
   <details>
-    <summary>Spoiler <b>(do NOT use this example, instead modify it with fake SMBIOS data; sudo dmidecode)</b></summary>
+    <summary>Spoiler</summary>
 
   ```shell
       <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=1,manufacturer=Gigabyte Technology Co.,, Ltd.,product=HP Laptop 14s-fq2xxx,version=23.41,serial=D3E4F56789"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=2,manufacturer=Gigabyte Technology Co.,, Ltd.,product=89FE,version=34.12,serial=B1C2D3E4F56789"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=3,manufacturer=Gigabyte Technology Co.,, Ltd.,version=23.41,serial=D3E4F56789"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=4,sock_pfx=U3E1,manufacturer=Advanced Micro Devices,, Inc.,version=AMD Ryzen 5 5625U 6-Core Processor,max-speed=4300,current-speed=2300"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=17,manufacturer=Samsung,part=M471A5244CB0-CWE,speed=3200,serial=D3E4F5"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=8,internal_reference=J1A1,external_reference=Keyboard,connector_type=0x0F,port_type=0x0D"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=8,internal_reference=J1A1,external_reference=Mouse,connector_type=0x0F,port_type=0x0E"/>
-      <qemu:arg value="-smbios"/>
-      <qemu:arg value="type=9,slot_designation=J6C1,slot_type=0xAA,slot_data_bus_width=0x0D,current_usage=0x04,slot_length=0x04,slot_id=0x01,slot_characteristics1=0x04,slot_characteristics2=0x03"/>
+      <qemu:arg value="file=/usr/local/bin/smbios.bin"/>
     </qemu:commandline>
   ```
   </details>
