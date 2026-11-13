@@ -22,9 +22,9 @@ if raw := get_bytes("/sys/class/dmi/id/product_uuid").strip():
 # 3. Overwrite SN strings
 if val := get_bytes("/sys/class/dmi/id/board_serial").strip():
 	data = data.replace(val, b"BOARD_SERIAL")
-for attr in ("chassis_serial", "product_serial"):
-	if val := get_bytes(f"/sys/class/dmi/id/{attr}").strip():
-		data = data.replace(val, b"PRODUCT_SERIAL")
+##for attr in ("chassis_serial", "product_serial"):
+##	if val := get_bytes(f"/sys/class/dmi/id/{attr}").strip():
+##		data = data.replace(val, b"PRODUCT_SERIAL")
 
 for entry in Path("/sys/firmware/dmi/entries/").glob("17-*/raw"):
 	for token in get_bytes(entry)[2:].split(b'\x00'):
