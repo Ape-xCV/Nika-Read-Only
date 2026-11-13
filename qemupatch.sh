@@ -2410,8 +2410,8 @@ if [ "${#t2_serial_number}" -ge 6 ]; then
   echo "Serial Number: $t2_serial_number"
 fi
 
-cp -f SMBIOS.py SMBIOSt2.py
-sed -i SMBIOSt2.py -Ee "s/b\"BOARD_SERIAL\"/b\"${t2_serial_number}\"/"
+cp -f "$SCRIPT_DIR/SMBIOS.py" "$SCRIPT_DIR/SMBIOSt2.py"
+sed -i "$SCRIPT_DIR/SMBIOSt2.py" -Ee "s/b\"BOARD_SERIAL\"/b\"${t2_serial_number}\"/"
 sudo python3 "$SCRIPT_DIR/SMBIOSt2.py" -o "$QEMU_DEST/smbios.bin"
 echo "$QEMU_DEST/smbios.bin"
 
