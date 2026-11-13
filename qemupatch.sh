@@ -2350,8 +2350,71 @@ find "/sys/firmware/acpi/tables" -type f -iname "SSDT*" | while read -r file; do
   echo "$QEMU_DEST/${filename}.dat"
 done
 
-sudo python3 "$SCRIPT_DIR/SMBIOS.py" -o "$QEMU_DEST/smbios.bin"
+
+get_type_2_data() {
+  local hex_data=$(sudo hexdump -v -e '1/1 "%02X "' "/sys/firmware/dmi/entries/2-0/raw")
+  local bytes=($hex_data)
+  local header_length=$((16#${bytes[1]}))
+  # Extract 1-based String Indexes from fixed offsets for Type 2 (Base Board)
+  local idx_manufacturer=$((16#${bytes[4]}))
+  local idx_product_name=$((16#${bytes[5]}))
+  local idx_version=$((16#${bytes[6]}))
+  local idx_serial_number=$((16#${bytes[7]}))
+  local idx_asset_tag=$((16#${bytes[8]}))
+  # Extract trailing null-terminated strings starting right after the fixed area
+  local strings=()
+  local current_str=""
+  for (( i=header_length; i<${#bytes[@]}; i++ )); do
+    if [ "${bytes[$i]}" == "00" ]; then
+      if [ -n "$current_str" ]; then
+        strings+=("$current_str")
+        current_str=""
+      fi
+    else
+      # Convert hex byte to ASCII character
+      local char
+      printf -v char "\x${bytes[$i]}"
+      current_str+="$char"
+    fi
+  done
+  # Helper function to look up string by 1-based index
+  get_smbios_string() {
+    local idx=$1
+    if [ "$idx" -gt 0 ] && [ "$idx" -le "${#strings[@]}" ]; then
+      echo "${strings[$((idx - 1))]}"
+    else
+      echo "<Not Specified>"
+    fi
+  }
+
+  t2_manufacturer=$(get_smbios_string $idx_manufacturer)
+  t2_product_name=$(get_smbios_string $idx_product_name)
+  t2_version=$(get_smbios_string $idx_version)
+  t2_serial_number=$(get_smbios_string $idx_serial_number)
+  t2_asset_tag=$(get_smbios_string $idx_asset_tag)
+}
+
+get_type_2_data
+
+# Output results
+echo "Manufacturer:  $t2_manufacturer"
+echo "Product Name:  $t2_product_name"
+echo "Version:       $t2_version"
+echo "Serial Number: $t2_serial_number"
+echo "Asset Tag:     $t2_asset_tag"
+if [ "${#t2_serial_number}" -ge 6 ]; then
+  prefix="${t2_serial_number:0:${#t2_serial_number}-6}"
+  last_six="${t2_serial_number: -6}"
+  shuffled_six=$(printf '%s' "$last_six" | grep -o . | shuf | tr -d '\n')
+  t2_serial_number="${prefix}${shuffled_six}"
+  echo "Serial Number: $t2_serial_number"
+fi
+
+cp -f SMBIOS.py SMBIOSt2.py
+sed -i SMBIOSt2.py -Ee "s/b\"BOARD_SERIAL\"/b\"${t2_serial_number}\"/"
+sudo python3 "$SCRIPT_DIR/SMBIOSt2.py" -o "$QEMU_DEST/smbios.bin"
 echo "$QEMU_DEST/smbios.bin"
+
 
 sudo mkdir -p /usr/local/share/qemu
 #sudo cp -f "$(pwd)/../pc-bios/kvmvapic.bin" "/usr/local/share/qemu/kvmvapic.bin"
