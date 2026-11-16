@@ -408,7 +408,23 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   <features>
     <acpi/>
     <apic/>
-    <hyperv mode="passthrough"/>
+    <hyperv mode="custom">
+      <relaxed state="off"/>
+      <vapic state="off"/>
+      <spinlocks state="off"/>
+      <vpindex state="off"/>
+      <runtime state="off"/>
+      <synic state="off"/>
+      <stimer state="off"/>
+      <reset state="off"/>
+      <vendor_id state="off"/>
+      <frequencies state="off"/>
+      <reenlightenment state="off"/>
+      <tlbflush state="off"/>
+      <ipi state="off"/>
+      <evmcs state="off"/>
+      <avic state="off"/>
+    </hyperv>
     <kvm>
       <hidden state="on"/>
     </kvm>
