@@ -408,23 +408,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
   <features>
     <acpi/>
     <apic/>
-    <hyperv mode="custom">
-      <relaxed state="off"/>
-      <vapic state="off"/>
-      <spinlocks state="off"/>
-      <vpindex state="off"/>
-      <runtime state="off"/>
-      <synic state="off"/>
-      <stimer state="off"/>
-      <reset state="off"/>
-      <vendor_id state="off"/>
-      <frequencies state="off"/>
-      <reenlightenment state="off"/>
-      <tlbflush state="off"/>
-      <ipi state="off"/>
-      <evmcs state="off"/>
-      <avic state="off"/>
-    </hyperv>
+    <hyperv mode="custom"/>
     <kvm>
       <hidden state="on"/>
     </kvm>
@@ -447,7 +431,7 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="yes"/>
     <timer name="pit" present="yes"/>
-    <timer name="hpet" present="yes"/>
+    <timer name="hpet" present="no"/>
     <timer name="hypervclock" present="no"/>
     <timer name="kvmclock" present="no"/>
   </clock>
@@ -569,28 +553,15 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
 
 - Pin `vcpu` to `cpuset`, example for 4 cores 8 threads (dies=1) host CPU:
 ```shell
-  paste <(grep "initial apicid" /proc/cpuinfo) <(grep "processor" /proc/cpuinfo)
-
-  initial apicid  : 0     processor       : 0
-  initial apicid  : 2     processor       : 1
-  initial apicid  : 4     processor       : 2
-  initial apicid  : 6     processor       : 3
-  initial apicid  : 1     processor       : 4
-  initial apicid  : 3     processor       : 5
-  initial apicid  : 5     processor       : 6
-  initial apicid  : 7     processor       : 7
-```
-
-```shell
   <vcpu placement="static">8</vcpu>
   <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="2" cpuset="1"/>
-    <vcpupin vcpu="4" cpuset="2"/>
-    <vcpupin vcpu="6" cpuset="3"/>
-    <vcpupin vcpu="1" cpuset="4"/>
-    <vcpupin vcpu="3" cpuset="5"/>
-    <vcpupin vcpu="5" cpuset="6"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    <vcpupin vcpu="2" cpuset="2"/>
+    <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
     <vcpupin vcpu="7" cpuset="7"/>
   </cputune>
   <cpu mode="host-passthrough" check="none" migratable="off">
@@ -1009,7 +980,7 @@ sudo -E ./nika
 
 - Install virtio ethernet from `network` folder (use Device Manager).
 
-- Open an `Administrator Command Prompt`, disable `testsigning`, then restart:
+- Run `Command Prompt` as Administrator and enter:
 ```shell
 bcdedit /set testsigning off
 ```
@@ -1138,6 +1109,12 @@ sudo sbsign --key my_mok.priv --cert my_mok.cer --output /boot/vmlinuz-6.19.14_t
 ### 8.2 Install Hyper-V (mandatory)
 
 - Settings >> Apps >> Programs and Features >> Turn Windows features on or off >> _check_ [x] Hyper-V >> [OK]
+
+- Run `Command Prompt` as Administrator and enter:
+```shell
+bcdedit /set hypervisorlaunchtype auto
+```
+
 
 - You need **at least** Intel 12th generation or AMD Zen 4:
   - HVCI EPT/NPT to handle EPT/NPT probing.
