@@ -1115,11 +1115,6 @@ sudo sbsign --key my_mok.priv --cert my_mok.cer --output /boot/vmlinuz-6.19.14_t
 bcdedit /set hypervisorlaunchtype auto
 ```
 
-
-- You need **at least** Intel 12th generation or AMD Zen 4:
-  - HVCI EPT/NPT to handle EPT/NPT probing.
-  - Intel_ArchLBR/AMD_LBRv to handle LBR probing.
-
 ### 9. Spoof network (if rtl8125/virtio, not required)
 
 - This step is a journey on it's own. Initially you should skip it, but return later when you feel prepared.
