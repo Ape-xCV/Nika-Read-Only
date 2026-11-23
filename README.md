@@ -656,14 +656,14 @@ sudo chmod 666 /var/lib/libvirt/images/win10.img
 ```shell
 sudo su
 echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
-echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
+echo "options kvm report_ignored_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Nested Virtualization for AMD:
 ```shell
 sudo su
 echo "options kvm_amd nested=1" > /etc/modprobe.d/kvm.conf
-echo "options kvm ignore_msrs=0" >> /etc/modprobe.d/kvm.conf
+echo "options kvm report_ignored_msrs=1" >> /etc/modprobe.d/kvm.conf
 ```
 
 - Preload `vfio-pci` module so it can bind to PCI IDs:
@@ -946,7 +946,17 @@ sudo -E ./nika
 
 - Plug an USB Network Interface Card into USB 3.x xHCI Host Controller port.
 
-### 7.1b. virtio (not safe)
+### 7.1b. rtl8125
+
+- Credit to: [Scrut1ny/AutoVirt](https://github.com/Scrut1ny/AutoVirt).
+
+- Virtual Machine Manager >> [Open] >> View >> Details >> NIC :xx:xx:xx >> Device model: rtl8125 >> [Apply]
+
+- Start VM.
+
+- Device Manager >> View >> Show hidden devices >> Intel(R) 82574L Gigabit Network Connection >> Uninstall device
+
+### 7.1c. virtio
 
 - Download `virtio-win.iso` from: [`fedorapeople.org`](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso).
 
