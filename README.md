@@ -65,6 +65,8 @@
 sudo dnf install xorg-x11-drv-dummy x11vnc mingetty
 sudo firewall-cmd --permanent --add-service=vnc-server
 sudo systemctl set-default multi-user.target
+sudo systemctl mask kmsconvt@.service
+sudo systemctl enable getty@tty1.service
 ```
 
 - Download `dummy.conf` / `headless.sh` / `autologin.sh` to **~/Downloads** and install:
