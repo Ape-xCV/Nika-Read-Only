@@ -669,10 +669,12 @@ sed -i "$file_pcibridge_c" -Ee "s/\"EDSM/\"${edsm}/"
 echo "  $file_pcihp_c"
 get_new_string_4
 echo "PHPR                                              -> $new_string"
+echo "aml_string(\"PNP0A06\")));                          -> aml_string(\"PNP0C02\")));"
 sed -i "$file_pcihp_c" -Ee "s/PHPR/$new_string/"
+sed -i "$file_pcihp_c" -Ee "s/aml_string\(\"PNP0A06\"\)\)\);/aml_string(\"PNP0C02\")));/"
 get_new_string_57
-echo "PCI Hotplug resources                             -> PCI $prefix$suffix"
-sed -i "$file_pcihp_c" -Ee "s/PCI Hotplug resources/PCI $prefix$suffix/"
+echo "aml_string(\"PCI Hotplug resources\")));            -> aml_string(\"PCI $prefix$suffix\")));"
+sed -i "$file_pcihp_c" -Ee "s/aml_string\(\"PCI Hotplug resources\"\)\)\);/aml_string(\"PCI $prefix$suffix\")));/"
 sed -i "$file_pcihp_c" -e  '/        \/\* add _EJ0 to make slot hotpluggable/{n;N;N;N;N;d;}'
 sed -i "$file_pcihp_c" -Ee "/        \/\* add _EJ0 to make slot hotpluggable/a\        method = aml_method(\"_RMV\", 0, AML_NOTSERIALIZED);\n\
         aml_append(method, aml_return(aml_int(0)));\n\
@@ -894,7 +896,9 @@ echo "    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"
 echo "    if (misc->has_hpet) {"
 sed -i "$file_acpibuild_c" -Ee "/    if \(misc->has_hpet\) \{/i\    build_timr_aml(dsdt);\n"
 sed -i "$file_acpibuild_c" -e  '/ACPI0006/{d;}'
+echo "aml_string(\"PNP0A06\")));                          -> aml_string(\"PNP0C02\")));"
 echo "aml_string(\"GPE0 resources\")));                   -> aml_int(2)));"
+sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"PNP0A06\"\)\)\);/aml_string(\"PNP0C02\")));/"
 sed -i "$file_acpibuild_c" -Ee "s/aml_string\(\"GPE0 resources\"\)\)\);/aml_int(2)));/"
 sed -i "$file_acpibuild_c" -e  '/create fw_cfg node, unconditionally/{n;N;N;N;N;d;}'
 sed -i "$file_acpibuild_c" -e  '/Windows ACPI Emulated Devices Table/{n;n;n;n;n;n;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;N;d;}'
@@ -2136,6 +2140,10 @@ sed -i "$file_cpu_c" -Ee "s/X86CPU, expose_kvm, true\),/X86CPU, expose_kvm, fals
 echo "  $file_cpu_h"
 echo "MCE_BANKS_DEF   10                                -> MCE_BANKS_DEF   32"
 sed -i "$file_cpu_h" -Ee "s/MCE_BANKS_DEF   10/MCE_BANKS_DEF   32/"
+if [[ "${cpu_vendor:1}" == "GenuineIntel" ]]; then
+  echo "MSR_IA32_MISC_ENABLE_DEFAULT    1                 -> MSR_IA32_MISC_ENABLE_DEFAULT    (1ULL << 0 | 1ULL << 20)"
+  sed -i "$file_cpu_h" -Ee "s/MSR_IA32_MISC_ENABLE_DEFAULT    1/MSR_IA32_MISC_ENABLE_DEFAULT    (1ULL << 0 | 1ULL << 20)/"
+fi
 
 echo "  $file_kvm_c"
 echo "\"Microsoft VS\"                                    -> 0"

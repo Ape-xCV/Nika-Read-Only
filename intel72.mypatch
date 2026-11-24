@@ -1,0 +1,331 @@
+--- a/arch/x86/kvm/hyperv.c	2026-11-01 12:44:45.000000000 +0000
++++ b/arch/x86/kvm/hyperv.c	2026-11-20 18:14:13.621944208 +0000
+@@ -2815,7 +2815,8 @@
+ 
+ 		switch (ent->function) {
+ 		case HYPERV_CPUID_VENDOR_AND_MAX_FUNCTIONS:
+-			memcpy(signature, "Linux KVM Hv", 12);
++//			memcpy(signature, "Linux KVM Hv", 12);  // NIKA removed
++			memcpy(signature, "Microsoft Hv", 12);  // NIKA added
+ 
+ 			ent->eax = HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES;
+ 			ent->ebx = signature[0];
+@@ -2832,7 +2833,8 @@
+ 			 * We implement some Hyper-V 2016 functions so let's use
+ 			 * this version.
+ 			 */
+-			ent->eax = 0x00003839;
++//			ent->eax = 0x00003839;  // NIKA removed
++			ent->eax = 0x00004A61;  // NIKA added
+ 			ent->ebx = 0x000A0000;
+ 			break;
+ 
+@@ -2912,7 +2914,8 @@
+ 			break;
+ 
+ 		case HYPERV_CPUID_SYNDBG_VENDOR_AND_MAX_FUNCTIONS:
+-			memcpy(signature, "Linux KVM Hv", 12);
++//			memcpy(signature, "Linux KVM Hv", 12);  // NIKA removed
++			memcpy(signature, "Microsoft Hv", 12);  // NIKA added
+ 
+ 			ent->eax = 0;
+ 			ent->ebx = signature[0];
+--- a/arch/x86/kvm/x86.c	2026-11-01 12:44:45.000000000 +0000
++++ b/arch/x86/kvm/x86.c	2026-11-22 15:42:27.122133675 +0000
+@@ -3638,6 +3638,10 @@
+ 			/* R bits, i.e. writes are ignored, but don't fault. */
+ 			data = data & ~MSR_IA32_MISC_ENABLE_EMON;
+ 			data |= old_val & MSR_IA32_MISC_ENABLE_EMON;
++			if (old_val & BIT_ULL(20)) {  // NIKA added; Check EIST_LOCK (bit 20)
++				data = data & ~(BIT_ULL(16) | BIT_ULL(20));  // NIKA added
++				data |= old_val & (BIT_ULL(16) | BIT_ULL(20));  // NIKA added
++			}  // NIKA added
+ 		}
+ 
+ 		if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT) &&
+@@ -3931,6 +3935,9 @@
+ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
+ 	switch (msr_info->index) {
++	case 0xC80:  /* MSR_IA32_DEBUG_INTERFACE */
++		msr_info->data = 1ULL << 30;  /* Set LOCK (bit 30) */
++		break;
+ 	case MSR_IA32_PLATFORM_ID:
+ 	case MSR_IA32_EBL_CR_POWERON:
+ 	case MSR_IA32_LASTBRANCHFROMIP:
+@@ -8529,6 +8536,15 @@
+ 		return 0;
+ 	}
+ 
++	if (!report_ignored_msrs) {  // NIKA begin
++		unsigned long next_rip = kvm_get_linear_rip(vcpu);
++		unsigned long dr6_payload = 0;
++		if (vcpu->arch.db[0] == next_rip && (vcpu->arch.dr7 & 0x03)) dr6_payload |= DR_TRAP0;
++		if (vcpu->arch.db[1] == next_rip && (vcpu->arch.dr7 & 0x0C)) dr6_payload |= DR_TRAP1;
++		if (vcpu->arch.db[2] == next_rip && (vcpu->arch.dr7 & 0x30)) dr6_payload |= DR_TRAP2;
++		if (vcpu->arch.db[3] == next_rip && (vcpu->arch.dr7 & 0xC0)) dr6_payload |= DR_TRAP3;
++		kvm_queue_exception_p(vcpu, DB_VECTOR, dr6 | dr6_payload);
++	} else  // NIKA end
+ 	kvm_queue_exception_p(vcpu, DB_VECTOR, dr6);
+ 	return 1;
+ }
+@@ -12495,6 +12511,7 @@
+ 	kvm->arch.pre_fault_allowed =
+ 		type == KVM_X86_DEFAULT_VM || type == KVM_X86_SW_PROTECTED_VM;
+ 	kvm->arch.disabled_quirks = kvm_caps.inapplicable_quirks & kvm_caps.supported_quirks;
++	kvm->arch.disabled_quirks |= KVM_X86_QUIRK_FIX_HYPERCALL_INSN | KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT | KVM_X86_QUIRK_MWAIT_NEVER_UD_FAULTS;  // NIKA added
+ 
+ 	ret = kvm_page_track_init(kvm);
+ 	if (ret)
+--- a/arch/x86/kvm/vmx/vmx.c	2026-11-01 12:44:45.000000000 +0000
++++ b/arch/x86/kvm/vmx/vmx.c	2026-11-23 00:56:45.365109921 +0000
+@@ -3752,6 +3752,13 @@
+ 		var->type |= 0x1; /* Accessed */
+ 
+ 	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(var));
++
++	if (unlikely(vcpu->vcpu_id == 0 && var->base == 0xFFFF0000 && seg == VCPU_SREG_CS)) {  // VIRTFUNC begin
++//		memset(vcpu->cpuid_cache, 0, sizeof(vcpu->cpuid_cache));
++//		memset(vcpu->ext_cpuid_cache, 0, sizeof(vcpu->ext_cpuid_cache));
++		vcpu->kvm->unintercept_cpuid = false;
++		vcpu->kvm->segment_timestamp = rdtsc();
++	}  // VIRTFUNC end
+ }
+ 
+ void vmx_set_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg)
+@@ -4285,10 +4292,16 @@
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C6_RESIDENCY, MSR_TYPE_R);
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_CORE_C7_RESIDENCY, MSR_TYPE_R);
+ 	}
+-	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {
++//	if (kvm_aperfmperf_in_guest(vcpu->kvm)) {  // NIKA removed
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_APERF, MSR_TYPE_R);
+ 		vmx_disable_intercept_for_msr(vcpu, MSR_IA32_MPERF, MSR_TYPE_R);
+-	}
++//	}  NIKA removed
++
++	vmx_disable_intercept_for_msr(vcpu, 0x1DA,      MSR_TYPE_RW);  /* VGK_IA32_LASTBRANCH_TOS */
++	vmx_disable_intercept_for_msr(vcpu, 0x1DB,      MSR_TYPE_RW);  /* VGK_IA32_LASTBRANCH_FROM_0 */
++	vmx_disable_intercept_for_msr(vcpu, 0x1DC,      MSR_TYPE_RW);  /* VGK_IA32_LASTBRANCH_TO_0 */
++	vmx_disable_intercept_for_msr(vcpu, 0x1DD,      MSR_TYPE_RW);  /* VGK_IA32_LASTINT_FROM_0 */
++	vmx_disable_intercept_for_msr(vcpu, 0x1DE,      MSR_TYPE_RW);  /* VGK_IA32_LASTINT_TO_0 */
+ 
+ 	/* PT MSRs can be passed through iff PT is exposed to the guest. */
+ 	if (vmx_pt_mode_is_host_guest())
+@@ -6310,6 +6323,17 @@
+ 				     vmx_get_msr_imm_reg(vcpu));
+ }
+ 
++static int handle_vmcall(struct kvm_vcpu *vcpu)  // NIKA begin
++{
++	if (!report_ignored_msrs)
++		return kvm_handle_invalid_op(vcpu);
++	else if (vmx_get_cpl(vcpu) > 0) {
++		kvm_queue_exception_e(vcpu, GP_VECTOR, 0);
++		return 1;
++	}
++	return kvm_emulate_hypercall(vcpu);
++}  // NIKA end
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6331,7 +6355,8 @@
+ 	[EXIT_REASON_INVD]		      = kvm_emulate_invd,
+ 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+ 	[EXIT_REASON_RDPMC]                   = kvm_emulate_rdpmc,
+-	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,
++//	[EXIT_REASON_VMCALL]                  = kvm_emulate_hypercall,  // NIKA removed
++	[EXIT_REASON_VMCALL]                  = handle_vmcall,  // NIKA added
+ 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+ 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
+@@ -7472,13 +7497,14 @@
+ 
+ 	guest_state_enter_irqoff();
+ 
+-	vmx_l1d_flush(vcpu);
++//	vmx_l1d_flush(vcpu);  // NIKA added
+ 
+ 	vmx_disable_fb_clear(vmx);
+ 
+ 	if (vcpu->arch.cr2 != native_read_cr2())
+ 		native_write_cr2(vcpu->arch.cr2);
+ 
++for (;;) {  // NIKA added
+ 	vmx->fail = __vmx_vcpu_run(vmx, flags);
+ 
+ 	vcpu->arch.cr2 = native_read_cr2();
+@@ -7494,10 +7520,69 @@
+ 	}
+ 
+ 	vmx->vt.exit_reason.full = vmcs_read32(VM_EXIT_REASON);
++	if (vmx->vt.exit_reason.basic == EXIT_REASON_CPUID) {  // NIKA begin
++		if (!vcpu->kvm->unintercept_cpuid && rdtsc() - vcpu->kvm->segment_timestamp > 145152000000)  // Intel® Core™ processors >60 seconds
++			vcpu->kvm->unintercept_cpuid = true;
++		if (vcpu->kvm->unintercept_cpuid) {
++			bool cpuid_fault_enabled = (vcpu->arch.msr_misc_features_enables & BIT_ULL(0)) ||  // MSR_MISC_FEATURES_ENABLES_CPUID_FAULT
++									   (vcpu->arch.msr_hwcr & BIT_ULL(35));                    // MSR_K7_HWCR_CPUID_USER_DIS
++			if (cpuid_fault_enabled && vmx_get_cpl(vcpu) > 0)
++				goto cpuid_fault;
++			// CHECK: GUEST_RFLAGS for TF (single-stepping)
++			if (!report_ignored_msrs && (vmcs_readl(GUEST_RFLAGS) & X86_EFLAGS_TF))
++				goto cpuid_fault;
++			u32 function = kvm_rax_read(vcpu);
++			u32 index = kvm_rcx_read(vcpu);
++			struct kvm_cpuid_entry2 *entry = NULL;  // Direct, noinstr-safe lookup
++			for (int i = 0; i < vcpu->arch.cpuid_nent; i++) {
++				if (vcpu->arch.cpuid_entries[i].function == function
++				    && (vcpu->arch.cpuid_entries[i].index == index || !(vcpu->arch.cpuid_entries[i].flags & KVM_CPUID_FLAG_SIGNIFCANT_INDEX))) {
++					entry = &vcpu->arch.cpuid_entries[i];
++					break;
++				}
++			}
++			if (report_ignored_msrs && function >= 0x40000000 && function <= 0x4000000B) {
++				if (vcpu->hv_cpuid_cache[0x00][0x00].rdy == 1) function = min(function, vcpu->hv_cpuid_cache[0x00][0x00].eax);
++				else                                           function = min(function, 0x4000000B);
++				index = 0;
++				function -= 0x40000000;
++				vcpu->arch.regs[VCPU_REGS_RAX] = vcpu->hv_cpuid_cache[function][index].eax;
++				vcpu->arch.regs[VCPU_REGS_RBX] = vcpu->hv_cpuid_cache[function][index].ebx;
++				vcpu->arch.regs[VCPU_REGS_RCX] = vcpu->hv_cpuid_cache[function][index].ecx;
++				vcpu->arch.regs[VCPU_REGS_RDX] = vcpu->hv_cpuid_cache[function][index].edx;
++				function += 0x40000000;
++			}
++			else if (entry) {
++				if (report_ignored_msrs && function == 0x01) entry->ecx |= 1U << 31;  // Hyper-V fix
++				vcpu->arch.regs[VCPU_REGS_RAX] = entry->eax;
++				vcpu->arch.regs[VCPU_REGS_RBX] = entry->ebx;
++				vcpu->arch.regs[VCPU_REGS_RCX] = entry->ecx;
++				vcpu->arch.regs[VCPU_REGS_RDX] = entry->edx;
++			}
++			else goto cpuid_fault;
++			kvm_register_mark_dirty(vcpu, VCPU_REGS_RAX);
++			kvm_register_mark_dirty(vcpu, VCPU_REGS_RBX);
++			kvm_register_mark_dirty(vcpu, VCPU_REGS_RCX);
++			kvm_register_mark_dirty(vcpu, VCPU_REGS_RDX);
++		//	kvm_rax_write(vcpu, entry->eax);
++		//	kvm_rbx_write(vcpu, entry->ebx);
++		//	kvm_rcx_write(vcpu, entry->ecx);
++		//	kvm_rdx_write(vcpu, entry->edx);
++			u32 instr_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
++			unsigned long rip = vmcs_readl(GUEST_RIP);
++			vmcs_writel(GUEST_RIP, rip + instr_len);
++			vcpu->arch.rip = rip + instr_len;
++			vmx_disable_fb_clear(vmx);
++			continue;
++		}
++	}
++cpuid_fault:  // NIKA end
+ 	if (likely(!vmx_get_exit_reason(vcpu).failed_vmentry))
+ 		vmx->idt_vectoring_info = vmcs_read32(IDT_VECTORING_INFO_FIELD);
+ 
+ 	vmx_handle_nmi(vcpu);
++	break;  // NIKA added
++}  // NIKA added
+ 
+ out:
+ 	guest_state_exit_irqoff();
+@@ -7668,6 +7753,21 @@
+ 	free_page((unsigned long)vmx->ve_info);
+ }
+ 
++static const struct cpuid_cache_regs hv_cpuid_cache_template[0x0C][0x01] = {  // NIKA begin
++	{ { 1, 0x4000000B, 0x7263694D, 0x666F736F, 0x76482074 } },  // '....'  'rciM'  'foso'  'vH t'
++	{ { 1, 0x31237648, 0x00000000, 0x00000000, 0x00000000 } },  // '1#vH'  '....'  '....'  '....'
++	{ { 1, 0x00004A61, 0x000A0000, 0x00000000, 0x00000099 } },  // Build:19041  Major/Minor:10/0  **  Revision:153=0x99
++	{ { 1, 0x0000BFFF, 0x002BB9FF, 0x00000002, 0x31FFFBF6 } },  // **  **  **  0x30FFFBF2 | 0x01000004 DirectSyntheticTimers(24) AccessFrequencyRegs(2)
++	{ { 1, 0x00060E14, 0x00000000, 0x0000002E, 0x00000000 } },
++	{ { 1, 0x00000400, 0x00000400, 0x00000324, 0x00000000 } },
++	{ { 1, 0x0082000F, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x80000007, 0x00000001, 0x00000000, 0x00000000 } },  // **  0x01 | 0x02 EnlightenedVmcs(1)  **  **
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } },
++	{ { 1, 0x00000000, 0x00000000, 0x00000000, 0x00000000 } }
++};  // NIKA end
++
+ int vmx_vcpu_create(struct kvm_vcpu *vcpu)
+ {
+ 	struct vmx_uret_msr *tsx_ctrl;
+@@ -7757,6 +7857,8 @@
+ 		WRITE_ONCE(to_kvm_vmx(vcpu->kvm)->pid_table[vcpu->vcpu_id],
+ 			   __pa(&vmx->vt.pi_desc) | PID_TABLE_ENTRY_VALID);
+ 
++	memcpy(vcpu->hv_cpuid_cache, hv_cpuid_cache_template, sizeof(vcpu->hv_cpuid_cache));  // NIKA added
++
+ 	return 0;
+ 
+ free_vmcs:
+--- a/include/asm-generic/mshyperv.h	2026-11-01 12:44:45.000000000 +0000
++++ b/include/asm-generic/mshyperv.h	2026-11-21 03:19:04.392686106 +0000
+@@ -170,8 +170,12 @@
+ {
+ 	u64 guest_id;
+ 
+-	guest_id = (((u64)HV_LINUX_VENDOR_ID) << 48);
+-	guest_id |= (kernel_version << 16);
++//	guest_id = (((u64)HV_LINUX_VENDOR_ID) << 48);  // NIKA removed
++//	guest_id |= (kernel_version << 16);  // NIKA removed
++	guest_id |= (0x0001ULL << 48);  // 62:48 Vendor:Microsoft
++	guest_id |= (  0x04ULL << 40);  // 47:40   OsId:WindowsNT
++	guest_id |= (  0x0AULL << 32);  // 39:32  Major:10
++	guest_id |=  0x271BULL       ;  // 15:00  Build:10011
+ 
+ 	return guest_id;
+ }
+--- a/include/linux/kvm_host.h	2026-11-01 12:44:45.000000000 +0000
++++ b/include/linux/kvm_host.h	2026-11-20 03:40:57.535277485 +0000
+@@ -322,6 +322,14 @@
+ 	unsigned int len;
+ };
+ 
++struct cpuid_cache_regs {  // NIKA begin
++	u32 rdy;
++	u32 eax;
++	u32 ebx;
++	u32 ecx;
++	u32 edx;
++};  // NIKA end
++
+ struct kvm_vcpu {
+ 	struct kvm *kvm;
+ #ifdef CONFIG_PREEMPT_NOTIFIERS
+@@ -398,6 +406,10 @@
+ 	 */
+ 	struct kvm_memory_slot *last_used_slot;
+ 	u64 last_used_slot_gen;
++
++//	struct cpuid_cache_regs     cpuid_cache[0x25][0x40];  // NIKA added
++//	struct cpuid_cache_regs ext_cpuid_cache[0x27][0x05];  // NIKA added
++	struct cpuid_cache_regs  hv_cpuid_cache[0x0C][0x01];  // NIKA added
+ };
+ 
+ /*
+@@ -876,16 +888,24 @@
+ 	struct xarray mem_attr_array;
+ #endif
+ 	char stats_id[KVM_STATS_NAME_SIZE];
++
++	bool unintercept_cpuid;  // NIKA added
++	u64  segment_timestamp;  // NIKA added
+ };
+ 
+ #define kvm_err(fmt, ...) \
+ 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_info(fmt, ...) \
+ 	pr_info("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++//#define kvm_debug(fmt, ...) \
++//	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
+ #define kvm_debug(fmt, ...) \
+-	pr_debug("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++	pr_err("dbg [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
++//#define kvm_debug_ratelimited(fmt, ...) \
++//	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
++//			     ## __VA_ARGS__)
+ #define kvm_debug_ratelimited(fmt, ...) \
+-	pr_debug_ratelimited("kvm [%i]: " fmt, task_pid_nr(current), \
++	pr_err("dbg_rl [%i]: " fmt, task_pid_nr(current), \
+ 			     ## __VA_ARGS__)
+ #define kvm_pr_unimpl(fmt, ...) \
+ 	pr_err_ratelimited("kvm [%i]: " fmt, \
