@@ -29,29 +29,6 @@ if [ "$EUID" != 0 ]; then
     exit $?
 fi
 
-if [[ ! -f vars.sh ]]; then
-  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
-  device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
-  xhci=$((   49152 - device - ((RANDOM%768)+256) ))
-  virtio=$(( 49152 + device                      ))
-  cpu=$((    16384          + ((RANDOM%1024)*16) ))
-  echo "device=\"$device\""                  >  vars.sh
-  echo "xhci=\"$xhci\""                      >> vars.sh
-  echo "virtio=\"$virtio\""                  >> vars.sh
-  echo "cpu=\"$cpu\""                        >> vars.sh
-  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
-  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
-else
-  echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
-  source vars.sh
-  echo "device=\"$device\""                  >  vars.sh
-  echo "xhci=\"$xhci\""                      >> vars.sh
-  echo "virtio=\"$virtio\""                  >> vars.sh
-  echo "cpu=\"$cpu\""                        >> vars.sh
-  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
-  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
-fi
-
 SCRIPT_DIR="$(pwd)"
 QEMU_DEST="/usr/local/bin"
 
@@ -364,6 +341,33 @@ get_type_4_data() {
   t4_processor_characteristics="${data:78:2}${data:76:2}"
 }
 
+if [[ ! -f vars.sh ]]; then
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m does not exist, storing..."
+  device=$(( ($(date +"%-d") + $(date +"%-m"))*100 + $(date +"%-d") * $(date +"%-m") ))
+  xhci=$((   49152 - device - ((RANDOM%768)+256) ))
+  virtio=$(( 49152 + device                      ))
+  cpu=$((    16384          + ((RANDOM%1024)*16) ))
+  get_new_string_4
+  fwcfg="$new_string"
+  echo "device=\"$device\""                  >  vars.sh
+  echo "xhci=\"$xhci\""                      >> vars.sh
+  echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
+  echo "fwcfg=\"$fwcfg\""                    >> vars.sh
+  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
+  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
+else
+  echo -e "$(pwd)/\e[1mvars.sh\e[0m found."
+  source vars.sh
+  echo "device=\"$device\""                  >  vars.sh
+  echo "xhci=\"$xhci\""                      >> vars.sh
+  echo "virtio=\"$virtio\""                  >> vars.sh
+  echo "cpu=\"$cpu\""                        >> vars.sh
+  echo "fwcfg=\"$fwcfg\""                    >> vars.sh
+  echo "edk2bridge_1022=\"$pcibridge_1022\"" >> vars.sh
+  echo "edk2bridge_8086=\"$pcibridge_8086\"" >> vars.sh
+fi
+
 if [[ ! -d qemubackup ]]; then
   echo -e "$(pwd)/\e[1mqemubackup\e[0m does not exist, cloning..."
   git clone --single-branch --branch stable-11.0 https://github.com/qemu/qemu.git qemubackup
@@ -394,6 +398,7 @@ fi
                 file_pc_c="$(pwd)/qemu/hw/i386/pc.c"
 #           file_pcpiix_c="$(pwd)/qemu/hw/i386/pc_piix.c"
              file_pcq35_c="$(pwd)/qemu/hw/i386/pc_q35.c"
+             file_vapic_c="$(pwd)/qemu/hw/i386/vapic.c"
          file_smbusich9_c="$(pwd)/qemu/hw/i2c/smbus_ich9.c"
              file_atapi_c="$(pwd)/qemu/hw/ide/atapi.c"
           file_ide_core_c="$(pwd)/qemu/hw/ide/core.c"
@@ -483,6 +488,7 @@ if [[ -f "$file_multiboot_c" ]]; then rm "$file_multiboot_c"; fi
 if [[ -f "$file_pc_c" ]]; then rm "$file_pc_c"; fi
 #if [[ -f "$file_pcpiix_c" ]]; then rm "$file_pcpiix_c"; fi
 if [[ -f "$file_pcq35_c" ]]; then rm "$file_pcq35_c"; fi
+if [[ -f "$file_vapic_c" ]]; then rm "$file_vapic_c"; fi
 if [[ -f "$file_smbusich9_c" ]]; then rm "$file_smbusich9_c"; fi
 if [[ -f "$file_atapi_c" ]]; then rm "$file_atapi_c"; fi
 if [[ -f "$file_ide_core_c" ]]; then rm "$file_ide_core_c"; fi
@@ -961,6 +967,11 @@ sed -i "$file_pcq35_c" -Ee "/    pc_q35_machine_options\(m\);/a\    m->smbios_me
 echo "smbios_memory_device_size = 16                    -> smbios_memory_device_size = 8"
 sed -i "$file_pcq35_c" -Ee "s/smbios_memory_device_size = 16/smbios_memory_device_size = 8/"
 
+echo "  $file_vapic_c"
+get_new_string_57
+echo "kvmvapic.bin                                      -> ${suffix}.bin"
+sed -i "$file_vapic_c" -Ee "s/kvmvapic.bin/${suffix}.bin/"
+
 echo "  $file_smbusich9_c"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "PCI_VENDOR_ID_INTEL;                              -> 0x1022;"
@@ -1181,6 +1192,8 @@ sed -i "$file_nvram_fwcfg_c" -Ee "s/0x51454d5520434647ULL/0x${signature}ULL/"
 #get_new_string_4
 #echo "\"QEMU\"                                            -> \"$new_string\""
 #sed -i "$file_nvram_fwcfg_c" -Ee "s/\"QEMU\"/\"$new_string\"/"
+echo "\"QEMU\"                                            -> \"$fwcfg\""
+sed -i "$file_nvram_fwcfg_c" -Ee "s/\"QEMU\"/\"$fwcfg\"/"
 
 echo "  $file_fwcfgacpi_c"
 echo "\"FWCF\"                                            -> \"$fwcf\""

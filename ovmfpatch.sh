@@ -50,6 +50,13 @@ get_new_string() {
   suffix=$(echo $new_string | tail -c ${#new_string} | tr '[A-Z]' '[a-z]')
 }
 
+get_new_string_57() {
+  get_new_string "$(shuf -i 5-7 -n 1)" "$(shuf -i 1-4 -n 1)"
+}
+get_new_string_4() {
+  get_new_string 4 "$(shuf -i 1-3 -n 1)"
+}
+
 if [[ ! -d ovmfbackup ]]; then
   echo -e "$(pwd)/\e[1movmfbackup\e[0m does not exist, clone started..."
   git clone --recursive --single-branch --branch edk2-stable202602 https://github.com/tianocore/edk2.git ovmfbackup
@@ -57,65 +64,119 @@ else
   echo -e "$(pwd)/\e[1movmfbackup\e[0m found."
 fi
 
-file_MdeModulePkg="$(pwd)/ovmf/MdeModulePkg/MdeModulePkg.dec"
-file_Dsdt="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl"
-file_Facp="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Facp.aslc"
-file_Hpet="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc"
-file_Madt="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Madt.aslc"
-file_Mcfg="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc"
-file_Platform="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Platform.h"
-file_Spcr="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc"
-file_VbeShim="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c"
-file_BhyveX64="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveX64.dsc"
+   file_SMPHD_ComponentName="$(pwd)/ovmf/MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/ComponentName.c"
+ file_EmmcDxe_ComponentName="$(pwd)/ovmf/MdeModulePkg/Bus/Sd/EmmcDxe/ComponentName.c"
+   file_SdDxe_ComponentName="$(pwd)/ovmf/MdeModulePkg/Bus/Sd/SdDxe/ComponentName.c"
+          file_MdeModulePkg="$(pwd)/ovmf/MdeModulePkg/MdeModulePkg.dec"
+        file_OvmfPkgX64_dsc="$(pwd)/ovmf/OvmfPkg/OvmfPkgX64.dsc"
+        file_OvmfPkgX64_fdf="$(pwd)/ovmf/OvmfPkg/OvmfPkgX64.fdf"
+                  file_Dsdt="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl"
+                  file_Facp="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Facp.aslc"
+                  file_Hpet="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc"
+                  file_Madt="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Madt.aslc"
+                  file_Mcfg="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc"
+   file_AcpiTables_Platform="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Platform.h"
+                  file_Spcr="$(pwd)/ovmf/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc"
+          file_BhyveDefines="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
+               file_VbeShim="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c"
+              file_BhyveX64="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveX64.dsc"
 file_BhyveSmbiosPlatformDxe="$(pwd)/ovmf/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
-file_SmbiosPlatformDxe="$(pwd)/ovmf/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
-file_QemuFwCfgCacheInit="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgCacheInit.c"
-file_FwBlockService="$(pwd)/ovmf/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FwBlockService.c"
-file_QemuFlash="$(pwd)/ovmf/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/QemuFlash.c"
-file_ComponentName="$(pwd)/ovmf/OvmfPkg/QemuVideoDxe/ComponentName.c"
-file_Driver="$(pwd)/ovmf/OvmfPkg/QemuVideoDxe/Driver.c"
-file_ShellPkg="$(pwd)/ovmf/ShellPkg/ShellPkg.dec"
-file_QemuBootOrderLib="$(pwd)/ovmf/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
-file_AuthServiceInternal="$(pwd)/ovmf/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
-file_Q35MchIch9="$(pwd)/ovmf/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
-file_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.c"
-file_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.c"
-header_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.h"
-header_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.h"
-file_BhyveDefines="$(pwd)/ovmf/OvmfPkg/Bhyve/BhyveDefines.fdf.inc"
-file_OvmfPkgDefines="$(pwd)/ovmf/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
+   file_OvmfOptHwComponents="$(pwd)/ovmf/OvmfPkg/Include/Dsc/OvmfOptHwComponents.dsc.inc"
+     file_NetworkComponents="$(pwd)/ovmf/OvmfPkg/Include/Dsc/NetworkComponents.dsc.inc"
+         file_UsbComponents="$(pwd)/ovmf/OvmfPkg/Include/Dsc/UsbComponents.dsc.inc"
+        file_OvmfPkgDefines="$(pwd)/ovmf/OvmfPkg/Include/Fdf/OvmfPkgDefines.fdf.inc"
+            file_Q35MchIch9="$(pwd)/ovmf/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h"
+      file_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.c"
+    header_PBML_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLib/BdsPlatform.h"
+     file_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.c"
+   header_PBMLB_BdsPlatform="$(pwd)/ovmf/OvmfPkg/Library/PlatformBootManagerLibBhyve/BdsPlatform.h"
+             file_MemDetect="$(pwd)/ovmf/OvmfPkg/Library/PlatformInitLib/MemDetect.c"
+          file_PIL_Platform="$(pwd)/ovmf/OvmfPkg/Library/PlatformInitLib/Platform.c"
+              file_PxeBcPcd="$(pwd)/ovmf/OvmfPkg/Library/PxeBcPcdProducerLib/PxeBcPcd.c"
+      file_QemuBootOrderLib="$(pwd)/ovmf/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c"
+    file_QemuFwCfgCacheInit="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgCacheInit.c"
+          file_QemuFwCfgDxe="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgDxe.c"
+      file_QemuFwCfgMmioDxe="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgMmioDxe.c"
+      file_QemuFwCfgMmioPei="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgMmioPei.c"
+          file_QemuFwCfgPei="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgPei.c"
+          file_QemuFwCfgSec="$(pwd)/ovmf/OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgSec.c"
+   file_X86QemuLoadImageLib="$(pwd)/ovmf/OvmfPkg/Library/X86QemuLoadImageLib/X86QemuLoadImageLib.c"
+        file_FwBlockService="$(pwd)/ovmf/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FwBlockService.c"
+             file_QemuFlash="$(pwd)/ovmf/OvmfPkg/QemuFlashFvbServicesRuntimeDxe/QemuFlash.c"
+     file_QVD_ComponentName="$(pwd)/ovmf/OvmfPkg/QemuVideoDxe/ComponentName.c"
+                file_Driver="$(pwd)/ovmf/OvmfPkg/QemuVideoDxe/Driver.c"
+     file_SmbiosPlatformDxe="$(pwd)/ovmf/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c"
+     file_VND_ComponentName="$(pwd)/ovmf/OvmfPkg/VirtioNetDxe/ComponentName.c"
+          file_VirtioSerial="$(pwd)/ovmf/OvmfPkg/VirtioSerialDxe/VirtioSerial.c"
+      file_VirtioSerialPort="$(pwd)/ovmf/OvmfPkg/VirtioSerialDxe/VirtioSerialPort.c"
+   file_AuthServiceInternal="$(pwd)/ovmf/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h"
+              file_ShellPkg="$(pwd)/ovmf/ShellPkg/ShellPkg.dec"
 
+if [[ -f "$file_SMPHD_ComponentName" ]]; then rm "$file_SMPHD_ComponentName"; fi
+if [[ -f "$file_EmmcDxe_ComponentName" ]]; then rm "$file_EmmcDxe_ComponentName"; fi
+if [[ -f "$file_SdDxe_ComponentName" ]]; then rm "$file_SdDxe_ComponentName"; fi
 if [[ -f "$file_MdeModulePkg" ]]; then rm "$file_MdeModulePkg"; fi
+if [[ -f "$file_OvmfPkgX64_dsc" ]]; then rm "$file_OvmfPkgX64_dsc"; fi
+if [[ -f "$file_OvmfPkgX64_fdf" ]]; then rm "$file_OvmfPkgX64_fdf"; fi
 if [[ -f "$file_Dsdt" ]]; then rm "$file_Dsdt"; fi
 if [[ -f "$file_Facp" ]]; then rm "$file_Facp"; fi
 if [[ -f "$file_Hpet" ]]; then rm "$file_Hpet"; fi
 if [[ -f "$file_Madt" ]]; then rm "$file_Madt"; fi
 if [[ -f "$file_Mcfg" ]]; then rm "$file_Mcfg"; fi
-if [[ -f "$file_Platform" ]]; then rm "$file_Platform"; fi
+if [[ -f "$file_AcpiTables_Platform" ]]; then rm "$file_AcpiTables_Platform"; fi
 if [[ -f "$file_Spcr" ]]; then rm "$file_Spcr"; fi
+if [[ -f "$file_BhyveDefines" ]]; then rm "$file_BhyveDefines"; fi
 if [[ -f "$file_VbeShim" ]]; then rm "$file_VbeShim"; fi
 if [[ -f "$file_BhyveX64" ]]; then rm "$file_BhyveX64"; fi
 if [[ -f "$file_BhyveSmbiosPlatformDxe" ]]; then rm "$file_BhyveSmbiosPlatformDxe"; fi
-if [[ -f "$file_SmbiosPlatformDxe" ]]; then rm "$file_SmbiosPlatformDxe"; fi
-if [[ -f "$file_QemuFwCfgCacheInit" ]]; then rm "$file_QemuFwCfgCacheInit"; fi
-if [[ -f "$file_FwBlockService" ]]; then rm "$file_FwBlockService"; fi
-if [[ -f "$file_QemuFlash" ]]; then rm "$file_QemuFlash"; fi
-if [[ -f "$file_ComponentName" ]]; then rm "$file_ComponentName"; fi
-if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
-if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
-if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
-if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
+if [[ -f "$file_OvmfOptHwComponents" ]]; then rm "$file_OvmfOptHwComponents"; fi
+if [[ -f "$file_NetworkComponents" ]]; then rm "$file_NetworkComponents"; fi
+if [[ -f "$file_UsbComponents" ]]; then rm "$file_UsbComponents"; fi
+if [[ -f "$file_OvmfPkgDefines" ]]; then rm "$file_OvmfPkgDefines"; fi
 if [[ -f "$file_Q35MchIch9" ]]; then rm "$file_Q35MchIch9"; fi
 if [[ -f "$file_PBML_BdsPlatform" ]]; then rm "$file_PBML_BdsPlatform"; fi
-if [[ -f "$file_PBMLB_BdsPlatform" ]]; then rm "$file_PBMLB_BdsPlatform"; fi
 if [[ -f "$header_PBML_BdsPlatform" ]]; then rm "$header_PBML_BdsPlatform"; fi
+if [[ -f "$file_PBMLB_BdsPlatform" ]]; then rm "$file_PBMLB_BdsPlatform"; fi
 if [[ -f "$header_PBMLB_BdsPlatform" ]]; then rm "$header_PBMLB_BdsPlatform"; fi
-if [[ -f "$file_BhyveDefines" ]]; then rm "$file_BhyveDefines"; fi
-if [[ -f "$file_OvmfPkgDefines" ]]; then rm "$file_OvmfPkgDefines"; fi
+if [[ -f "$file_MemDetect" ]]; then rm "$file_MemDetect"; fi
+if [[ -f "$file_PIL_Platform" ]]; then rm "$file_PIL_Platform"; fi
+if [[ -f "$file_PxeBcPcd" ]]; then rm "$file_PxeBcPcd"; fi
+if [[ -f "$file_QemuBootOrderLib" ]]; then rm "$file_QemuBootOrderLib"; fi
+if [[ -f "$file_QemuFwCfgCacheInit" ]]; then rm "$file_QemuFwCfgCacheInit"; fi
+if [[ -f "$file_QemuFwCfgDxe" ]]; then rm "$file_QemuFwCfgDxe"; fi
+if [[ -f "$file_QemuFwCfgMmioDxe" ]]; then rm "$file_QemuFwCfgMmioDxe"; fi
+if [[ -f "$file_QemuFwCfgMmioPei" ]]; then rm "$file_QemuFwCfgMmioPei"; fi
+if [[ -f "$file_QemuFwCfgPei" ]]; then rm "$file_QemuFwCfgPei"; fi
+if [[ -f "$file_QemuFwCfgSec" ]]; then rm "$file_QemuFwCfgSec"; fi
+if [[ -f "$file_X86QemuLoadImageLib" ]]; then rm "$file_X86QemuLoadImageLib"; fi
+if [[ -f "$file_FwBlockService" ]]; then rm "$file_FwBlockService"; fi
+if [[ -f "$file_QemuFlash" ]]; then rm "$file_QemuFlash"; fi
+if [[ -f "$file_QVD_ComponentName" ]]; then rm "$file_QVD_ComponentName"; fi
+if [[ -f "$file_Driver" ]]; then rm "$file_Driver"; fi
+if [[ -f "$file_SmbiosPlatformDxe" ]]; then rm "$file_SmbiosPlatformDxe"; fi
+if [[ -f "$file_VND_ComponentName" ]]; then rm "$file_VND_ComponentName"; fi
+if [[ -f "$file_VirtioSerial" ]]; then rm "$file_VirtioSerial"; fi
+if [[ -f "$file_VirtioSerialPort" ]]; then rm "$file_VirtioSerialPort"; fi
+if [[ -f "$file_AuthServiceInternal" ]]; then rm "$file_AuthServiceInternal"; fi
+if [[ -f "$file_ShellPkg" ]]; then rm "$file_ShellPkg"; fi
 mkdir -p ovmf
 cp -fr ovmfbackup/. ovmf
 cp -fr splash.bmp ovmf/MdeModulePkg/Logo/Logo.bmp
 cp -fr /sys/firmware/acpi/bgrt/image ovmf/MdeModulePkg/Logo/Logo.bmp
+
+echo "  $file_SMPHD_ComponentName"
+get_new_string_57
+Edkii="$prefix$suffix"
+echo "Edkii                                             -> $Edkii"
+sed -i "$file_SMPHD_ComponentName" -Ee "s/Edkii/$Edkii/g"
+
+echo "  $file_EmmcDxe_ComponentName"
+echo "Edkii                                             -> $Edkii"
+sed -i "$file_EmmcDxe_ComponentName" -Ee "s/Edkii/$Edkii/g"
+
+echo "  $file_SdDxe_ComponentName"
+echo "Edkii                                             -> $Edkii"
+sed -i "$file_SdDxe_ComponentName" -Ee "s/Edkii/$Edkii/g"
 
 echo "  $file_MdeModulePkg"
 echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
@@ -124,6 +185,14 @@ echo "0x20202020324B4445                                -> 0x20202049204D2041" #
 sed -i "$file_MdeModulePkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
 sed -i "$file_MdeModulePkg" -Ee "s/\"INTEL \"/\"ALASKA\"/"
 sed -i "$file_MdeModulePkg" -Ee "s/0x20202020324B4445/0x20202049204D2041/"
+
+echo "  $file_OvmfPkgX64_dsc"
+echo "OvmfPkg/VirtioFsDxe/VirtioFsDxe.inf               ->"
+sed -i "$file_OvmfPkgX64_dsc" -e  '/VirtioFsDxe/{d;}'
+
+echo "  $file_OvmfPkgX64_fdf"
+echo "INF  OvmfPkg/VirtioFsDxe/VirtioFsDxe.inf          ->"
+sed -i "$file_OvmfPkgX64_fdf" -e  '/VirtioFsDxe/{d;}'
 
 echo "  $file_Dsdt"
 echo "\"BHYVE\"                                           -> \"ALASKA\""
@@ -154,25 +223,29 @@ echo "  $file_Mcfg"
 echo "'B','V','M','C','F','G',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Mcfg" -Ee "s/'B','V','M','C','F','G',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
-echo "  $file_Platform"
+echo "  $file_AcpiTables_Platform"
 echo "'B','H','Y','V','E',' '                           -> 'A','L','A','S','K','A'"
 echo "'B','H','Y','V'                                   -> 'A','M','I',' '"
-sed -i "$file_Platform" -Ee "s/'B','H','Y','V','E',' '/'A','L','A','S','K','A'/"
-sed -i "$file_Platform" -Ee "s/'B','H','Y','V'/'A','M','I',' '/"
+sed -i "$file_AcpiTables_Platform" -Ee "s/'B','H','Y','V','E',' '/'A','L','A','S','K','A'/"
+sed -i "$file_AcpiTables_Platform" -Ee "s/'B','H','Y','V'/'A','M','I',' '/"
 
 echo "  $file_Spcr"
 echo "'B','V','S','P','C','R',' ',' '                   -> 'A',' ','M',' ','I',' ',' ',' '"
 sed -i "$file_Spcr" -Ee "s/'B','V','S','P','C','R',' ',' '/'A',' ','M',' ','I',' ',' ',' '/"
 
+echo "  $file_BhyveDefines"
+echo "0x800000                                          -> 0x810000"
+sed -i "$file_BhyveDefines" -Ee "s/0x800000/0x810000/"
+
 echo "  $file_VbeShim"
-get_new_string 4 1
+get_new_string_4
 echo "\"VESA\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -Ee "s/\"VESA\"/\"$new_string\"/"
-get_new_string 4 1
+get_new_string_4
 echo "\"FBSD\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/OemNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/OemNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
-#get_new_string 4 1
+#get_new_string_4
 echo "\"FBSD\"                                            -> \"$new_string\""
 sed -i "$file_VbeShim" -e  '/VendorNameAddress/{n;d;}'
 sed -i "$file_VbeShim" -Ee "/VendorNameAddress/a\  CopyMem (Ptr, \"$new_string\", 5);"
@@ -240,6 +313,189 @@ sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0x1C \/\/ SystemReserved/0x0D \/\/ 
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMajorRelease/$version_major,     \/\/ UINT8                     SystemBiosMajorRelease/"
 sed -i "$file_BhyveSmbiosPlatformDxe" -Ee "s/0,     \/\/ UINT8                     SystemBiosMinorRelease/$version_minor,    \/\/ UINT8                     SystemBiosMinorRelease/"
 
+echo "  $file_OvmfOptHwComponents"
+get_new_string_57
+org_tianocore="$suffix"
+echo "org.tianocore/                                    -> $org_tianocore/"
+sed -i "$file_OvmfOptHwComponents" -Ee "s/org.tianocore\//$org_tianocore\//"
+
+echo "  $file_NetworkComponents"
+get_new_string_57
+Virtio="$prefix$suffix"
+echo "org.tianocore/                                    -> $org_tianocore/"
+echo "VirtioNetSupport                                  -> ${Virtio}NetSupport/"
+sed -i "$file_NetworkComponents" -Ee "s/org.tianocore\//$org_tianocore\//g"
+sed -i "$file_NetworkComponents" -Ee "s/VirtioNetSupport/${Virtio}NetSupport/"
+
+echo "  $file_UsbComponents"
+echo "org.tianocore/                                    -> $org_tianocore/"
+sed -i "$file_UsbComponents" -Ee "s/org.tianocore\//$org_tianocore\//"
+
+echo "  $file_OvmfPkgDefines"
+echo "0x800000                                          -> 0x810000"
+sed -i "$file_OvmfPkgDefines" -Ee "s/0x800000/0x810000/"
+
+echo "  $file_Q35MchIch9"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022/"
+else
+  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086"
+  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086/"
+fi
+echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
+sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  echo "EFI_PCI_ADDRESS (0, 0x1f, 0                       -> EFI_PCI_ADDRESS (0, 0x14, 3"
+  sed -i "$file_Q35MchIch9" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/"
+  sed -i "$file_Q35MchIch9" -Ee "s/EFI_PCI_ADDRESS \(0, 0x1f, 0/EFI_PCI_ADDRESS (0, 0x14, 3/"
+fi
+
+echo "  $file_PBML_BdsPlatform"
+echo "org.tianocore/                                    -> $org_tianocore/"
+sed -i "$file_PBML_BdsPlatform" -Ee "s/org.tianocore\//$org_tianocore\//g"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBML_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBML_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBML_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $file_PBMLB_BdsPlatform"
+  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
+  sed -i "$file_PBMLB_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
+fi
+
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "  $header_PBMLB_BdsPlatform"
+  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
+  sed -i "$header_PBMLB_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
+fi
+
+echo "  $file_MemDetect"
+get_new_string_57
+ovmf="$suffix"
+echo "ovmf/                                             -> $ovmf/"
+echo "org.tianocore/                                    -> $org_tianocore/"
+sed -i "$file_MemDetect" -Ee "s/ovmf\//$ovmf\//"
+sed -i "$file_MemDetect" -Ee "s/org.tianocore\//$org_tianocore\//"
+
+echo "  $file_PIL_Platform"
+echo "org.tianocore/                                    -> $org_tianocore/"
+echo "return QemuFwCfgParseBool (\"opt/ovmf/             -> return QemuFwCfgParseBool (\"opt/$ovmf/"
+sed -i "$file_PIL_Platform" -Ee "s/org.tianocore\//$org_tianocore\//"
+sed -i "$file_PIL_Platform" -Ee "s/return QemuFwCfgParseBool \(\"opt\/ovmf\//return QemuFwCfgParseBool (\"opt\/$ovmf\//"
+
+echo "  $file_PxeBcPcd"
+echo "org.tianocore/                                    -> $org_tianocore/"
+sed -i "$file_PxeBcPcd" -Ee "s/org.tianocore\//$org_tianocore\//g"
+
+echo "  $file_QemuBootOrderLib"
+get_new_string_57
+echo "\"VMMBootOrder%04x\"                                -> \"${prefix}${suffix}%04x\""
+sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"${prefix}${suffix}%04x\"/"
+
+echo "  $file_QemuFwCfgCacheInit"
+echo "\"QEMU FW CFG\"                                     -> \"$fwcfg FW CFG\""
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$new_string FW CFG/"
+get_new_string_57
+QemuFwCfg="$prefix$suffix"
+echo "\"QemuFwCfgSignature\"                              -> \"${QemuFwCfg}Signature\""
+echo "\"QemuFwCfgInterfaceVersion\"                       -> \"${QemuFwCfg}InterfaceVersion\""
+echo "\"QemuFwCfgFileDri\"                                -> \"${QemuFwCfg}FileDri\""
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/\"QemuFwCfgSignature\"/\"${QemuFwCfg}Signature\"/"
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/\"QemuFwCfgInterfaceVersion\"/\"${QemuFwCfg}InterfaceVersion\"/"
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/\"QemuFwCfgFileDri\"/\"${QemuFwCfg}FileDri\"/"
+echo "ovmf/                                             -> $ovmf/"
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/ovmf\//$ovmf\//"
+
+echo "  $file_QemuFwCfgDxe"
+echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'"
+sed -i "$file_QemuFwCfgDxe" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
+
+echo "  $file_QemuFwCfgMmioDxe"
+echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'"
+sed -i "$file_QemuFwCfgMmioDxe" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
+
+echo "  $file_QemuFwCfgMmioPei"
+echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'"
+sed -i "$file_QemuFwCfgMmioPei" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
+
+echo "  $file_QemuFwCfgPei"
+echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'"
+sed -i "$file_QemuFwCfgPei" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
+
+echo "  $file_QemuFwCfgSec"
+echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'"
+sed -i "$file_QemuFwCfgSec" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
+
+echo "  $file_X86QemuLoadImageLib"
+OVMF: Secure boot image verification failed.  Consider using the '-shim'
+echo "OVMF: Secure boot image verification failed.  Con -> UEFI: Secure boot image verification failed."
+echo "OVMF: Running in confidential VM, not using insec -> UEFI: Running in confidential PC, not using insecure kernel loader."
+echo "org.tianocore/                                    -> $org_tianocore/"
+echo "OVMF: Fallback to insecure legacy linux kernel lo -> UEFI: Fallback to insecure kernel loader is disabled."
+echo "OVMF: Using legacy linux kernel loader (insecure  -> UEFI: Using insecure kernel loader."
+sed -i "$file_X86QemuLoadImageLib" -e  '/image verification failed/{n;N;d;}'
+sed -i "$file_X86QemuLoadImageLib" -Ee "s/OVMF: Secure boot image verification failed.  Consider using the '-shim'/UEFI: Secure boot image verification failed./"
+sed -i "$file_X86QemuLoadImageLib" -Ee "s/OVMF: Running in confidential VM, not using insecure legacy linux kernel loader./UEFI: Running in confidential PC, not using insecure kernel loader./"
+sed -i "$file_X86QemuLoadImageLib" -Ee "s/org.tianocore\//$org_tianocore\//"
+sed -i "$file_X86QemuLoadImageLib" -e  '/kernel loader is disabled/{n;d;}'
+sed -i "$file_X86QemuLoadImageLib" -Ee "s/OVMF: Fallback to insecure legacy linux kernel loader is disabled./UEFI: Fallback to insecure kernel loader is disabled./"
+sed -i "$file_X86QemuLoadImageLib" -e  '/insecure and deprecated/{n;d;}'
+sed -i "$file_X86QemuLoadImageLib" -Ee "s/OVMF: Using legacy linux kernel loader \(insecure and deprecated\)./UEFI: Using insecure kernel loader./"
+
+echo "  $file_FwBlockService"
+#get_new_string_4
+echo "QEMU flash                                        -> $new_string Flash"
+echo "QEMU Flash                                        -> $new_string Flash"
+sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$new_string Flash/"
+sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$new_string Flash/"
+
+echo "  $file_QemuFlash"
+#get_new_string_4
+echo "\"QEMU                                             -> \"$new_string"
+sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
+echo "\"QemuFlashDetected                                -> \"${prefix}${suffix}FlashDetected"
+sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${prefix}${suffix}FlashDetected/"
+
+echo "  $file_QVD_ComponentName"
+#get_new_string_4
+echo "L\"QEMU                                            -> L\"$new_string"
+sed -i "$file_QVD_ComponentName" -Ee "s/L\"QEMU/L\"$new_string/g"
+
+echo "  $file_Driver"
+#get_new_string_4
+echo "L\"QEMU                                            -> L\"$new_string"
+sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
+if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
+  echo "0x1234                                            -> 0x1022"
+  echo "0x1b36                                            -> 0x1022"
+  echo "0x1af4                                            -> 0x1022"
+  echo "0x15ad                                            -> 0x1022"
+  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
+  sed -i "$file_Driver" -Ee "s/0x1b36/0x1022/"
+  sed -i "$file_Driver" -Ee "s/0x1af4/0x1022/"
+  sed -i "$file_Driver" -Ee "s/0x15ad/0x1022/"
+else
+  echo "0x1234                                            -> 0x8086"
+  echo "0x1b36                                            -> 0x8086"
+  echo "0x1af4                                            -> 0x8086"
+  echo "0x15ad                                            -> 0x8086"
+  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
+  sed -i "$file_Driver" -Ee "s/0x1b36/0x8086/"
+  sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
+  sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
+fi
+echo "0x1111                                            -> 0x$device"
+sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
+
 echo "  $file_SmbiosPlatformDxe"
 echo "0xE800, // UINT16                    BiosSegment            -> 0xE000, // UINT16                    BiosSegment"
 echo "0,      // UINT8                     BiosSize               -> 0xFF,   // UINT8                     BiosSize"
@@ -294,120 +550,28 @@ sed -i "$file_SmbiosPlatformDxe" -Ee "s/VendStr = L\"unknown\";/VendStr = L\"Ame
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/VersStr = L\"unknown\";/VersStr = L\"$version_major$version_minor\";/"
 sed -i "$file_SmbiosPlatformDxe" -Ee "s/DateStr = L\"02\/02\/2022\";/DateStr = L\"$day\/$month\/$year\";/"
 
-echo "  $file_QemuFwCfgCacheInit"
-get_new_string 4 1
-echo "QEMU FW CFG                                       -> $new_string FW CFG"
-sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$new_string FW CFG/"
+echo "  $file_VND_ComponentName"
+echo "Virtio Network                                    -> $Virtio Network"
+sed -i "$file_VND_ComponentName" -Ee "s/Virtio Network/${Virtio} Network/g"
 
-echo "  $file_FwBlockService"
-#get_new_string 4 1
-echo "QEMU flash                                        -> $new_string Flash"
-echo "QEMU Flash                                        -> $new_string Flash"
-sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$new_string Flash/"
-sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$new_string Flash/"
+echo "  $file_VirtioSerial"
+echo "VirtioSerialDriverBindingStart                    -> ${Virtio}SerialDriverBindingStart"
+sed -i "$file_VirtioSerial" -Ee "s/VirtioSerialDriverBindingStart/${Virtio}SerialDriverBindingStart/g"
 
-echo "  $file_QemuFlash"
-#get_new_string 4 1
-echo "\"QEMU                                             -> \"$new_string"
-sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
-echo "\"QemuFlashDetected                                -> \"${prefix}${suffix}FlashDetected"
-sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${prefix}${suffix}FlashDetected/"
-
-echo "  $file_ComponentName"
-#get_new_string 4 1
-echo "L\"QEMU                                            -> L\"$new_string"
-sed -i "$file_ComponentName" -Ee "s/L\"QEMU/L\"$new_string/"
-
-echo "  $file_Driver"
-#get_new_string 4 1
-echo "L\"QEMU                                            -> L\"$new_string"
-sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "0x1234                                            -> 0x1022"
-  echo "0x1b36                                            -> 0x1022"
-  echo "0x1af4                                            -> 0x1022"
-  echo "0x15ad                                            -> 0x1022"
-  sed -i "$file_Driver" -Ee "s/0x1234/0x1022/"
-  sed -i "$file_Driver" -Ee "s/0x1b36/0x1022/"
-  sed -i "$file_Driver" -Ee "s/0x1af4/0x1022/"
-  sed -i "$file_Driver" -Ee "s/0x15ad/0x1022/"
-else
-  echo "0x1234                                            -> 0x8086"
-  echo "0x1b36                                            -> 0x8086"
-  echo "0x1af4                                            -> 0x8086"
-  echo "0x15ad                                            -> 0x8086"
-  sed -i "$file_Driver" -Ee "s/0x1234/0x8086/"
-  sed -i "$file_Driver" -Ee "s/0x1b36/0x8086/"
-  sed -i "$file_Driver" -Ee "s/0x1af4/0x8086/"
-  sed -i "$file_Driver" -Ee "s/0x15ad/0x8086/"
-fi
-echo "0x1111                                            -> 0x$device"
-sed -i "$file_Driver" -Ee "s/0x1111/0x$device/"
-
-echo "  $file_ShellPkg"
-echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
-sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
-
-echo "  $file_QemuBootOrderLib"
-get_new_string $(shuf -i 5-7 -n 1) 3
-echo "\"VMMBootOrder%04x\"                                -> \"${prefix}${suffix}%04x\""
-sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"${prefix}${suffix}%04x\"/"
+echo "  $file_VirtioSerialPort"
+echo "VirtioSerialIoInit                                -> ${Virtio}SerialIoInit"
+sed -i "$file_VirtioSerialPort" -Ee "s/VirtioSerialIoInit/${Virtio}SerialIoInit/g"
 
 echo "  $file_AuthServiceInternal"
-get_new_string $(shuf -i 5-7 -n 1) 3
+get_new_string_57
 echo "L\"certdb\"                                         -> L\"db${prefix}${suffix}\""
 sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdb\"/L\"db${prefix}${suffix}\"/"
 echo "L\"certdbv\"                                        -> L\"dbv${prefix}${suffix}\""
 sed -i "$file_AuthServiceInternal" -Ee "s/L\"certdbv\"/L\"dbv${prefix}${suffix}\"/"
 
-echo "  $file_Q35MchIch9"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022"
-  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_1022/"
-else
-  echo "INTEL_Q35_MCH_DEVICE_ID  0x29C0                   -> INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086"
-  sed -i "$file_Q35MchIch9" -Ee "s/INTEL_Q35_MCH_DEVICE_ID  0x29C0/INTEL_Q35_MCH_DEVICE_ID  0x$edk2bridge_8086/"
-fi
-echo "ICH9_CPU_HOTPLUG_BASE  0x0CD8                     -> ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )"
-sed -i "$file_Q35MchIch9" -Ee "s/ICH9_CPU_HOTPLUG_BASE  0x0CD8/ICH9_CPU_HOTPLUG_BASE  0x$( printf '%X' $cpu )/"
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
-  echo "EFI_PCI_ADDRESS (0, 0x1f, 0                       -> EFI_PCI_ADDRESS (0, 0x14, 3"
-  sed -i "$file_Q35MchIch9" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/"
-  sed -i "$file_Q35MchIch9" -Ee "s/EFI_PCI_ADDRESS \(0, 0x1f, 0/EFI_PCI_ADDRESS (0, 0x14, 3/"
-fi
-
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "  $file_PBML_BdsPlatform"
-  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
-  sed -i "$file_PBML_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
-fi
-
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "  $file_PBMLB_BdsPlatform"
-  echo "PCI_LIB_ADDRESS (0, 0x1f, 0                       -> PCI_LIB_ADDRESS (0, 0x14, 3"
-  sed -i "$file_PBMLB_BdsPlatform" -Ee "s/PCI_LIB_ADDRESS \(0, 0x1f, 0/PCI_LIB_ADDRESS (0, 0x14, 3/g"
-fi
-
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "  $header_PBML_BdsPlatform"
-  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
-  sed -i "$header_PBML_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
-fi
-
-if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
-  echo "  $header_PBMLB_BdsPlatform"
-  echo "PCI_DEVICE_PATH_NODE(0, 0x1f                      -> PCI_DEVICE_PATH_NODE(0, 0x14"
-  sed -i "$header_PBMLB_BdsPlatform" -Ee "s/PCI_DEVICE_PATH_NODE\(0, 0x1f/PCI_DEVICE_PATH_NODE(0, 0x14/"
-fi
-
-echo "  $file_BhyveDefines"
-echo "0x800000                                          -> 0x810000"
-sed -i "$file_BhyveDefines" -Ee "s/0x800000/0x810000/"
-
-echo "  $file_OvmfPkgDefines"
-echo "0x800000                                          -> 0x810000"
-sed -i "$file_OvmfPkgDefines" -Ee "s/0x800000/0x810000/"
+echo "  $file_ShellPkg"
+echo "\"EDK II\"                                          -> \"American Megatrends Inc.\""
+sed -i "$file_ShellPkg" -Ee "s/\"EDK II\"/\"American Megatrends Inc.\"/"
 
 read -p $'Continue? [y/\e[1mN\e[0m]> ' -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -416,6 +580,7 @@ else
   echo ""
   exit 0
 fi
+
 
 cd ovmf
 export WORKSPACE="$(pwd)"
