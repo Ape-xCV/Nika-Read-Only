@@ -403,7 +403,7 @@ sed -i "$file_QemuBootOrderLib" -Ee "s/\"VMMBootOrder%04x\"/\"${prefix}${suffix}
 
 echo "  $file_QemuFwCfgCacheInit"
 echo "\"QEMU FW CFG\"                                     -> \"$fwcfg FW CFG\""
-sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$new_string FW CFG/"
+sed -i "$file_QemuFwCfgCacheInit" -Ee "s/QEMU FW CFG/$fwcfg FW CFG/"
 get_new_string_57
 QemuFwCfg="$prefix$suffix"
 echo "\"QemuFwCfgSignature\"                              -> \"${QemuFwCfg}Signature\""
@@ -436,7 +436,6 @@ echo "'Q', 'E', 'M', 'U'                                -> '${fwcfg:0:1}', '${fw
 sed -i "$file_QemuFwCfgSec" -Ee "s/'Q', 'E', 'M', 'U'/'${fwcfg:0:1}', '${fwcfg:1:1}', '${fwcfg:2:1}', '${fwcfg:3:1}'/"
 
 echo "  $file_X86QemuLoadImageLib"
-OVMF: Secure boot image verification failed.  Consider using the '-shim'
 echo "OVMF: Secure boot image verification failed.  Con -> UEFI: Secure boot image verification failed."
 echo "OVMF: Running in confidential VM, not using insec -> UEFI: Running in confidential PC, not using insecure kernel loader."
 echo "org.tianocore/                                    -> $org_tianocore/"
@@ -452,28 +451,24 @@ sed -i "$file_X86QemuLoadImageLib" -e  '/insecure and deprecated/{n;d;}'
 sed -i "$file_X86QemuLoadImageLib" -Ee "s/OVMF: Using legacy linux kernel loader \(insecure and deprecated\)./UEFI: Using insecure kernel loader./"
 
 echo "  $file_FwBlockService"
-#get_new_string_4
-echo "QEMU flash                                        -> $new_string Flash"
-echo "QEMU Flash                                        -> $new_string Flash"
-sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$new_string Flash/"
-sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$new_string Flash/"
+echo "QEMU flash                                        -> $fwcfg Flash"
+echo "QEMU Flash                                        -> $fwcfg Flash"
+sed -i "$file_FwBlockService" -Ee "s/QEMU flash/$fwcfg Flash/"
+sed -i "$file_FwBlockService" -Ee "s/QEMU Flash/$fwcfg Flash/"
 
 echo "  $file_QemuFlash"
-#get_new_string_4
-echo "\"QEMU                                             -> \"$new_string"
-sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$new_string/"
-echo "\"QemuFlashDetected                                -> \"${prefix}${suffix}FlashDetected"
-sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${prefix}${suffix}FlashDetected/"
+echo "\"QEMU                                             -> \"$fwcfg"
+sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$fwcfg/"
+echo "\"QemuFlashDetected                                -> \"${fwcfg}FlashDetected"
+sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${fwcfg}FlashDetected/"
 
 echo "  $file_QVD_ComponentName"
-#get_new_string_4
-echo "L\"QEMU                                            -> L\"$new_string"
-sed -i "$file_QVD_ComponentName" -Ee "s/L\"QEMU/L\"$new_string/g"
+echo "L\"QEMU                                            -> L\"$fwcfg"
+sed -i "$file_QVD_ComponentName" -Ee "s/L\"QEMU/L\"$fwcfg/g"
 
 echo "  $file_Driver"
-#get_new_string_4
-echo "L\"QEMU                                            -> L\"$new_string"
-sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$new_string/"
+echo "L\"QEMU                                            -> L\"$fwcfg"
+sed -i "$file_Driver" -Ee "s/L\"QEMU/L\"$fwcfg/"
 if [[ "${cpu_vendor:1}" == "AuthenticAMD" ]]; then
   echo "0x1234                                            -> 0x1022"
   echo "0x1b36                                            -> 0x1022"
