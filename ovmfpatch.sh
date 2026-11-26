@@ -460,7 +460,7 @@ echo "  $file_QemuFlash"
 echo "\"QEMU                                             -> \"$fwcfg"
 sed -i "$file_QemuFlash" -Ee "s/\"QEMU/\"$fwcfg/"
 echo "\"QemuFlashDetected                                -> \"${fwcfg}FlashDetected"
-sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${fwcfg}FlashDetected/"
+sed -i "$file_QemuFlash" -Ee "s/\"QemuFlashDetected/\"${fwcfg}FlashDetected/g"
 
 echo "  $file_QVD_ComponentName"
 echo "L\"QEMU                                            -> L\"$fwcfg"
