@@ -1,7 +1,11 @@
 [Window settings for ImGui GLFW3]
 Description=Window settings for ImGui GLFW3
+above=true
+aboverule=2
 fullscreen=true
 fullscreenrule=3
+layer=overlay
+layerrule=2
 title=ImGui GLFW3
 titlematch=1
 
